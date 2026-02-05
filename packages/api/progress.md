@@ -178,3 +178,45 @@ pnpm test --filter @structcms/api -- --run src/storage/verify-schema.test.ts
 - Migration applied via `supabase db push`
 - 3 new integration tests passing (7 total)
 - Files: `migrations/002_create_navigation_table.sql`
+
+---
+
+## Working on: Supabase Storage Adapter
+
+**Selected because:** Foundation for all CRUD operations. Implements StorageAdapter interface.
+
+### Plan
+
+**Files to create:**
+- `src/storage/supabase-adapter.ts` - SupabaseStorageAdapter implementation
+- `src/storage/supabase-adapter.test.ts` - Integration tests
+
+**Files to modify:**
+- `src/storage/index.ts` - Export adapter
+- `src/index.ts` - Export createStorageAdapter
+
+**Approach:**
+1. Implement SupabaseStorageAdapter class implementing StorageAdapter
+2. Map between DB snake_case and TypeScript camelCase
+3. Handle connection errors gracefully
+4. Integration tests for all CRUD operations
+
+**Acceptance Criteria:**
+- [x] SupabaseStorageAdapter implements StorageAdapter
+- [x] Uses supabase-js client for database operations
+- [x] Handles connection errors gracefully
+- [x] Integration test: CRUD operations work against Supabase
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run
+```
+
+**Result:** ✅ Success
+
+- 20 new integration tests passing (57 total)
+- Full Page CRUD: create, get, getById, update, delete, list, filter, paginate
+- Full Navigation CRUD: create, get, getById, update, delete, list
+- Auto slug generation with uniqueness
+- StorageError class for error handling
+- Files: `src/storage/supabase-adapter.ts`, `src/storage/supabase-adapter.test.ts`

@@ -95,7 +95,7 @@
         "Handles connection errors gracefully",
         "Integration test: CRUD operations work against Supabase"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",

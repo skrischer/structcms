@@ -9,6 +9,13 @@ export type {
   CreateNavigationInput,
   UpdateNavigationInput,
   StorageAdapter,
+  SupabaseStorageAdapterConfig,
+} from './storage';
+
+export {
+  SupabaseStorageAdapter,
+  createStorageAdapter,
+  StorageError,
 } from './storage';
 
 export { generateSlug, ensureUniqueSlug } from './utils';

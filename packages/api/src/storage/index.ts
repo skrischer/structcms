@@ -10,3 +10,10 @@ export type {
   UpdateNavigationInput,
   StorageAdapter,
 } from './types';
+
+export {
+  SupabaseStorageAdapter,
+  createStorageAdapter,
+  StorageError,
+  type SupabaseStorageAdapterConfig,
+} from './supabase-adapter';
