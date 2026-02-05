@@ -134,7 +134,7 @@
         "listPages(filter?) returns filtered page list",
         "Integration test: all CRUD operations"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",
@@ -147,7 +147,7 @@
         "deleteNavigation(id) removes navigation",
         "Integration test: all CRUD operations"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",
@@ -185,7 +185,7 @@
         "Error cases tested (not found, duplicate slug)",
         "Tests run in CI environment"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",
