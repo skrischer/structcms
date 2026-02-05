@@ -31,3 +31,13 @@ export {
   handleGetPageBySlug,
   handleGetNavigation,
 } from './delivery';
+
+export type {
+  MediaFile,
+  MediaAdapter,
+  UploadMediaInput,
+  MediaFilter,
+  AllowedMimeType,
+} from './media';
+
+export { ALLOWED_MIME_TYPES } from './media';

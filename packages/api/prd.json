@@ -197,7 +197,7 @@
         "Interface is Supabase-agnostic",
         "Unit test: interface types compile"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",

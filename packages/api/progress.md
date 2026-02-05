@@ -265,3 +265,46 @@ pnpm test --filter @structcms/api -- --run
 - Response types: `PageResponse`, `NavigationResponse` with ISO date strings
 - Files created: `src/delivery/types.ts`, `src/delivery/handlers.ts`, `src/delivery/handlers.test.ts`, `src/delivery/index.ts`
 - Exports added to `src/index.ts`
+
+---
+
+## Working on: Media Interface Definition
+
+**Selected because:** Foundation task for all Media operations. No dependencies. All subsequent Media tasks depend on this interface.
+
+### Plan
+
+**Files to create:**
+- `src/media/types.ts` - MediaAdapter interface, MediaFile type, input types
+- `src/media/types.test.ts` - Type compilation tests
+- `src/media/index.ts` - Barrel export
+
+**Files to modify:**
+- `src/index.ts` - Export media types
+
+**Approach:**
+1. Define `MediaFile` type with id, filename, url, mimeType, size, createdAt
+2. Define input types for upload and list operations
+3. Define `MediaAdapter` interface with upload, getMedia, listMedia, deleteMedia
+4. Keep interface Supabase-agnostic (no Supabase types)
+5. Unit tests to verify types compile correctly
+
+**Acceptance Criteria:**
+- [x] MediaAdapter interface with upload, getMedia, listMedia, deleteMedia
+- [x] MediaFile type with id, filename, url, mimeType, size
+- [x] Interface is Supabase-agnostic
+- [x] Unit test: interface types compile
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- 11 new unit tests passing (75 total)
+- Types: `MediaFile`, `MediaAdapter`, `UploadMediaInput`, `MediaFilter`, `AllowedMimeType`
+- Constant: `ALLOWED_MIME_TYPES` (jpeg, png, gif, webp, svg)
+- Files created: `src/media/types.ts`, `src/media/types.test.ts`, `src/media/index.ts`
+- Exports added to `src/index.ts`
