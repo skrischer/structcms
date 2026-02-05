@@ -187,3 +187,27 @@ This package contains three domains: Storage, Media, and Export.
 - [ ] Backup process documented in README
 
 ---
+
+## Database Migrations
+
+SQL migrations are located in `migrations/`. Apply them in order via Supabase SQL Editor or CLI.
+
+### 001_create_pages_table.sql
+
+Creates the `pages` table for storing CMS pages.
+
+```sql
+-- Apply via Supabase SQL Editor
+-- Or: supabase db push (if using Supabase CLI)
+```
+
+**Schema:**
+- `id` (UUID, primary key, auto-generated)
+- `slug` (TEXT, unique, indexed)
+- `page_type` (TEXT, indexed)
+- `title` (TEXT)
+- `sections` (JSONB, default `[]`)
+- `created_at` (TIMESTAMPTZ, auto-set)
+- `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
+
+---

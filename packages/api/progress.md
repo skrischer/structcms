@@ -106,3 +106,42 @@ pnpm test --filter @structcms/api -- --run
 - 20 new unit tests passing (30 total)
 - Files created: `src/utils/slug.ts`, `src/utils/slug.test.ts`, `src/utils/index.ts`
 - Exports: `generateSlug`, `ensureUniqueSlug`
+
+---
+
+## Working on: Database Schema - Pages Table
+
+**Selected because:** Foundation for all page storage operations. Required before Supabase adapter.
+
+### Plan
+
+**Files to create:**
+- `migrations/001_create_pages_table.sql` - SQL migration
+
+**Files to modify:**
+- `README.md` - Document migration
+
+**Approach:**
+1. Create pages table with: id (uuid), slug (unique), page_type, title, sections (jsonb), timestamps
+2. Add unique constraint on slug
+3. Set default timestamps
+4. Document in README
+
+**Acceptance Criteria:**
+- [x] SQL migration creates pages table
+- [x] slug has unique constraint
+- [x] sections stored as JSONB
+- [x] created_at and updated_at timestamps with defaults
+- [x] Migration documented in README
+
+**Verification:**
+```bash
+npx supabase db push
+pnpm test --filter @structcms/api -- --run src/storage/verify-schema.test.ts
+```
+
+**Result:** ✅ Success
+
+- Migration applied via `supabase db push`
+- 4 integration tests passing (unique constraint, UUID generation, timestamps, JSONB)
+- Files: `migrations/001_create_pages_table.sql`, `src/storage/verify-schema.test.ts`

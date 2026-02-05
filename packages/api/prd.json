@@ -108,7 +108,7 @@
         "created_at and updated_at timestamps with defaults",
         "Migration documented in README"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",
