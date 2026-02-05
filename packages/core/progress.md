@@ -67,3 +67,48 @@ pnpm test -w @structcms/core
 - TypeScript typecheck passing
 - Files created: `src/types.ts`, `src/define-section.ts`, `src/define-section.test.ts`
 - Exports added to `src/index.ts`
+
+---
+
+## Working on: Field Type Definitions
+
+**Selected because:** Next logical step after defineSection. Provides field type helpers with metadata for Admin UI to distinguish between text/richtext/image etc.
+
+### Plan
+
+**Files to create:**
+- `src/fields.ts` - Field type helper functions with metadata
+- `src/fields.test.ts` - Unit tests for field types
+
+**Files to modify:**
+- `src/types.ts` - Add FieldMeta type
+- `src/index.ts` - Export field helpers
+
+**Approach:**
+1. Create helper functions that wrap Zod schemas with metadata (fieldType)
+2. Use Zod's `.describe()` or custom brand to store field type info
+3. Field helpers: `fields.string()`, `fields.text()`, `fields.richtext()`, `fields.image()`, `fields.reference()`
+4. Array and object are native Zod (`z.array()`, `z.object()`) - no wrapper needed
+
+**Acceptance Criteria:**
+- [x] string: short text, maps to z.string()
+- [x] text: long text, maps to z.string() with metadata
+- [x] richtext: HTML content, maps to z.string() with metadata
+- [x] image: media reference, maps to z.string().url() or media ID
+- [x] reference: page reference, maps to z.string() (slug or ID)
+- [x] array: list of items, maps to z.array()
+- [x] object: nested structure, maps to z.object()
+- [x] Unit test: each field type validates correctly
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/core -- --run
+```
+
+**Result:** ✅ Success
+
+- 15 new unit tests passing (20 total)
+- TypeScript typecheck passing
+- Files created: `src/fields.ts`, `src/fields.test.ts`
+- Types added: `FieldType`, `FieldMeta`
+- Exports: `fields`, `getFieldMeta`, `isFieldType`

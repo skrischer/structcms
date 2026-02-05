@@ -1,2 +1,8 @@
 export { defineSection } from './define-section';
-export type { SectionDefinition, DefineSectionConfig } from './types';
+export { fields, getFieldMeta, isFieldType } from './fields';
+export type {
+  SectionDefinition,
+  DefineSectionConfig,
+  FieldType,
+  FieldMeta,
+} from './types';

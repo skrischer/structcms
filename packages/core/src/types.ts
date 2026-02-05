@@ -1,6 +1,25 @@
 import type { z } from 'zod';
 
 /**
+ * Supported field types for CMS content
+ */
+export type FieldType =
+  | 'string'
+  | 'text'
+  | 'richtext'
+  | 'image'
+  | 'reference'
+  | 'array'
+  | 'object';
+
+/**
+ * Metadata stored in Zod schema description for field type identification
+ */
+export interface FieldMeta {
+  fieldType: FieldType;
+}
+
+/**
  * Configuration for defining a section
  */
 export interface DefineSectionConfig<T extends z.ZodRawShape> {
