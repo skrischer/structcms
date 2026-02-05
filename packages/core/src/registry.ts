@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type {
   CreateRegistryConfig,
+  PageTypeDefinition,
   Registry,
   SectionDefinition,
 } from './types';
@@ -12,21 +13,24 @@ import type {
  * @example
  * const registry = createRegistry({
  *   sections: [HeroSection, TextSection, GallerySection],
- *   pageTypes: ['landing', 'article', 'contact'],
+ *   pageTypes: [LandingPage, ArticlePage],
  * });
  *
  * const hero = registry.getSection('hero');
  * const allSections = registry.getAllSections();
- * const pageTypes = registry.getPageTypes();
+ * const landing = registry.getPageType('landing');
  */
 export function createRegistry(config: CreateRegistryConfig): Registry {
   const sectionMap = new Map<string, SectionDefinition<z.ZodRawShape>>();
+  const pageTypeMap = new Map<string, PageTypeDefinition>();
 
   for (const section of config.sections) {
     sectionMap.set(section.name, section);
   }
 
-  const pageTypes = config.pageTypes ?? [];
+  for (const pageType of config.pageTypes ?? []) {
+    pageTypeMap.set(pageType.name, pageType);
+  }
 
   return {
     getSection(name: string): SectionDefinition<z.ZodRawShape> | undefined {
@@ -37,8 +41,12 @@ export function createRegistry(config: CreateRegistryConfig): Registry {
       return Array.from(sectionMap.values());
     },
 
-    getPageTypes(): string[] {
-      return [...pageTypes];
+    getPageType(name: string): PageTypeDefinition | undefined {
+      return pageTypeMap.get(name);
+    },
+
+    getAllPageTypes(): PageTypeDefinition[] {
+      return Array.from(pageTypeMap.values());
     },
   };
 }

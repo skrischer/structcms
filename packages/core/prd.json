@@ -103,7 +103,7 @@
         "registry.getPageType(name) returns page type with allowed sections",
         "Unit test: page type correctly restricts sections"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Registry",

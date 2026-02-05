@@ -188,3 +188,45 @@ pnpm test --filter @structcms/core -- --run
 - TypeScript typecheck passing
 - Files created: `src/registry.ts`, `src/registry.test.ts`
 - Types added: `CreateRegistryConfig`, `Registry`
+
+---
+
+## Working on: Page Type Definition
+
+**Selected because:** Registry API complete. Page types define which sections are allowed per page.
+
+### Plan
+
+**Files to create:**
+- `src/define-page-type.ts` - definePageType() function
+- `src/define-page-type.test.ts` - Unit tests
+
+**Files to modify:**
+- `src/types.ts` - Add PageTypeDefinition type
+- `src/registry.ts` - Add getPageType() method
+- `src/index.ts` - Export definePageType
+
+**Approach:**
+1. Define `PageTypeDefinition` with name and allowedSections array
+2. Create `definePageType()` function
+3. Extend Registry to accept pageTypes as PageTypeDefinition[]
+4. Add `registry.getPageType(name)` method
+
+**Acceptance Criteria:**
+- [x] definePageType({ name, allowedSections }) creates page type definition
+- [x] allowedSections references registered section names
+- [x] registry.getPageType(name) returns page type with allowed sections
+- [x] Unit test: page type correctly restricts sections
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/core -- --run
+```
+
+**Result:** ✅ Success
+
+- 7 new unit tests passing (37 total)
+- TypeScript typecheck passing
+- Files created: `src/define-page-type.ts`, `src/define-page-type.test.ts`
+- Types added: `DefinePageTypeConfig`, `PageTypeDefinition`
+- Registry updated: `getPageType()`, `getAllPageTypes()`
