@@ -48,20 +48,22 @@ Website projects register their own models dynamically.
 
 StructCMS provides:
 
-- Content storage
-- Model registry
-- Admin UI
-- Delivery API
+- Content storage with PostgreSQL/JSONB
+- Code-first model registry
+- Admin UI with dynamic form generation
+- REST Delivery API
 - Media management
+
+Planned for Phase 2:
 - Multisite capability
 - Localization support
+- Draft/Publish workflow
 
 It is designed primarily for:
 
 - Agency websites
 - Corporate marketing sites
 - Landing pages
-- Multisite environments
 
 ---
 
@@ -82,7 +84,11 @@ It is designed primarily for:
 ### API
 - Content CRUD
 - Delivery endpoints
-- Draft/publish states
+
+### Backend Abstraction
+- Storage interface (Supabase-agnostic)
+- Auth interface (Supabase-agnostic)
+- Future portability to self-hosted PostgreSQL
 
 ### Media
 - Upload
@@ -96,6 +102,11 @@ It is designed primarily for:
 ---
 
 ## In Scope (Phase 2)
+
+### Draft/Publish States
+- Content draft mode
+- Publish workflow
+- Preview endpoints
 
 ### Localization
 - Field‑level translations
@@ -205,100 +216,16 @@ StructCMS is embedded but connects to managed backend infrastructure.
 
 ## Technical Layers
 
-### 1. Modeling Layer
-Defines schemas and content structures.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical layer documentation.
 
-- Section definitions
-- Field types
-- Localization flags
-
----
-
-### 2. Registry Layer
-Registers models from the host website.
-
-- Section registry
-- Page types
-- Navigation models
-
----
-
-### 3. Storage Layer
-Persists structured content.
-
-- PostgreSQL
-- JSONB sections
-- Media references
-
----
-
-### 4. Domain API Layer
-Applies business logic.
-
-- Validation
-- Slug handling
-- Publish states
-- Locale resolution
-
----
-
-### 5. Delivery API Layer
-Optimized for frontend consumption.
-
-- Typed responses
-- Section unions
-- Caching ready
-
----
-
-### 6. Admin UI Layer
-Content management interface.
-
-- Dynamic forms
-- Section editors
-- Media browser
-- Locale switching
-
----
-
-### 7. Rendering Integration Layer
-Maps content to frontend components.
-
-- Section → Component mapping
-- Typed props delivery
-
----
-
-## Functional System Areas
-
-### Content Management (MVP)
-- Pages
-- Sections
-- Navigation
-
-### Media Management (MVP)
-- Upload
-- Storage
-- Referencing
-
-### Localization (Phase 2)
-- Field translations
-- Locale config
-- Fallback logic
-
-### Multisite (Phase 2)
-- Site configs
-- Domain mapping
-- Content isolation
-
-### Developer Experience
-- Code‑first schemas
-- Typed APIs
-- Installable packages
-
-### Delivery
-- REST endpoints
-- Draft/preview support
+Summary:
+1. **Modeling Layer** - Zod schemas, field types
+2. **Registry Layer** - Section/page type registration
+3. **Storage Layer** - PostgreSQL, JSONB sections
+4. **Domain API Layer** - Validation, slug handling
+5. **Delivery API Layer** - Typed REST responses
+6. **Admin UI Layer** - Dynamic forms, media browser
+7. **Rendering Integration** - Section → Component mapping
 
 ---
 
@@ -307,7 +234,6 @@ Maps content to frontend components.
 ### Technical Risks
 - **Admin UI Complexity**: Dynamic form generation is the largest development effort
 - **Supabase Dependency**: Currently tied to Supabase; abstraction layer mitigates but doesn't eliminate
-- **Preview Implementation**: Requires frontend integration for draft content viewing
 
 ### Operational Risks
 - **Multi-Project Updates**: Breaking changes require coordinated updates across client projects
