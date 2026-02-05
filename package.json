@@ -1,0 +1,36 @@
+{
+  "name": "structcms",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A developer-first, installable headless CMS framework",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skrischer/structcms.git"
+  },
+  "author": "skrischer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/skrischer/structcms/issues"
+  },
+  "homepage": "https://github.com/skrischer/structcms#readme",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "tsup": "^8.3.0",
+    "typescript": "~5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
