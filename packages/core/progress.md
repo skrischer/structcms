@@ -272,3 +272,37 @@ pnpm test --filter @structcms/core -- --run
 - Files created: `src/define-navigation.ts`, `src/define-navigation.test.ts`
 - Types added: `DefineNavigationConfig`, `NavigationDefinition`, `NavigationItem`
 - Registry updated: `getNavigation()`, `getAllNavigations()`
+
+---
+
+## Working on: Unit Tests with >80% Coverage
+
+**Selected because:** Final task. All features implemented, need to verify coverage target.
+
+### Plan
+
+**Approach:**
+1. Run tests with coverage report
+2. Identify any uncovered code paths
+3. Add tests for edge cases if needed
+4. Verify >80% coverage achieved
+
+**Acceptance Criteria:**
+- [x] All public functions have unit tests
+- [x] Edge cases tested (empty registry, invalid schemas)
+- [x] Code coverage >80%
+- [x] Tests run with vitest
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/core -- --run --coverage
+```
+
+**Result:** ✅ Success
+
+- 47 unit tests passing
+- **Coverage: 97.14%** (target: >80%)
+- All source files at 100% except:
+  - `index.ts` (re-exports only)
+  - `types.ts` (TypeScript types only)
+  - `fields.ts` catch block (94.28%)

@@ -127,7 +127,7 @@
         "Code coverage >80%",
         "Tests run with vitest or jest"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
