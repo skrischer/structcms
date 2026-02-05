@@ -220,3 +220,48 @@ pnpm test --filter @structcms/api -- --run
 - Auto slug generation with uniqueness
 - StorageError class for error handling
 - Files: `src/storage/supabase-adapter.ts`, `src/storage/supabase-adapter.test.ts`
+
+---
+
+## Working on: Delivery Endpoints
+
+**Selected because:** User explicitly requested this task. All dependencies are met (Storage Interface, Supabase Adapter, Page CRUD, Navigation CRUD).
+
+### Plan
+
+**Files to create:**
+- `src/delivery/types.ts` - PageResponse, NavigationResponse types
+- `src/delivery/handlers.ts` - Handler functions (handleListPages, handleGetPageBySlug, handleGetNavigation)
+- `src/delivery/handlers.test.ts` - Integration tests
+- `src/delivery/index.ts` - Barrel export
+
+**Files to modify:**
+- `src/index.ts` - Export delivery handlers
+
+**Approach:**
+1. Define response types (PageResponse, NavigationResponse) with ISO date strings
+2. Create handler functions that take StorageAdapter as parameter
+3. Map internal Page/Navigation types to response types
+4. Return null for not found (caller handles 404)
+5. Integration tests against real Supabase
+
+**Acceptance Criteria:**
+- [x] GET /api/cms/pages returns all pages (public)
+- [x] GET /api/cms/pages/:slug returns single page (public)
+- [x] GET /api/cms/navigation/:name returns navigation (public)
+- [x] Responses match PageResponse/NavigationResponse types
+- [x] 404 for non-existent resources
+- [x] Integration test: all endpoints
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run
+```
+
+**Result:** ✅ Success
+
+- 7 new integration tests passing (64 total)
+- Handler functions: `handleListPages`, `handleGetPageBySlug`, `handleGetNavigation`
+- Response types: `PageResponse`, `NavigationResponse` with ISO date strings
+- Files created: `src/delivery/types.ts`, `src/delivery/handlers.ts`, `src/delivery/handlers.test.ts`, `src/delivery/index.ts`
+- Exports added to `src/index.ts`

@@ -99,6 +99,67 @@ GET  /api/cms/navigation/:name   # Get navigation by name
 GET  /api/cms/media              # List media
 ```
 
+### API Implementation Strategy
+
+This package exports **handler functions**, not complete route handlers.
+
+**Rationale:**
+- Framework-agnostic (not tied to Next.js)
+- Adapter injection for storage abstraction
+- Host projects control middleware, auth, caching
+- Easy unit testing without HTTP layer
+
+**Exported Handlers:**
+```typescript
+// Delivery API
+export function handleListPages(adapter: StorageAdapter): Promise<PageResponse[]>;
+export function handleGetPageBySlug(adapter: StorageAdapter, slug: string): Promise<PageResponse | null>;
+export function handleGetNavigation(adapter: StorageAdapter, name: string): Promise<NavigationResponse | null>;
+export function handleListMedia(adapter: MediaAdapter): Promise<MediaResponse[]>;
+
+// Admin API
+export function handleCreatePage(adapter: StorageAdapter, data: CreatePageInput): Promise<PageResponse>;
+export function handleUpdatePage(adapter: StorageAdapter, id: string, data: UpdatePageInput): Promise<PageResponse>;
+export function handleDeletePage(adapter: StorageAdapter, id: string): Promise<void>;
+export function handleUploadMedia(adapter: MediaAdapter, file: File): Promise<MediaResponse>;
+export function handleDeleteMedia(adapter: MediaAdapter, id: string): Promise<void>;
+```
+
+**Usage in Host Project:**
+```typescript
+// app/api/cms/pages/route.ts
+import { handleListPages, handleCreatePage } from '@structcms/api';
+import { adapter } from '@/lib/cms-adapter';
+
+export async function GET() {
+  const pages = await handleListPages(adapter);
+  return Response.json(pages);
+}
+
+export async function POST(request: Request) {
+  const data = await request.json();
+  const page = await handleCreatePage(adapter, data);
+  return Response.json(page, { status: 201 });
+}
+```
+
+```typescript
+// app/api/cms/pages/[slug]/route.ts
+import { handleGetPageBySlug, handleUpdatePage, handleDeletePage } from '@structcms/api';
+import { adapter } from '@/lib/cms-adapter';
+
+export async function GET(
+  request: Request,
+  { params }: { params: { slug: string } }
+) {
+  const page = await handleGetPageBySlug(adapter, params.slug);
+  if (!page) {
+    return Response.json({ error: 'Not found' }, { status: 404 });
+  }
+  return Response.json(page);
+}
+```
+
 **Response Format:**
 ```typescript
 interface PageResponse {

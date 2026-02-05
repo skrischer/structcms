@@ -173,7 +173,7 @@
         "404 for non-existent resources",
         "Integration test: all endpoints"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",
