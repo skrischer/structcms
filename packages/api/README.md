@@ -210,4 +210,15 @@ Creates the `pages` table for storing CMS pages.
 - `created_at` (TIMESTAMPTZ, auto-set)
 - `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
 
+### 002_create_navigation_table.sql
+
+Creates the `navigation` table for storing navigation structures.
+
+**Schema:**
+- `id` (UUID, primary key, auto-generated)
+- `name` (TEXT, unique, indexed)
+- `items` (JSONB, default `[]`)
+- `created_at` (TIMESTAMPTZ, auto-set)
+- `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
+
 ---

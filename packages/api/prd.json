@@ -120,7 +120,7 @@
         "items stored as JSONB (array of nav items)",
         "Migration documented in README"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",

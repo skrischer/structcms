@@ -145,3 +145,36 @@ pnpm test --filter @structcms/api -- --run src/storage/verify-schema.test.ts
 - Migration applied via `supabase db push`
 - 4 integration tests passing (unique constraint, UUID generation, timestamps, JSONB)
 - Files: `migrations/001_create_pages_table.sql`, `src/storage/verify-schema.test.ts`
+
+---
+
+## Working on: Database Schema - Navigation Table
+
+**Selected because:** Required for navigation CRUD. Similar pattern to pages table.
+
+### Plan
+
+**Files to create:**
+- `migrations/002_create_navigation_table.sql`
+
+**Files to modify:**
+- `README.md` - Document migration
+- `src/storage/verify-schema.test.ts` - Add navigation tests
+
+**Acceptance Criteria:**
+- [x] SQL migration creates navigation table
+- [x] name has unique constraint
+- [x] items stored as JSONB (array of nav items)
+- [x] Migration documented in README
+
+**Verification:**
+```bash
+npx supabase db push
+pnpm test --filter @structcms/api -- --run src/storage/verify-schema.test.ts
+```
+
+**Result:** ✅ Success
+
+- Migration applied via `supabase db push`
+- 3 new integration tests passing (7 total)
+- Files: `migrations/002_create_navigation_table.sql`

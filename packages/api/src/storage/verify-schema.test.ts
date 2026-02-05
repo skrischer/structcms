@@ -116,4 +116,83 @@ describe('Database Schema Verification', () => {
       }
     );
   });
+
+  describe('navigation table', () => {
+    it.skipIf(!supabaseUrl || !supabaseKey)(
+      'should exist and have correct columns',
+      async () => {
+        const supabase = createClient(supabaseUrl!, supabaseKey!);
+
+        const { error } = await supabase
+          .from('navigation')
+          .select('*')
+          .limit(0);
+
+        expect(error).toBeNull();
+      }
+    );
+
+    it.skipIf(!supabaseUrl || !supabaseKey)(
+      'should enforce unique name constraint',
+      async () => {
+        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const testName = `test-nav-${Date.now()}`;
+
+        // Insert first navigation
+        const { error: insertError } = await supabase
+          .from('navigation')
+          .insert({
+            name: testName,
+            items: [],
+          });
+
+        expect(insertError).toBeNull();
+
+        // Try to insert duplicate name
+        const { error: duplicateError } = await supabase
+          .from('navigation')
+          .insert({
+            name: testName,
+            items: [],
+          });
+
+        expect(duplicateError).not.toBeNull();
+        expect(duplicateError?.code).toBe('23505'); // unique_violation
+
+        // Cleanup
+        await supabase.from('navigation').delete().eq('name', testName);
+      }
+    );
+
+    it.skipIf(!supabaseUrl || !supabaseKey)(
+      'should store items as JSONB',
+      async () => {
+        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const testName = `test-nav-jsonb-${Date.now()}`;
+        const testItems = [
+          { label: 'Home', href: '/' },
+          {
+            label: 'Products',
+            href: '/products',
+            children: [{ label: 'Category A', href: '/products/a' }],
+          },
+        ];
+
+        const { data, error } = await supabase
+          .from('navigation')
+          .insert({
+            name: testName,
+            items: testItems,
+          })
+          .select()
+          .single();
+
+        expect(error).toBeNull();
+        expect(data?.items).toEqual(testItems);
+
+        // Cleanup
+        await supabase.from('navigation').delete().eq('name', testName);
+      }
+    );
+  });
 });
