@@ -282,4 +282,17 @@ Creates the `navigation` table for storing navigation structures.
 - `created_at` (TIMESTAMPTZ, auto-set)
 - `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
 
+### 003_create_media_table.sql
+
+Creates the `media` table for storing media file metadata.
+
+**Schema:**
+- `id` (UUID, primary key, auto-generated)
+- `filename` (TEXT, original filename)
+- `storage_path` (TEXT, path in Supabase Storage bucket, indexed)
+- `mime_type` (TEXT, indexed)
+- `size` (INTEGER, file size in bytes)
+- `created_at` (TIMESTAMPTZ, auto-set, indexed DESC)
+- `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
+
 ---

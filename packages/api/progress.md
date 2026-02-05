@@ -308,3 +308,42 @@ pnpm --filter @structcms/api typecheck
 - Constant: `ALLOWED_MIME_TYPES` (jpeg, png, gif, webp, svg)
 - Files created: `src/media/types.ts`, `src/media/types.test.ts`, `src/media/index.ts`
 - Exports added to `src/index.ts`
+
+---
+
+## Working on: Database Schema: Media Table
+
+**Selected because:** Required before Supabase Media Adapter. The adapter needs a table to store media metadata.
+
+### Plan
+
+**Files to create:**
+- `migrations/003_create_media_table.sql` - SQL migration
+
+**Files to modify:**
+- `README.md` - Document migration
+
+**Approach:**
+1. Create media table with: id (uuid), filename, storage_path, mime_type, size, timestamps
+2. Add index on storage_path for lookups
+3. Reuse existing updated_at trigger function
+4. Document in README
+
+**Acceptance Criteria:**
+- [x] SQL migration creates media table
+- [x] storage_path references Supabase Storage path
+- [x] Migration documented in README
+
+**Verification:**
+```bash
+npx supabase db push
+```
+
+**Result:** ✅ Success
+
+- Migration `003_create_media_table.sql` applied to remote database
+- 3 integration tests passing (schema verification)
+- Table: `media` with id, filename, storage_path, mime_type, size, timestamps
+- Indexes: storage_path, mime_type, created_at DESC
+- Files: `supabase/migrations/003_create_media_table.sql`, `src/media/verify-schema.test.ts`
+- README updated with schema documentation

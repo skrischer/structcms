@@ -220,7 +220,7 @@
         "storage_path references Supabase Storage path",
         "Migration documented in README"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",
