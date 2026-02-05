@@ -91,7 +91,7 @@
         "registry.getPageTypes() returns registered page type names",
         "Unit test: registry stores and retrieves sections correctly"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Registry",

@@ -148,3 +148,43 @@ pnpm --filter @structcms/core typecheck
 - TypeScript typecheck passing
 - Added `InferSectionData<T>` utility type
 - Tests use vitest `expectTypeOf` for compile-time type verification
+
+---
+
+## Working on: Registry API
+
+**Selected because:** All Modeling tasks complete. Registry is needed for Page Type Definition and Navigation Model.
+
+### Plan
+
+**Files to create:**
+- `src/registry.ts` - createRegistry() function
+- `src/registry.test.ts` - Unit tests
+
+**Files to modify:**
+- `src/types.ts` - Add Registry type
+- `src/index.ts` - Export createRegistry
+
+**Approach:**
+1. Define `Registry` interface with getSection, getAllSections, getPageTypes methods
+2. Create `createRegistry()` that accepts sections and pageTypes arrays
+3. Store sections in a Map for O(1) lookup by name
+
+**Acceptance Criteria:**
+- [x] createRegistry({ sections, pageTypes }) creates registry instance
+- [x] registry.getSection(name) returns section definition or undefined
+- [x] registry.getAllSections() returns all registered sections
+- [x] registry.getPageTypes() returns registered page type names
+- [x] Unit test: registry stores and retrieves sections correctly
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/core -- --run
+```
+
+**Result:** ✅ Success
+
+- 8 new unit tests passing (32 total)
+- TypeScript typecheck passing
+- Files created: `src/registry.ts`, `src/registry.test.ts`
+- Types added: `CreateRegistryConfig`, `Registry`

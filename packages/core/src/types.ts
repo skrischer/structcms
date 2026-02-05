@@ -44,3 +44,20 @@ export interface SectionDefinition<T extends z.ZodRawShape> {
  */
 export type InferSectionData<T extends SectionDefinition<z.ZodRawShape>> =
   T['_type'];
+
+/**
+ * Configuration for creating a registry
+ */
+export interface CreateRegistryConfig {
+  sections: Array<SectionDefinition<z.ZodRawShape>>;
+  pageTypes?: string[];
+}
+
+/**
+ * Registry instance providing access to registered models
+ */
+export interface Registry {
+  getSection(name: string): SectionDefinition<z.ZodRawShape> | undefined;
+  getAllSections(): Array<SectionDefinition<z.ZodRawShape>>;
+  getPageTypes(): string[];
+}
