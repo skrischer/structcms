@@ -83,7 +83,7 @@
         "Interface is Supabase-agnostic (no Supabase types in interface)",
         "Unit test: interface types compile correctly"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",

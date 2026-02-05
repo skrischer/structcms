@@ -9,4 +9,4 @@ export type {
   CreateNavigationInput,
   UpdateNavigationInput,
   StorageAdapter,
-} from './storage';
+} from './types';
