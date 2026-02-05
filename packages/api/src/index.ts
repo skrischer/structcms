@@ -38,6 +38,12 @@ export type {
   UploadMediaInput,
   MediaFilter,
   AllowedMimeType,
+  SupabaseMediaAdapterConfig,
 } from './media';
 
-export { ALLOWED_MIME_TYPES } from './media';
+export {
+  ALLOWED_MIME_TYPES,
+  SupabaseMediaAdapter,
+  createMediaAdapter,
+  MediaError,
+} from './media';

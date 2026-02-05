@@ -209,7 +209,7 @@
         "Public URLs generated for uploaded files",
         "Integration test: upload and retrieve file"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",

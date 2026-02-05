@@ -347,3 +347,51 @@ npx supabase db push
 - Indexes: storage_path, mime_type, created_at DESC
 - Files: `supabase/migrations/003_create_media_table.sql`, `src/media/verify-schema.test.ts`
 - README updated with schema documentation
+
+---
+
+## Working on: Supabase Media Adapter
+
+**Selected because:** All dependencies met (MediaAdapter interface ✅, Media table ✅). Required for all Media endpoint tasks.
+
+### Plan
+
+**Files to create:**
+- `src/media/supabase-adapter.ts` - SupabaseMediaAdapter implementation
+- `src/media/supabase-adapter.test.ts` - Integration tests
+
+**Files to modify:**
+- `src/media/index.ts` - Export adapter
+- `src/index.ts` - Export createMediaAdapter
+
+**Approach:**
+1. Create SupabaseMediaAdapter class implementing MediaAdapter
+2. Upload: Store file in Supabase Storage bucket, create DB record
+3. getMedia: Fetch from DB, construct public URL
+4. listMedia: Query DB with pagination, construct URLs
+5. deleteMedia: Delete from Storage and DB
+6. Integration tests against real Supabase
+
+**Challenges:**
+- Need to create Storage bucket "media" if not exists
+- Public URL generation from storage path
+
+**Acceptance Criteria:**
+- [x] SupabaseMediaAdapter implements MediaAdapter
+- [x] Files uploaded to Supabase Storage bucket
+- [x] Public URLs generated for uploaded files
+- [x] Integration test: upload and retrieve file
+
+**Verification:**
+```bash
+SUPABASE_URL=... SUPABASE_SECRET_KEY=... pnpm test --filter @structcms/api -- --run src/media/supabase-adapter.test.ts
+```
+
+**Result:** ✅ Success
+
+- 10 integration tests passing
+- SupabaseMediaAdapter: upload, getMedia, listMedia, deleteMedia
+- Storage bucket "media" created with public access
+- Public URLs generated via Supabase Storage API
+- Files: `src/media/supabase-adapter.ts`, `src/media/supabase-adapter.test.ts`
+- Exports: `SupabaseMediaAdapter`, `createMediaAdapter`, `MediaError`
