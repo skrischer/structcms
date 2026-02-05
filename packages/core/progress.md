@@ -230,3 +230,45 @@ pnpm test --filter @structcms/core -- --run
 - Files created: `src/define-page-type.ts`, `src/define-page-type.test.ts`
 - Types added: `DefinePageTypeConfig`, `PageTypeDefinition`
 - Registry updated: `getPageType()`, `getAllPageTypes()`
+
+---
+
+## Working on: Navigation Model
+
+**Selected because:** Last feature task before coverage. Provides typed navigation structures.
+
+### Plan
+
+**Files to create:**
+- `src/define-navigation.ts` - defineNavigation() function
+- `src/define-navigation.test.ts` - Unit tests
+
+**Files to modify:**
+- `src/types.ts` - Add NavigationDefinition type
+- `src/registry.ts` - Add navigation support
+- `src/index.ts` - Export defineNavigation
+
+**Approach:**
+1. Define `NavigationDefinition` with name and schema
+2. Create default navigation item schema (label, href, children)
+3. Create `defineNavigation()` function
+4. Extend Registry to support navigation registration
+
+**Acceptance Criteria:**
+- [x] defineNavigation({ name, schema }) creates navigation definition
+- [x] Default schema supports label, href, optional children (recursive)
+- [x] Navigation can be registered in registry
+- [x] Unit test: navigation model validates correctly
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/core -- --run
+```
+
+**Result:** ✅ Success
+
+- 10 new unit tests passing (47 total)
+- TypeScript typecheck passing
+- Files created: `src/define-navigation.ts`, `src/define-navigation.test.ts`
+- Types added: `DefineNavigationConfig`, `NavigationDefinition`, `NavigationItem`
+- Registry updated: `getNavigation()`, `getAllNavigations()`

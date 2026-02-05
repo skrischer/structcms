@@ -115,7 +115,7 @@
         "Navigation can be registered in registry",
         "Unit test: navigation model validates correctly"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Testing",

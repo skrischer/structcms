@@ -62,11 +62,29 @@ export interface PageTypeDefinition {
 }
 
 /**
+ * Configuration for defining a navigation
+ */
+export interface DefineNavigationConfig<T extends z.ZodTypeAny> {
+  name: string;
+  schema?: T;
+}
+
+/**
+ * A navigation definition with typed items
+ */
+export interface NavigationDefinition<T extends z.ZodTypeAny = z.ZodTypeAny> {
+  name: string;
+  schema: T;
+  _itemType: z.infer<T>;
+}
+
+/**
  * Configuration for creating a registry
  */
 export interface CreateRegistryConfig {
   sections: Array<SectionDefinition<z.ZodRawShape>>;
   pageTypes?: PageTypeDefinition[];
+  navigations?: Array<NavigationDefinition>;
 }
 
 /**
@@ -77,4 +95,6 @@ export interface Registry {
   getAllSections(): Array<SectionDefinition<z.ZodRawShape>>;
   getPageType(name: string): PageTypeDefinition | undefined;
   getAllPageTypes(): PageTypeDefinition[];
+  getNavigation(name: string): NavigationDefinition | undefined;
+  getAllNavigations(): NavigationDefinition[];
 }
