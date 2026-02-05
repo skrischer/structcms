@@ -112,3 +112,39 @@ pnpm test --filter @structcms/core -- --run
 - Files created: `src/fields.ts`, `src/fields.test.ts`
 - Types added: `FieldType`, `FieldMeta`
 - Exports: `fields`, `getFieldMeta`, `isFieldType`
+
+---
+
+## Working on: Type Inference from Zod Schemas
+
+**Selected because:** Next Modeling task. Ensures TypeScript type inference works correctly with defineSection and fields.
+
+### Plan
+
+**Files to modify:**
+- `src/define-section.test.ts` - Add explicit type inference tests
+- `src/types.ts` - Add InferSectionData utility type
+
+**Approach:**
+1. Add `InferSectionData<T>` utility type for extracting data type from SectionDefinition
+2. Add comprehensive type inference tests that verify compile-time behavior
+3. Tests already partially exist - extend them to cover all acceptance criteria
+
+**Acceptance Criteria:**
+- [x] z.infer<typeof section.schema> returns correct TypeScript type
+- [x] Optional fields are typed as T | undefined
+- [x] Nested objects preserve type structure
+- [x] Unit test: type inference matches expected types
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/core -- --run
+pnpm --filter @structcms/core typecheck
+```
+
+**Result:** ✅ Success
+
+- 4 new type inference tests passing (24 total)
+- TypeScript typecheck passing
+- Added `InferSectionData<T>` utility type
+- Tests use vitest `expectTypeOf` for compile-time type verification

@@ -5,4 +5,5 @@ export type {
   DefineSectionConfig,
   FieldType,
   FieldMeta,
+  InferSectionData,
 } from './types';

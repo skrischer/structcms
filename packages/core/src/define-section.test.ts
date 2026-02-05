@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import { z } from 'zod';
 import { defineSection } from './define-section';
+import type { InferSectionData } from './types';
 
 describe('defineSection', () => {
   it('should create a section definition with name and schema', () => {
@@ -96,5 +97,93 @@ describe('defineSection', () => {
 
     const result = TestSection.schema.safeParse(testData);
     expect(result.success).toBe(true);
+  });
+});
+
+describe('Type Inference', () => {
+  it('should infer types via z.infer<typeof section.schema>', () => {
+    const HeroSection = defineSection({
+      name: 'hero',
+      fields: {
+        title: z.string(),
+        subtitle: z.string().optional(),
+      },
+    });
+
+    type HeroData = z.infer<typeof HeroSection.schema>;
+
+    expectTypeOf<HeroData>().toEqualTypeOf<{
+      title: string;
+      subtitle?: string | undefined;
+    }>();
+  });
+
+  it('should type optional fields as T | undefined', () => {
+    const Section = defineSection({
+      name: 'test',
+      fields: {
+        required: z.string(),
+        optional: z.string().optional(),
+        nullable: z.string().nullable(),
+        optionalNullable: z.string().optional().nullable(),
+      },
+    });
+
+    type Data = z.infer<typeof Section.schema>;
+
+    expectTypeOf<Data['required']>().toEqualTypeOf<string>();
+    expectTypeOf<Data['optional']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Data['nullable']>().toEqualTypeOf<string | null>();
+    expectTypeOf<Data['optionalNullable']>().toEqualTypeOf<
+      string | null | undefined
+    >();
+  });
+
+  it('should preserve nested object type structure', () => {
+    const Section = defineSection({
+      name: 'nested',
+      fields: {
+        cta: z.object({
+          label: z.string(),
+          href: z.string(),
+          external: z.boolean().optional(),
+        }),
+        items: z.array(
+          z.object({
+            id: z.number(),
+            name: z.string(),
+          })
+        ),
+      },
+    });
+
+    type Data = z.infer<typeof Section.schema>;
+
+    expectTypeOf<Data['cta']>().toEqualTypeOf<{
+      label: string;
+      href: string;
+      external?: boolean | undefined;
+    }>();
+
+    expectTypeOf<Data['items']>().toEqualTypeOf<
+      Array<{ id: number; name: string }>
+    >();
+  });
+
+  it('should work with InferSectionData utility type', () => {
+    const HeroSection = defineSection({
+      name: 'hero',
+      fields: {
+        title: z.string(),
+        image: z.string().url(),
+      },
+    });
+
+    type HeroData = InferSectionData<typeof HeroSection>;
+
+    expectTypeOf<HeroData>().toEqualTypeOf<{
+      title: string;
+      image: string;
+    }>();
   });
 });

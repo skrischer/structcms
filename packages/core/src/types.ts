@@ -35,3 +35,12 @@ export interface SectionDefinition<T extends z.ZodRawShape> {
   schema: z.ZodObject<T>;
   _type: z.infer<z.ZodObject<T>>;
 }
+
+/**
+ * Utility type to extract the data type from a SectionDefinition
+ * @example
+ * const HeroSection = defineSection({ name: 'hero', fields: { title: z.string() } });
+ * type HeroData = InferSectionData<typeof HeroSection>; // { title: string }
+ */
+export type InferSectionData<T extends SectionDefinition<z.ZodRawShape>> =
+  T['_type'];

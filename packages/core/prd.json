@@ -78,7 +78,7 @@
         "Nested objects preserve type structure",
         "Unit test: type inference matches expected types"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Registry",
