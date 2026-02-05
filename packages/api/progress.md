@@ -68,3 +68,41 @@ pnpm --filter @structcms/api typecheck
 - TypeScript typecheck passing
 - Files created: `src/storage/types.ts`, `src/storage/types.test.ts`, `src/storage/index.ts`
 - Types: Page, PageSection, PageFilter, Navigation, NavigationItem, StorageAdapter
+
+---
+
+## Working on: Slug Generation and Uniqueness
+
+**Selected because:** Independent utility task. Required for Page CRUD. Can be fully unit tested.
+
+### Plan
+
+**Files to create:**
+- `src/utils/slug.ts` - generateSlug() function
+- `src/utils/slug.test.ts` - Unit tests
+
+**Files to modify:**
+- `src/index.ts` - Export slug utilities
+
+**Approach:**
+1. Create `generateSlug(title)` that converts title to URL-safe slug
+2. Handle special characters, spaces, umlauts (ä→ae, ö→oe, ü→ue, ß→ss)
+3. Create `ensureUniqueSlug(slug, existingSlugs)` for uniqueness check
+4. Append -1, -2, etc. if slug exists
+
+**Acceptance Criteria:**
+- [x] generateSlug(title) creates URL-safe slug
+- [x] Handles special characters, spaces, umlauts
+- [x] Appends -1, -2, etc. if slug exists
+- [x] Unit test: slug generation and uniqueness
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run
+```
+
+**Result:** ✅ Success
+
+- 20 new unit tests passing (30 total)
+- Files created: `src/utils/slug.ts`, `src/utils/slug.test.ts`, `src/utils/index.ts`
+- Exports: `generateSlug`, `ensureUniqueSlug`

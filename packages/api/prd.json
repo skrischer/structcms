@@ -159,7 +159,7 @@
         "Appends -1, -2, etc. if slug exists",
         "Unit test: slug generation and uniqueness"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Delivery",

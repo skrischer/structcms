@@ -10,3 +10,5 @@ export type {
   UpdateNavigationInput,
   StorageAdapter,
 } from './storage';
+
+export { generateSlug, ensureUniqueSlug } from './utils';
