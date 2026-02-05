@@ -1,0 +1,264 @@
+{
+  "project_meta": {
+    "name": "@structcms/admin",
+    "version": "0.1.0",
+    "description": "Admin UI components for StructCMS"
+  },
+  "context": {
+    "dependencies": {
+      "runtime": [
+        "@structcms/core",
+        "react",
+        "react-dom",
+        "react-hook-form",
+        "@hookform/resolvers",
+        "@tiptap/react",
+        "@tiptap/starter-kit",
+        "@tiptap/extension-link",
+        "tailwindcss",
+        "class-variance-authority",
+        "clsx",
+        "tailwind-merge",
+        "lucide-react"
+      ],
+      "dev": ["vitest", "@testing-library/react", "playwright", "typescript"],
+      "shadcn_components": ["button", "input", "textarea", "card", "dialog", "select", "label", "separator"]
+    },
+    "package_exports": [
+      "PageEditor",
+      "SectionEditor",
+      "MediaBrowser",
+      "NavigationEditor",
+      "PageList",
+      "AdminLayout",
+      "FormGenerator",
+      "StringInput",
+      "TextInput",
+      "RichTextEditor",
+      "ImagePicker",
+      "ArrayField",
+      "ObjectField"
+    ],
+    "api_configuration": {
+      "base_url": "Configurable via AdminProvider context, default: /api/cms",
+      "example": "<AdminProvider apiBaseUrl='/api/cms' registry={registry}><AdminLayout /></AdminProvider>"
+    },
+    "file_structure": {
+      "src/": "Source files",
+      "src/components/": "React components",
+      "src/components/inputs/": "Field input components (StringInput, TextInput, etc.)",
+      "src/components/editors/": "Editor components (SectionEditor, PageEditor)",
+      "src/components/layout/": "Layout components (AdminLayout, Sidebar)",
+      "src/components/media/": "Media components (MediaBrowser, ImagePicker)",
+      "src/lib/": "Utilities (cn, form-generator)",
+      "src/context/": "React contexts (AdminProvider)",
+      "src/hooks/": "Custom hooks (usePages, useMedia)",
+      "src/index.ts": "Package entry point"
+    },
+    "integration_in_host": {
+      "next_js_app_router": "Host creates admin route group (e.g., app/(admin)/)",
+      "example_page": "import { PageEditor } from '@structcms/admin'; export default function EditPage({ params }) { return <PageEditor slug={params.slug} />; }",
+      "provider_setup": "Wrap admin routes with AdminProvider passing registry and API base URL"
+    },
+    "ui_decisions": {
+      "richtext_editor": "TipTap with StarterKit + Link extension",
+      "section_reordering": "Up/Down buttons (no drag & drop)",
+      "array_reordering": "Up/Down buttons (no drag & drop)",
+      "save_behavior": "Manual save only (no autosave)",
+      "styling": "Tailwind CSS + shadcn/ui components"
+    },
+    "notes": [
+      "All components receive registry from AdminProvider context",
+      "Form generation uses React Hook Form + Zod resolver",
+      "Components are headless-friendly but styled by default",
+      "API calls use fetch() to configured base URL",
+      "No drag & drop - explicit out of scope"
+    ]
+  },
+  "backlog": [
+    {
+      "group": "Form Generation",
+      "feature": "Form Generator from Zod Schema",
+      "description": "Create component that generates React Hook Form from Zod schema, mapping field types to appropriate input components",
+      "acceptance_criteria": [
+        "Accepts Zod schema and generates form fields",
+        "Integrates with React Hook Form + Zod resolver",
+        "Maps each field type to corresponding input component",
+        "Handles validation errors from Zod",
+        "Unit test: form generation from sample schema"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Field Inputs",
+      "feature": "String Input Component",
+      "description": "Text input component for string fields with label, placeholder, validation error display",
+      "acceptance_criteria": [
+        "Renders shadcn/ui Input component",
+        "Displays label and optional placeholder",
+        "Shows validation errors below input",
+        "Supports required/optional indicator",
+        "Unit test: renders and validates correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Field Inputs",
+      "feature": "Text Input Component",
+      "description": "Textarea component for long text fields",
+      "acceptance_criteria": [
+        "Renders shadcn/ui Textarea component",
+        "Supports configurable rows",
+        "Displays label and validation errors",
+        "Unit test: renders correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Field Inputs",
+      "feature": "RichText Editor Component",
+      "description": "WYSIWYG editor for richtext fields using TipTap",
+      "acceptance_criteria": [
+        "Integrates TipTap editor",
+        "Supports bold, italic, links, lists, headings",
+        "Outputs HTML string",
+        "Styled to match shadcn/ui design",
+        "Unit test: editor renders and outputs HTML"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Field Inputs",
+      "feature": "Image Picker Component",
+      "description": "Component for image fields that opens MediaBrowser for selection",
+      "acceptance_criteria": [
+        "Shows current image preview if selected",
+        "Button to open MediaBrowser modal",
+        "Stores media ID or URL in form",
+        "Clear button to remove selection",
+        "Unit test: selection flow"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Field Inputs",
+      "feature": "Array Field Component",
+      "description": "Component for array fields with add/remove/reorder (buttons) functionality",
+      "acceptance_criteria": [
+        "Add button appends new item",
+        "Remove button on each item",
+        "Up/Down buttons for reordering",
+        "Renders nested form for each item",
+        "Unit test: add, remove, reorder operations"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Field Inputs",
+      "feature": "Object Field Component",
+      "description": "Component for nested object fields, rendering sub-form",
+      "acceptance_criteria": [
+        "Renders nested form fields for object properties",
+        "Visually grouped (card or indentation)",
+        "Supports nested validation",
+        "Unit test: nested form renders"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Editors",
+      "feature": "Section Editor Component",
+      "description": "Component that renders form for a section based on its schema from registry",
+      "acceptance_criteria": [
+        "Accepts section type and data",
+        "Looks up schema from registry",
+        "Generates form using Form Generator",
+        "Emits onChange with updated section data",
+        "Unit test: renders form for section type"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Editors",
+      "feature": "Page Editor Component",
+      "description": "Full page editor with multiple sections, add/remove/reorder sections using buttons",
+      "acceptance_criteria": [
+        "Displays list of sections with SectionEditor for each",
+        "Add Section button with section type selector",
+        "Remove button on each section",
+        "Up/Down buttons for section reordering",
+        "Save button triggers onSave callback",
+        "Unit test: section management operations"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Content Management",
+      "feature": "Page List Component",
+      "description": "List all pages with filter/search, link to edit each page",
+      "acceptance_criteria": [
+        "Fetches and displays pages from API",
+        "Search input filters by title/slug",
+        "Filter by page type",
+        "Click row navigates to PageEditor",
+        "Create New Page button",
+        "Unit test: list renders and filters"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Content Management",
+      "feature": "Navigation Editor Component",
+      "description": "Editor for navigation items with nested structure support",
+      "acceptance_criteria": [
+        "Displays navigation items as list",
+        "Edit label and href for each item",
+        "Add/remove items",
+        "Support nested children (one level)",
+        "Save button persists changes",
+        "Unit test: navigation editing"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Media Browser Component",
+      "description": "Browse, upload, and select media files",
+      "acceptance_criteria": [
+        "Grid display of uploaded media",
+        "Upload button with file input",
+        "Click to select (for Image Picker integration)",
+        "Delete button on each media item",
+        "Pagination or infinite scroll",
+        "Unit test: browse and select flow"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Layout",
+      "feature": "Admin Layout Shell",
+      "description": "Admin layout with sidebar navigation, header, and content area",
+      "acceptance_criteria": [
+        "Sidebar with links: Pages, Navigation, Media",
+        "Header with app title",
+        "Responsive: sidebar collapses on mobile",
+        "Uses shadcn/ui components and Tailwind",
+        "Unit test: layout renders correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Testing",
+      "feature": "E2E Tests for Critical Flows",
+      "description": "End-to-end tests for critical admin flows: create page, edit section, upload media",
+      "acceptance_criteria": [
+        "E2E test: create new page with sections",
+        "E2E test: edit existing page section",
+        "E2E test: upload media and select in content",
+        "Tests run with Playwright or Cypress",
+        "Tests documented in README"
+      ],
+      "passes": false
+    }
+  ]
+}

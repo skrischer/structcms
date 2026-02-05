@@ -1,0 +1,30 @@
+# @structcms/api - Progress Log
+
+## Project Overview
+Storage, domain API, and delivery API for StructCMS.
+
+## Current Status
+**Phase**: MVP Development  
+**Started**: 2026-02-05
+
+---
+
+## Completed Tasks
+
+_No tasks completed yet._
+
+---
+
+## In Progress
+
+_No tasks in progress._
+
+---
+
+## Log
+
+### 2026-02-05
+- Initialized prd.json with 22 tasks
+- Tasks organized into groups: Storage (9), Media (8), Export (5)
+- Clarified: Media accepts jpg, jpeg, png, gif, webp, svg only
+- Clarified: Export includes resolved media URLs for backup/migration use case

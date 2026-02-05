@@ -1,0 +1,347 @@
+{
+  "project_meta": {
+    "name": "@structcms/api",
+    "version": "0.1.0",
+    "description": "Storage, domain API, and delivery API for StructCMS"
+  },
+  "context": {
+    "dependencies": {
+      "runtime": ["@structcms/core", "@supabase/supabase-js"],
+      "dev": ["vitest", "typescript"]
+    },
+    "environment_variables": {
+      "SUPABASE_URL": "https://your-project.supabase.co",
+      "SUPABASE_ANON_KEY": "Public anon key for client-side access",
+      "SUPABASE_SERVICE_ROLE_KEY": "Service role key for server-side operations"
+    },
+    "supabase_setup": {
+      "storage_bucket": "media (public access enabled)",
+      "tables": ["pages", "navigation", "media"],
+      "rls_policies": "To be defined - MVP may use service role key"
+    },
+    "package_exports": [
+      "createStorageAdapter",
+      "createMediaAdapter",
+      "StorageAdapter (type)",
+      "MediaAdapter (type)",
+      "Page (type)",
+      "MediaFile (type)"
+    ],
+    "api_endpoints": {
+      "delivery_public": [
+        "GET /api/cms/pages",
+        "GET /api/cms/pages/:slug",
+        "GET /api/cms/navigation/:name",
+        "GET /api/cms/media"
+      ],
+      "admin_protected": [
+        "POST /api/cms/pages",
+        "PUT /api/cms/pages/:id",
+        "DELETE /api/cms/pages/:id",
+        "POST /api/cms/media",
+        "DELETE /api/cms/media/:id"
+      ],
+      "export": [
+        "GET /api/cms/export",
+        "GET /api/cms/export/pages",
+        "GET /api/cms/export/pages/:slug",
+        "GET /api/cms/export/navigation"
+      ]
+    },
+    "file_structure": {
+      "src/": "Source files",
+      "src/storage/": "Storage adapter interfaces and implementations",
+      "src/storage/types.ts": "StorageAdapter interface, Page type",
+      "src/storage/supabase-adapter.ts": "SupabaseStorageAdapter implementation",
+      "src/media/": "Media adapter interfaces and implementations",
+      "src/media/types.ts": "MediaAdapter interface, MediaFile type",
+      "src/media/supabase-adapter.ts": "SupabaseMediaAdapter implementation",
+      "src/utils/slug.ts": "Slug generation utilities",
+      "src/index.ts": "Package entry point",
+      "migrations/": "SQL migration files for Supabase"
+    },
+    "integration_in_host": {
+      "next_js_route_handlers": "Host project creates route handlers in app/api/cms/ that use exported adapters",
+      "example": "import { createStorageAdapter } from '@structcms/api'; const storage = createStorageAdapter({ supabaseUrl, supabaseKey });"
+    },
+    "notes": [
+      "All interfaces are Supabase-agnostic for future portability",
+      "Delivery endpoints are public (no auth)",
+      "Admin endpoints require Supabase Auth (Phase 2: proper RLS)",
+      "Media accepts only: jpg, jpeg, png, gif, webp, svg",
+      "Export includes resolved media URLs for backup/migration"
+    ]
+  },
+  "backlog": [
+    {
+      "group": "Storage",
+      "feature": "Storage Interface Definition",
+      "description": "Define StorageAdapter interface with CRUD methods for pages, navigation, providing abstraction over Supabase for future portability",
+      "acceptance_criteria": [
+        "StorageAdapter interface defined with getPage, savePage, deletePage, listPages",
+        "PageFilter type defined for list filtering",
+        "Interface is Supabase-agnostic (no Supabase types in interface)",
+        "Unit test: interface types compile correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Supabase Storage Adapter",
+      "description": "Implement SupabaseStorageAdapter that implements StorageAdapter interface using Supabase client",
+      "acceptance_criteria": [
+        "SupabaseStorageAdapter implements StorageAdapter",
+        "Uses supabase-js client for database operations",
+        "Handles connection errors gracefully",
+        "Integration test: CRUD operations work against Supabase"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Database Schema: Pages Table",
+      "description": "Create pages table with id (uuid), slug (unique), page_type, sections (jsonb), timestamps",
+      "acceptance_criteria": [
+        "SQL migration creates pages table",
+        "slug has unique constraint",
+        "sections stored as JSONB",
+        "created_at and updated_at timestamps with defaults",
+        "Migration documented in README"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Database Schema: Navigation Table",
+      "description": "Create navigation table with id (uuid), name, items (jsonb), timestamps",
+      "acceptance_criteria": [
+        "SQL migration creates navigation table",
+        "name has unique constraint",
+        "items stored as JSONB (array of nav items)",
+        "Migration documented in README"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Page CRUD Operations",
+      "description": "Implement Create, Read, Update, Delete operations for pages via StorageAdapter",
+      "acceptance_criteria": [
+        "createPage() creates new page with generated ID",
+        "getPage(slug) retrieves page by slug",
+        "updatePage() updates existing page",
+        "deletePage(id) removes page",
+        "listPages(filter?) returns filtered page list",
+        "Integration test: all CRUD operations"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Navigation CRUD Operations",
+      "description": "Implement Create, Read, Update, Delete operations for navigation",
+      "acceptance_criteria": [
+        "createNavigation() creates new navigation",
+        "getNavigation(name) retrieves by name",
+        "updateNavigation() updates existing",
+        "deleteNavigation(id) removes navigation",
+        "Integration test: all CRUD operations"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Slug Generation and Uniqueness",
+      "description": "Auto-generate URL-safe slugs from page title, ensure uniqueness by appending suffix if needed",
+      "acceptance_criteria": [
+        "generateSlug(title) creates URL-safe slug",
+        "Handles special characters, spaces, umlauts",
+        "Appends -1, -2, etc. if slug exists",
+        "Unit test: slug generation and uniqueness"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Delivery",
+      "feature": "Delivery Endpoints",
+      "description": "Create REST endpoints for frontend consumption: GET /api/cms/pages, GET /api/cms/pages/:slug, GET /api/cms/navigation/:name",
+      "acceptance_criteria": [
+        "GET /api/cms/pages returns all pages (public)",
+        "GET /api/cms/pages/:slug returns single page (public)",
+        "GET /api/cms/navigation/:name returns navigation (public)",
+        "Responses match PageResponse/NavigationResponse types",
+        "404 for non-existent resources",
+        "Integration test: all endpoints"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Storage Integration Tests",
+      "description": "Comprehensive integration tests for all storage operations against Supabase",
+      "acceptance_criteria": [
+        "Test database setup/teardown",
+        "All CRUD operations tested",
+        "Error cases tested (not found, duplicate slug)",
+        "Tests run in CI environment"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Media Interface Definition",
+      "description": "Define MediaAdapter interface with upload, list, delete methods for media files",
+      "acceptance_criteria": [
+        "MediaAdapter interface with upload, getMedia, listMedia, deleteMedia",
+        "MediaFile type with id, filename, url, mimeType, size",
+        "Interface is Supabase-agnostic",
+        "Unit test: interface types compile"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Supabase Media Adapter",
+      "description": "Implement SupabaseMediaAdapter using Supabase Storage for file storage",
+      "acceptance_criteria": [
+        "SupabaseMediaAdapter implements MediaAdapter",
+        "Files uploaded to Supabase Storage bucket",
+        "Public URLs generated for uploaded files",
+        "Integration test: upload and retrieve file"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Database Schema: Media Table",
+      "description": "Create media table with id, filename, storage_path, mime_type, size, timestamps",
+      "acceptance_criteria": [
+        "SQL migration creates media table",
+        "storage_path references Supabase Storage path",
+        "Migration documented in README"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Media Upload Endpoint",
+      "description": "POST /api/cms/media endpoint accepting file upload, storing in Supabase Storage, recording in database",
+      "acceptance_criteria": [
+        "Accepts multipart/form-data file upload",
+        "Validates file type (jpg, jpeg, png, gif, webp, svg)",
+        "Stores file in Supabase Storage",
+        "Creates media record in database",
+        "Returns MediaFile with public URL",
+        "Integration test: upload flow"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Media List Endpoint",
+      "description": "GET /api/cms/media endpoint returning paginated list of media files",
+      "acceptance_criteria": [
+        "Returns array of MediaFile objects",
+        "Supports pagination (limit, offset)",
+        "Ordered by created_at descending",
+        "Integration test: list with pagination"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Media Delete Endpoint",
+      "description": "DELETE /api/cms/media/:id endpoint removing file from storage and database",
+      "acceptance_criteria": [
+        "Deletes file from Supabase Storage",
+        "Removes record from database",
+        "Returns 404 if not found",
+        "Integration test: delete flow"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Media Reference Resolution",
+      "description": "Image field type in content resolves to full media URL in delivery responses",
+      "acceptance_criteria": [
+        "image fields store media ID or path",
+        "Delivery API resolves to public URL",
+        "Handles missing media gracefully (null or placeholder)",
+        "Unit test: resolution logic"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Media",
+      "feature": "Media Integration Tests",
+      "description": "Comprehensive integration tests for media upload, list, delete against Supabase Storage",
+      "acceptance_criteria": [
+        "Test file upload with valid image",
+        "Test rejection of invalid file types",
+        "Test list and pagination",
+        "Test delete removes file and record"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Export",
+      "feature": "Single Page Export",
+      "description": "GET /api/cms/export/pages/:slug returns complete page JSON including resolved media URLs",
+      "acceptance_criteria": [
+        "Returns full page data as JSON",
+        "Media references resolved to URLs",
+        "Content-Disposition header for download",
+        "Integration test: export single page"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Export",
+      "feature": "All Pages Export",
+      "description": "GET /api/cms/export/pages returns all pages as JSON array",
+      "acceptance_criteria": [
+        "Returns array of all pages",
+        "Media references resolved to URLs",
+        "Content-Disposition header for download",
+        "Integration test: export all pages"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Export",
+      "feature": "Navigation Export",
+      "description": "GET /api/cms/export/navigation returns all navigation structures as JSON",
+      "acceptance_criteria": [
+        "Returns array of all navigations",
+        "Content-Disposition header for download",
+        "Integration test: export navigation"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Export",
+      "feature": "Full Site Export",
+      "description": "GET /api/cms/export returns complete site content (pages, navigation, media metadata) as JSON",
+      "acceptance_criteria": [
+        "Returns { pages, navigation, media } object",
+        "Media includes URLs for external download",
+        "Suitable for backup or migration",
+        "Integration test: full export"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Export",
+      "feature": "Backup Documentation",
+      "description": "Document backup strategy using export endpoints in README",
+      "acceptance_criteria": [
+        "README section on backup strategy",
+        "Example curl commands for export",
+        "Guidance on restoring from export",
+        "Media backup considerations documented"
+      ],
+      "passes": false
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "project_meta": {
+    "name": "@structcms/core",
+    "version": "0.1.0",
+    "description": "Core modeling, validation, and types for StructCMS"
+  },
+  "context": {
+    "dependencies": {
+      "runtime": ["zod"],
+      "dev": ["vitest", "typescript"]
+    },
+    "package_exports": [
+      "defineSection",
+      "definePageType",
+      "defineNavigation",
+      "createRegistry",
+      "SectionDefinition (type)",
+      "PageTypeDefinition (type)",
+      "Registry (type)"
+    ],
+    "api_examples": {
+      "defineSection": "const HeroSection = defineSection({ name: 'hero', fields: { title: z.string().min(1), subtitle: z.string().optional(), image: z.string().url() } });",
+      "createRegistry": "const registry = createRegistry({ sections: [HeroSection, TextSection], pageTypes: [LandingPage] });",
+      "usage_in_host": "import { createRegistry, defineSection } from '@structcms/core'; // Host project defines and registers own sections"
+    },
+    "file_structure": {
+      "src/": "Source files",
+      "src/define-section.ts": "defineSection() function",
+      "src/define-page-type.ts": "definePageType() function",
+      "src/define-navigation.ts": "defineNavigation() function",
+      "src/registry.ts": "createRegistry() function",
+      "src/types.ts": "Shared TypeScript types",
+      "src/index.ts": "Package entry point with exports"
+    },
+    "notes": [
+      "This package has NO external dependencies except zod",
+      "All types must be inferred from Zod schemas - no manual type duplication",
+      "Package is framework-agnostic (no React dependency)",
+      "Field type metadata (text vs richtext) is stored in schema description or custom property"
+    ]
+  },
+  "backlog": [
+    {
+      "group": "Modeling",
+      "feature": "Define Section API",
+      "description": "Create defineSection() function that accepts a name and Zod schema fields, returning a typed section definition with inferred TypeScript types",
+      "acceptance_criteria": [
+        "defineSection() accepts { name: string, fields: ZodObject }",
+        "Returns SectionDefinition with name, schema, and inferred type",
+        "TypeScript correctly infers field types from Zod schema",
+        "Unit test: defineSection creates valid section definition"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Modeling",
+      "feature": "Field Type Definitions",
+      "description": "Define and document supported field types: string, text, richtext, image, reference, array, object. Provide helper functions or type guards where useful",
+      "acceptance_criteria": [
+        "string: short text, maps to z.string()",
+        "text: long text, maps to z.string() with metadata",
+        "richtext: HTML content, maps to z.string() with metadata",
+        "image: media reference, maps to z.string().url() or media ID",
+        "reference: page reference, maps to z.string() (slug or ID)",
+        "array: list of items, maps to z.array()",
+        "object: nested structure, maps to z.object()",
+        "Unit test: each field type validates correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Modeling",
+      "feature": "Type Inference from Zod Schemas",
+      "description": "Ensure Zod schemas correctly infer TypeScript types for section data, enabling type-safe content access in frontend components",
+      "acceptance_criteria": [
+        "z.infer<typeof section.schema> returns correct TypeScript type",
+        "Optional fields are typed as T | undefined",
+        "Nested objects preserve type structure",
+        "Unit test: type inference matches expected types"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Registry",
+      "feature": "Registry API",
+      "description": "Create createRegistry() function that collects section definitions and page types, providing runtime access to registered models",
+      "acceptance_criteria": [
+        "createRegistry({ sections, pageTypes }) creates registry instance",
+        "registry.getSection(name) returns section definition or undefined",
+        "registry.getAllSections() returns all registered sections",
+        "registry.getPageTypes() returns registered page type names",
+        "Unit test: registry stores and retrieves sections correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Registry",
+      "feature": "Page Type Definition",
+      "description": "Create definePageType() function that specifies which sections are allowed for a given page type",
+      "acceptance_criteria": [
+        "definePageType({ name, allowedSections }) creates page type definition",
+        "allowedSections references registered section names",
+        "registry.getPageType(name) returns page type with allowed sections",
+        "Unit test: page type correctly restricts sections"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Registry",
+      "feature": "Navigation Model",
+      "description": "Create defineNavigation() for menu/navigation structures with typed items (label, href, children)",
+      "acceptance_criteria": [
+        "defineNavigation({ name, schema }) creates navigation definition",
+        "Default schema supports label, href, optional children (recursive)",
+        "Navigation can be registered in registry",
+        "Unit test: navigation model validates correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Testing",
+      "feature": "Unit Tests with >80% Coverage",
+      "description": "Comprehensive unit tests for all public APIs: defineSection, definePageType, defineNavigation, createRegistry, type inference",
+      "acceptance_criteria": [
+        "All public functions have unit tests",
+        "Edge cases tested (empty registry, invalid schemas)",
+        "Code coverage >80%",
+        "Tests run with vitest or jest"
+      ],
+      "passes": false
+    }
+  ]
+}
