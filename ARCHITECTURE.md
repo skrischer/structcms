@@ -2,6 +2,11 @@
 
 This document describes the technical layers and their responsibilities within StructCMS.
 
+For package-specific details, see:
+- [@structcms/core](./packages/core/README.md) — Modeling, Registry, Types
+- [@structcms/api](./packages/api/README.md) — Storage, Domain API, Delivery API
+- [@structcms/admin](./packages/admin/README.md) — Admin UI Components
+
 ---
 
 ## High-Level Architecture

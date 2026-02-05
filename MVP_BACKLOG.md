@@ -8,11 +8,13 @@ This document defines the MVP backlog organized by domains. Each domain can be r
 
 | Domain | Package | Depends On | Parallel To | Priority |
 |--------|---------|------------|-------------|----------|
-| Modeling | `@structcms/core` | - | - | 1 (Start) |
-| Storage | `@structcms/api` | Modeling | Media | 2 |
-| Media | `@structcms/api` | Modeling | Storage | 2 |
-| Admin UI | `@structcms/admin` | Modeling, Storage, Media | Export | 3 |
-| Export | `@structcms/api` | Storage | Admin UI | 3 |
+| Modeling | [`@structcms/core`](./packages/core/README.md) | - | - | 1 (Start) |
+| Storage | [`@structcms/api`](./packages/api/README.md) | Modeling | Media | 2 |
+| Media | [`@structcms/api`](./packages/api/README.md) | Modeling | Storage | 2 |
+| Admin UI | [`@structcms/admin`](./packages/admin/README.md) | Modeling, Storage, Media | Export | 3 |
+| Export | [`@structcms/api`](./packages/api/README.md) | Storage | Admin UI | 3 |
+
+For detailed backlog items per domain, see the respective package README files.
 
 ---
 

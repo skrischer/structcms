@@ -182,6 +182,11 @@ StructCMS is distributed as an **npm package** installed into the host project.
 @structcms/api       # Route handlers, delivery API
 ```
 
+For package-specific documentation, see:
+- [@structcms/core](./packages/core/README.md)
+- [@structcms/api](./packages/api/README.md)
+- [@structcms/admin](./packages/admin/README.md)
+
 ### Versioning
 - Semantic versioning (semver)
 - Breaking changes only in major versions
