@@ -547,3 +547,36 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Edit Page View
+
+**Selected because:** Next task in Admin Pages group. Create Page ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `app/(admin)/pages/[slug]/page.tsx` - Edit page view
+
+**Approach:**
+1. Fetch page by slug via useApiClient
+2. Render PageEditor with existing sections
+3. onSave updates page via API
+
+**Acceptance Criteria:**
+- [x] app/(admin)/pages/[slug]/page.tsx fetches page by slug
+- [x] Renders PageEditor with existing data
+- [x] Save updates page
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/(admin)/pages/[slug]/page.tsx created
+- Fetches page data, renders PageEditor with existing sections
+- Loading skeleton and error handling
+
+---
+

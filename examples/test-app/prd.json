@@ -228,7 +228,7 @@
         "Renders PageEditor with existing data",
         "Save updates page"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Admin Pages",
