@@ -114,7 +114,7 @@
         "Displays label and validation errors",
         "Unit test: renders correctly"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Field Inputs",

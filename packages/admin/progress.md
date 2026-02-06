@@ -130,3 +130,43 @@ _No tasks in progress._
 - Updated `src/index.ts` with exports
 - Updated `vitest.config.ts` with setupFiles
 - Installed dependencies: tailwind-merge, clsx, class-variance-authority, @testing-library/user-event, @testing-library/jest-dom
+
+---
+
+## Working on Text Input Component
+
+**Task:** Textarea component for long text fields.
+
+**Acceptance Criteria:**
+1. Renders shadcn/ui Textarea component
+2. Supports configurable rows
+3. Displays label and validation errors
+4. Unit test: renders correctly
+
+**Plan:**
+- Create `src/components/ui/textarea.tsx` - shadcn/ui Textarea component
+- Create `src/components/inputs/text-input.tsx` - TextInput component (wraps Textarea)
+- Write unit test `src/components/inputs/__tests__/text-input.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/ui/textarea.tsx`
+- `src/components/inputs/text-input.tsx`
+- `src/components/inputs/__tests__/text-input.test.tsx`
+
+**Approach:**
+- TextInput follows same pattern as StringInput
+- Props: name, label, placeholder, error, required, rows (default: 3)
+- Uses forwardRef for React Hook Form compatibility
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 25 tests passed (5 AdminProvider + 10 StringInput + 10 TextInput)
+- Typecheck passed
+- Created files:
+  - `src/components/ui/textarea.tsx` - shadcn/ui Textarea component
+  - `src/components/inputs/text-input.tsx` - TextInput component
+  - `src/components/inputs/__tests__/text-input.test.tsx` - 10 unit tests
+- Updated `src/index.ts` with exports
