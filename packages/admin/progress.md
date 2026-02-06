@@ -340,3 +340,51 @@ _No tasks in progress._
   - `src/components/inputs/object-field.tsx` - ObjectField component
   - `src/components/inputs/__tests__/object-field.test.tsx` - 10 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Form Generator from Zod Schema
+
+**Task:** Create component that generates React Hook Form from Zod schema, mapping field types to appropriate input components.
+
+**Acceptance Criteria:**
+1. Accepts Zod schema and generates form fields
+2. Integrates with React Hook Form + Zod resolver
+3. Maps each field type to corresponding input component
+4. Handles validation errors from Zod
+5. Unit test: form generation from sample schema
+
+**Plan:**
+- Install dependencies: react-hook-form, @hookform/resolvers
+- Create `src/lib/form-generator.tsx` - FormGenerator component
+- Write unit test `src/lib/__tests__/form-generator.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/lib/form-generator.tsx`
+- `src/lib/__tests__/form-generator.test.tsx`
+
+**Approach:**
+- FormGenerator accepts a Zod schema (ZodObject), iterates over its shape
+- Uses `getFieldMeta()` from @structcms/core to determine field type
+- Maps field types to input components: string→StringInput, text→TextInput, richtext→RichTextEditor, image→ImagePicker, array→ArrayField, object→ObjectField
+- Integrates React Hook Form with zodResolver
+- Passes validation errors to each field
+- Accepts onSubmit callback
+
+**Challenges:**
+- Need to install react-hook-form and @hookform/resolvers
+- Unwrapping optional/default Zod wrappers to find field meta
+- Array/Object fields need recursive rendering
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 91 tests passed (73 previous + 18 FormGenerator)
+- Typecheck passed
+- Created files:
+  - `src/lib/form-generator.tsx` - FormGenerator component with resolveFieldType, fieldNameToLabel
+  - `src/lib/__tests__/form-generator.test.tsx` - 18 unit tests (6 resolveFieldType + 3 fieldNameToLabel + 9 FormGenerator)
+- Updated `src/index.ts` with exports
+- Installed dependencies: react-hook-form, @hookform/resolvers, zod

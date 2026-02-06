@@ -178,7 +178,7 @@
         "Handles validation errors from Zod",
         "Unit test: form generation from sample schema"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Editors",

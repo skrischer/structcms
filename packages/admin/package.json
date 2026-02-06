@@ -28,6 +28,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@structcms/core": "workspace:*",
     "@tiptap/extension-link": "^3.19.0",
     "@tiptap/pm": "^3.19.0",
@@ -35,7 +36,9 @@
     "@tiptap/starter-kit": "^3.19.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.0"
+    "react-hook-form": "^7.71.1",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",

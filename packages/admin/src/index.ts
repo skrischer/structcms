@@ -11,4 +11,5 @@ export { Input, type InputProps } from './components/ui/input';
 export { Textarea, type TextareaProps } from './components/ui/textarea';
 export { Label, type LabelProps } from './components/ui/label';
 export { Button, type ButtonProps, buttonVariants } from './components/ui/button';
+export { FormGenerator, type FormGeneratorProps, resolveFieldType, fieldNameToLabel } from './lib/form-generator';
 export { cn } from './lib/utils';
