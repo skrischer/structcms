@@ -219,7 +219,7 @@
         "Create New Page button",
         "Unit test: list renders and filters"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Content Management",

@@ -471,3 +471,50 @@ _No tasks in progress._
   - `src/components/editors/page-editor.tsx` - PageEditor component
   - `src/components/editors/__tests__/page-editor.test.tsx` - 12 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Page List Component
+
+**Task:** List all pages with filter/search, link to edit each page.
+
+**Acceptance Criteria:**
+1. Fetches and displays pages from API
+2. Search input filters by title/slug
+3. Filter by page type
+4. Click row navigates to PageEditor
+5. Create New Page button
+6. Unit test: list renders and filters
+
+**Plan:**
+- Create `src/components/content/page-list.tsx` - PageList component
+- Write unit test `src/components/content/__tests__/page-list.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/content/page-list.tsx`
+- `src/components/content/__tests__/page-list.test.tsx`
+
+**Approach:**
+- PageList uses useApiClient() to fetch pages from `/pages`
+- Renders a table/list of pages with title, slug, page type
+- Search input filters client-side by title/slug
+- Page type filter dropdown
+- Click row calls onSelectPage callback (navigation handled by consumer)
+- Create New Page button calls onCreatePage callback
+- Loading and error states
+
+**Challenges:**
+- Need to mock fetch in tests for API calls
+- Need to define PageSummary type for the list data
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 125 tests passed (112 previous + 13 PageList)
+- Typecheck passed
+- Created files:
+  - `src/components/content/page-list.tsx` - PageList component
+  - `src/components/content/__tests__/page-list.test.tsx` - 13 unit tests
+- Updated `src/index.ts` with exports
