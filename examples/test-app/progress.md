@@ -72,3 +72,46 @@ pnpm --filter test-app dev
 
 ---
 
+## Working on: Root Layout
+
+**Selected because:** Next logical step in Setup group. app/layout.tsx exists but Tailwind CSS is not configured yet.
+
+### Plan
+
+**Files to create:**
+- `tailwind.config.ts` - Tailwind configuration
+- `postcss.config.mjs` - PostCSS configuration
+- `app/globals.css` - Tailwind directives
+
+**Files to modify:**
+- `app/layout.tsx` - Import globals.css
+- `package.json` - Add tailwindcss, postcss, autoprefixer (if not already present)
+
+**Approach:**
+1. Install Tailwind CSS dependencies
+2. Create tailwind.config.ts with content paths
+3. Create postcss.config.mjs
+4. Create globals.css with @tailwind directives
+5. Import globals.css in layout.tsx
+
+**Acceptance Criteria:**
+- [x] app/layout.tsx with html and body tags
+- [x] Tailwind CSS configured (or minimal CSS)
+- [x] Children rendered in body
+
+**Verification:**
+```bash
+pnpm --filter test-app dev
+# Check that Tailwind classes work in browser
+```
+
+**Result:** ✅ Success
+
+- Tailwind CSS v4 configured with @tailwindcss/postcss
+- globals.css with `@import "tailwindcss"`
+- layout.tsx imports globals.css and uses Tailwind classes (bg-gray-50)
+- Screenshot verified: gray background visible
+- Files created: tailwind.config.ts, postcss.config.mjs, app/globals.css
+
+---
+

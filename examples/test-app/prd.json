@@ -79,7 +79,7 @@
         "Tailwind CSS configured (or minimal CSS)",
         "Children rendered in body"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Lib",
