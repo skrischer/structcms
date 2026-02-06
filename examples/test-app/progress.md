@@ -380,3 +380,36 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Test Reset Endpoint
+
+**Selected because:** Next task in Route Handlers group. Required for E2E test cleanup.
+
+### Plan
+
+**Files to create:**
+- `app/api/cms/__test__/reset/route.ts` - POST to clear all data
+
+**Approach:**
+1. List all pages, navigations, media via adapters
+2. Delete each item
+3. Return { status: 'reset' }
+
+**Acceptance Criteria:**
+- [x] Deletes all pages via storageAdapter
+- [x] Deletes all navigations via storageAdapter
+- [x] Deletes all media via mediaAdapter
+- [x] Returns { status: 'reset' }
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/api/cms/__test__/reset/route.ts created
+- Deletes all pages, navigations, and media
+
+---
+
