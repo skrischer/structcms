@@ -310,3 +310,38 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Navigation Route Handlers
+
+**Selected because:** Next task in Route Handlers group. All dependencies met (Adapters ✅). Required by Admin Pages.
+
+### Plan
+
+**Files to create:**
+- `app/api/cms/navigation/[name]/route.ts` - GET and PUT by name
+
+**Approach:**
+1. Create app/api/cms/navigation/[name]/route.ts with:
+   - GET: handleGetNavigation(storageAdapter, name)
+   - PUT: handleUpdateNavigation(storageAdapter, data)
+
+**Potential challenges:**
+- Need to get navigation by name (check if API supports this)
+- Error handling for not found cases
+
+**Acceptance Criteria:**
+- [x] GET /api/cms/navigation/[name] returns navigation
+- [x] PUT /api/cms/navigation/[name] updates navigation
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/api/cms/navigation/[name]/route.ts created (GET, PUT by name)
+- Proper error handling with 404 for not found
+
+---
+
