@@ -307,7 +307,7 @@
         "Select uploaded image via ImagePicker",
         "Verify image preview shown"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Tests",

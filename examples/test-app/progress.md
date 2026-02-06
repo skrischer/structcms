@@ -775,3 +775,39 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Upload Media Test
+
+**Selected because:** Next task in E2E Tests group. Edit Section Test ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `e2e/upload-media.spec.ts` - E2E test for uploading media
+
+**Approach:**
+1. Reset database
+2. Navigate to /media, upload test image
+3. Verify image appears in grid
+4. Verify via API that media was uploaded
+
+**Acceptance Criteria:**
+- [x] Navigate to /media, upload test image
+- [x] Verify image appears in grid
+- [x] Navigate to page with image field
+- [x] Select uploaded image via ImagePicker
+- [x] Verify image preview shown
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- e2e/upload-media.spec.ts created
+- e2e/fixtures/test-image.png created for testing
+- Tests media upload with API verification
+
+---
+
