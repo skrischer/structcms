@@ -580,3 +580,36 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Navigation View
+
+**Selected because:** Next task in Admin Pages group. Edit Page ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `app/(admin)/navigation/page.tsx` - Navigation editor view
+
+**Approach:**
+1. Fetch main navigation via useApiClient
+2. Render NavigationEditor component
+3. onSave updates navigation via API
+
+**Acceptance Criteria:**
+- [x] app/(admin)/navigation/page.tsx fetches main navigation
+- [x] Renders NavigationEditor component
+- [x] Save persists changes
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/(admin)/navigation/page.tsx created
+- Fetches main navigation, renders NavigationEditor
+- Loading skeleton and error handling
+
+---
+

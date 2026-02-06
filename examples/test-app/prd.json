@@ -239,7 +239,7 @@
         "Renders NavigationEditor component",
         "Save persists changes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Admin Pages",
