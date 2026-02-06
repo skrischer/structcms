@@ -848,3 +848,46 @@ pnpm --filter @structcms/api typecheck
 - Name uniqueness validation for create and update
 - 12 new unit tests (27 total in storage handlers)
 - Exported from `storage/index.ts` and `src/index.ts`
+
+---
+
+## Working on: Remove Slug Logic from Adapter
+
+**Selected because:** REVIEW.md Finding #1 (Severity: Medium). Duplicated slug generation/uniqueness logic in both `handlers.ts` and `supabase-adapter.ts` causes double DB queries and risks double-suffixing.
+
+### Plan
+
+**Files to modify:**
+- `src/storage/supabase-adapter.ts` — Remove slug generation, `ensureUniqueSlug`, `getAllSlugs()`, and related imports from `createPage()`
+- `src/storage/supabase-adapter.test.ts` — Update integration tests: auto-slug-generation test must now provide a slug (adapter no longer generates), unique-slug test must now provide pre-resolved slugs
+
+**Approach:**
+1. Simplify `createPage()` in adapter: require `input.slug` to be present (handler guarantees it), insert as-is
+2. Remove `getAllSlugs()` private method
+3. Remove `generateSlug`/`ensureUniqueSlug` imports from `../utils`
+4. Update integration tests to pass slugs explicitly (since the adapter no longer generates them)
+
+**Potential challenges:**
+- Integration tests are skipped without Supabase credentials, so we can only verify unit tests + typecheck locally
+- The `CreatePageInput.slug` is optional (`slug?: string`). After this change, the adapter trusts the handler to always provide it. We should NOT change the type — the handler still accepts optional slug from the caller.
+
+**Acceptance Criteria:**
+- [x] SupabaseStorageAdapter.createPage() no longer generates or deduplicates slugs
+- [x] getAllSlugs() private method removed
+- [x] generateSlug/ensureUniqueSlug imports removed from supabase-adapter.ts
+- [x] All existing tests still pass
+- [x] Adapter integration tests updated
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Removed slug generation and `ensureUniqueSlug` from `SupabaseStorageAdapter.createPage()`
+- Removed `getAllSlugs()` private method
+- Removed `generateSlug`/`ensureUniqueSlug` imports from `supabase-adapter.ts`
+- Updated integration tests: "auto-generated slug" → "provided slug", "ensure unique slugs" → "reject duplicate slugs", added explicit slug to sections test
+- 103 tests passing, typecheck clean

@@ -391,6 +391,32 @@
         "Exported from storage/index.ts and package entry point"
       ],
       "passes": true
+    },
+    {
+      "group": "Refactor",
+      "feature": "Remove Slug Logic from Adapter",
+      "description": "Remove duplicated slug generation and uniqueness logic from SupabaseStorageAdapter.createPage(). The adapter should store the slug as-is. Slug handling is the handler's responsibility.",
+      "acceptance_criteria": [
+        "SupabaseStorageAdapter.createPage() no longer generates or deduplicates slugs",
+        "getAllSlugs() private method removed if no longer needed",
+        "generateSlug/ensureUniqueSlug imports removed from supabase-adapter.ts if unused",
+        "All existing tests still pass",
+        "Adapter integration tests updated if needed"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Refactor",
+      "feature": "Consistent Comment Style",
+      "description": "Align comment conventions across all domains to match the media/ reference pattern: no trailing periods on JSDoc, JSDoc on interface methods, no section separators, JSDoc on private adapter methods",
+      "acceptance_criteria": [
+        "storage/handlers.ts JSDoc without trailing periods",
+        "StorageAdapter interface methods have JSDoc comments",
+        "Section separators removed from supabase-adapter.ts",
+        "getAllSlugs (if still present) has JSDoc",
+        "All existing tests still pass"
+      ],
+      "passes": false
     }
   ]
 }

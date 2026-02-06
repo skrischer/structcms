@@ -11,7 +11,6 @@ import type {
   CreateNavigationInput,
   UpdateNavigationInput,
 } from './types';
-import { generateSlug, ensureUniqueSlug } from '../utils';
 
 /**
  * Database row types (snake_case)
@@ -129,20 +128,10 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async createPage(input: CreatePageInput): Promise<Page> {
-    // Generate slug if not provided
-    let slug = input.slug;
-    if (!slug) {
-      slug = generateSlug(input.title);
-    }
-
-    // Ensure slug is unique
-    const existingSlugs = await this.getAllSlugs();
-    slug = ensureUniqueSlug(slug, existingSlugs);
-
     const { data, error } = await this.client
       .from('pages')
       .insert({
-        slug,
+        slug: input.slug,
         page_type: input.pageType,
         title: input.title,
         sections: input.sections ?? [],
@@ -225,16 +214,6 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     }
 
     return (data as PageRow[]).map(mapPageRowToPage);
-  }
-
-  private async getAllSlugs(): Promise<string[]> {
-    const { data, error } = await this.client.from('pages').select('slug');
-
-    if (error) {
-      throw new StorageError(error.message, error.code, error.details);
-    }
-
-    return (data as Array<{ slug: string }>).map((row) => row.slug);
   }
 
   // ==================== Navigation Operations ====================

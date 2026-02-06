@@ -44,9 +44,10 @@ describe('SupabaseStorageAdapter', () => {
 
   describe('Page CRUD', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should create a page with auto-generated slug',
+      'should create a page with provided slug',
       async () => {
         const page = await adapter.createPage({
+          slug: `${testPrefix}-test-page`,
           pageType: 'landing',
           title: `${testPrefix} Test Page`,
         });
@@ -83,6 +84,7 @@ describe('SupabaseStorageAdapter', () => {
         ];
 
         const page = await adapter.createPage({
+          slug: `${testPrefix}-sections-page`,
           pageType: 'landing',
           title: `${testPrefix} Sections Page`,
           sections,
@@ -93,20 +95,21 @@ describe('SupabaseStorageAdapter', () => {
     );
 
     it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should ensure unique slugs',
+      'should reject duplicate slugs',
       async () => {
-        const page1 = await adapter.createPage({
+        await adapter.createPage({
+          slug: `${testPrefix}-duplicate`,
           pageType: 'landing',
           title: `${testPrefix} Duplicate`,
         });
 
-        const page2 = await adapter.createPage({
-          pageType: 'landing',
-          title: `${testPrefix} Duplicate`,
-        });
-
-        expect(page1.slug).toBe(`${testPrefix}-duplicate`);
-        expect(page2.slug).toBe(`${testPrefix}-duplicate-1`);
+        await expect(
+          adapter.createPage({
+            slug: `${testPrefix}-duplicate`,
+            pageType: 'landing',
+            title: `${testPrefix} Duplicate 2`,
+          })
+        ).rejects.toThrow(StorageError);
       }
     );
 
