@@ -222,45 +222,9 @@ StructCMS is embedded but connects to managed backend infrastructure.
 
 ## E2E Test Application
 
-Since `@structcms/admin` is a library package (no standalone dev server), a minimal Next.js host application is required for E2E testing and integration verification.
+A minimal Next.js host application in `examples/test-app/` integrates all three packages for end-to-end testing with Playwright. It connects to the real Supabase test instance — no mocks.
 
-### Purpose
-
-- Provide a running application that integrates all three packages (`core`, `api`, `admin`)
-- Enable Playwright E2E tests for critical admin flows
-- Serve as a reference implementation for host project integration
-- Validate the full data flow: Admin UI → API → Storage → Delivery
-
-### Location
-
-```
-examples/
-└── test-app/           # Minimal Next.js App Router project
-```
-
-The test app is part of the pnpm workspace but is **not** a publishable package. It exists solely for testing and as a reference.
-
-### Backend Strategy
-
-The test app connects to the **existing Supabase test instance** using the real `SupabaseStorageAdapter` and `SupabaseMediaAdapter` from `@structcms/api`. This validates the full stack end-to-end: UI → API handlers → Supabase DB/Storage.
-
-- **Full-stack validation**: Tests cover real database queries, JSONB serialization, and Storage operations
-- **No mocks**: Same adapter code that runs in production
-- **Seed data**: Representative test content (pages, navigation, media) seeded before tests
-- **Clean state**: Reset endpoint truncates all data between test runs
-- **CI-ready**: Supabase credentials via GitHub Secrets
-
-### E2E Test Scope
-
-| Flow | Description |
-|------|-------------|
-| Create Page | Create a new page with sections via PageEditor |
-| Edit Section | Edit an existing section's fields and save |
-| Upload Media | Upload a file via MediaBrowser and select in content |
-| Navigation | Edit navigation items and save |
-| Page List | Search, filter, and navigate to pages |
-
-For detailed architecture, see [ARCHITECTURE.md](./ARCHITECTURE.md#e2e-testing-layer).
+For details, see the [E2E Test App README](./examples/test-app/README.md).
 
 ---
 

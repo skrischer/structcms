@@ -1,0 +1,357 @@
+{
+  "project_meta": {
+    "name": "test-app",
+    "version": "0.0.1",
+    "description": "E2E Test App for StructCMS integration testing and reference implementation"
+  },
+  "context": {
+    "dependencies": {
+      "runtime": [
+        "@structcms/core",
+        "@structcms/api",
+        "@structcms/admin",
+        "next",
+        "react",
+        "react-dom",
+        "@supabase/supabase-js"
+      ],
+      "dev": ["@playwright/test", "typescript"]
+    },
+    "environment_variables": {
+      "SUPABASE_URL": "https://xxx.supabase.co",
+      "SUPABASE_SERVICE_ROLE_KEY": "Service role key for server-side operations"
+    },
+    "file_structure": {
+      "app/": "Next.js App Router pages and layouts",
+      "app/(admin)/": "Admin route group with AdminProvider",
+      "app/(admin)/pages/": "Page list and editor views",
+      "app/(admin)/navigation/": "Navigation editor view",
+      "app/(admin)/media/": "Media browser view",
+      "app/api/cms/": "Route handlers wrapping @structcms/api",
+      "app/api/cms/__test__/": "Test-only reset and seed endpoints",
+      "lib/": "Shared utilities (registry, adapters, seed data)",
+      "e2e/": "Playwright test specs"
+    },
+    "example_sections": {
+      "hero": "title (string), subtitle (text), image (image)",
+      "content": "body (richtext)"
+    },
+    "example_page_types": {
+      "landing": "Allowed sections: hero, content",
+      "blog": "Allowed sections: content"
+    },
+    "seed_data": {
+      "pages": ["Home (landing)", "About Us (landing)", "Blog Post Example (blog)"],
+      "navigations": ["main (with nested children)"]
+    },
+    "e2e_test_lifecycle": {
+      "reset": "POST /api/cms/__test__/reset — clears all pages, navigations, media",
+      "seed": "POST /api/cms/__test__/seed — inserts seed data",
+      "pattern": "beforeEach: resetAndSeed() or resetOnly()"
+    },
+    "notes": [
+      "This is NOT a publishable package — testing and reference only",
+      "Uses real Supabase adapters — no mocks",
+      "Route handlers are thin wrappers around @structcms/api handlers",
+      "Admin pages are thin wrappers around @structcms/admin components",
+      "CI uses GitHub Secrets for Supabase credentials"
+    ]
+  },
+  "backlog": [
+    {
+      "group": "Setup",
+      "feature": "Next.js Project Initialization",
+      "description": "Create Next.js App Router project with TypeScript, configure workspace dependencies",
+      "acceptance_criteria": [
+        "package.json with workspace:* references to @structcms packages",
+        "tsconfig.json extending base config",
+        "next.config.ts with transpilePackages for workspace packages",
+        "App runs with pnpm --filter test-app dev"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Setup",
+      "feature": "Root Layout",
+      "description": "Create root layout with html, body, and basic styling",
+      "acceptance_criteria": [
+        "app/layout.tsx with html and body tags",
+        "Tailwind CSS configured (or minimal CSS)",
+        "Children rendered in body"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Lib",
+      "feature": "Supabase Adapters",
+      "description": "Create lib/adapters.ts with real Supabase client and adapters",
+      "acceptance_criteria": [
+        "Supabase client created from env variables",
+        "storageAdapter exported using createStorageAdapter",
+        "mediaAdapter exported using createMediaAdapter",
+        "Adapters work with existing Supabase test instance"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Lib",
+      "feature": "Example Registry",
+      "description": "Create lib/registry.ts with example sections and page types",
+      "acceptance_criteria": [
+        "HeroSection with title, subtitle, image fields",
+        "ContentSection with body (richtext) field",
+        "LandingPage type allowing hero, content sections",
+        "BlogPage type allowing content section",
+        "Registry exported for use in AdminProvider"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Lib",
+      "feature": "Seed Data Definitions",
+      "description": "Create lib/seed.ts with representative test data",
+      "acceptance_criteria": [
+        "seedPages array with 3 pages (Home, About, Blog Post)",
+        "seedNavigations array with main navigation including children",
+        "Data covers all section types and nested structures"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Lib",
+      "feature": "Seed Runner",
+      "description": "Create lib/seed-runner.ts with seed execution logic",
+      "acceptance_criteria": [
+        "runSeed() function creates pages and navigations via adapters",
+        "Handles errors gracefully",
+        "Can be called from API route or CLI"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Route Handlers",
+      "feature": "Pages Route Handlers",
+      "description": "Create route handlers for /api/cms/pages",
+      "acceptance_criteria": [
+        "GET /api/cms/pages returns page list via handleListPages",
+        "POST /api/cms/pages creates page via handleCreatePage",
+        "GET /api/cms/pages/[slug] returns single page",
+        "PUT /api/cms/pages/[slug] updates page via handleUpdatePage",
+        "DELETE /api/cms/pages/[slug] deletes page via handleDeletePage"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Route Handlers",
+      "feature": "Navigation Route Handlers",
+      "description": "Create route handlers for /api/cms/navigation",
+      "acceptance_criteria": [
+        "GET /api/cms/navigation/[name] returns navigation",
+        "PUT /api/cms/navigation/[name] updates navigation"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Route Handlers",
+      "feature": "Media Route Handlers",
+      "description": "Create route handlers for /api/cms/media",
+      "acceptance_criteria": [
+        "GET /api/cms/media returns media list via handleListMedia",
+        "POST /api/cms/media uploads file via handleUploadMedia",
+        "DELETE /api/cms/media/[id] deletes media via handleDeleteMedia"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Route Handlers",
+      "feature": "Test Reset Endpoint",
+      "description": "Create POST /api/cms/__test__/reset to clear all data",
+      "acceptance_criteria": [
+        "Deletes all pages via storageAdapter",
+        "Deletes all navigations via storageAdapter",
+        "Deletes all media via mediaAdapter",
+        "Returns { status: 'reset' }"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Route Handlers",
+      "feature": "Test Seed Endpoint",
+      "description": "Create POST /api/cms/__test__/seed to insert seed data",
+      "acceptance_criteria": [
+        "Calls runSeed() from seed-runner",
+        "Returns { status: 'seeded' }",
+        "Idempotent: can be called after reset"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Admin Pages",
+      "feature": "Admin Layout",
+      "description": "Create admin route group with AdminProvider and AdminLayout",
+      "acceptance_criteria": [
+        "app/(admin)/layout.tsx wraps children with AdminProvider",
+        "Passes registry and apiBaseUrl to AdminProvider",
+        "Uses AdminLayout with onNavigate for client-side routing",
+        "Sidebar navigation works (Pages, Navigation, Media)"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Admin Pages",
+      "feature": "Page List View",
+      "description": "Create page list view at /pages",
+      "acceptance_criteria": [
+        "app/(admin)/pages/page.tsx renders PageList component",
+        "onSelectPage navigates to /pages/[slug]",
+        "onCreatePage navigates to /pages/new"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Admin Pages",
+      "feature": "Create Page View",
+      "description": "Create new page view at /pages/new",
+      "acceptance_criteria": [
+        "app/(admin)/pages/new/page.tsx renders PageEditor with empty data",
+        "Page type selector available",
+        "Save creates page and redirects to list"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Admin Pages",
+      "feature": "Edit Page View",
+      "description": "Create edit page view at /pages/[slug]",
+      "acceptance_criteria": [
+        "app/(admin)/pages/[slug]/page.tsx fetches page by slug",
+        "Renders PageEditor with existing data",
+        "Save updates page"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Admin Pages",
+      "feature": "Navigation View",
+      "description": "Create navigation editor view at /navigation",
+      "acceptance_criteria": [
+        "app/(admin)/navigation/page.tsx fetches main navigation",
+        "Renders NavigationEditor component",
+        "Save persists changes"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Admin Pages",
+      "feature": "Media View",
+      "description": "Create media browser view at /media",
+      "acceptance_criteria": [
+        "app/(admin)/media/page.tsx renders MediaBrowser component",
+        "Upload, browse, delete functionality works"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Tests",
+      "feature": "Playwright Configuration",
+      "description": "Configure Playwright for E2E testing",
+      "acceptance_criteria": [
+        "playwright.config.ts with baseURL localhost:3000",
+        "webServer config to start Next.js dev server",
+        "Test directory set to e2e/"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Tests",
+      "feature": "Test Helpers",
+      "description": "Create e2e/helpers.ts with reset and seed utilities",
+      "acceptance_criteria": [
+        "resetAndSeed() calls reset then seed endpoints",
+        "resetOnly() calls only reset endpoint",
+        "BASE_URL configurable"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Tests",
+      "feature": "Create Page Test",
+      "description": "E2E test for creating a new page",
+      "acceptance_criteria": [
+        "Navigate to /pages, click Create New Page",
+        "Select page type, add section, fill fields",
+        "Save and verify page appears in list",
+        "Verify via API that page was created"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Tests",
+      "feature": "Edit Section Test",
+      "description": "E2E test for editing an existing section",
+      "acceptance_criteria": [
+        "Seed a page with hero section",
+        "Navigate to /pages/[slug], edit hero title",
+        "Save and verify via API that data persisted"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Tests",
+      "feature": "Upload Media Test",
+      "description": "E2E test for uploading and selecting media",
+      "acceptance_criteria": [
+        "Navigate to /media, upload test image",
+        "Verify image appears in grid",
+        "Navigate to page with image field",
+        "Select uploaded image via ImagePicker",
+        "Verify image preview shown"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Tests",
+      "feature": "Navigation Test",
+      "description": "E2E test for editing navigation",
+      "acceptance_criteria": [
+        "Navigate to /navigation",
+        "Add navigation item with label and href",
+        "Add child item",
+        "Save and verify via API"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Tests",
+      "feature": "Page List Test",
+      "description": "E2E test for page list filtering and navigation",
+      "acceptance_criteria": [
+        "Seed 3 pages (2 landing, 1 blog)",
+        "Verify all pages visible",
+        "Test search filter",
+        "Test page type filter",
+        "Click row navigates to edit page"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Documentation",
+      "feature": "Setup Guide in Root README",
+      "description": "Add a Setup Guide section to the root README.md with step-by-step instructions and code examples for integrating StructCMS into a host project",
+      "acceptance_criteria": [
+        "New '## Setup Guide' section in root README.md",
+        "Step 1: Install packages (pnpm add @structcms/core @structcms/api @structcms/admin)",
+        "Step 2: Configure Supabase environment variables",
+        "Step 3: Run database migrations (link to @structcms/api README)",
+        "Step 4: Create lib/registry.ts with example section definitions",
+        "Step 5: Create lib/adapters.ts with Supabase client and adapters",
+        "Step 6: Create route handlers in app/api/cms/ with code example",
+        "Step 7: Create admin layout with AdminProvider and AdminLayout",
+        "Step 8: Create admin pages (pages, navigation, media)",
+        "Code examples for each step (TypeScript)",
+        "Link to examples/test-app as full reference implementation"
+      ],
+      "passes": false
+    }
+  ]
+}
