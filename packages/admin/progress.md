@@ -805,3 +805,39 @@ _No tasks in progress._
   - `src/hooks/use-api-client.ts` — wrapped `createApiClient` in `useMemo` keyed on `apiBaseUrl`
   - `src/components/media/media-browser.tsx` — removed `eslint-disable`, added `fetchMedia` to deps
   - `src/components/content/page-list.tsx` — removed `eslint-disable`, added `api` to deps
+
+---
+
+## Working on Consolidate NavItem Types
+
+**Task:** Three conflicting NavItem types exist: `NavItem` in navigation-editor (label, href, children), `NavItem` in admin-layout (label, path), and `NavigationItem` from @structcms/core (label, href, children — identical to navigation-editor's NavItem).
+
+**Acceptance Criteria:**
+1. NavigationEditor uses `NavigationItem` from `@structcms/core`
+2. AdminLayout `NavItem` renamed to `SidebarNavItem`
+3. No duplicate NavItem exports
+4. Existing tests still pass
+
+**Plan:**
+- In `navigation-editor.tsx`: remove local `NavItem` interface, import `NavigationItem` from `@structcms/core`, replace all `NavItem` usages with `NavigationItem`
+- In `admin-layout.tsx`: rename `NavItem` to `SidebarNavItem`
+- In `src/index.ts`: export `NavigationEditorProps` (no more `NavItem` from navigation-editor), export `SidebarNavItem` from admin-layout
+- Update tests if they reference `NavItem` type
+
+**Files to modify:**
+- `src/components/content/navigation-editor.tsx`
+- `src/components/layout/admin-layout.tsx`
+- `src/index.ts`
+- Possibly test files if they import `NavItem`
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 189 tests passed
+- Typecheck passed
+- Modified files:
+  - `src/components/content/navigation-editor.tsx` — replaced local `NavItem` with `NavigationItem` from `@structcms/core`
+  - `src/components/layout/admin-layout.tsx` — renamed `NavItem` to `SidebarNavItem`
+  - `src/index.ts` — removed `NavItem` export, added `SidebarNavItem` export
+  - `src/components/content/__tests__/navigation-editor.test.tsx` — updated type references

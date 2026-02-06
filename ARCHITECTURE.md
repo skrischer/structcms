@@ -378,15 +378,22 @@ examples/
     │           ├── navigation/
     │           │   └── [name]/
     │           │       └── route.ts      # GET, PUT
-    │           └── media/
-    │               ├── route.ts          # GET (list), POST (upload)
-    │               └── [id]/
-    │                   └── route.ts      # DELETE
+    │           ├── media/
+    │           │   ├── route.ts          # GET (list), POST (upload)
+    │           │   └── [id]/
+    │           │       └── route.ts      # DELETE
+    │           └── __test__/
+    │               ├── reset/
+    │               │   └── route.ts      # POST — clear all data
+    │               └── seed/
+    │                   └── route.ts      # POST — insert seed data
     ├── lib/
     │   ├── registry.ts                   # Example sections + page types
-    │   ├── mock-storage-adapter.ts       # In-memory StorageAdapter
-    │   └── mock-media-adapter.ts         # In-memory MediaAdapter
+    │   ├── adapters.ts                   # Supabase client + real adapters
+    │   ├── seed.ts                       # Seed data definitions
+    │   └── seed-runner.ts                # Seed execution logic
     ├── e2e/
+    │   ├── helpers.ts                    # resetAndSeed(), resetOnly()
     │   ├── create-page.spec.ts
     │   ├── edit-section.spec.ts
     │   ├── upload-media.spec.ts
@@ -398,66 +405,188 @@ examples/
     └── playwright.config.ts
 ```
 
-### Mock Adapters
+### Backend: Real Supabase DB
 
-The test app implements `StorageAdapter` and `MediaAdapter` from `@structcms/api` as in-memory stores. This avoids any external dependency (no Supabase, no Docker, no database).
+The test app connects to the existing Supabase test instance using `SupabaseStorageAdapter` and `SupabaseMediaAdapter` from `@structcms/api`. No mocks — this validates the full stack including database queries, JSONB serialization, and Storage bucket operations.
 
-#### MockStorageAdapter
-
-Implements `StorageAdapter` with a `Map<string, Page>` as backing store:
+#### Adapter Setup
 
 ```typescript
-import type { StorageAdapter, Page, PageFilter, CreatePageInput, UpdatePageInput } from '@structcms/api';
+// lib/adapters.ts
+import { createClient } from '@supabase/supabase-js';
+import { createStorageAdapter, createMediaAdapter } from '@structcms/api';
 
-class MockStorageAdapter implements StorageAdapter {
-  private pages: Map<string, Page>;
-  private navigations: Map<string, Navigation>;
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-  // All CRUD methods operate on the Maps
-  // generateId() returns crypto.randomUUID()
-  // Slug uniqueness enforced via Map lookup
+export const storageAdapter = createStorageAdapter({ client: supabase });
+export const mediaAdapter = createMediaAdapter({ client: supabase, bucket: 'media' });
+```
+
+#### Environment
+
+```bash
+# .env.local (gitignored)
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+```
+
+CI uses GitHub Secrets for the same variables.
+
+### Seed Data
+
+A seed module provides representative test data that covers all field types and content structures. The seed is used by E2E tests and can be run manually for development.
+
+#### Seed Content
+
+```typescript
+// lib/seed.ts
+import type { CreatePageInput, CreateNavigationInput } from '@structcms/api';
+
+export const seedPages: CreatePageInput[] = [
+  {
+    title: 'Home',
+    slug: 'home',
+    pageType: 'landing',
+    sections: [
+      {
+        type: 'hero',
+        data: {
+          title: 'Welcome to StructCMS',
+          subtitle: 'A code-first headless CMS',
+          image: '',
+        },
+      },
+      {
+        type: 'content',
+        data: {
+          body: '<p>This is the home page content.</p>',
+        },
+      },
+    ],
+  },
+  {
+    title: 'About Us',
+    slug: 'about',
+    pageType: 'landing',
+    sections: [
+      {
+        type: 'hero',
+        data: {
+          title: 'About Us',
+          subtitle: '',
+          image: '',
+        },
+      },
+    ],
+  },
+  {
+    title: 'Blog Post Example',
+    slug: 'blog-post-example',
+    pageType: 'blog',
+    sections: [
+      {
+        type: 'content',
+        data: {
+          body: '<h2>Hello World</h2><p>This is a blog post.</p>',
+        },
+      },
+    ],
+  },
+];
+
+export const seedNavigations: CreateNavigationInput[] = [
+  {
+    name: 'main',
+    items: [
+      { label: 'Home', href: '/' },
+      {
+        label: 'About',
+        href: '/about',
+        children: [
+          { label: 'Team', href: '/about/team' },
+        ],
+      },
+    ],
+  },
+];
+```
+
+#### Seed Runner
+
+```typescript
+// lib/seed-runner.ts
+import { storageAdapter, mediaAdapter } from './adapters';
+import { seedPages, seedNavigations } from './seed';
+
+export async function runSeed() {
+  for (const page of seedPages) {
+    await storageAdapter.createPage(page);
+  }
+  for (const nav of seedNavigations) {
+    await storageAdapter.createNavigation(nav);
+  }
 }
 ```
 
-**Key behaviors:**
-- `listPages(filter?)` — supports `pageType` filter and `search` (title/slug substring match)
-- `getPage(slug)` — lookup by slug
-- `createPage(input)` — generates UUID, sets timestamps
-- `updatePage(id, input)` — updates `updated_at`
-- `deletePage(id)` — removes from Map
+The seed can be triggered via:
+- **API route**: `POST /api/cms/__test__/seed` (for Playwright `beforeEach`)
+- **CLI script**: `pnpm --filter test-app seed` (for manual development)
 
-#### MockMediaAdapter
+### Cleanup Strategy
 
-Implements `MediaAdapter` with a `Map<string, MediaFile>` as backing store:
+Since the Supabase instance is exclusively for testing, cleanup is straightforward.
 
-```typescript
-import type { MediaAdapter, MediaFile, UploadMediaInput, MediaFilter } from '@structcms/api';
-
-class MockMediaAdapter implements MediaAdapter {
-  private files: Map<string, MediaFile>;
-
-  // upload() stores metadata, returns mock URL (data: URI or /mock-media/:id)
-  // list() supports limit/offset pagination
-  // delete() removes from Map
-}
-```
-
-**Key behaviors:**
-- `upload(input)` — stores file metadata, generates a deterministic mock URL
-- `listMedia(filter?)` — supports `limit` and `offset` for pagination
-- `getMedia(id)` — lookup by ID
-- `deleteMedia(id)` — removes from Map
-
-#### Adapter Lifecycle
-
-Adapters are instantiated as **module-level singletons** in the test app. For E2E tests, a dedicated API route resets the state:
+#### Reset Endpoint
 
 ```typescript
 // app/api/cms/__test__/reset/route.ts
-// POST /api/cms/__test__/reset — clears all data (only available in test app)
+import { storageAdapter } from '@/lib/adapters';
+
+export async function POST() {
+  // Delete all pages
+  const pages = await storageAdapter.listPages();
+  for (const page of pages) {
+    await storageAdapter.deletePage(page.id);
+  }
+
+  // Delete all navigations
+  const navigations = await storageAdapter.listNavigations();
+  for (const nav of navigations) {
+    await storageAdapter.deleteNavigation(nav.id);
+  }
+
+  // Delete all media
+  const media = await mediaAdapter.listMedia();
+  for (const file of media) {
+    await mediaAdapter.deleteMedia(file.id);
+  }
+
+  return Response.json({ status: 'reset' });
+}
 ```
 
-Playwright tests call this endpoint in `beforeEach` to ensure clean state.
+#### E2E Test Lifecycle
+
+```typescript
+// e2e/helpers.ts
+const BASE_URL = 'http://localhost:3000';
+
+export async function resetAndSeed() {
+  await fetch(`${BASE_URL}/api/cms/__test__/reset`, { method: 'POST' });
+  await fetch(`${BASE_URL}/api/cms/__test__/seed`, { method: 'POST' });
+}
+
+export async function resetOnly() {
+  await fetch(`${BASE_URL}/api/cms/__test__/reset`, { method: 'POST' });
+}
+```
+
+Tests choose their setup:
+- **Tests that need existing data** (Page List, Edit Section): `resetAndSeed()`
+- **Tests that start from scratch** (Create Page, Upload Media): `resetOnly()`
 
 ### Example Registry
 

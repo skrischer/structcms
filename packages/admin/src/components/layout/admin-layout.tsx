@@ -4,12 +4,12 @@ import * as React from 'react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 
-export interface NavItem {
+export interface SidebarNavItem {
   label: string;
   path: string;
 }
 
-const DEFAULT_NAV_ITEMS: NavItem[] = [
+const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
   { label: 'Pages', path: '/pages' },
   { label: 'Navigation', path: '/navigation' },
   { label: 'Media', path: '/media' },
@@ -18,7 +18,7 @@ const DEFAULT_NAV_ITEMS: NavItem[] = [
 export interface AdminLayoutProps {
   children: React.ReactNode;
   title?: string;
-  navItems?: NavItem[];
+  navItems?: SidebarNavItem[];
   activePath?: string;
   onNavigate: (path: string) => void;
   className?: string;

@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { NavigationEditor, type NavItem } from '../navigation-editor';
+import { type NavigationItem } from '@structcms/core';
+import { NavigationEditor } from '../navigation-editor';
 
 describe('NavigationEditor', () => {
   it('renders navigation editor', () => {
@@ -33,7 +34,7 @@ describe('NavigationEditor', () => {
   });
 
   it('renders existing items with label and href', () => {
-    const items: NavItem[] = [
+    const items: NavigationItem[] = [
       { label: 'Home', href: '/' },
       { label: 'About', href: '/about' },
     ];
@@ -60,7 +61,7 @@ describe('NavigationEditor', () => {
 
   it('removes an item when Remove is clicked', async () => {
     const user = userEvent.setup();
-    const items: NavItem[] = [
+    const items: NavigationItem[] = [
       { label: 'Home', href: '/' },
       { label: 'About', href: '/about' },
     ];
@@ -75,7 +76,7 @@ describe('NavigationEditor', () => {
 
   it('edits item label', async () => {
     const user = userEvent.setup();
-    const items: NavItem[] = [{ label: '', href: '' }];
+    const items: NavigationItem[] = [{ label: '', href: '' }];
 
     render(<NavigationEditor items={items} onSave={() => {}} />);
 
@@ -86,7 +87,7 @@ describe('NavigationEditor', () => {
 
   it('edits item href', async () => {
     const user = userEvent.setup();
-    const items: NavItem[] = [{ label: '', href: '' }];
+    const items: NavigationItem[] = [{ label: '', href: '' }];
 
     render(<NavigationEditor items={items} onSave={() => {}} />);
 
@@ -97,7 +98,7 @@ describe('NavigationEditor', () => {
 
   it('adds a child item', async () => {
     const user = userEvent.setup();
-    const items: NavItem[] = [{ label: 'Products', href: '/products', children: [] }];
+    const items: NavigationItem[] = [{ label: 'Products', href: '/products', children: [] }];
 
     render(<NavigationEditor items={items} onSave={() => {}} />);
 
@@ -107,7 +108,7 @@ describe('NavigationEditor', () => {
   });
 
   it('renders existing children', () => {
-    const items: NavItem[] = [
+    const items: NavigationItem[] = [
       {
         label: 'Products',
         href: '/products',
@@ -126,7 +127,7 @@ describe('NavigationEditor', () => {
 
   it('removes a child item', async () => {
     const user = userEvent.setup();
-    const items: NavItem[] = [
+    const items: NavigationItem[] = [
       {
         label: 'Products',
         href: '/products',
@@ -148,7 +149,7 @@ describe('NavigationEditor', () => {
   it('calls onSave with updated items when Save is clicked', async () => {
     const handleSave = vi.fn();
     const user = userEvent.setup();
-    const items: NavItem[] = [
+    const items: NavigationItem[] = [
       { label: 'Home', href: '/', children: [] },
     ];
 

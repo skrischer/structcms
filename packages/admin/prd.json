@@ -321,7 +321,7 @@
         "No duplicate NavItem exports",
         "Existing tests still pass"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Refactor",

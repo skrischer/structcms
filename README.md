@@ -241,14 +241,13 @@ The test app is part of the pnpm workspace but is **not** a publishable package.
 
 ### Backend Strategy
 
-The test app uses an **in-memory mock adapter** instead of a real Supabase instance:
+The test app connects to the **existing Supabase test instance** using the real `SupabaseStorageAdapter` and `SupabaseMediaAdapter` from `@structcms/api`. This validates the full stack end-to-end: UI → API handlers → Supabase DB/Storage.
 
-- **Deterministic**: No external dependencies, tests are reproducible
-- **Fast**: No network calls, no database setup
-- **Isolated**: Each test run starts with a clean state
-- **Portable**: Runs in CI without infrastructure
-
-The mock adapter implements the same `StorageAdapter` and `MediaAdapter` interfaces from `@structcms/api`, ensuring that the integration is realistic while remaining self-contained.
+- **Full-stack validation**: Tests cover real database queries, JSONB serialization, and Storage operations
+- **No mocks**: Same adapter code that runs in production
+- **Seed data**: Representative test content (pages, navigation, media) seeded before tests
+- **Clean state**: Reset endpoint truncates all data between test runs
+- **CI-ready**: Supabase credentials via GitHub Secrets
 
 ### E2E Test Scope
 

@@ -1,19 +1,14 @@
 'use client';
 
 import * as React from 'react';
+import { type NavigationItem } from '@structcms/core';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 
-export interface NavItem {
-  label: string;
-  href: string;
-  children?: NavItem[];
-}
-
 export interface NavigationEditorProps {
-  items: NavItem[];
-  onSave: (items: NavItem[]) => void;
+  items: NavigationItem[];
+  onSave: (items: NavigationItem[]) => void;
   className?: string;
 }
 
@@ -33,7 +28,7 @@ function NavigationEditor({
   onSave,
   className,
 }: NavigationEditorProps) {
-  const [items, setItems] = React.useState<NavItem[]>(initialItems);
+  const [items, setItems] = React.useState<NavigationItem[]>(initialItems);
 
   const handleAddItem = () => {
     setItems([...items, { label: '', href: '', children: [] }]);
