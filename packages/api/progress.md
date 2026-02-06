@@ -759,3 +759,52 @@ pnpm --filter @structcms/api typecheck
 - Deleted `src/storage/supabase-client.ts`
 - No imports referenced it (confirmed via grep)
 - 76 tests passing, typecheck clean
+
+---
+
+## Working on: Storage Page Handlers
+
+**Selected because:** The storage domain is missing its handler layer (REVIEW.md Finding #1). Media handlers serve as the reference pattern.
+
+### Plan
+
+**Files to create:**
+- `src/storage/handlers.ts` - Page CRUD handler functions
+- `src/storage/handlers.test.ts` - Unit tests with mock adapter
+
+**Files to modify:**
+- `src/storage/index.ts` - Export new handlers
+- `src/index.ts` - Export from package entry point
+
+**Approach:**
+1. Create `StorageValidationError` class (analogous to `MediaValidationError`)
+2. `handleCreatePage(adapter, input)` — validates title is non-empty, generates slug from title if not provided, ensures slug uniqueness via `listPages`, delegates to `adapter.createPage`
+3. `handleUpdatePage(adapter, input)` — validates id is present, delegates to `adapter.updatePage`
+4. `handleDeletePage(adapter, id)` — delegates to `adapter.deletePage`
+5. Unit tests with mock `StorageAdapter`
+
+**Potential challenges:**
+- Slug uniqueness check requires listing existing pages to get slugs — `ensureUniqueSlug` expects a string array, `listPages` returns `Page[]`
+- Need to decide validation scope: minimal (non-empty title) vs. comprehensive
+
+**Acceptance Criteria:**
+- [x] handleCreatePage with slug generation and validation
+- [x] handleUpdatePage with validation
+- [x] handleDeletePage
+- [x] Unit tests with mock adapter
+- [x] Exported from storage/index.ts and package entry point
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/storage/handlers.test.ts
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Created `src/storage/handlers.ts` with `handleCreatePage`, `handleUpdatePage`, `handleDeletePage`
+- Created `StorageValidationError` class (analogous to `MediaValidationError`)
+- `handleCreatePage` generates slug from title, ensures uniqueness via `ensureUniqueSlug`
+- `handleUpdatePage` validates slug uniqueness excluding current page
+- 15 unit tests covering happy paths, validation errors, slug uniqueness
+- Exported from `storage/index.ts` and `src/index.ts`

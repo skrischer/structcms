@@ -17,3 +17,10 @@ export {
   StorageError,
   type SupabaseStorageAdapterConfig,
 } from './supabase-adapter';
+
+export {
+  handleCreatePage,
+  handleUpdatePage,
+  handleDeletePage,
+  StorageValidationError,
+} from './handlers';

@@ -16,6 +16,10 @@ export {
   SupabaseStorageAdapter,
   createStorageAdapter,
   StorageError,
+  handleCreatePage,
+  handleUpdatePage,
+  handleDeletePage,
+  StorageValidationError,
 } from './storage';
 
 export { generateSlug, ensureUniqueSlug } from './utils';

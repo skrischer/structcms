@@ -377,7 +377,7 @@
         "Unit tests with mock adapter",
         "Exported from storage/index.ts and package entry point"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",
