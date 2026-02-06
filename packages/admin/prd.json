@@ -8,6 +8,7 @@
     "dependencies": {
       "runtime": [
         "@structcms/core",
+        "@structcms/api",
         "react",
         "react-dom",
         "react-hook-form",
@@ -22,7 +23,7 @@
         "lucide-react"
       ],
       "dev": ["vitest", "@testing-library/react", "playwright", "typescript"],
-      "shadcn_components": ["button", "input", "textarea", "card", "dialog", "select", "label", "separator"]
+      "shadcn_components": ["button", "input", "textarea", "card", "dialog", "select", "label", "separator", "toast", "skeleton"]
     },
     "package_exports": [
       "PageEditor",
@@ -72,22 +73,23 @@
       "Form generation uses React Hook Form + Zod resolver",
       "Components are headless-friendly but styled by default",
       "API calls use fetch() to configured base URL",
-      "No drag & drop - explicit out of scope"
+      "No drag & drop - explicit out of scope",
+      "@structcms/api provides response types (PageResponse, MediaResponse, etc.)"
     ]
   },
   "backlog": [
     {
-      "group": "Form Generation",
-      "feature": "Form Generator from Zod Schema",
-      "description": "Create component that generates React Hook Form from Zod schema, mapping field types to appropriate input components",
+      "group": "Context",
+      "feature": "AdminProvider Context",
+      "description": "React context provider for registry, API base URL, and shared state",
       "acceptance_criteria": [
-        "Accepts Zod schema and generates form fields",
-        "Integrates with React Hook Form + Zod resolver",
-        "Maps each field type to corresponding input component",
-        "Handles validation errors from Zod",
-        "Unit test: form generation from sample schema"
+        "Provides registry to all child components",
+        "Configurable apiBaseUrl prop",
+        "Exposes useAdmin() hook for context access",
+        "Provides useApiClient() hook for API calls",
+        "Unit test: context values accessible in child components"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Field Inputs",
@@ -162,6 +164,19 @@
         "Visually grouped (card or indentation)",
         "Supports nested validation",
         "Unit test: nested form renders"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Form Generation",
+      "feature": "Form Generator from Zod Schema",
+      "description": "Create component that generates React Hook Form from Zod schema, mapping field types to appropriate input components",
+      "acceptance_criteria": [
+        "Accepts Zod schema and generates form fields",
+        "Integrates with React Hook Form + Zod resolver",
+        "Maps each field type to corresponding input component",
+        "Handles validation errors from Zod",
+        "Unit test: form generation from sample schema"
       ],
       "passes": false
     },
@@ -244,6 +259,19 @@
         "Responsive: sidebar collapses on mobile",
         "Uses shadcn/ui components and Tailwind",
         "Unit test: layout renders correctly"
+      ],
+      "passes": false
+    },
+    {
+      "group": "UX",
+      "feature": "Loading and Error States",
+      "description": "Reusable components for loading indicators and error handling with toast notifications",
+      "acceptance_criteria": [
+        "Skeleton components for content loading",
+        "Toast notifications for success/error feedback",
+        "Error boundary for component-level errors",
+        "useToast() hook for triggering notifications",
+        "Unit test: loading and error states render correctly"
       ],
       "passes": false
     },
