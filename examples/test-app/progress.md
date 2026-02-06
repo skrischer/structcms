@@ -445,3 +445,38 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Admin Layout
+
+**Selected because:** First task in Admin Pages group. Route Handlers ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `app/(admin)/layout.tsx` - Admin layout with AdminProvider
+
+**Approach:**
+1. Create route group (admin) for admin pages
+2. Import AdminProvider, AdminLayout from @structcms/admin
+3. Import registry from lib/registry
+4. Wrap children with AdminProvider (registry, apiBaseUrl)
+5. Use AdminLayout with onNavigate for client-side routing
+
+**Acceptance Criteria:**
+- [x] app/(admin)/layout.tsx wraps children with AdminProvider
+- [x] Passes registry and apiBaseUrl to AdminProvider
+- [x] Uses AdminLayout with onNavigate for client-side routing
+- [x] Sidebar navigation works (Pages, Navigation, Media)
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/(admin)/layout.tsx created with AdminProvider and AdminLayout
+- Client-side routing via useRouter
+
+---
+

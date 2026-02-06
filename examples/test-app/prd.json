@@ -195,7 +195,7 @@
         "Uses AdminLayout with onNavigate for client-side routing",
         "Sidebar navigation works (Pages, Navigation, Media)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Admin Pages",
