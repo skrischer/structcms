@@ -643,3 +643,36 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Playwright Configuration
+
+**Selected because:** First task in E2E Tests group. Admin Pages ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `playwright.config.ts` - Playwright configuration
+
+**Approach:**
+1. Configure baseURL to localhost:3000
+2. Add webServer config to start Next.js dev server
+3. Set testDir to e2e/
+
+**Acceptance Criteria:**
+- [x] playwright.config.ts with baseURL localhost:3000
+- [x] webServer config to start Next.js dev server
+- [x] Test directory set to e2e/
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- playwright.config.ts created with all required settings
+- webServer starts Next.js dev server
+- testDir set to ./e2e
+
+---
+
