@@ -276,6 +276,101 @@
       "passes": true
     },
     {
+      "group": "Bugfix",
+      "feature": "Fix MediaBrowser Upload URL",
+      "description": "Upload URL is broken: ternary always evaluates to empty string, hitting /media instead of ${apiBaseUrl}/media",
+      "acceptance_criteria": [
+        "Upload uses apiBaseUrl from context or useApiClient upload() method",
+        "Upload sends FormData to correct endpoint",
+        "Unit test: upload triggers correct API call",
+        "Existing MediaBrowser tests still pass"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Bugfix",
+      "feature": "Add Array and Object Cases to FormGenerator",
+      "description": "FormGenerator switch statement missing array/object cases, silently renders StringInput instead of ArrayField/ObjectField",
+      "acceptance_criteria": [
+        "FormGenerator renders ArrayField for array field types",
+        "FormGenerator renders ObjectField for object field types",
+        "Unit test: array and object fields render correct components",
+        "Existing FormGenerator tests still pass"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Refactor",
+      "feature": "Memoize useApiClient",
+      "description": "createApiClient is called every render without memoization, causing useCallback dependencies to be ineffective",
+      "acceptance_criteria": [
+        "createApiClient wrapped in useMemo keyed on apiBaseUrl",
+        "Remove eslint-disable comments in PageList and MediaBrowser",
+        "Existing tests still pass",
+        "Typecheck passes"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Refactor",
+      "feature": "Consolidate NavItem Types",
+      "description": "Three conflicting NavItem types: navigation-editor, admin-layout, and unused NavigationItem from core",
+      "acceptance_criteria": [
+        "NavigationEditor uses NavigationItem from @structcms/core",
+        "AdminLayout NavItem renamed to SidebarNavItem",
+        "No duplicate NavItem exports",
+        "Existing tests still pass"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Refactor",
+      "feature": "Integrate Toast into AdminProvider",
+      "description": "ToastProvider is separate, no component uses toast for feedback. Consumer must manually nest providers",
+      "acceptance_criteria": [
+        "AdminProvider wraps ToastProvider internally",
+        "useToast() works inside AdminProvider without extra nesting",
+        "Existing tests still pass"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Refactor",
+      "feature": "SectionEditor Auto-Sync in PageEditor",
+      "description": "Each SectionEditor has its own submit button, unsubmitted changes are silently lost when Save Page is clicked",
+      "acceptance_criteria": [
+        "Section data syncs to PageEditor on field change (onChange/onBlur)",
+        "Save Page captures all current section data without per-section submit",
+        "Existing PageEditor tests updated accordingly",
+        "Unit test: unsaved section data is included in Save Page"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Refactor",
+      "feature": "ErrorBoundary Reset Mechanism",
+      "description": "ErrorBoundary has no reset mechanism, user must reload the page after an error",
+      "acceptance_criteria": [
+        "Default error UI includes a Retry button",
+        "Retry resets error state and re-renders children",
+        "Optional onReset callback prop",
+        "Unit test: reset clears error state",
+        "Existing ErrorBoundary tests still pass"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Refactor",
+      "feature": "Fix Toast Counter Module-Level State",
+      "description": "Toast counter is module-level variable, shared across all ToastProvider instances and SSR renders",
+      "acceptance_criteria": [
+        "Toast ID generation uses useRef inside ToastProvider",
+        "Multiple ToastProvider instances have independent counters",
+        "Existing Toast tests still pass"
+      ],
+      "passes": false
+    },
+    {
       "group": "Testing",
       "feature": "E2E Tests for Critical Flows",
       "description": "End-to-end tests for critical admin flows: create page, edit section, upload media",

@@ -85,27 +85,15 @@ function MediaBrowser({
     setLoading(true);
     setError(null);
 
-    try {
-      const response = await fetch(
-        `${api.get.toString().includes('baseUrl') ? '' : ''}/media`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
+    const result = await api.upload<MediaItem>('/media', formData);
 
-      if (!response.ok) {
-        setError('Upload failed');
-        setLoading(false);
-        return;
-      }
-
+    if (result.error) {
+      setError(result.error.message);
+      setLoading(false);
+    } else {
       // Refresh the list
       setPage(0);
       await fetchMedia(0, false);
-    } catch {
-      setError('Upload failed');
-      setLoading(false);
     }
 
     // Reset file input

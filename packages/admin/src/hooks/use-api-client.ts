@@ -27,6 +27,7 @@ export interface ApiClient {
   post<T>(path: string, body: unknown): Promise<ApiResponse<T>>;
   put<T>(path: string, body: unknown): Promise<ApiResponse<T>>;
   delete<T>(path: string): Promise<ApiResponse<T>>;
+  upload<T>(path: string, body: FormData): Promise<ApiResponse<T>>;
 }
 
 async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
@@ -108,6 +109,14 @@ function createApiClient(baseUrl: string): ApiClient {
         headers: {
           'Content-Type': 'application/json',
         },
+      });
+      return handleResponse<T>(response);
+    },
+
+    async upload<T>(path: string, body: FormData): Promise<ApiResponse<T>> {
+      const response = await fetch(`${normalizedBaseUrl}${path}`, {
+        method: 'POST',
+        body,
       });
       return handleResponse<T>(response);
     },

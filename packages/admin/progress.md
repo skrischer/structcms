@@ -693,3 +693,42 @@ _No tasks in progress._
   - `src/components/ui/__tests__/toast.test.tsx` - 9 unit tests
   - `src/components/ui/__tests__/error-boundary.test.tsx` - 5 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Fix MediaBrowser Upload URL
+
+**Task:** Upload URL is broken — ternary always evaluates to empty string, hitting `/media` instead of `${apiBaseUrl}/media`.
+
+**Acceptance Criteria:**
+1. Upload uses apiBaseUrl from context or useApiClient upload() method
+2. Upload sends FormData to correct endpoint
+3. Unit test: upload triggers correct API call
+4. Existing MediaBrowser tests still pass
+
+**Plan:**
+- Add `upload<T>(path: string, body: FormData): Promise<ApiResponse<T>>` method to `ApiClient` interface and `createApiClient`
+- Update `MediaBrowser.handleUpload` to use `api.upload('/media', formData)` instead of raw `fetch`
+- Add unit test verifying upload calls the correct endpoint
+- Update `ApiClient` type export in `src/index.ts` if needed
+
+**Files to modify:**
+- `src/hooks/use-api-client.ts` — add `upload` method
+- `src/components/media/media-browser.tsx` — use `api.upload`
+- `src/components/media/__tests__/media-browser.test.tsx` — add upload test
+
+**Approach:**
+- Best fix: extend ApiClient with an `upload()` method that sends FormData without JSON serialization
+- This keeps the upload logic consistent with the rest of the API client pattern
+- MediaBrowser then uses `api.upload` like it uses `api.get`/`api.delete`
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 187 tests passed (186 previous + 1 upload endpoint test)
+- Typecheck passed
+- Modified files:
+  - `src/hooks/use-api-client.ts` — added `upload()` method to ApiClient interface and implementation
+  - `src/components/media/media-browser.tsx` — replaced broken fetch with `api.upload()`
+  - `src/components/media/__tests__/media-browser.test.tsx` — added upload endpoint verification test

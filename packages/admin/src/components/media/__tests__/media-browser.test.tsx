@@ -223,4 +223,45 @@ describe('MediaBrowser', () => {
 
     expect(screen.getByTestId('media-browser')).toHaveClass('custom-class');
   });
+
+  it('uploads file via api.upload to correct endpoint', async () => {
+    mockFetchSuccess(mockMedia);
+    const user = userEvent.setup();
+
+    renderWithProvider(<MediaBrowser />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
+    });
+
+    // Mock upload response, then refresh response
+    const uploadedItem: MediaItem = { id: '4', url: 'https://example.com/img4.jpg', filename: 'img4.jpg' };
+    vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(uploadedItem), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify([...mockMedia, uploadedItem]), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      );
+
+    const file = new File(['test'], 'img4.jpg', { type: 'image/jpeg' });
+    const fileInput = screen.getByTestId('file-input');
+    await user.upload(fileInput, file);
+
+    await waitFor(() => {
+      // Verify upload was called with correct URL (apiBaseUrl + /media)
+      const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+      const uploadCall = fetchCalls.find(
+        (call) => call[1] && (call[1] as RequestInit).method === 'POST'
+      );
+      expect(uploadCall).toBeDefined();
+      expect(uploadCall![0]).toBe('/api/cms/media');
+    });
+  });
 });
