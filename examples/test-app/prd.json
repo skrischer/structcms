@@ -319,7 +319,7 @@
         "Add child item",
         "Save and verify via API"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Tests",

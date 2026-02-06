@@ -811,3 +811,37 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Navigation Test
+
+**Selected because:** Next task in E2E Tests group. Upload Media Test ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `e2e/navigation.spec.ts` - E2E test for editing navigation
+
+**Approach:**
+1. Seed database with navigation data
+2. Navigate to /navigation
+3. Add navigation item with label and href
+4. Save and verify via API
+
+**Acceptance Criteria:**
+- [x] Navigate to /navigation
+- [x] Add navigation item with label and href
+- [x] Add child item
+- [x] Save and verify via API
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- e2e/navigation.spec.ts created
+- Tests navigation display and save with API verification
+
+---
+
