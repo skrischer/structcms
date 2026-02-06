@@ -5,6 +5,7 @@ export { StringInput, type StringInputProps } from './components/inputs/string-i
 export { TextInput, type TextInputProps } from './components/inputs/text-input';
 export { RichTextEditor, type RichTextEditorProps } from './components/inputs/rich-text-editor';
 export { ImagePicker, type ImagePickerProps } from './components/inputs/image-picker';
+export { ArrayField, type ArrayFieldProps } from './components/inputs/array-field';
 export { Input, type InputProps } from './components/ui/input';
 export { Textarea, type TextareaProps } from './components/ui/textarea';
 export { Label, type LabelProps } from './components/ui/label';

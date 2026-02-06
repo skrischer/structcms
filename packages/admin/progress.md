@@ -261,3 +261,44 @@ _No tasks in progress._
   - `src/components/inputs/image-picker.tsx` - ImagePicker component
   - `src/components/inputs/__tests__/image-picker.test.tsx` - 12 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Array Field Component
+
+**Task:** Component for array fields with add/remove/reorder (buttons) functionality.
+
+**Acceptance Criteria:**
+1. Add button appends new item
+2. Remove button on each item
+3. Up/Down buttons for reordering
+4. Renders nested form for each item
+5. Unit test: add, remove, reorder operations
+
+**Plan:**
+- Create `src/components/inputs/array-field.tsx` - ArrayField component
+- Write unit test `src/components/inputs/__tests__/array-field.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/inputs/array-field.tsx`
+- `src/components/inputs/__tests__/array-field.test.tsx`
+
+**Approach:**
+- ArrayField accepts value (array), onChange, renderItem (render prop for each item)
+- Add button appends default item to array
+- Each item has Remove, Up, Down buttons
+- Up/Down disabled at boundaries
+- Uses Button component for actions
+- Generic component that works with any item type
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 63 tests passed (5 AdminProvider + 10 StringInput + 10 TextInput + 10 RichTextEditor + 12 ImagePicker + 16 ArrayField)
+- Typecheck passed
+- Created files:
+  - `src/components/inputs/array-field.tsx` - ArrayField component
+  - `src/components/inputs/__tests__/array-field.test.tsx` - 16 unit tests
+- Updated `src/index.ts` with exports

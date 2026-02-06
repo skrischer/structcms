@@ -153,7 +153,7 @@
         "Renders nested form for each item",
         "Unit test: add, remove, reorder operations"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Field Inputs",
