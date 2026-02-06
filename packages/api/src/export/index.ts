@@ -9,4 +9,4 @@ export type {
 
 export { contentDisposition } from './types';
 
-export { handleExportPage } from './handlers';
+export { handleExportPage, handleExportAllPages } from './handlers';

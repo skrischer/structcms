@@ -63,4 +63,4 @@ export type {
   MediaExportEntry,
 } from './export';
 
-export { contentDisposition, handleExportPage } from './export';
+export { contentDisposition, handleExportPage, handleExportAllPages } from './export';

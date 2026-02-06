@@ -306,7 +306,7 @@
         "Content-Disposition header for download",
         "Integration test: export all pages"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Export",

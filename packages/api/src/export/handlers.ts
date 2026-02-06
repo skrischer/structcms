@@ -1,8 +1,31 @@
-import type { StorageAdapter } from '../storage/types';
+import type { StorageAdapter, Page } from '../storage/types';
 import type { MediaAdapter } from '../media/types';
-import type { PageExportResponse } from './types';
+import type { PageExportResponse, AllPagesExportResponse } from './types';
 import { contentDisposition } from './types';
 import { resolveMediaReferences } from '../media/resolve';
+
+/**
+ * Converts a Page to a PageExportResponse with resolved media references
+ */
+async function toPageExport(
+  page: Page,
+  mediaAdapter: MediaAdapter
+): Promise<PageExportResponse> {
+  const resolvedSections = await resolveMediaReferences(
+    page.sections,
+    mediaAdapter
+  );
+
+  return {
+    id: page.id,
+    slug: page.slug,
+    pageType: page.pageType,
+    title: page.title,
+    sections: resolvedSections,
+    createdAt: page.createdAt.toISOString(),
+    updatedAt: page.updatedAt.toISOString(),
+  };
+}
 
 /**
  * Handler for GET /api/cms/export/pages/:slug
@@ -19,23 +42,36 @@ export async function handleExportPage(
     return null;
   }
 
-  const resolvedSections = await resolveMediaReferences(
-    page.sections,
-    mediaAdapter
-  );
-
-  const data: PageExportResponse = {
-    id: page.id,
-    slug: page.slug,
-    pageType: page.pageType,
-    title: page.title,
-    sections: resolvedSections,
-    createdAt: page.createdAt.toISOString(),
-    updatedAt: page.updatedAt.toISOString(),
-  };
+  const data = await toPageExport(page, mediaAdapter);
 
   return {
     data,
     contentDisposition: contentDisposition(`${page.slug}.json`),
+  };
+}
+
+/**
+ * Handler for GET /api/cms/export/pages
+ * Returns all pages as JSON array with resolved media URLs
+ */
+export async function handleExportAllPages(
+  storageAdapter: StorageAdapter,
+  mediaAdapter: MediaAdapter
+): Promise<{ data: AllPagesExportResponse; contentDisposition: string }> {
+  const pages = await storageAdapter.listPages();
+
+  const exportedPages: PageExportResponse[] = [];
+  for (const page of pages) {
+    exportedPages.push(await toPageExport(page, mediaAdapter));
+  }
+
+  const data: AllPagesExportResponse = {
+    pages: exportedPages,
+    exportedAt: new Date().toISOString(),
+  };
+
+  return {
+    data,
+    contentDisposition: contentDisposition('pages-export.json'),
   };
 }

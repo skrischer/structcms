@@ -535,3 +535,42 @@ pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
 - `contentDisposition()` helper for download headers
 - Export types defined for future tasks (AllPagesExport, NavigationExport, SiteExport)
 - Files: `src/export/types.ts`, `src/export/handlers.ts`, `src/export/handlers.test.ts`, `src/export/index.ts`
+
+---
+
+## Working on: All Pages Export
+
+**Selected because:** Next Export task, builds directly on Single Page Export infrastructure.
+
+### Plan
+
+**Files to modify:**
+- `src/export/handlers.ts` - Add `handleExportAllPages` handler
+- `src/export/handlers.test.ts` - Add unit tests
+- `src/export/index.ts` - Export new handler
+- `src/index.ts` - Export from package entry point
+
+**Approach:**
+1. Create `handleExportAllPages(storageAdapter, mediaAdapter)` handler
+2. List all pages, resolve media references for each, return `AllPagesExportResponse`
+3. Include `exportedAt` timestamp and Content-Disposition header
+4. Unit tests with mock adapters
+
+**Acceptance Criteria:**
+- [x] Returns array of all pages
+- [x] Media references resolved to URLs
+- [x] Content-Disposition header for download
+- [x] Integration test: export all pages
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
+```
+
+**Result:** ✅ Success
+
+- 5 new unit tests (11 total in export handlers)
+- `handleExportAllPages(storageAdapter, mediaAdapter)` returns all pages with resolved media
+- Refactored shared `toPageExport()` helper to avoid duplication
+- `AllPagesExportResponse` includes `exportedAt` timestamp
+- Content-Disposition: `pages-export.json`
