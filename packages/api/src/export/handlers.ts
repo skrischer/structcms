@@ -1,6 +1,6 @@
 import type { StorageAdapter, Page } from '../storage/types';
 import type { MediaAdapter } from '../media/types';
-import type { PageExportResponse, AllPagesExportResponse, NavigationExportResponse, AllNavigationsExportResponse } from './types';
+import type { PageExportResponse, AllPagesExportResponse, NavigationExportResponse, AllNavigationsExportResponse, SiteExportResponse, MediaExportEntry } from './types';
 import { contentDisposition } from './types';
 import { resolveMediaReferences } from '../media/resolve';
 
@@ -100,5 +100,53 @@ export async function handleExportNavigations(
   return {
     data,
     contentDisposition: contentDisposition('navigation-export.json'),
+  };
+}
+
+/**
+ * Handler for GET /api/cms/export
+ * Returns complete site content (pages, navigation, media metadata) as JSON
+ */
+export async function handleExportSite(
+  storageAdapter: StorageAdapter,
+  mediaAdapter: MediaAdapter
+): Promise<{ data: SiteExportResponse; contentDisposition: string }> {
+  // Export pages with resolved media
+  const pages = await storageAdapter.listPages();
+  const exportedPages: PageExportResponse[] = [];
+  for (const page of pages) {
+    exportedPages.push(await toPageExport(page, mediaAdapter));
+  }
+
+  // Export navigations
+  const navigations = await storageAdapter.listNavigations();
+  const exportedNavigations: NavigationExportResponse[] = navigations.map((nav) => ({
+    id: nav.id,
+    name: nav.name,
+    items: nav.items,
+    updatedAt: nav.updatedAt.toISOString(),
+  }));
+
+  // Export media metadata
+  const mediaFiles = await mediaAdapter.listMedia();
+  const exportedMedia: MediaExportEntry[] = mediaFiles.map((file) => ({
+    id: file.id,
+    filename: file.filename,
+    url: file.url,
+    mimeType: file.mimeType,
+    size: file.size,
+    createdAt: file.createdAt.toISOString(),
+  }));
+
+  const data: SiteExportResponse = {
+    pages: exportedPages,
+    navigations: exportedNavigations,
+    media: exportedMedia,
+    exportedAt: new Date().toISOString(),
+  };
+
+  return {
+    data,
+    contentDisposition: contentDisposition('site-export.json'),
   };
 }

@@ -611,3 +611,42 @@ pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
 - `handleExportNavigations(storageAdapter)` returns all navigations with nested items
 - `AllNavigationsExportResponse` includes `exportedAt` timestamp
 - Content-Disposition: `navigation-export.json`
+
+---
+
+## Working on: Full Site Export
+
+**Selected because:** All sub-components (pages, navigations, media) are implemented. This combines them into one endpoint.
+
+### Plan
+
+**Files to modify:**
+- `src/export/handlers.ts` - Add `handleExportSite` handler
+- `src/export/handlers.test.ts` - Add unit tests
+- `src/export/index.ts` - Export new handler
+- `src/index.ts` - Export from package entry point
+
+**Approach:**
+1. Create `handleExportSite(storageAdapter, mediaAdapter)` handler
+2. Reuse `handleExportAllPages` and `handleExportNavigations` logic internally
+3. List all media via `mediaAdapter.listMedia()` and map to `MediaExportEntry`
+4. Return `SiteExportResponse` with `{ pages, navigations, media, exportedAt }`
+5. Unit tests with mock adapters
+
+**Acceptance Criteria:**
+- [x] Returns { pages, navigation, media } object
+- [x] Media includes URLs for external download
+- [x] Suitable for backup or migration
+- [x] Integration test: full export
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
+```
+
+**Result:** ✅ Success
+
+- 7 new unit tests (24 total in export handlers)
+- `handleExportSite(storageAdapter, mediaAdapter)` returns `{ pages, navigations, media, exportedAt }`
+- Pages with resolved media, navigations with nested items, media with URLs for download
+- Content-Disposition: `site-export.json`

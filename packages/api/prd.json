@@ -329,7 +329,7 @@
         "Suitable for backup or migration",
         "Integration test: full export"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Export",
