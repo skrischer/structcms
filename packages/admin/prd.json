@@ -165,7 +165,7 @@
         "Supports nested validation",
         "Unit test: nested form renders"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Form Generation",

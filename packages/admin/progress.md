@@ -302,3 +302,41 @@ _No tasks in progress._
   - `src/components/inputs/array-field.tsx` - ArrayField component
   - `src/components/inputs/__tests__/array-field.test.tsx` - 16 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Object Field Component
+
+**Task:** Component for nested object fields, rendering sub-form.
+
+**Acceptance Criteria:**
+1. Renders nested form fields for object properties
+2. Visually grouped (card or indentation)
+3. Supports nested validation
+4. Unit test: nested form renders
+
+**Plan:**
+- Create `src/components/inputs/object-field.tsx` - ObjectField component
+- Write unit test `src/components/inputs/__tests__/object-field.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/inputs/object-field.tsx`
+- `src/components/inputs/__tests__/object-field.test.tsx`
+
+**Approach:**
+- ObjectField accepts label, children (nested form fields), error, required
+- Wraps children in a visually grouped container (card-like with border)
+- Supports nested validation by passing error prop
+- Simple wrapper component - actual field rendering is done by parent
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 73 tests passed (5 AdminProvider + 10 StringInput + 10 TextInput + 10 RichTextEditor + 12 ImagePicker + 16 ArrayField + 10 ObjectField)
+- Typecheck passed
+- Created files:
+  - `src/components/inputs/object-field.tsx` - ObjectField component
+  - `src/components/inputs/__tests__/object-field.test.tsx` - 10 unit tests
+- Updated `src/index.ts` with exports
