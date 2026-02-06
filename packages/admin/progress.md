@@ -732,3 +732,42 @@ _No tasks in progress._
   - `src/hooks/use-api-client.ts` — added `upload()` method to ApiClient interface and implementation
   - `src/components/media/media-browser.tsx` — replaced broken fetch with `api.upload()`
   - `src/components/media/__tests__/media-browser.test.tsx` — added upload endpoint verification test
+
+---
+
+## Working on Add Array and Object Cases to FormGenerator
+
+**Task:** FormGenerator switch statement missing array/object cases, silently renders StringInput instead of ArrayField/ObjectField.
+
+**Acceptance Criteria:**
+1. FormGenerator renders ArrayField for array field types
+2. FormGenerator renders ObjectField for object field types
+3. Unit test: array and object fields render correct components
+4. Existing FormGenerator tests still pass
+
+**Plan:**
+- Add `case 'array'` and `case 'object'` to the switch in `renderField()`
+- Import ArrayField and ObjectField
+- For `array`: use Controller + ArrayField with generic renderItem (StringInput per item)
+- For `object`: use ObjectField wrapper, recursively render inner shape fields
+- Add unit tests for both cases
+
+**Files to modify:**
+- `src/lib/form-generator.tsx` — add array/object cases + imports
+- `src/lib/__tests__/form-generator.test.tsx` — add tests
+
+**Challenge:**
+- ArrayField requires `renderItem` and `createDefaultItem` — we need sensible defaults
+- ObjectField requires `children` — we need to render sub-fields from the inner ZodObject shape
+- Must handle unwrapped schemas to get inner types
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 189 tests passed (187 previous + 2 array/object FormGenerator tests)
+- Typecheck passed
+- Modified files:
+  - `src/lib/form-generator.tsx` — added array/object cases + ArrayField/ObjectField/Input imports
+  - `src/lib/__tests__/form-generator.test.tsx` — added 2 tests for array and object rendering
+  - `src/components/inputs/array-field.tsx` — added `data-testid="array-field"` to wrapper

@@ -297,7 +297,7 @@
         "Unit test: array and object fields render correct components",
         "Existing FormGenerator tests still pass"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Refactor",

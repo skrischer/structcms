@@ -323,3 +323,314 @@ export function Page({ sections }) {
 | `@structcms/admin` | Admin UI components | `@structcms/core`, react, shadcn/ui |
 
 ---
+
+## E2E Testing Layer
+
+**Purpose**: Integration testing of all packages together in a realistic host application.
+
+### Why a Test App is Required
+
+`@structcms/admin` is a library package — it exports React components but has no standalone dev server, no routing, and no API backend. E2E tests require:
+
+- A running HTTP server with routes
+- API endpoints that respond to admin UI requests
+- A registry with example section definitions
+- A storage backend (real or mocked)
+
+### Architecture
+
+```
+examples/test-app/
+│
+├─ @structcms/core        # Section definitions, registry
+├─ @structcms/admin       # Admin UI components
+├─ @structcms/api         # Handler functions
+├─ In-Memory Adapters     # Mock StorageAdapter + MediaAdapter
+│
+└─ Next.js App Router     # Routing, route handlers, pages
+```
+
+### File Structure
+
+```
+examples/
+└── test-app/
+    ├── app/
+    │   ├── layout.tsx                    # Root layout (html, body)
+    │   ├── (admin)/
+    │   │   ├── layout.tsx                # AdminProvider + AdminLayout
+    │   │   ├── pages/
+    │   │   │   ├── page.tsx              # PageList view
+    │   │   │   └── [slug]/
+    │   │   │       └── page.tsx          # PageEditor view
+    │   │   ├── pages/new/
+    │   │   │   └── page.tsx              # Create new page
+    │   │   ├── navigation/
+    │   │   │   └── page.tsx              # NavigationEditor view
+    │   │   └── media/
+    │   │       └── page.tsx              # MediaBrowser view
+    │   └── api/
+    │       └── cms/
+    │           ├── pages/
+    │           │   ├── route.ts          # GET (list), POST (create)
+    │           │   └── [slug]/
+    │           │       └── route.ts      # GET, PUT, DELETE
+    │           ├── navigation/
+    │           │   └── [name]/
+    │           │       └── route.ts      # GET, PUT
+    │           └── media/
+    │               ├── route.ts          # GET (list), POST (upload)
+    │               └── [id]/
+    │                   └── route.ts      # DELETE
+    ├── lib/
+    │   ├── registry.ts                   # Example sections + page types
+    │   ├── mock-storage-adapter.ts       # In-memory StorageAdapter
+    │   └── mock-media-adapter.ts         # In-memory MediaAdapter
+    ├── e2e/
+    │   ├── create-page.spec.ts
+    │   ├── edit-section.spec.ts
+    │   ├── upload-media.spec.ts
+    │   ├── navigation.spec.ts
+    │   └── page-list.spec.ts
+    ├── package.json
+    ├── tsconfig.json
+    ├── next.config.ts
+    └── playwright.config.ts
+```
+
+### Mock Adapters
+
+The test app implements `StorageAdapter` and `MediaAdapter` from `@structcms/api` as in-memory stores. This avoids any external dependency (no Supabase, no Docker, no database).
+
+#### MockStorageAdapter
+
+Implements `StorageAdapter` with a `Map<string, Page>` as backing store:
+
+```typescript
+import type { StorageAdapter, Page, PageFilter, CreatePageInput, UpdatePageInput } from '@structcms/api';
+
+class MockStorageAdapter implements StorageAdapter {
+  private pages: Map<string, Page>;
+  private navigations: Map<string, Navigation>;
+
+  // All CRUD methods operate on the Maps
+  // generateId() returns crypto.randomUUID()
+  // Slug uniqueness enforced via Map lookup
+}
+```
+
+**Key behaviors:**
+- `listPages(filter?)` — supports `pageType` filter and `search` (title/slug substring match)
+- `getPage(slug)` — lookup by slug
+- `createPage(input)` — generates UUID, sets timestamps
+- `updatePage(id, input)` — updates `updated_at`
+- `deletePage(id)` — removes from Map
+
+#### MockMediaAdapter
+
+Implements `MediaAdapter` with a `Map<string, MediaFile>` as backing store:
+
+```typescript
+import type { MediaAdapter, MediaFile, UploadMediaInput, MediaFilter } from '@structcms/api';
+
+class MockMediaAdapter implements MediaAdapter {
+  private files: Map<string, MediaFile>;
+
+  // upload() stores metadata, returns mock URL (data: URI or /mock-media/:id)
+  // list() supports limit/offset pagination
+  // delete() removes from Map
+}
+```
+
+**Key behaviors:**
+- `upload(input)` — stores file metadata, generates a deterministic mock URL
+- `listMedia(filter?)` — supports `limit` and `offset` for pagination
+- `getMedia(id)` — lookup by ID
+- `deleteMedia(id)` — removes from Map
+
+#### Adapter Lifecycle
+
+Adapters are instantiated as **module-level singletons** in the test app. For E2E tests, a dedicated API route resets the state:
+
+```typescript
+// app/api/cms/__test__/reset/route.ts
+// POST /api/cms/__test__/reset — clears all data (only available in test app)
+```
+
+Playwright tests call this endpoint in `beforeEach` to ensure clean state.
+
+### Example Registry
+
+The test app registers a small set of representative sections covering all field types:
+
+```typescript
+// lib/registry.ts
+import { defineSection, definePageType, createRegistry, fields } from '@structcms/core';
+
+const HeroSection = defineSection({
+  name: 'hero',
+  fields: {
+    title: fields.string().min(1),
+    subtitle: fields.text().optional(),
+    image: fields.image(),
+  },
+});
+
+const ContentSection = defineSection({
+  name: 'content',
+  fields: {
+    body: fields.richtext(),
+  },
+});
+
+const LandingPage = definePageType({
+  name: 'landing',
+  allowedSections: ['hero', 'content'],
+});
+
+export const registry = createRegistry({
+  sections: [HeroSection, ContentSection],
+  pageTypes: [LandingPage],
+});
+```
+
+### Route Handlers
+
+Route handlers are thin wrappers around `@structcms/api` handler functions, injecting the mock adapters:
+
+```typescript
+// app/api/cms/pages/route.ts
+import { handleListPages, handleCreatePage } from '@structcms/api';
+import { storageAdapter } from '@/lib/mock-storage-adapter';
+
+export async function GET() {
+  const pages = await handleListPages(storageAdapter);
+  return Response.json(pages);
+}
+
+export async function POST(request: Request) {
+  const data = await request.json();
+  const page = await handleCreatePage(storageAdapter, data);
+  return Response.json(page, { status: 201 });
+}
+```
+
+### Admin Pages
+
+Admin pages are thin wrappers around `@structcms/admin` components:
+
+```typescript
+// app/(admin)/layout.tsx
+import { AdminProvider, AdminLayout } from '@structcms/admin';
+import { registry } from '@/lib/registry';
+
+export default function Layout({ children }) {
+  return (
+    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
+      <AdminLayout onNavigate={(path) => /* Next.js router.push */}>
+        {children}
+      </AdminLayout>
+    </AdminProvider>
+  );
+}
+```
+
+### Workspace Integration
+
+The test app is included in the pnpm workspace:
+
+```yaml
+# pnpm-workspace.yaml
+packages:
+  - "packages/*"
+  - "examples/*"
+```
+
+Dependencies reference workspace packages:
+
+```json
+// examples/test-app/package.json
+{
+  "dependencies": {
+    "@structcms/core": "workspace:*",
+    "@structcms/api": "workspace:*",
+    "@structcms/admin": "workspace:*",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "typescript": "~5.7.0"
+  }
+}
+```
+
+### E2E Test Specifications
+
+Tests use Playwright and follow this pattern:
+
+1. **Reset state** via `POST /api/cms/__test__/reset`
+2. **Seed data** if needed via API calls
+3. **Navigate** to admin page
+4. **Interact** with UI components
+5. **Assert** UI state and/or API state
+
+#### Test: Create Page
+
+```
+1. Navigate to /pages
+2. Click "Create New Page"
+3. Select page type "landing"
+4. Add a "hero" section
+5. Fill in title, subtitle, image
+6. Click "Save Page"
+7. Assert: page appears in page list
+8. Assert: GET /api/cms/pages/:slug returns the created page
+```
+
+#### Test: Edit Section
+
+```
+1. Seed a page with a hero section via API
+2. Navigate to /pages/:slug
+3. Edit the hero title field
+4. Save the section / Save the page
+5. Assert: updated data persisted via API
+```
+
+#### Test: Upload Media
+
+```
+1. Navigate to /media
+2. Click "Upload"
+3. Select a test image file
+4. Assert: image appears in media grid
+5. Navigate to a page with an image field
+6. Click "Browse Media" on the image picker
+7. Select the uploaded image
+8. Assert: image preview shown in form
+```
+
+#### Test: Navigation
+
+```
+1. Navigate to /navigation
+2. Add a navigation item (label + href)
+3. Add a child item
+4. Click "Save Navigation"
+5. Assert: GET /api/cms/navigation/:name returns saved items
+```
+
+#### Test: Page List
+
+```
+1. Seed 3 pages via API (2 landing, 1 blog)
+2. Navigate to /pages
+3. Assert: all 3 pages visible
+4. Type search term → assert filtered results
+5. Select page type filter → assert filtered results
+6. Click a page row → assert navigation to edit page
+```
+
+---

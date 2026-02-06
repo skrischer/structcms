@@ -87,7 +87,7 @@ function ArrayFieldInner<T>(
   };
 
   return (
-    <div ref={ref} className={cn('space-y-2', className)}>
+    <div ref={ref} className={cn('space-y-2', className)} data-testid="array-field">
       <Label htmlFor={inputId}>
         {label}
         {required && <span className="text-destructive ml-1">*</span>}

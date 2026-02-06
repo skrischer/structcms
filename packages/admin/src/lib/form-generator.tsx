@@ -9,6 +9,9 @@ import { StringInput } from '../components/inputs/string-input';
 import { TextInput } from '../components/inputs/text-input';
 import { RichTextEditor } from '../components/inputs/rich-text-editor';
 import { ImagePicker } from '../components/inputs/image-picker';
+import { ArrayField } from '../components/inputs/array-field';
+import { ObjectField } from '../components/inputs/object-field';
+import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { cn } from './utils';
 
@@ -163,6 +166,69 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
             )}
           />
         );
+
+      case 'array':
+        return (
+          <Controller
+            key={fieldName}
+            name={fieldName as Parameters<typeof register>[0]}
+            control={control}
+            render={({ field }) => (
+              <ArrayField<string>
+                label={label}
+                required={isRequired}
+                error={errorMessage}
+                value={(field.value as string[] | undefined) ?? []}
+                onChange={field.onChange}
+                name={field.name}
+                createDefaultItem={() => ''}
+                renderItem={(item, index, onItemChange) => (
+                  <Input
+                    value={item}
+                    onChange={(e) => onItemChange(e.target.value)}
+                    data-testid={`${fieldName}-item-${index}`}
+                  />
+                )}
+              />
+            )}
+          />
+        );
+
+      case 'object': {
+        const innerSchema = unwrapSchema(fieldSchema);
+        const innerShape = 'shape' in innerSchema
+          ? (innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<string, z.ZodTypeAny>
+          : null;
+
+        return (
+          <ObjectField
+            key={fieldName}
+            label={label}
+            required={isRequired}
+            error={errorMessage}
+          >
+            {innerShape
+              ? Object.entries(innerShape).map(([subName, subSchema]) => {
+                  const subFieldName = `${fieldName}.${subName}`;
+                  const subLabel = fieldNameToLabel(subName);
+                  const subError = (errors as FieldErrors<Record<string, unknown>>)[fieldName] as
+                    | FieldErrors<Record<string, unknown>>
+                    | undefined;
+                  const subErrorMessage = subError?.[subName]?.message as string | undefined;
+
+                  return (
+                    <StringInput
+                      key={subFieldName}
+                      label={subLabel}
+                      error={subErrorMessage}
+                      {...register(subFieldName as Parameters<typeof register>[0])}
+                    />
+                  );
+                })
+              : null}
+          </ObjectField>
+        );
+      }
 
       default:
         return (

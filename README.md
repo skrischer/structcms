@@ -219,6 +219,51 @@ StructCMS is embedded but connects to managed backend infrastructure.
 
 ---
 
+## E2E Test Application
+
+Since `@structcms/admin` is a library package (no standalone dev server), a minimal Next.js host application is required for E2E testing and integration verification.
+
+### Purpose
+
+- Provide a running application that integrates all three packages (`core`, `api`, `admin`)
+- Enable Playwright E2E tests for critical admin flows
+- Serve as a reference implementation for host project integration
+- Validate the full data flow: Admin UI → API → Storage → Delivery
+
+### Location
+
+```
+examples/
+└── test-app/           # Minimal Next.js App Router project
+```
+
+The test app is part of the pnpm workspace but is **not** a publishable package. It exists solely for testing and as a reference.
+
+### Backend Strategy
+
+The test app uses an **in-memory mock adapter** instead of a real Supabase instance:
+
+- **Deterministic**: No external dependencies, tests are reproducible
+- **Fast**: No network calls, no database setup
+- **Isolated**: Each test run starts with a clean state
+- **Portable**: Runs in CI without infrastructure
+
+The mock adapter implements the same `StorageAdapter` and `MediaAdapter` interfaces from `@structcms/api`, ensuring that the integration is realistic while remaining self-contained.
+
+### E2E Test Scope
+
+| Flow | Description |
+|------|-------------|
+| Create Page | Create a new page with sections via PageEditor |
+| Edit Section | Edit an existing section's fields and save |
+| Upload Media | Upload a file via MediaBrowser and select in content |
+| Navigation | Edit navigation items and save |
+| Page List | Search, filter, and navigate to pages |
+
+For detailed architecture, see [ARCHITECTURE.md](./ARCHITECTURE.md#e2e-testing-layer).
+
+---
+
 ## Technical Layers
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical layer documentation.

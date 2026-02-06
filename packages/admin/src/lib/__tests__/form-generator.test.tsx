@@ -183,4 +183,43 @@ describe('FormGenerator', () => {
 
     expect(screen.getByLabelText(/Title/)).toHaveValue('Default Title');
   });
+
+  it('renders ArrayField for array field types', () => {
+    const schema = z.object({
+      tags: fields.array(z.string()),
+    });
+
+    render(
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ tags: ['tag1', 'tag2'] }}
+      />
+    );
+
+    expect(screen.getByText('Tags')).toBeInTheDocument();
+    expect(screen.getByTestId('array-field')).toBeInTheDocument();
+  });
+
+  it('renders ObjectField for object field types', () => {
+    const schema = z.object({
+      address: fields.object({
+        street: z.string(),
+        city: z.string(),
+      }),
+    });
+
+    render(
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ address: { street: '', city: '' } }}
+      />
+    );
+
+    expect(screen.getByText('Address')).toBeInTheDocument();
+    expect(screen.getByTestId('object-field-container')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Street/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/City/)).toBeInTheDocument();
+  });
 });
