@@ -115,3 +115,40 @@ pnpm --filter test-app dev
 
 ---
 
+## Working on: Example Registry
+
+**Selected because:** No external dependencies (only @structcms/core). Easier to verify than Supabase Adapters. Required by Admin Pages later.
+
+### Plan
+
+**Files to create:**
+- `lib/registry.ts` - Section definitions, page types, and registry export
+
+**Approach:**
+1. Import defineSection, definePageType, createRegistry, fields from @structcms/core
+2. Define HeroSection with title (string), subtitle (text), image (image)
+3. Define ContentSection with body (richtext)
+4. Define LandingPage type allowing hero, content sections
+5. Define BlogPage type allowing content section
+6. Export registry for use in AdminProvider
+
+**Acceptance Criteria:**
+- [x] HeroSection with title, subtitle, image fields
+- [x] ContentSection with body (richtext) field
+- [x] LandingPage type allowing hero, content sections
+- [x] BlogPage type allowing content section
+- [x] Registry exported for use in AdminProvider
+
+**Verification:**
+```bash
+pnpm --filter test-app typecheck
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- lib/registry.ts created with HeroSection, ContentSection, LandingPage, BlogPage
+- Registry exported for AdminProvider
+
+---
+

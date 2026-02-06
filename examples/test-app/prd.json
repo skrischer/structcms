@@ -104,7 +104,7 @@
         "BlogPage type allowing content section",
         "Registry exported for use in AdminProvider"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Lib",
