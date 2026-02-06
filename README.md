@@ -186,6 +186,7 @@ For package-specific documentation, see:
 - [@structcms/core](./packages/core/README.md)
 - [@structcms/api](./packages/api/README.md)
 - [@structcms/admin](./packages/admin/README.md)
+- [E2E Test App](./examples/test-app/README.md)
 
 ### Versioning
 - Semantic versioning (semver)

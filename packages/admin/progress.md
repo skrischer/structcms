@@ -947,3 +947,34 @@ _No tasks in progress._
 - Modified files:
   - `src/components/ui/error-boundary.tsx` — added `onReset` prop, `handleReset()` method, Retry button
   - `src/components/ui/__tests__/error-boundary.test.tsx` — added 3 tests for Retry button, reset, and onReset callback
+
+---
+
+## Working on Fix Toast Counter Module-Level State
+
+**Task:** Toast counter is a module-level `let toastCounter = 0`, shared across all ToastProvider instances and SSR renders. This can cause hydration mismatches and non-deterministic IDs.
+
+**Acceptance Criteria:**
+1. Toast ID generation uses `useRef` inside ToastProvider
+2. Multiple ToastProvider instances have independent counters
+3. Existing Toast tests still pass
+
+**Plan:**
+- Remove `let toastCounter = 0` module-level variable
+- Add `const counterRef = React.useRef(0)` inside `ToastProvider`
+- Use `counterRef.current` instead of `toastCounter` in `addToast`
+- Add test: two separate ToastProvider instances generate independent IDs
+
+**Files to modify:**
+- `src/components/ui/toast.tsx` — replace module-level counter with useRef
+- `src/components/ui/__tests__/toast.test.tsx` — add independent counter test
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 193 tests passed (192 previous + 1 independent counter test)
+- Typecheck passed
+- Modified files:
+  - `src/components/ui/toast.tsx` — replaced module-level `toastCounter` with `useRef` inside ToastProvider
+  - `src/components/ui/__tests__/toast.test.tsx` — added test for independent counters across instances

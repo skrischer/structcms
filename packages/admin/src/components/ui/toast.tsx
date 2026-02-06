@@ -19,8 +19,6 @@ interface ToastContextValue {
 
 const ToastContext = React.createContext<ToastContextValue | null>(null);
 
-let toastCounter = 0;
-
 export interface ToastProviderProps {
   children: React.ReactNode;
   autoDismissMs?: number;
@@ -38,6 +36,7 @@ export interface ToastProviderProps {
  */
 function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
+  const counterRef = React.useRef(0);
 
   const removeToast = React.useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -45,7 +44,7 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
 
   const addToast = React.useCallback(
     (message: string, variant: ToastVariant = 'default') => {
-      const id = `toast-${++toastCounter}`;
+      const id = `toast-${++counterRef.current}`;
       const toast: Toast = { id, message, variant };
       setToasts((prev) => [...prev, toast]);
 

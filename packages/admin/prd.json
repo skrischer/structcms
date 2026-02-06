@@ -368,7 +368,7 @@
         "Multiple ToastProvider instances have independent counters",
         "Existing Toast tests still pass"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

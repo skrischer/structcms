@@ -164,4 +164,49 @@ describe('Toast', () => {
 
     expect(screen.queryByTestId('toast-container')).not.toBeInTheDocument();
   });
+
+  it('has independent counters across multiple ToastProvider instances', async () => {
+    function ConsumerA() {
+      const { toast, toasts } = useToast();
+      return (
+        <div>
+          <button data-testid="trigger-a" onClick={() => toast('Toast A')}>A</button>
+          <span data-testid="ids-a">{toasts.map((t) => t.id).join(',')}</span>
+        </div>
+      );
+    }
+
+    function ConsumerB() {
+      const { toast, toasts } = useToast();
+      return (
+        <div>
+          <button data-testid="trigger-b" onClick={() => toast('Toast B')}>B</button>
+          <span data-testid="ids-b">{toasts.map((t) => t.id).join(',')}</span>
+        </div>
+      );
+    }
+
+    const { unmount } = render(
+      <div>
+        <ToastProvider autoDismissMs={0}>
+          <ConsumerA />
+        </ToastProvider>
+        <ToastProvider autoDismissMs={0}>
+          <ConsumerB />
+        </ToastProvider>
+      </div>
+    );
+
+    await act(async () => {
+      screen.getByTestId('trigger-a').click();
+    });
+    await act(async () => {
+      screen.getByTestId('trigger-b').click();
+    });
+
+    expect(screen.getByTestId('ids-a')).toHaveTextContent('toast-1');
+    expect(screen.getByTestId('ids-b')).toHaveTextContent('toast-1');
+
+    unmount();
+  });
 });
