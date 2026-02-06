@@ -708,3 +708,38 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Create Page Test
+
+**Selected because:** Next task in E2E Tests group. Test Helpers ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `e2e/create-page.spec.ts` - E2E test for creating a new page
+
+**Approach:**
+1. Reset database before test
+2. Navigate to /pages, click Create New Page
+3. Select page type, add section, fill fields
+4. Save and verify page appears in list
+5. Verify via API that page was created
+
+**Acceptance Criteria:**
+- [x] Navigate to /pages, click Create New Page
+- [x] Select page type, add section, fill fields
+- [x] Save and verify page appears in list
+- [x] Verify via API that page was created
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- e2e/create-page.spec.ts created
+- Tests page creation flow with API verification
+
+---
+

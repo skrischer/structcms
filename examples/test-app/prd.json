@@ -283,7 +283,7 @@
         "Save and verify page appears in list",
         "Verify via API that page was created"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Tests",
