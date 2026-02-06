@@ -14,9 +14,18 @@
       "definePageType",
       "defineNavigation",
       "createRegistry",
+      "fields",
+      "getFieldMeta",
+      "isFieldType",
+      "defaultNavigationItemSchema",
       "SectionDefinition (type)",
       "PageTypeDefinition (type)",
-      "Registry (type)"
+      "NavigationDefinition (type)",
+      "Registry (type)",
+      "FieldType (type)",
+      "FieldMeta (type)",
+      "InferSectionData (type)",
+      "NavigationItem (type)"
     ],
     "api_examples": {
       "defineSection": "const HeroSection = defineSection({ name: 'hero', fields: { title: z.string().min(1), subtitle: z.string().optional(), image: z.string().url() } });",
@@ -27,8 +36,9 @@
       "src/": "Source files",
       "src/define-section.ts": "defineSection() function",
       "src/define-page-type.ts": "definePageType() function",
-      "src/define-navigation.ts": "defineNavigation() function",
+      "src/define-navigation.ts": "defineNavigation() function with default schema",
       "src/registry.ts": "createRegistry() function",
+      "src/fields.ts": "Field type helpers (string, text, richtext, image, reference, array, object)",
       "src/types.ts": "Shared TypeScript types",
       "src/index.ts": "Package entry point with exports"
     },
@@ -126,6 +136,19 @@
         "Edge cases tested (empty registry, invalid schemas)",
         "Code coverage >80%",
         "Tests run with vitest or jest"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Rendering",
+      "feature": "Section Renderer Utility",
+      "description": "Create createSectionRenderer() utility that maps section types to React components for type-safe rendering in host projects",
+      "acceptance_criteria": [
+        "createSectionRenderer({ sectionName: Component }) creates render function",
+        "renderSection(section, key) returns React element for matching section type",
+        "TypeScript enforces correct props for each section component",
+        "Handles unknown section types gracefully (returns null or fallback)",
+        "Unit test: renderer maps sections to correct components"
       ],
       "passes": true
     }

@@ -306,3 +306,55 @@ pnpm test --filter @structcms/core -- --run --coverage
   - `index.ts` (re-exports only)
   - `types.ts` (TypeScript types only)
   - `fields.ts` catch block (94.28%)
+
+---
+
+## Working on: Section Renderer Utility
+
+**Selected because:** Only remaining task with `passes: false`. Required for Layer 7 (Rendering Integration) per ARCHITECTURE.md.
+
+### Plan
+
+**Files to create:**
+- `src/section-renderer.ts` - createSectionRenderer() function
+- `src/section-renderer.test.ts` - Unit tests
+
+**Files to modify:**
+- `src/types.ts` - Add SectionRendererConfig and related types
+- `src/index.ts` - Export createSectionRenderer
+
+**Approach:**
+1. Create framework-agnostic renderer (no React dependency per prd.json notes)
+2. Use generic `ComponentType` that accepts any function/class returning any value
+3. `createSectionRenderer(mapping)` returns a render function
+4. Render function takes section data and key, returns component result or null
+5. TypeScript enforces section type → component mapping
+
+**Design Decision:** The package must remain framework-agnostic. Instead of returning React.ReactElement, the renderer will:
+- Accept any component type (function that takes props and returns something)
+- Return the result of calling that component with section data
+- This works with React, Preact, Vue render functions, or plain functions
+
+**Acceptance Criteria:**
+- [ ] createSectionRenderer({ sectionName: Component }) creates render function
+- [ ] renderSection(section, key) returns component result for matching section type
+- [ ] TypeScript enforces correct props for each section component
+- [ ] Handles unknown section types gracefully (returns null or fallback)
+- [ ] Unit test: renderer maps sections to correct components
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/core -- --run
+```
+
+**Potential Challenges:**
+- Maintaining type safety without React types
+- Generic component type that works across frameworks
+
+**Result:** ✅ Success
+
+- 9 new unit tests passing (56 total)
+- TypeScript typecheck passing
+- Files created: `src/section-renderer.ts`, `src/section-renderer.test.ts`
+- Types added: `SectionData`, `SectionComponentProps`, `SectionComponent`, `SectionComponentMap`, `CreateSectionRendererConfig`, `SectionRenderer`
+- Framework-agnostic implementation (no React dependency)

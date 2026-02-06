@@ -7,6 +7,7 @@ export {
 } from './define-navigation';
 export { fields, getFieldMeta, isFieldType } from './fields';
 export { createRegistry } from './registry';
+export { createSectionRenderer } from './section-renderer';
 export type {
   SectionDefinition,
   DefineSectionConfig,
@@ -19,4 +20,10 @@ export type {
   PageTypeDefinition,
   DefineNavigationConfig,
   NavigationDefinition,
+  SectionData,
+  SectionComponentProps,
+  SectionComponent,
+  SectionComponentMap,
+  CreateSectionRendererConfig,
+  SectionRenderer,
 } from './types';

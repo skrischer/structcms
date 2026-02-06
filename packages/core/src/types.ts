@@ -98,3 +98,50 @@ export interface Registry {
   getNavigation(name: string): NavigationDefinition | undefined;
   getAllNavigations(): NavigationDefinition[];
 }
+
+/**
+ * Section data as stored/delivered by the CMS
+ */
+export interface SectionData {
+  type: string;
+  data: Record<string, unknown>;
+}
+
+/**
+ * Props passed to section components
+ */
+export interface SectionComponentProps<T = Record<string, unknown>> {
+  data: T;
+  sectionKey: string | number;
+}
+
+/**
+ * A component that renders a section (framework-agnostic)
+ */
+export type SectionComponent<T = Record<string, unknown>, R = unknown> = (
+  props: SectionComponentProps<T>
+) => R;
+
+/**
+ * Mapping of section type names to their components
+ */
+export type SectionComponentMap<R = unknown> = Record<
+  string,
+  SectionComponent<Record<string, unknown>, R>
+>;
+
+/**
+ * Configuration for createSectionRenderer
+ */
+export interface CreateSectionRendererConfig<R = unknown> {
+  components: SectionComponentMap<R>;
+  fallback?: SectionComponent<Record<string, unknown>, R>;
+}
+
+/**
+ * A function that renders a section to a component result
+ */
+export type SectionRenderer<R = unknown> = (
+  section: SectionData,
+  key: string | number
+) => R | null;
