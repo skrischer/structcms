@@ -1,4 +1,4 @@
-import type { StorageAdapter, Page, CreatePageInput, UpdatePageInput } from './types';
+import type { StorageAdapter, Page, Navigation, CreatePageInput, UpdatePageInput, CreateNavigationInput, UpdateNavigationInput } from './types';
 import { generateSlug, ensureUniqueSlug } from '../utils/slug';
 
 /**
@@ -111,4 +111,90 @@ export async function handleDeletePage(
   }
 
   return adapter.deletePage(id);
+}
+
+/**
+ * Handler for creating a new navigation.
+ * Validates that the name is non-empty and unique.
+ */
+export async function handleCreateNavigation(
+  adapter: StorageAdapter,
+  input: CreateNavigationInput
+): Promise<Navigation> {
+  if (!input.name.trim()) {
+    throw new StorageValidationError(
+      'Navigation name must not be empty',
+      'EMPTY_NAME'
+    );
+  }
+
+  // Ensure name uniqueness
+  const existingNavigations = await adapter.listNavigations();
+  const existingNames = existingNavigations.map((n) => n.name);
+
+  if (existingNames.includes(input.name.trim())) {
+    throw new StorageValidationError(
+      `Navigation name "${input.name.trim()}" is already in use`,
+      'DUPLICATE_NAME'
+    );
+  }
+
+  return adapter.createNavigation(input);
+}
+
+/**
+ * Handler for updating an existing navigation.
+ */
+export async function handleUpdateNavigation(
+  adapter: StorageAdapter,
+  input: UpdateNavigationInput
+): Promise<Navigation> {
+  if (!input.id.trim()) {
+    throw new StorageValidationError(
+      'Navigation ID must not be empty',
+      'EMPTY_ID'
+    );
+  }
+
+  // If name is being updated, ensure uniqueness
+  if (input.name !== undefined) {
+    const name = input.name.trim();
+    if (!name) {
+      throw new StorageValidationError(
+        'Navigation name must not be empty',
+        'EMPTY_NAME'
+      );
+    }
+
+    const existingNavigations = await adapter.listNavigations();
+    const existingNames = existingNavigations
+      .filter((n) => n.id !== input.id)
+      .map((n) => n.name);
+
+    if (existingNames.includes(name)) {
+      throw new StorageValidationError(
+        `Navigation name "${name}" is already in use`,
+        'DUPLICATE_NAME'
+      );
+    }
+  }
+
+  return adapter.updateNavigation(input);
+}
+
+/**
+ * Handler for deleting a navigation by ID.
+ */
+export async function handleDeleteNavigation(
+  adapter: StorageAdapter,
+  id: string
+): Promise<void> {
+  if (!id.trim()) {
+    throw new StorageValidationError(
+      'Navigation ID must not be empty',
+      'EMPTY_ID'
+    );
+  }
+
+  return adapter.deleteNavigation(id);
 }

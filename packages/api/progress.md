@@ -808,3 +808,43 @@ pnpm --filter @structcms/api typecheck
 - `handleUpdatePage` validates slug uniqueness excluding current page
 - 15 unit tests covering happy paths, validation errors, slug uniqueness
 - Exported from `storage/index.ts` and `src/index.ts`
+
+---
+
+## Working on: Storage Navigation Handlers
+
+**Selected because:** Last remaining task. Page handlers are done and serve as the direct template.
+
+### Plan
+
+**Files to modify:**
+- `src/storage/handlers.ts` - Add navigation CRUD handlers
+- `src/storage/handlers.test.ts` - Add navigation handler tests
+- `src/storage/index.ts` - Export new handlers
+- `src/index.ts` - Export from package entry point
+
+**Approach:**
+1. `handleCreateNavigation(adapter, input)` — validates name is non-empty, checks name uniqueness via `listNavigations`, delegates to `adapter.createNavigation`
+2. `handleUpdateNavigation(adapter, input)` — validates id is present, checks name uniqueness if name is being changed, delegates to `adapter.updateNavigation`
+3. `handleDeleteNavigation(adapter, id)` — validates id is non-empty, delegates to `adapter.deleteNavigation`
+4. Unit tests with mock adapter
+
+**Acceptance Criteria:**
+- [x] handleCreateNavigation with validation
+- [x] handleUpdateNavigation with validation
+- [x] handleDeleteNavigation
+- [x] Unit tests with mock adapter
+- [x] Exported from storage/index.ts and package entry point
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/storage/handlers.test.ts
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Added `handleCreateNavigation`, `handleUpdateNavigation`, `handleDeleteNavigation` to `src/storage/handlers.ts`
+- Name uniqueness validation for create and update
+- 12 new unit tests (27 total in storage handlers)
+- Exported from `storage/index.ts` and `src/index.ts`

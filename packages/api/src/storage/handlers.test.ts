@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { handleCreatePage, handleUpdatePage, handleDeletePage, StorageValidationError } from './handlers';
-import type { StorageAdapter, Page, CreatePageInput, UpdatePageInput } from './types';
+import { handleCreatePage, handleUpdatePage, handleDeletePage, handleCreateNavigation, handleUpdateNavigation, handleDeleteNavigation, StorageValidationError } from './handlers';
+import type { StorageAdapter, Page, Navigation, CreatePageInput, UpdatePageInput, CreateNavigationInput, UpdateNavigationInput } from './types';
 
 const testDate = new Date('2025-01-15T10:00:00Z');
 
@@ -234,6 +234,164 @@ describe('handleDeletePage', () => {
 
     try {
       await handleDeletePage(adapter, '');
+    } catch (error) {
+      expect(error).toBeInstanceOf(StorageValidationError);
+      expect((error as StorageValidationError).code).toBe('EMPTY_ID');
+    }
+  });
+});
+
+const navDate = new Date('2025-02-01T12:00:00Z');
+
+function createMockNavigationAdapter(
+  navigations: Navigation[]
+): StorageAdapter {
+  const base = createMockStorageAdapter({});
+  return {
+    ...base,
+    listNavigations: async () => navigations,
+    createNavigation: async (input: CreateNavigationInput) => ({
+      id: 'new-nav-id',
+      name: input.name,
+      items: input.items,
+      updatedAt: navDate,
+    }),
+    updateNavigation: async (input: UpdateNavigationInput) => {
+      const existing = navigations.find((n) => n.id === input.id);
+      if (!existing) throw new Error('Navigation not found');
+      return {
+        ...existing,
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.items !== undefined ? { items: input.items } : {}),
+        updatedAt: navDate,
+      };
+    },
+    deleteNavigation: async () => {},
+  };
+}
+
+describe('handleCreateNavigation', () => {
+  it('should create a navigation', async () => {
+    const adapter = createMockNavigationAdapter([]);
+    const result = await handleCreateNavigation(adapter, {
+      name: 'main',
+      items: [{ label: 'Home', href: '/' }],
+    });
+
+    expect(result.name).toBe('main');
+    expect(result.items).toHaveLength(1);
+  });
+
+  it('should throw on empty name', async () => {
+    const adapter = createMockNavigationAdapter([]);
+
+    await expect(
+      handleCreateNavigation(adapter, { name: '', items: [] })
+    ).rejects.toThrow('Navigation name must not be empty');
+
+    await expect(
+      handleCreateNavigation(adapter, { name: '   ', items: [] })
+    ).rejects.toThrow('Navigation name must not be empty');
+  });
+
+  it('should throw on duplicate name', async () => {
+    const adapter = createMockNavigationAdapter([
+      { id: 'nav-1', name: 'main', items: [], updatedAt: navDate },
+    ]);
+
+    await expect(
+      handleCreateNavigation(adapter, { name: 'main', items: [] })
+    ).rejects.toThrow('Navigation name "main" is already in use');
+  });
+
+  it('should throw StorageValidationError with correct code', async () => {
+    const adapter = createMockNavigationAdapter([]);
+
+    try {
+      await handleCreateNavigation(adapter, { name: '', items: [] });
+    } catch (error) {
+      expect(error).toBeInstanceOf(StorageValidationError);
+      expect((error as StorageValidationError).code).toBe('EMPTY_NAME');
+    }
+  });
+});
+
+describe('handleUpdateNavigation', () => {
+  const existingNav: Navigation = {
+    id: 'nav-1',
+    name: 'main',
+    items: [{ label: 'Home', href: '/' }],
+    updatedAt: navDate,
+  };
+
+  it('should update a navigation', async () => {
+    const adapter = createMockNavigationAdapter([existingNav]);
+    const result = await handleUpdateNavigation(adapter, {
+      id: 'nav-1',
+      items: [{ label: 'Home', href: '/' }, { label: 'About', href: '/about' }],
+    });
+
+    expect(result.items).toHaveLength(2);
+  });
+
+  it('should validate name uniqueness on update', async () => {
+    const adapter = createMockNavigationAdapter([
+      existingNav,
+      { id: 'nav-2', name: 'footer', items: [], updatedAt: navDate },
+    ]);
+
+    await expect(
+      handleUpdateNavigation(adapter, { id: 'nav-1', name: 'footer' })
+    ).rejects.toThrow('Navigation name "footer" is already in use');
+  });
+
+  it('should allow keeping the same name', async () => {
+    const adapter = createMockNavigationAdapter([existingNav]);
+
+    const result = await handleUpdateNavigation(adapter, {
+      id: 'nav-1',
+      name: 'main',
+    });
+
+    expect(result.name).toBe('main');
+  });
+
+  it('should throw on empty ID', async () => {
+    const adapter = createMockNavigationAdapter([]);
+
+    await expect(
+      handleUpdateNavigation(adapter, { id: '', name: 'test' })
+    ).rejects.toThrow('Navigation ID must not be empty');
+  });
+
+  it('should throw on empty name', async () => {
+    const adapter = createMockNavigationAdapter([existingNav]);
+
+    await expect(
+      handleUpdateNavigation(adapter, { id: 'nav-1', name: '' })
+    ).rejects.toThrow('Navigation name must not be empty');
+  });
+});
+
+describe('handleDeleteNavigation', () => {
+  it('should delete a navigation by ID', async () => {
+    const adapter = createMockNavigationAdapter([]);
+    await expect(handleDeleteNavigation(adapter, 'nav-1')).resolves.toBeUndefined();
+  });
+
+  it('should throw on empty ID', async () => {
+    const adapter = createMockNavigationAdapter([]);
+
+    await expect(handleDeleteNavigation(adapter, '')).rejects.toThrow(
+      'Navigation ID must not be empty'
+    );
+  });
+
+  it('should throw StorageValidationError with correct code', async () => {
+    const adapter = createMockNavigationAdapter([]);
+
+    try {
+      await handleDeleteNavigation(adapter, '');
     } catch (error) {
       expect(error).toBeInstanceOf(StorageValidationError);
       expect((error as StorageValidationError).code).toBe('EMPTY_ID');

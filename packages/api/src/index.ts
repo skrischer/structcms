@@ -19,6 +19,9 @@ export {
   handleCreatePage,
   handleUpdatePage,
   handleDeletePage,
+  handleCreateNavigation,
+  handleUpdateNavigation,
+  handleDeleteNavigation,
   StorageValidationError,
 } from './storage';
 
