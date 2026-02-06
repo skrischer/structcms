@@ -183,7 +183,7 @@
         "Returns { status: 'seeded' }",
         "Idempotent: can be called after reset"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Admin Pages",

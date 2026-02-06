@@ -413,3 +413,35 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Test Seed Endpoint
+
+**Selected because:** Last task in Route Handlers group. Required for E2E test setup.
+
+### Plan
+
+**Files to create:**
+- `app/api/cms/__test__/seed/route.ts` - POST to insert seed data
+
+**Approach:**
+1. Import runSeed from seed-runner
+2. Call runSeed() and return result
+3. Return { status: 'seeded' }
+
+**Acceptance Criteria:**
+- [x] Calls runSeed() from seed-runner
+- [x] Returns { status: 'seeded' }
+- [x] Idempotent: can be called after reset
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/api/cms/__test__/seed/route.ts created
+- Calls runSeed() and returns status with result details
+
+---
+
