@@ -271,7 +271,7 @@
         "resetOnly() calls only reset endpoint",
         "BASE_URL configurable"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Tests",

@@ -676,3 +676,35 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Test Helpers
+
+**Selected because:** Next task in E2E Tests group. Playwright Config ✅ complete. Required by all E2E tests.
+
+### Plan
+
+**Files to create:**
+- `e2e/helpers.ts` - Reset and seed utilities
+
+**Approach:**
+1. Create resetAndSeed() that calls reset then seed endpoints
+2. Create resetOnly() that calls only reset endpoint
+3. Make BASE_URL configurable via env or default
+
+**Acceptance Criteria:**
+- [x] resetAndSeed() calls reset then seed endpoints
+- [x] resetOnly() calls only reset endpoint
+- [x] BASE_URL configurable
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- e2e/helpers.ts created with resetAndSeed(), resetOnly(), seedOnly()
+- BASE_URL configurable via env or default
+
+---
+
