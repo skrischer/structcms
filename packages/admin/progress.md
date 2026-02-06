@@ -518,3 +518,45 @@ _No tasks in progress._
   - `src/components/content/page-list.tsx` - PageList component
   - `src/components/content/__tests__/page-list.test.tsx` - 13 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Navigation Editor Component
+
+**Task:** Editor for navigation items with nested structure support.
+
+**Acceptance Criteria:**
+1. Displays navigation items as list
+2. Edit label and href for each item
+3. Add/remove items
+4. Support nested children (one level)
+5. Save button persists changes
+6. Unit test: navigation editing
+
+**Plan:**
+- Create `src/components/content/navigation-editor.tsx` - NavigationEditor component
+- Write unit test `src/components/content/__tests__/navigation-editor.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/content/navigation-editor.tsx`
+- `src/components/content/__tests__/navigation-editor.test.tsx`
+
+**Approach:**
+- NavigationEditor accepts items (NavigationItem[]), onSave callback
+- Each item has label (string) and href (string) fields
+- Each item can have children (one level deep)
+- Add/Remove buttons for top-level and child items
+- Save button calls onSave with updated items
+- Uses Input, Button, Label components
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 139 tests passed (125 previous + 14 NavigationEditor)
+- Typecheck passed
+- Created files:
+  - `src/components/content/navigation-editor.tsx` - NavigationEditor component
+  - `src/components/content/__tests__/navigation-editor.test.tsx` - 14 unit tests
+- Updated `src/index.ts` with exports

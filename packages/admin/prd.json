@@ -233,7 +233,7 @@
         "Save button persists changes",
         "Unit test: navigation editing"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",
