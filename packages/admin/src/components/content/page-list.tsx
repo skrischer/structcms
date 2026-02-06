@@ -71,7 +71,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
     return () => {
       cancelled = true;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [api]);
 
   const filteredPages = React.useMemo(() => {
     let result = pages;

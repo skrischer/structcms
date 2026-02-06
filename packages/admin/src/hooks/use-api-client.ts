@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useAdmin } from './use-admin';
 
 /**
@@ -147,5 +148,5 @@ function createApiClient(baseUrl: string): ApiClient {
  */
 export function useApiClient(): ApiClient {
   const { apiBaseUrl } = useAdmin();
-  return createApiClient(apiBaseUrl);
+  return useMemo(() => createApiClient(apiBaseUrl), [apiBaseUrl]);
 }

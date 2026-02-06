@@ -67,7 +67,7 @@ function MediaBrowser({
 
   React.useEffect(() => {
     void fetchMedia(0, false);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchMedia]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;

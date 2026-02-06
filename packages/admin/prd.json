@@ -309,7 +309,7 @@
         "Existing tests still pass",
         "Typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Refactor",

@@ -771,3 +771,37 @@ _No tasks in progress._
   - `src/lib/form-generator.tsx` — added array/object cases + ArrayField/ObjectField/Input imports
   - `src/lib/__tests__/form-generator.test.tsx` — added 2 tests for array and object rendering
   - `src/components/inputs/array-field.tsx` — added `data-testid="array-field"` to wrapper
+
+---
+
+## Working on Memoize useApiClient
+
+**Task:** `createApiClient(apiBaseUrl)` is called on every render without memoization, causing `useCallback` dependencies on `api` to be ineffective and requiring `eslint-disable` comments.
+
+**Acceptance Criteria:**
+1. `createApiClient` wrapped in `useMemo` keyed on `apiBaseUrl`
+2. Remove `eslint-disable` comments in PageList and MediaBrowser
+3. Existing tests still pass
+4. Typecheck passes
+
+**Plan:**
+- Wrap `createApiClient(apiBaseUrl)` in `React.useMemo` inside `useApiClient()` hook
+- Import `useMemo` from React
+- Remove `eslint-disable-line react-hooks/exhaustive-deps` from `media-browser.tsx` line 70 and `page-list.tsx` line 74
+- Add `api` to the dependency arrays of those useEffects
+
+**Files to modify:**
+- `src/hooks/use-api-client.ts` — add useMemo
+- `src/components/media/media-browser.tsx` — remove eslint-disable, add api to deps
+- `src/components/content/page-list.tsx` — remove eslint-disable, add api to deps
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 189 tests passed
+- Typecheck passed
+- Modified files:
+  - `src/hooks/use-api-client.ts` — wrapped `createApiClient` in `useMemo` keyed on `apiBaseUrl`
+  - `src/components/media/media-browser.tsx` — removed `eslint-disable`, added `fetchMedia` to deps
+  - `src/components/content/page-list.tsx` — removed `eslint-disable`, added `api` to deps
