@@ -206,7 +206,7 @@
         "onSelectPage navigates to /pages/[slug]",
         "onCreatePage navigates to /pages/new"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Admin Pages",

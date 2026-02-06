@@ -480,3 +480,36 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Page List View
+
+**Selected because:** Next task in Admin Pages group. Admin Layout ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `app/(admin)/pages/page.tsx` - Page list view
+
+**Approach:**
+1. Import PageList from @structcms/admin
+2. Use useRouter for navigation
+3. onSelectPage navigates to /pages/[slug]
+4. onCreatePage navigates to /pages/new
+
+**Acceptance Criteria:**
+- [x] app/(admin)/pages/page.tsx renders PageList component
+- [x] onSelectPage navigates to /pages/[slug]
+- [x] onCreatePage navigates to /pages/new
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/(admin)/pages/page.tsx created with PageList component
+- Navigation handlers for select and create
+
+---
+
