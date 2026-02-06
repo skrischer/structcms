@@ -1,6 +1,6 @@
 import type { StorageAdapter, Page } from '../storage/types';
 import type { MediaAdapter } from '../media/types';
-import type { PageExportResponse, AllPagesExportResponse } from './types';
+import type { PageExportResponse, AllPagesExportResponse, NavigationExportResponse, AllNavigationsExportResponse } from './types';
 import { contentDisposition } from './types';
 import { resolveMediaReferences } from '../media/resolve';
 
@@ -73,5 +73,32 @@ export async function handleExportAllPages(
   return {
     data,
     contentDisposition: contentDisposition('pages-export.json'),
+  };
+}
+
+/**
+ * Handler for GET /api/cms/export/navigation
+ * Returns all navigation structures as JSON
+ */
+export async function handleExportNavigations(
+  storageAdapter: StorageAdapter
+): Promise<{ data: AllNavigationsExportResponse; contentDisposition: string }> {
+  const navigations = await storageAdapter.listNavigations();
+
+  const exported: NavigationExportResponse[] = navigations.map((nav) => ({
+    id: nav.id,
+    name: nav.name,
+    items: nav.items,
+    updatedAt: nav.updatedAt.toISOString(),
+  }));
+
+  const data: AllNavigationsExportResponse = {
+    navigations: exported,
+    exportedAt: new Date().toISOString(),
+  };
+
+  return {
+    data,
+    contentDisposition: contentDisposition('navigation-export.json'),
   };
 }

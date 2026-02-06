@@ -317,7 +317,7 @@
         "Content-Disposition header for download",
         "Integration test: export navigation"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Export",

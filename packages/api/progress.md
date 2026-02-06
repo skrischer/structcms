@@ -574,3 +574,40 @@ pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
 - Refactored shared `toPageExport()` helper to avoid duplication
 - `AllPagesExportResponse` includes `exportedAt` timestamp
 - Content-Disposition: `pages-export.json`
+
+---
+
+## Working on: Navigation Export
+
+**Selected because:** Next Export task, no media resolution needed (navigations don't contain media references).
+
+### Plan
+
+**Files to modify:**
+- `src/export/handlers.ts` - Add `handleExportNavigations` handler
+- `src/export/handlers.test.ts` - Add unit tests
+- `src/export/index.ts` - Export new handler
+- `src/index.ts` - Export from package entry point
+
+**Approach:**
+1. Create `handleExportNavigations(storageAdapter)` handler
+2. List all navigations, map to `NavigationExportResponse`, return `AllNavigationsExportResponse`
+3. Include `exportedAt` timestamp and Content-Disposition header
+4. Unit tests with mock adapter
+
+**Acceptance Criteria:**
+- [x] Returns array of all navigations
+- [x] Content-Disposition header for download
+- [x] Integration test: export navigation
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
+```
+
+**Result:** ✅ Success
+
+- 6 new unit tests (17 total in export handlers)
+- `handleExportNavigations(storageAdapter)` returns all navigations with nested items
+- `AllNavigationsExportResponse` includes `exportedAt` timestamp
+- Content-Disposition: `navigation-export.json`

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { handleExportPage, handleExportAllPages } from './handlers';
+import { handleExportPage, handleExportAllPages, handleExportNavigations } from './handlers';
 import type { StorageAdapter, Page } from '../storage/types';
 import type { MediaAdapter } from '../media/types';
 
@@ -248,6 +248,78 @@ describe('handleExportAllPages', () => {
     const result = await handleExportAllPages(emptyAdapter, mediaAdapter);
 
     expect(result.data.pages).toHaveLength(0);
+    expect(result.data.exportedAt).toBeDefined();
+  });
+});
+
+describe('handleExportNavigations', () => {
+  const navDate = new Date('2025-02-01T12:00:00Z');
+
+  const storageAdapter = createMockStorageAdapter({});
+  // Override listNavigations for this test suite
+  storageAdapter.listNavigations = async () => [
+    {
+      id: 'nav-1',
+      name: 'main',
+      items: [
+        { label: 'Home', href: '/' },
+        { label: 'About', href: '/about', children: [{ label: 'Team', href: '/about/team' }] },
+      ],
+      updatedAt: navDate,
+    },
+    {
+      id: 'nav-2',
+      name: 'footer',
+      items: [{ label: 'Privacy', href: '/privacy' }],
+      updatedAt: navDate,
+    },
+  ];
+
+  it('should return array of all navigations', async () => {
+    const result = await handleExportNavigations(storageAdapter);
+
+    expect(result.data.navigations).toHaveLength(2);
+    expect(result.data.navigations[0].name).toBe('main');
+    expect(result.data.navigations[1].name).toBe('footer');
+  });
+
+  it('should include navigation items with nested children', async () => {
+    const result = await handleExportNavigations(storageAdapter);
+
+    const mainNav = result.data.navigations[0];
+    expect(mainNav.items).toHaveLength(2);
+    expect(mainNav.items[1].children).toHaveLength(1);
+    expect(mainNav.items[1].children![0].label).toBe('Team');
+  });
+
+  it('should serialize dates as ISO strings', async () => {
+    const result = await handleExportNavigations(storageAdapter);
+
+    expect(result.data.navigations[0].updatedAt).toBe('2025-02-01T12:00:00.000Z');
+  });
+
+  it('should include exportedAt timestamp', async () => {
+    const before = new Date().toISOString();
+    const result = await handleExportNavigations(storageAdapter);
+    const after = new Date().toISOString();
+
+    expect(result.data.exportedAt >= before).toBe(true);
+    expect(result.data.exportedAt <= after).toBe(true);
+  });
+
+  it('should include Content-Disposition header', async () => {
+    const result = await handleExportNavigations(storageAdapter);
+
+    expect(result.contentDisposition).toBe(
+      'attachment; filename="navigation-export.json"'
+    );
+  });
+
+  it('should handle empty navigations list', async () => {
+    const emptyAdapter = createMockStorageAdapter({});
+    const result = await handleExportNavigations(emptyAdapter);
+
+    expect(result.data.navigations).toHaveLength(0);
     expect(result.data.exportedAt).toBeDefined();
   });
 });
