@@ -53,3 +53,14 @@ export {
   MediaValidationError,
   resolveMediaReferences,
 } from './media';
+
+export type {
+  PageExportResponse,
+  AllPagesExportResponse,
+  NavigationExportResponse,
+  AllNavigationsExportResponse,
+  SiteExportResponse,
+  MediaExportEntry,
+} from './export';
+
+export { contentDisposition, handleExportPage } from './export';

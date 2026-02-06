@@ -492,3 +492,46 @@ pnpm test --filter @structcms/api -- --run src/media/resolve.test.ts
 - UUID values resolved to public URLs, missing media → null
 - Nested objects supported, original sections not mutated
 - Files: `src/media/resolve.ts`, `src/media/resolve.test.ts`
+
+---
+
+## Working on: Single Page Export
+
+**Selected because:** First Export task, all dependencies met (StorageAdapter, MediaAdapter, resolveMediaReferences).
+
+### Plan
+
+**Files to create:**
+- `src/export/types.ts` - Export response types
+- `src/export/handlers.ts` - handleExportPage handler
+- `src/export/handlers.test.ts` - Unit tests with mock adapters
+- `src/export/index.ts` - Barrel export
+
+**Files to modify:**
+- `src/index.ts` - Export from package entry point
+
+**Approach:**
+1. Define `PageExportResponse` type (full page data with resolved media URLs, ISO dates)
+2. Create `handleExportPage(storageAdapter, mediaAdapter, slug)` handler
+3. Fetch page by slug, resolve media references in sections, return export response
+4. Include `contentDisposition` helper for download header generation
+5. Unit tests with mock StorageAdapter and MediaAdapter
+
+**Acceptance Criteria:**
+- [x] Returns full page data as JSON
+- [x] Media references resolved to URLs
+- [x] Content-Disposition header for download
+- [x] Integration test: export single page
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
+```
+
+**Result:** ✅ Success
+
+- 6 unit tests passing (mock adapters)
+- `handleExportPage(storageAdapter, mediaAdapter, slug)` returns page with resolved media
+- `contentDisposition()` helper for download headers
+- Export types defined for future tasks (AllPagesExport, NavigationExport, SiteExport)
+- Files: `src/export/types.ts`, `src/export/handlers.ts`, `src/export/handlers.test.ts`, `src/export/index.ts`
