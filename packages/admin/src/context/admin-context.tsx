@@ -2,6 +2,7 @@
 
 import { createContext, type ReactNode } from 'react';
 import { type Registry } from '@structcms/core';
+import { ToastProvider } from '../components/ui/toast';
 
 /**
  * Configuration for the Admin context
@@ -52,6 +53,8 @@ export function AdminProvider({
   };
 
   return (
-    <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
+    <AdminContext.Provider value={value}>
+      <ToastProvider>{children}</ToastProvider>
+    </AdminContext.Provider>
   );
 }

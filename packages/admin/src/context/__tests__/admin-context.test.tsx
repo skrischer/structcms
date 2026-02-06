@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { AdminProvider } from '../admin-context';
 import { useAdmin } from '../../hooks/use-admin';
 import { useApiClient } from '../../hooks/use-api-client';
+import { useToast } from '../../components/ui/toast';
 import type { Registry } from '@structcms/core';
 
 function createMockRegistry(): Registry {
@@ -110,5 +112,31 @@ describe('useApiClient', () => {
     expect(screen.getByTestId('has-post').textContent).toBe('yes');
     expect(screen.getByTestId('has-put').textContent).toBe('yes');
     expect(screen.getByTestId('has-delete').textContent).toBe('yes');
+  });
+});
+
+function ToastConsumer() {
+  const { toast } = useToast();
+  return (
+    <button data-testid="trigger-toast" onClick={() => toast('Hello', 'success')}>
+      Toast
+    </button>
+  );
+}
+
+describe('Toast integration in AdminProvider', () => {
+  it('useToast works inside AdminProvider without separate ToastProvider', async () => {
+    const mockRegistry = createMockRegistry();
+    const user = userEvent.setup();
+
+    render(
+      <AdminProvider registry={mockRegistry}>
+        <ToastConsumer />
+      </AdminProvider>
+    );
+
+    await user.click(screen.getByTestId('trigger-toast'));
+
+    expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 });

@@ -841,3 +841,36 @@ _No tasks in progress._
   - `src/components/layout/admin-layout.tsx` — renamed `NavItem` to `SidebarNavItem`
   - `src/index.ts` — removed `NavItem` export, added `SidebarNavItem` export
   - `src/components/content/__tests__/navigation-editor.test.tsx` — updated type references
+
+---
+
+## Working on Integrate Toast into AdminProvider
+
+**Task:** ToastProvider is separate from AdminProvider. No component uses toast for feedback. Consumer must manually nest providers.
+
+**Acceptance Criteria:**
+1. AdminProvider wraps ToastProvider internally
+2. useToast() works inside AdminProvider without extra nesting
+3. Existing tests still pass
+
+**Plan:**
+- In `admin-context.tsx`: import `ToastProvider`, wrap `children` with `<ToastProvider>`
+- Existing AdminProvider tests need to verify `useToast()` works inside AdminProvider
+- Add one test: render component using `useToast()` inside `AdminProvider` without separate `ToastProvider`
+
+**Files to modify:**
+- `src/context/admin-context.tsx` — wrap children with ToastProvider
+- `src/context/__tests__/admin-context.test.tsx` — add test for useToast inside AdminProvider
+
+**Challenge:**
+- Must not break existing tests that may already wrap with ToastProvider separately
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 190 tests passed (189 previous + 1 toast integration test)
+- Typecheck passed
+- Modified files:
+  - `src/context/admin-context.tsx` — wrapped children with `<ToastProvider>`
+  - `src/context/__tests__/admin-context.test.tsx` — added toast integration test
