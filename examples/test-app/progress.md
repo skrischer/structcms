@@ -266,3 +266,47 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Pages Route Handlers
+
+**Selected because:** First task in Route Handlers group. All dependencies met (Adapters ✅). Required by Admin Pages and E2E Tests.
+
+### Plan
+
+**Files to create:**
+- `app/api/cms/pages/route.ts` - GET (list) and POST (create)
+- `app/api/cms/pages/[slug]/route.ts` - GET, PUT, DELETE by slug
+
+**Approach:**
+1. Create app/api/cms/pages/route.ts with:
+   - GET: handleListPages(storageAdapter)
+   - POST: handleCreatePage(storageAdapter, data)
+2. Create app/api/cms/pages/[slug]/route.ts with:
+   - GET: handleGetPageBySlug(storageAdapter, slug)
+   - PUT: handleUpdatePage(storageAdapter, data)
+   - DELETE: handleDeletePage(storageAdapter, id)
+
+**Potential challenges:**
+- Need to get page ID for update/delete (fetch by slug first)
+- Error handling for not found cases
+
+**Acceptance Criteria:**
+- [x] GET /api/cms/pages returns page list via handleListPages
+- [x] POST /api/cms/pages creates page via handleCreatePage
+- [x] GET /api/cms/pages/[slug] returns single page
+- [x] PUT /api/cms/pages/[slug] updates page via handleUpdatePage
+- [x] DELETE /api/cms/pages/[slug] deletes page via handleDeletePage
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/api/cms/pages/route.ts created (GET list, POST create)
+- app/api/cms/pages/[slug]/route.ts created (GET, PUT, DELETE by slug)
+- Proper error handling with 404 for not found, 400 for bad request
+
+---
+

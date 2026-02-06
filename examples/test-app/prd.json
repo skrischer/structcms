@@ -139,7 +139,7 @@
         "PUT /api/cms/pages/[slug] updates page via handleUpdatePage",
         "DELETE /api/cms/pages/[slug] deletes page via handleDeletePage"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Route Handlers",
