@@ -891,3 +891,48 @@ pnpm --filter @structcms/api typecheck
 - Removed `generateSlug`/`ensureUniqueSlug` imports from `supabase-adapter.ts`
 - Updated integration tests: "auto-generated slug" → "provided slug", "ensure unique slugs" → "reject duplicate slugs", added explicit slug to sections test
 - 103 tests passing, typecheck clean
+
+---
+
+## Working on: Consistent Comment Style
+
+**Selected because:** Last remaining task. Cosmetic but improves codebase consistency.
+
+### Plan
+
+**Reference pattern:** `media/` domain (no trailing periods, JSDoc on interface methods, no section separators)
+
+**Files to modify:**
+- `src/storage/handlers.ts` — Remove trailing periods from JSDoc
+- `src/storage/types.ts` — Add JSDoc to `StorageAdapter` interface methods, remove section separators
+- `src/storage/supabase-adapter.ts` — Remove `// ====== ... ======` section separators
+
+**Changes:**
+1. `handlers.ts`: Remove trailing periods from 8 JSDoc lines
+2. `types.ts`: Replace `// Page operations` / `// Navigation operations` with JSDoc on each method
+3. `supabase-adapter.ts`: Remove `// ==================== ... ====================` separators
+
+**Not in scope:**
+- `utils/slug.ts` `@param`/`@returns` tags — these are fine as-is, more detailed docs on utility functions is acceptable
+- Row mapper placement — Finding #2, no action required
+
+**Acceptance Criteria:**
+- [x] storage/handlers.ts JSDoc without trailing periods
+- [x] StorageAdapter interface methods have JSDoc comments
+- [x] Section separators removed from supabase-adapter.ts
+- [x] All existing tests still pass
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Removed trailing periods from 8 JSDoc lines in `storage/handlers.ts`
+- Added JSDoc to all 12 `StorageAdapter` interface methods in `types.ts`
+- Removed trailing periods from interface-level JSDoc in `types.ts`
+- Removed 2 section separators (`// ====== ... ======`) from `supabase-adapter.ts`
+- `getAllSlugs` was already removed in previous cycle — N/A
+- 103 tests passing, typecheck clean

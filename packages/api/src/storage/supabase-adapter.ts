@@ -91,8 +91,6 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     this.client = config.client;
   }
 
-  // ==================== Page Operations ====================
-
   async getPage(slug: string): Promise<Page | null> {
     const { data, error } = await this.client
       .from('pages')
@@ -215,8 +213,6 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
     return (data as PageRow[]).map(mapPageRowToPage);
   }
-
-  // ==================== Navigation Operations ====================
 
   async getNavigation(name: string): Promise<Navigation | null> {
     const { data, error } = await this.client

@@ -416,7 +416,7 @@
         "getAllSlugs (if still present) has JSDoc",
         "All existing tests still pass"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

@@ -87,23 +87,43 @@ export interface UpdateNavigationInput {
 }
 
 /**
- * Storage adapter interface for page and navigation persistence.
- * This interface is Supabase-agnostic to allow future portability.
+ * Storage adapter interface for page and navigation persistence
+ * This interface is Supabase-agnostic to allow future portability
  */
 export interface StorageAdapter {
-  // Page operations
+  /** Get a page by its slug */
   getPage(slug: string): Promise<Page | null>;
+
+  /** Get a page by its ID */
   getPageById(id: string): Promise<Page | null>;
+
+  /** Create a new page */
   createPage(input: CreatePageInput): Promise<Page>;
+
+  /** Update an existing page */
   updatePage(input: UpdatePageInput): Promise<Page>;
+
+  /** Delete a page by ID */
   deletePage(id: string): Promise<void>;
+
+  /** List pages with optional filtering and pagination */
   listPages(filter?: PageFilter): Promise<Page[]>;
 
-  // Navigation operations
+  /** Get a navigation by its name */
   getNavigation(name: string): Promise<Navigation | null>;
+
+  /** Get a navigation by its ID */
   getNavigationById(id: string): Promise<Navigation | null>;
+
+  /** Create a new navigation */
   createNavigation(input: CreateNavigationInput): Promise<Navigation>;
+
+  /** Update an existing navigation */
   updateNavigation(input: UpdateNavigationInput): Promise<Navigation>;
+
+  /** Delete a navigation by ID */
   deleteNavigation(id: string): Promise<void>;
+
+  /** List all navigations */
   listNavigations(): Promise<Navigation[]>;
 }

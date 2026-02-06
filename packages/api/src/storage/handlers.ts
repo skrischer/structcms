@@ -15,8 +15,8 @@ export class StorageValidationError extends Error {
 }
 
 /**
- * Handler for creating a new page.
- * Generates a slug from the title if not provided and ensures uniqueness.
+ * Handler for creating a new page
+ * Generates a slug from the title if not provided and ensures uniqueness
  */
 export async function handleCreatePage(
   adapter: StorageAdapter,
@@ -50,7 +50,7 @@ export async function handleCreatePage(
 }
 
 /**
- * Handler for updating an existing page.
+ * Handler for updating an existing page
  */
 export async function handleUpdatePage(
   adapter: StorageAdapter,
@@ -97,7 +97,7 @@ export async function handleUpdatePage(
 }
 
 /**
- * Handler for deleting a page by ID.
+ * Handler for deleting a page by ID
  */
 export async function handleDeletePage(
   adapter: StorageAdapter,
@@ -114,8 +114,8 @@ export async function handleDeletePage(
 }
 
 /**
- * Handler for creating a new navigation.
- * Validates that the name is non-empty and unique.
+ * Handler for creating a new navigation
+ * Validates that the name is non-empty and unique
  */
 export async function handleCreateNavigation(
   adapter: StorageAdapter,
@@ -143,7 +143,7 @@ export async function handleCreateNavigation(
 }
 
 /**
- * Handler for updating an existing navigation.
+ * Handler for updating an existing navigation
  */
 export async function handleUpdateNavigation(
   adapter: StorageAdapter,
@@ -183,7 +183,7 @@ export async function handleUpdateNavigation(
 }
 
 /**
- * Handler for deleting a navigation by ID.
+ * Handler for deleting a navigation by ID
  */
 export async function handleDeleteNavigation(
   adapter: StorageAdapter,
