@@ -273,7 +273,7 @@
         "useToast() hook for triggering notifications",
         "Unit test: loading and error states render correctly"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Testing",

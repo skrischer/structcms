@@ -644,3 +644,52 @@ _No tasks in progress._
   - `src/components/layout/admin-layout.tsx` - AdminLayout component
   - `src/components/layout/__tests__/admin-layout.test.tsx` - 14 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Loading and Error States
+
+**Task:** Reusable components for loading indicators and error handling with toast notifications.
+
+**Acceptance Criteria:**
+1. Skeleton components for content loading
+2. Toast notifications for success/error feedback
+3. Error boundary for component-level errors
+4. useToast() hook for triggering notifications
+5. Unit test: loading and error states render correctly
+
+**Plan:**
+- Create `src/components/ui/skeleton.tsx` - Skeleton loading component
+- Create `src/components/ui/toast.tsx` - Toast notification component + useToast hook
+- Create `src/components/ui/error-boundary.tsx` - ErrorBoundary component
+- Write unit tests for all three
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/ui/skeleton.tsx`
+- `src/components/ui/toast.tsx`
+- `src/components/ui/error-boundary.tsx`
+- `src/components/ui/__tests__/skeleton.test.tsx`
+- `src/components/ui/__tests__/toast.test.tsx`
+- `src/components/ui/__tests__/error-boundary.test.tsx`
+
+**Approach:**
+- Skeleton: simple div with pulse animation, configurable width/height
+- Toast: context-based toast system with ToastProvider, useToast hook, auto-dismiss
+- ErrorBoundary: class component catching render errors, fallback UI
+- All using Tailwind + cn() utility
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 186 tests passed (167 previous + 5 Skeleton + 9 Toast + 5 ErrorBoundary)
+- Typecheck passed
+- Created files:
+  - `src/components/ui/skeleton.tsx` - Skeleton loading component
+  - `src/components/ui/toast.tsx` - ToastProvider + useToast hook
+  - `src/components/ui/error-boundary.tsx` - ErrorBoundary component
+  - `src/components/ui/__tests__/skeleton.test.tsx` - 5 unit tests
+  - `src/components/ui/__tests__/toast.test.tsx` - 9 unit tests
+  - `src/components/ui/__tests__/error-boundary.test.tsx` - 5 unit tests
+- Updated `src/index.ts` with exports
