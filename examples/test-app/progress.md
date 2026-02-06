@@ -345,3 +345,38 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Media Route Handlers
+
+**Selected because:** Next task in Route Handlers group. All dependencies met (Adapters ✅).
+
+### Plan
+
+**Files to create:**
+- `app/api/cms/media/route.ts` - GET (list) and POST (upload)
+- `app/api/cms/media/[id]/route.ts` - DELETE by id
+
+**Approach:**
+1. Create app/api/cms/media/route.ts with:
+   - GET: handleListMedia(mediaAdapter)
+   - POST: handleUploadMedia(mediaAdapter, data)
+2. Create app/api/cms/media/[id]/route.ts with:
+   - DELETE: handleDeleteMedia(mediaAdapter, id)
+
+**Acceptance Criteria:**
+- [x] GET /api/cms/media returns media list via handleListMedia
+- [x] POST /api/cms/media uploads file via handleUploadMedia
+- [x] DELETE /api/cms/media/[id] deletes media via handleDeleteMedia
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/api/cms/media/route.ts created (GET list, POST upload with FormData)
+- app/api/cms/media/[id]/route.ts created (DELETE by id)
+
+---
+

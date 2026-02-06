@@ -160,7 +160,7 @@
         "POST /api/cms/media uploads file via handleUploadMedia",
         "DELETE /api/cms/media/[id] deletes media via handleDeleteMedia"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Route Handlers",
