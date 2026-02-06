@@ -17,4 +17,5 @@ export { PageEditor, type PageEditorProps } from './components/editors/page-edit
 export { PageList, type PageListProps, type PageSummary } from './components/content/page-list';
 export { NavigationEditor, type NavigationEditorProps, type NavItem } from './components/content/navigation-editor';
 export { MediaBrowser, type MediaBrowserProps, type MediaItem } from './components/media/media-browser';
+export { AdminLayout, type AdminLayoutProps } from './components/layout/admin-layout';
 export { cn } from './lib/utils';

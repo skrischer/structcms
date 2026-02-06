@@ -603,3 +603,44 @@ _No tasks in progress._
   - `src/components/media/media-browser.tsx` - MediaBrowser component
   - `src/components/media/__tests__/media-browser.test.tsx` - 14 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Admin Layout Shell
+
+**Task:** Admin layout with sidebar navigation, header, and content area.
+
+**Acceptance Criteria:**
+1. Sidebar with links: Pages, Navigation, Media
+2. Header with app title
+3. Responsive: sidebar collapses on mobile
+4. Uses shadcn/ui components and Tailwind
+5. Unit test: layout renders correctly
+
+**Plan:**
+- Create `src/components/layout/admin-layout.tsx` - AdminLayout component
+- Write unit test `src/components/layout/__tests__/admin-layout.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/layout/admin-layout.tsx`
+- `src/components/layout/__tests__/admin-layout.test.tsx`
+
+**Approach:**
+- AdminLayout accepts children, optional title, optional navItems
+- Default nav items: Pages, Navigation, Media
+- Sidebar with nav links, header with app title
+- Mobile: toggle button to show/hide sidebar
+- Uses Button, cn() utility, Tailwind classes
+- onNavigate callback for link clicks (routing handled by consumer)
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 167 tests passed (153 previous + 14 AdminLayout)
+- Typecheck passed
+- Created files:
+  - `src/components/layout/admin-layout.tsx` - AdminLayout component
+  - `src/components/layout/__tests__/admin-layout.test.tsx` - 14 unit tests
+- Updated `src/index.ts` with exports
