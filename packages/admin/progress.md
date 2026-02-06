@@ -216,3 +216,48 @@ _No tasks in progress._
   - `src/components/inputs/__tests__/rich-text-editor.test.tsx` - 10 unit tests
 - Updated `src/index.ts` with exports
 - Installed dependencies: @tiptap/react, @tiptap/starter-kit, @tiptap/extension-link, @tiptap/pm
+
+---
+
+## Working on Image Picker Component
+
+**Task:** Component for image fields that opens MediaBrowser for selection.
+
+**Acceptance Criteria:**
+1. Shows current image preview if selected
+2. Button to open MediaBrowser modal
+3. Stores media ID or URL in form
+4. Clear button to remove selection
+5. Unit test: selection flow
+
+**Plan:**
+- Create `src/components/ui/button.tsx` - shadcn/ui Button component (needed for actions)
+- Create `src/components/inputs/image-picker.tsx` - ImagePicker component
+- Write unit test `src/components/inputs/__tests__/image-picker.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/ui/button.tsx`
+- `src/components/inputs/image-picker.tsx`
+- `src/components/inputs/__tests__/image-picker.test.tsx`
+
+**Approach:**
+- ImagePicker accepts value (URL string), onChange, onBrowse (callback to open MediaBrowser)
+- Shows image preview when value is set
+- "Browse" button triggers onBrowse callback (MediaBrowser integration comes later)
+- "Clear" button sets value to empty string
+- Uses Label for accessibility
+
+**Note:** MediaBrowser modal integration will be done when MediaBrowser component is implemented. For now, onBrowse is a callback prop.
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 47 tests passed (5 AdminProvider + 10 StringInput + 10 TextInput + 10 RichTextEditor + 12 ImagePicker)
+- Typecheck passed
+- Created files:
+  - `src/components/ui/button.tsx` - shadcn/ui Button component
+  - `src/components/inputs/image-picker.tsx` - ImagePicker component
+  - `src/components/inputs/__tests__/image-picker.test.tsx` - 12 unit tests
+- Updated `src/index.ts` with exports
