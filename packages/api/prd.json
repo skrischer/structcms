@@ -342,6 +342,55 @@
         "Media backup considerations documented"
       ],
       "passes": true
+    },
+    {
+      "group": "Refactor",
+      "feature": "Export Cosmetic Fixes",
+      "description": "Fix inline import in export/types.ts, extract toNavigationExport helper, move contentDisposition into handlers.ts",
+      "acceptance_criteria": [
+        "No inline imports in export/types.ts",
+        "contentDisposition moved out of types.ts into handlers.ts",
+        "Shared toNavigationExport() helper eliminates duplication",
+        "All existing tests still pass"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Refactor",
+      "feature": "Remove Dead Code",
+      "description": "Delete unused storage/supabase-client.ts",
+      "acceptance_criteria": [
+        "supabase-client.ts removed",
+        "No remaining imports of supabase-client",
+        "All existing tests still pass"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Storage Page Handlers",
+      "description": "Add handler functions for page CRUD (create, update, delete) with validation and slug handling",
+      "acceptance_criteria": [
+        "handleCreatePage with slug generation and validation",
+        "handleUpdatePage with validation",
+        "handleDeletePage",
+        "Unit tests with mock adapter",
+        "Exported from storage/index.ts and package entry point"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Storage",
+      "feature": "Storage Navigation Handlers",
+      "description": "Add handler functions for navigation CRUD (create, update, delete) with validation",
+      "acceptance_criteria": [
+        "handleCreateNavigation with validation",
+        "handleUpdateNavigation with validation",
+        "handleDeleteNavigation",
+        "Unit tests with mock adapter",
+        "Exported from storage/index.ts and package entry point"
+      ],
+      "passes": false
     }
   ]
 }

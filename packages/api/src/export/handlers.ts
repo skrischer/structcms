@@ -1,8 +1,14 @@
-import type { StorageAdapter, Page } from '../storage/types';
+import type { StorageAdapter, Page, Navigation } from '../storage/types';
 import type { MediaAdapter } from '../media/types';
 import type { PageExportResponse, AllPagesExportResponse, NavigationExportResponse, AllNavigationsExportResponse, SiteExportResponse, MediaExportEntry } from './types';
-import { contentDisposition } from './types';
 import { resolveMediaReferences } from '../media/resolve';
+
+/**
+ * Generates a Content-Disposition header value for file download
+ */
+function contentDisposition(filename: string): string {
+  return `attachment; filename="${filename}"`;
+}
 
 /**
  * Converts a Page to a PageExportResponse with resolved media references
@@ -77,6 +83,18 @@ export async function handleExportAllPages(
 }
 
 /**
+ * Converts a Navigation to a NavigationExportResponse
+ */
+function toNavigationExport(nav: Navigation): NavigationExportResponse {
+  return {
+    id: nav.id,
+    name: nav.name,
+    items: nav.items,
+    updatedAt: nav.updatedAt.toISOString(),
+  };
+}
+
+/**
  * Handler for GET /api/cms/export/navigation
  * Returns all navigation structures as JSON
  */
@@ -85,15 +103,8 @@ export async function handleExportNavigations(
 ): Promise<{ data: AllNavigationsExportResponse; contentDisposition: string }> {
   const navigations = await storageAdapter.listNavigations();
 
-  const exported: NavigationExportResponse[] = navigations.map((nav) => ({
-    id: nav.id,
-    name: nav.name,
-    items: nav.items,
-    updatedAt: nav.updatedAt.toISOString(),
-  }));
-
   const data: AllNavigationsExportResponse = {
-    navigations: exported,
+    navigations: navigations.map(toNavigationExport),
     exportedAt: new Date().toISOString(),
   };
 
@@ -120,12 +131,7 @@ export async function handleExportSite(
 
   // Export navigations
   const navigations = await storageAdapter.listNavigations();
-  const exportedNavigations: NavigationExportResponse[] = navigations.map((nav) => ({
-    id: nav.id,
-    name: nav.name,
-    items: nav.items,
-    updatedAt: nav.updatedAt.toISOString(),
-  }));
+  const exportedNavigations = navigations.map(toNavigationExport);
 
   // Export media metadata
   const mediaFiles = await mediaAdapter.listMedia();

@@ -683,3 +683,46 @@ pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
 - Full export JSON format documented
 - Restore strategy for pages, navigations, and media
 - Media backup considerations (Storage vs DB, URL stability, allowed types)
+
+---
+
+## Working on: Export Cosmetic Fixes
+
+**Selected because:** Low-risk refactor that cleans up the export domain before adding new handler patterns.
+
+### Plan
+
+**Files to modify:**
+- `src/export/types.ts` - Fix inline import, remove `contentDisposition` function
+- `src/export/handlers.ts` - Move `contentDisposition` here, extract `toNavigationExport()` helper
+- `src/export/index.ts` - Update re-exports (contentDisposition now from handlers)
+- `src/index.ts` - Update re-export if needed
+
+**Approach:**
+1. Replace inline `import('../storage/types').NavigationItem[]` with top-level import
+2. Move `contentDisposition()` from `types.ts` into `handlers.ts` (private, not exported)
+3. Remove `contentDisposition` from barrel exports since it becomes an internal helper
+4. Extract `toNavigationExport()` helper to eliminate duplication between `handleExportNavigations` and `handleExportSite`
+
+**Potential challenges:**
+- `contentDisposition` is currently re-exported from `index.ts` and `export/index.ts` — need to check if anything external depends on it
+
+**Acceptance Criteria:**
+- [x] No inline imports in export/types.ts
+- [x] contentDisposition moved out of types.ts into handlers.ts
+- [x] Shared toNavigationExport() helper eliminates duplication
+- [x] All existing tests still pass
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Replaced inline `import()` with top-level import of `NavigationItem`
+- Moved `contentDisposition()` from `types.ts` to private function in `handlers.ts`
+- Removed `contentDisposition` from barrel exports (internal-only now)
+- Extracted `toNavigationExport()` helper, used in both `handleExportNavigations` and `handleExportSite`
+- 24 tests still passing, typecheck clean

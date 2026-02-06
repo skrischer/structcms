@@ -1,4 +1,4 @@
-import type { PageSection } from '../storage/types';
+import type { PageSection, NavigationItem } from '../storage/types';
 
 /**
  * Export response for a single page with resolved media URLs
@@ -27,7 +27,7 @@ export interface AllPagesExportResponse {
 export interface NavigationExportResponse {
   id: string;
   name: string;
-  items: import('../storage/types').NavigationItem[];
+  items: NavigationItem[];
   updatedAt: string;
 }
 
@@ -59,11 +59,4 @@ export interface MediaExportEntry {
   mimeType: string;
   size: number;
   createdAt: string;
-}
-
-/**
- * Generates a Content-Disposition header value for file download
- */
-export function contentDisposition(filename: string): string {
-  return `attachment; filename="${filename}"`;
 }
