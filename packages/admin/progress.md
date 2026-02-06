@@ -170,3 +170,49 @@ _No tasks in progress._
   - `src/components/inputs/text-input.tsx` - TextInput component
   - `src/components/inputs/__tests__/text-input.test.tsx` - 10 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on RichText Editor Component
+
+**Task:** WYSIWYG editor for richtext fields using TipTap.
+
+**Acceptance Criteria:**
+1. Integrates TipTap editor
+2. Supports bold, italic, links, lists, headings
+3. Outputs HTML string
+4. Styled to match shadcn/ui design
+5. Unit test: editor renders and outputs HTML
+
+**Plan:**
+- Install TipTap dependencies: @tiptap/react, @tiptap/starter-kit, @tiptap/extension-link
+- Create `src/components/inputs/rich-text-editor.tsx` - RichTextEditor component
+- Write unit test `src/components/inputs/__tests__/rich-text-editor.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/inputs/rich-text-editor.tsx`
+- `src/components/inputs/__tests__/rich-text-editor.test.tsx`
+
+**Approach:**
+- RichTextEditor follows same pattern as other inputs (label, error, required)
+- Uses TipTap with StarterKit (bold, italic, lists, headings) + Link extension
+- Toolbar with buttons for formatting
+- Outputs HTML via editor.getHTML()
+- Uses forwardRef pattern but with controlled value/onChange
+
+**Challenges:**
+- TipTap testing requires special setup (mocking contenteditable)
+- Need to install TipTap dependencies first
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 35 tests passed (5 AdminProvider + 10 StringInput + 10 TextInput + 10 RichTextEditor)
+- Typecheck passed
+- Created files:
+  - `src/components/inputs/rich-text-editor.tsx` - RichTextEditor component with TipTap
+  - `src/components/inputs/__tests__/rich-text-editor.test.tsx` - 10 unit tests
+- Updated `src/index.ts` with exports
+- Installed dependencies: @tiptap/react, @tiptap/starter-kit, @tiptap/extension-link, @tiptap/pm

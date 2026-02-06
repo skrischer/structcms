@@ -127,7 +127,7 @@
         "Styled to match shadcn/ui design",
         "Unit test: editor renders and outputs HTML"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Field Inputs",
