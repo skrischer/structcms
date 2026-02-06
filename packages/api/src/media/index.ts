@@ -23,3 +23,5 @@ export {
   handleDeleteMedia,
   MediaValidationError,
 } from './handlers';
+
+export { resolveMediaReferences } from './resolve';

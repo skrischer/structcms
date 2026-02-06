@@ -51,4 +51,5 @@ export {
   handleListMedia,
   handleDeleteMedia,
   MediaValidationError,
+  resolveMediaReferences,
 } from './media';

@@ -438,3 +438,57 @@ SUPABASE_URL=... SUPABASE_SECRET_KEY=... pnpm test --filter @structcms/api -- --
 - MIME type validation with `MediaValidationError`
 - Files: `src/media/handlers.ts`, `src/media/handlers.test.ts`
 - Exports added to `src/media/index.ts` and `src/index.ts`
+
+---
+
+## Batch: Media List Endpoint, Media Delete Endpoint, Media Integration Tests
+
+**All three tasks were already implemented and tested in the Media Upload Endpoint cycle.**
+
+- `handleListMedia`: Returns MediaFile[], supports pagination (limit, offset), ordered by created_at DESC
+- `handleDeleteMedia`: Deletes from Supabase Storage + DB, throws MediaError for not found
+- Integration tests: 9 tests covering upload, rejection, list, pagination, delete
+
+**Result:** ✅ All three marked as passing (already verified)
+
+---
+
+## Working on: Media Reference Resolution
+
+**Selected because:** Last remaining Media task. Required by Export tasks that need media URLs resolved.
+
+### Plan
+
+**Files to create:**
+- `src/media/resolve.ts` - resolveMediaReferences function
+- `src/media/resolve.test.ts` - Unit tests
+
+**Files to modify:**
+- `src/media/index.ts` - Export resolve function
+- `src/index.ts` - Export resolve function from package
+
+**Approach:**
+1. Create `resolveMediaReferences(sections, adapter)` that walks PageSection data
+2. Any field value matching a media ID pattern (UUID) gets resolved to a public URL via adapter.getMedia()
+3. Missing media returns null gracefully
+4. Pure unit tests with mock adapter (no Supabase needed)
+
+**Acceptance Criteria:**
+- [x] image fields store media ID or path
+- [x] Delivery API resolves to public URL
+- [x] Handles missing media gracefully (null or placeholder)
+- [x] Unit test: resolution logic
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/media/resolve.test.ts
+```
+
+**Result:** ✅ Success
+
+- 11 unit tests passing (mock adapter, no Supabase needed)
+- `resolveMediaReferences(sections, adapter)` walks PageSection data
+- Convention-based: fields named image, media, photo, thumbnail, avatar, icon (+ _image, _media suffixes)
+- UUID values resolved to public URLs, missing media → null
+- Nested objects supported, original sections not mutated
+- Files: `src/media/resolve.ts`, `src/media/resolve.test.ts`

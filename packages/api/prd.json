@@ -246,7 +246,7 @@
         "Ordered by created_at descending",
         "Integration test: list with pagination"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",
@@ -258,7 +258,7 @@
         "Returns 404 if not found",
         "Integration test: delete flow"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",
@@ -270,7 +270,7 @@
         "Handles missing media gracefully (null or placeholder)",
         "Unit test: resolution logic"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",
@@ -282,7 +282,7 @@
         "Test list and pagination",
         "Test delete removes file and record"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Export",
