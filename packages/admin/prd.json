@@ -357,7 +357,7 @@
         "Unit test: reset clears error state",
         "Existing ErrorBoundary tests still pass"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Refactor",

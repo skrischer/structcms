@@ -1,9 +1,11 @@
 import * as React from 'react';
+import { Button } from './button';
 import { cn } from '../../lib/utils';
 
 export interface ErrorBoundaryProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
+  onReset?: () => void;
   className?: string;
 }
 
@@ -35,6 +37,11 @@ class ErrorBoundary extends React.Component<
     return { hasError: true, error };
   }
 
+  handleReset = () => {
+    this.setState({ hasError: false, error: null });
+    this.props.onReset?.();
+  };
+
   override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
@@ -56,6 +63,16 @@ class ErrorBoundary extends React.Component<
           <p className="text-sm text-muted-foreground">
             {this.state.error?.message ?? 'An unexpected error occurred'}
           </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-3"
+            onClick={this.handleReset}
+            data-testid="error-boundary-retry"
+          >
+            Retry
+          </Button>
         </div>
       );
     }

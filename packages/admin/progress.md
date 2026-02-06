@@ -914,3 +914,36 @@ _No tasks in progress._
   - `src/components/editors/section-editor.tsx` — pass `onChange` to FormGenerator for live sync
   - `src/components/editors/__tests__/section-editor.test.tsx` — updated tests for auto-sync behavior
   - `src/components/editors/__tests__/page-editor.test.tsx` — added auto-sync capture test
+
+---
+
+## Working on ErrorBoundary Reset Mechanism
+
+**Task:** ErrorBoundary has no reset mechanism. User must reload the page after an error.
+
+**Acceptance Criteria:**
+1. Default error UI includes a Retry button
+2. Retry resets error state and re-renders children
+3. Optional `onReset` callback prop
+4. Unit test: reset clears error state
+5. Existing ErrorBoundary tests still pass
+
+**Plan:**
+- Add `onReset?: () => void` to `ErrorBoundaryProps`
+- Add `handleReset()` method that sets state back to `{ hasError: false, error: null }` and calls `onReset` if provided
+- Add a "Retry" Button to the default error UI that calls `handleReset()`
+- Add tests: click Retry → children re-render, onReset callback is called
+
+**Files to modify:**
+- `src/components/ui/error-boundary.tsx` — add reset mechanism + Retry button
+- `src/components/ui/__tests__/error-boundary.test.tsx` — add reset tests
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 192 tests passed (189 previous + 3 new ErrorBoundary reset tests)
+- Typecheck passed
+- Modified files:
+  - `src/components/ui/error-boundary.tsx` — added `onReset` prop, `handleReset()` method, Retry button
+  - `src/components/ui/__tests__/error-boundary.test.tsx` — added 3 tests for Retry button, reset, and onReset callback
