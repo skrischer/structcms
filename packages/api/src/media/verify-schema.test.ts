@@ -1,18 +1,19 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { type Database } from '../types/database.types';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SECRET_KEY;
 
 describe('Media Table Schema', () => {
-  let supabase: ReturnType<typeof createClient>;
+  let supabase: SupabaseClient<Database>;
 
   beforeAll(() => {
     if (!supabaseUrl || !supabaseKey) {
       console.warn('Skipping schema tests: Missing Supabase credentials');
       return;
     }
-    supabase = createClient(supabaseUrl, supabaseKey);
+    supabase = createClient<Database>(supabaseUrl, supabaseKey);
   });
 
   it.skipIf(!supabaseUrl || !supabaseKey)(
@@ -34,16 +35,16 @@ describe('Media Table Schema', () => {
 
       expect(insertError).toBeNull();
       expect(inserted).toBeDefined();
-      expect(inserted.id).toBeDefined();
-      expect(inserted.filename).toBe(`${testId}.jpg`);
-      expect(inserted.storage_path).toBe(`media/${testId}.jpg`);
-      expect(inserted.mime_type).toBe('image/jpeg');
-      expect(inserted.size).toBe(1024);
-      expect(inserted.created_at).toBeDefined();
-      expect(inserted.updated_at).toBeDefined();
+      expect(inserted!.id).toBeDefined();
+      expect(inserted!.filename).toBe(`${testId}.jpg`);
+      expect(inserted!.storage_path).toBe(`media/${testId}.jpg`);
+      expect(inserted!.mime_type).toBe('image/jpeg');
+      expect(inserted!.size).toBe(1024);
+      expect(inserted!.created_at).toBeDefined();
+      expect(inserted!.updated_at).toBeDefined();
 
       // Cleanup
-      await supabase.from('media').delete().eq('id', inserted.id);
+      await supabase.from('media').delete().eq('id', inserted!.id);
     }
   );
 
@@ -64,12 +65,12 @@ describe('Media Table Schema', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data.id).toMatch(
+      expect(data!.id).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
       );
 
       // Cleanup
-      await supabase.from('media').delete().eq('id', data.id);
+      await supabase.from('media').delete().eq('id', data!.id);
     }
   );
 
@@ -79,7 +80,7 @@ describe('Media Table Schema', () => {
       const testId = `test-update-${Date.now()}`;
 
       // Insert
-      const { data: inserted } = await supabase
+      const { data: insertedData } = await supabase
         .from('media')
         .insert({
           filename: `${testId}.gif`,
@@ -94,19 +95,19 @@ describe('Media Table Schema', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Update
-      const { data: updated } = await supabase
+      const { data: updatedData } = await supabase
         .from('media')
         .update({ filename: `${testId}-updated.gif` })
-        .eq('id', inserted.id)
+        .eq('id', insertedData!.id)
         .select()
         .single();
 
-      expect(new Date(updated.updated_at).getTime()).toBeGreaterThan(
-        new Date(inserted.updated_at).getTime()
+      expect(new Date(updatedData!.updated_at).getTime()).toBeGreaterThan(
+        new Date(insertedData!.updated_at).getTime()
       );
 
       // Cleanup
-      await supabase.from('media').delete().eq('id', inserted.id);
+      await supabase.from('media').delete().eq('id', insertedData!.id);
     }
   );
 });

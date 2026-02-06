@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
+import { type Database } from '../types/database.types';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SECRET_KEY;
@@ -15,7 +16,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should exist and have correct columns',
       async () => {
-        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
 
         // Try to select from pages table - will fail if table doesn't exist
         const { error } = await supabase.from('pages').select('*').limit(0);
@@ -27,7 +28,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should enforce unique slug constraint',
       async () => {
-        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
         const testSlug = `test-unique-${Date.now()}`;
 
         // Insert first page
@@ -59,7 +60,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should auto-generate UUID and timestamps',
       async () => {
-        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
         const testSlug = `test-auto-${Date.now()}`;
 
         const { data, error } = await supabase
@@ -90,7 +91,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should store sections as JSONB',
       async () => {
-        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
         const testSlug = `test-jsonb-${Date.now()}`;
         const testSections = [
           { id: 'section-1', type: 'hero', data: { title: 'Hello' } },
@@ -121,7 +122,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should exist and have correct columns',
       async () => {
-        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
 
         const { error } = await supabase
           .from('navigation')
@@ -135,7 +136,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should enforce unique name constraint',
       async () => {
-        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
         const testName = `test-nav-${Date.now()}`;
 
         // Insert first navigation
@@ -167,7 +168,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should store items as JSONB',
       async () => {
-        const supabase = createClient(supabaseUrl!, supabaseKey!);
+        const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
         const testName = `test-nav-jsonb-${Date.now()}`;
         const testItems = [
           { label: 'Home', href: '/' },

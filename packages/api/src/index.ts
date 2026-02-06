@@ -46,4 +46,9 @@ export {
   SupabaseMediaAdapter,
   createMediaAdapter,
   MediaError,
+  handleUploadMedia,
+  handleGetMedia,
+  handleListMedia,
+  handleDeleteMedia,
+  MediaValidationError,
 } from './media';

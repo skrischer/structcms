@@ -395,3 +395,46 @@ SUPABASE_URL=... SUPABASE_SECRET_KEY=... pnpm test --filter @structcms/api -- --
 - Public URLs generated via Supabase Storage API
 - Files: `src/media/supabase-adapter.ts`, `src/media/supabase-adapter.test.ts`
 - Exports: `SupabaseMediaAdapter`, `createMediaAdapter`, `MediaError`
+
+---
+
+## Working on: Media Upload Endpoint
+
+**Selected because:** All dependencies met. Required for admin media management.
+
+### Plan
+
+**Files to create:**
+- `src/media/handlers.ts` - handleUploadMedia handler function
+- `src/media/handlers.test.ts` - Integration tests
+
+**Files to modify:**
+- `src/media/index.ts` - Export handler
+- `src/index.ts` - Export handler from package
+
+**Approach:**
+1. Create `handleUploadMedia(adapter, input)` handler function
+2. Validate MIME type against ALLOWED_MIME_TYPES
+3. Call adapter.upload() and return MediaFile
+4. Integration test with real Supabase
+
+**Acceptance Criteria:**
+- [x] Accepts multipart/form-data file upload
+- [x] Validates file type (jpg, jpeg, png, gif, webp, svg)
+- [x] Stores file in Supabase Storage
+- [x] Creates media record in database
+- [x] Returns MediaFile with public URL
+- [x] Integration test: upload flow
+
+**Verification:**
+```bash
+SUPABASE_URL=... SUPABASE_SECRET_KEY=... pnpm test --filter @structcms/api -- --run src/media/handlers.test.ts
+```
+
+**Result:** ✅ Success
+
+- 9 integration tests passing
+- Handlers: `handleUploadMedia`, `handleGetMedia`, `handleListMedia`, `handleDeleteMedia`
+- MIME type validation with `MediaValidationError`
+- Files: `src/media/handlers.ts`, `src/media/handlers.test.ts`
+- Exports added to `src/media/index.ts` and `src/index.ts`

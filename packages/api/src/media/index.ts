@@ -15,3 +15,11 @@ export {
   createMediaAdapter,
   MediaError,
 } from './supabase-adapter';
+
+export {
+  handleUploadMedia,
+  handleGetMedia,
+  handleListMedia,
+  handleDeleteMedia,
+  MediaValidationError,
+} from './handlers';

@@ -23,6 +23,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
+    "gen:types": "npx supabase gen types typescript --project-id arwaynscjejiwpcurnjs > src/types/database.types.ts",
     "test": "vitest"
   },
   "dependencies": {

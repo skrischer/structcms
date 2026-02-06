@@ -234,7 +234,7 @@
         "Returns MediaFile with public URL",
         "Integration test: upload flow"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Media",
