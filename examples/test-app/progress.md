@@ -743,3 +743,35 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Edit Section Test
+
+**Selected because:** Next task in E2E Tests group. Create Page Test ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `e2e/edit-section.spec.ts` - E2E test for editing an existing section
+
+**Approach:**
+1. Seed database with test data
+2. Navigate to /pages/home, edit hero title
+3. Save and verify via API that data persisted
+
+**Acceptance Criteria:**
+- [x] Seed a page with hero section
+- [x] Navigate to /pages/[slug], edit hero title
+- [x] Save and verify via API that data persisted
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- e2e/edit-section.spec.ts created
+- Tests editing hero section with API verification
+
+---
+

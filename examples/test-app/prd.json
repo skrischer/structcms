@@ -294,7 +294,7 @@
         "Navigate to /pages/[slug], edit hero title",
         "Save and verify via API that data persisted"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Tests",
