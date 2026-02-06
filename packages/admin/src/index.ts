@@ -13,4 +13,5 @@ export { Label, type LabelProps } from './components/ui/label';
 export { Button, type ButtonProps, buttonVariants } from './components/ui/button';
 export { FormGenerator, type FormGeneratorProps, resolveFieldType, fieldNameToLabel } from './lib/form-generator';
 export { SectionEditor, type SectionEditorProps } from './components/editors/section-editor';
+export { PageEditor, type PageEditorProps } from './components/editors/page-editor';
 export { cn } from './lib/utils';

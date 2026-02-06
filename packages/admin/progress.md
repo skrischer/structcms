@@ -429,3 +429,45 @@ _No tasks in progress._
   - `src/components/editors/section-editor.tsx` - SectionEditor component
   - `src/components/editors/__tests__/section-editor.test.tsx` - 9 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Page Editor Component
+
+**Task:** Full page editor with multiple sections, add/remove/reorder sections using buttons.
+
+**Acceptance Criteria:**
+1. Displays list of sections with SectionEditor for each
+2. Add Section button with section type selector
+3. Remove button on each section
+4. Up/Down buttons for section reordering
+5. Save button triggers onSave callback
+6. Unit test: section management operations
+
+**Plan:**
+- Create `src/components/editors/page-editor.tsx` - PageEditor component
+- Write unit test `src/components/editors/__tests__/page-editor.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/editors/page-editor.tsx`
+- `src/components/editors/__tests__/page-editor.test.tsx`
+
+**Approach:**
+- PageEditor accepts sections (SectionData[]), allowedSections (string[]), onSave callback
+- Renders each section with SectionEditor
+- Add Section button with select dropdown for section type
+- Remove/Up/Down buttons per section (reuses pattern from ArrayField)
+- Save button triggers onSave with all section data
+- Uses useAdmin() for registry access
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 112 tests passed (100 previous + 12 PageEditor)
+- Typecheck passed
+- Created files:
+  - `src/components/editors/page-editor.tsx` - PageEditor component
+  - `src/components/editors/__tests__/page-editor.test.tsx` - 12 unit tests
+- Updated `src/index.ts` with exports
