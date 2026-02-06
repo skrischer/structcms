@@ -102,7 +102,7 @@
         "Supports required/optional indicator",
         "Unit test: renders and validates correctly"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Field Inputs",

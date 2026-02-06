@@ -76,3 +76,57 @@ _No tasks in progress._
   - `vitest.config.ts` - Vitest config for jsdom environment
 - Updated `src/index.ts` with exports
 - Installed dev dependencies: @testing-library/react, @testing-library/dom, jsdom
+
+---
+
+## Working on String Input Component
+
+**Task:** Text input component for string fields with label, placeholder, validation error display.
+
+**Acceptance Criteria:**
+1. Renders shadcn/ui Input component
+2. Displays label and optional placeholder
+3. Shows validation errors below input
+4. Supports required/optional indicator
+5. Unit test: renders and validates correctly
+
+**Plan:**
+- Create `src/lib/utils.ts` with `cn()` utility for Tailwind class merging
+- Create `src/components/ui/input.tsx` - shadcn/ui Input component
+- Create `src/components/ui/label.tsx` - shadcn/ui Label component
+- Create `src/components/inputs/string-input.tsx` - StringInput component
+- Write unit test `src/components/inputs/__tests__/string-input.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/lib/utils.ts`
+- `src/components/ui/input.tsx`
+- `src/components/ui/label.tsx`
+- `src/components/inputs/string-input.tsx`
+- `src/components/inputs/__tests__/string-input.test.tsx`
+
+**Approach:**
+- StringInput wraps shadcn Input with label, error display, and required indicator
+- Props: name, label, placeholder, error, required, and standard input props
+- Uses React Hook Form's register pattern (forwardRef)
+- Styled with Tailwind CSS
+
+**Challenges:**
+- Need to install tailwind-merge, clsx, class-variance-authority first
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 15 tests passed (5 AdminProvider + 10 StringInput)
+- Typecheck passed
+- Created files:
+  - `src/lib/utils.ts` - cn() utility for Tailwind class merging
+  - `src/components/ui/input.tsx` - shadcn/ui Input component
+  - `src/components/ui/label.tsx` - shadcn/ui Label component
+  - `src/components/inputs/string-input.tsx` - StringInput component
+  - `src/components/inputs/__tests__/string-input.test.tsx` - 10 unit tests
+  - `src/test/setup.ts` - Vitest setup for jest-dom matchers
+- Updated `src/index.ts` with exports
+- Updated `vitest.config.ts` with setupFiles
+- Installed dependencies: tailwind-merge, clsx, class-variance-authority, @testing-library/user-event, @testing-library/jest-dom
