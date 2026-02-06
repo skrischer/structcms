@@ -152,3 +152,42 @@ pnpm --filter test-app typecheck
 
 ---
 
+## Working on: Supabase Adapters
+
+**Selected because:** Next logical step in Lib group. Seed Data, Seed Runner, and all Route Handlers depend on these adapters.
+
+### Plan
+
+**Files to create:**
+- `lib/adapters.ts` - Supabase client and adapter exports
+
+**Approach:**
+1. Import createClient from @supabase/supabase-js
+2. Import createStorageAdapter, createMediaAdapter from @structcms/api
+3. Create Supabase client from SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars
+4. Export storageAdapter and mediaAdapter
+
+**Potential challenges:**
+- Environment variables must be available at runtime (server-side only)
+- Need to check @structcms/api export signatures
+
+**Acceptance Criteria:**
+- [x] Supabase client created from env variables
+- [x] storageAdapter exported using createStorageAdapter
+- [x] mediaAdapter exported using createMediaAdapter
+- [x] Adapters work with existing Supabase test instance
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- lib/adapters.ts created with Supabase client and adapters
+- Environment variable validation at module load
+- storageAdapter and mediaAdapter exported
+
+---
+

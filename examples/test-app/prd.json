@@ -91,7 +91,7 @@
         "mediaAdapter exported using createMediaAdapter",
         "Adapters work with existing Supabase test instance"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Lib",
