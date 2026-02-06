@@ -874,3 +874,43 @@ _No tasks in progress._
 - Modified files:
   - `src/context/admin-context.tsx` — wrapped children with `<ToastProvider>`
   - `src/context/__tests__/admin-context.test.tsx` — added toast integration test
+
+---
+
+## Working on SectionEditor Auto-Sync in PageEditor
+
+**Task:** Each SectionEditor has its own submit button via FormGenerator. Unsubmitted section changes are silently lost when "Save Page" is clicked.
+
+**Acceptance Criteria:**
+1. Section data syncs to PageEditor on field change (onChange/onBlur)
+2. Save Page captures all current section data without per-section submit
+3. Existing PageEditor tests updated accordingly
+4. Unit test: unsaved section data is included in Save Page
+
+**Plan:**
+- Add optional `onChange` callback to `FormGeneratorProps` that fires on every field change via `useForm.watch()`
+- When `onChange` is provided, hide the submit button (no per-section submit needed)
+- Update `SectionEditor` to pass `onChange` to FormGenerator instead of relying on `onSubmit`
+- PageEditor already has `handleSectionChange` — SectionEditor's `onChange` will call it on every field change
+- Add test: type into a section field, click Save Page without submitting the section, verify onSave includes the typed data
+
+**Files to modify:**
+- `src/lib/form-generator.tsx` — add `onChange` prop, use `watch()` to sync
+- `src/components/editors/section-editor.tsx` — pass `onChange` to FormGenerator
+- `src/components/editors/__tests__/page-editor.test.tsx` — add auto-sync test
+
+**Challenge:**
+- `watch()` fires on every keystroke — need to debounce or use `useEffect` with watch subscription
+- Must not break existing FormGenerator usage (standalone forms still need submit button)
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 189 tests passed (190 previous - 4 obsolete submit-based SectionEditor tests + 3 new tests)
+- Typecheck passed
+- Modified files:
+  - `src/lib/form-generator.tsx` — added `onChange` prop with `watch()` subscription, hide submit when `onChange` set
+  - `src/components/editors/section-editor.tsx` — pass `onChange` to FormGenerator for live sync
+  - `src/components/editors/__tests__/section-editor.test.tsx` — updated tests for auto-sync behavior
+  - `src/components/editors/__tests__/page-editor.test.tsx` — added auto-sync capture test

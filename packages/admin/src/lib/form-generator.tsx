@@ -57,6 +57,7 @@ function fieldNameToLabel(name: string): string {
 export interface FormGeneratorProps<T extends z.ZodObject<z.ZodRawShape>> {
   schema: T;
   onSubmit: (data: z.infer<T>) => void;
+  onChange?: (data: z.infer<T>) => void;
   defaultValues?: DefaultValues<z.infer<T>>;
   submitLabel?: string;
   className?: string;
@@ -83,6 +84,7 @@ export interface FormGeneratorProps<T extends z.ZodObject<z.ZodRawShape>> {
 function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
   schema,
   onSubmit,
+  onChange,
   defaultValues,
   submitLabel = 'Submit',
   className,
@@ -91,11 +93,20 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
     defaultValues,
   });
+
+  React.useEffect(() => {
+    if (!onChange) return;
+    const subscription = watch((values) => {
+      onChange(values as z.infer<T>);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, onChange]);
 
   const shape = schema.shape as Record<string, z.ZodTypeAny>;
 
@@ -252,9 +263,11 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       {Object.entries(shape).map(([fieldName, fieldSchema]) =>
         renderField(fieldName, fieldSchema)
       )}
-      <Button type="submit" data-testid="form-submit">
-        {submitLabel}
-      </Button>
+      {!onChange && (
+        <Button type="submit" data-testid="form-submit">
+          {submitLabel}
+        </Button>
+      )}
     </form>
   );
 }

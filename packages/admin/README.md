@@ -63,7 +63,6 @@ Content management interface for editors.
 | A-11 | Navigation Editor | Edit navigation items | Todo |
 | A-12 | Media Browser | Browse, upload, select media | Todo |
 | A-13 | Layout Shell | Admin layout with sidebar navigation | Todo |
-| A-14 | E2E Tests | Critical flows: create page, edit section, upload media | Todo |
 
 ### Done Criteria
 

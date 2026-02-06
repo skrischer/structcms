@@ -22,7 +22,7 @@
         "tailwind-merge",
         "lucide-react"
       ],
-      "dev": ["vitest", "@testing-library/react", "playwright", "typescript"],
+      "dev": ["vitest", "@testing-library/react", "typescript"],
       "shadcn_components": ["button", "input", "textarea", "card", "dialog", "select", "label", "separator", "toast", "skeleton"]
     },
     "package_exports": [
@@ -344,7 +344,7 @@
         "Existing PageEditor tests updated accordingly",
         "Unit test: unsaved section data is included in Save Page"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Refactor",

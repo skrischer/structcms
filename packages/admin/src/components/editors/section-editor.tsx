@@ -58,6 +58,7 @@ function SectionEditor({
       <FormGenerator
         schema={section.schema as z.ZodObject<z.ZodRawShape>}
         onSubmit={onChange}
+        onChange={onChange}
         defaultValues={data}
         submitLabel={submitLabel}
       />

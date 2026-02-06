@@ -223,4 +223,30 @@ describe('PageEditor', () => {
 
     expect(screen.getByTestId('page-editor')).toHaveClass('custom-class');
   });
+
+  it('captures unsaved section data when Save Page is clicked', async () => {
+    const handleSave = vi.fn();
+    const user = userEvent.setup();
+    const sections: SectionData[] = [
+      { type: 'hero', data: { title: '', subtitle: '' } },
+    ];
+
+    renderWithProvider(
+      <PageEditor
+        sections={sections}
+        allowedSections={['hero', 'content']}
+        onSave={handleSave}
+      />
+    );
+
+    await user.type(screen.getByLabelText(/Title/), 'Auto-synced');
+    await user.click(screen.getByTestId('save-page'));
+
+    expect(handleSave).toHaveBeenCalledWith([
+      expect.objectContaining({
+        type: 'hero',
+        data: expect.objectContaining({ title: 'Auto-synced' }),
+      }),
+    ]);
+  });
 });

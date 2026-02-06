@@ -625,12 +625,12 @@ export const registry = createRegistry({
 
 ### Route Handlers
 
-Route handlers are thin wrappers around `@structcms/api` handler functions, injecting the mock adapters:
+Route handlers are thin wrappers around `@structcms/api` handler functions, injecting the adapters:
 
 ```typescript
 // app/api/cms/pages/route.ts
 import { handleListPages, handleCreatePage } from '@structcms/api';
-import { storageAdapter } from '@/lib/mock-storage-adapter';
+import { storageAdapter } from '@/lib/adapters';
 
 export async function GET() {
   const pages = await handleListPages(storageAdapter);

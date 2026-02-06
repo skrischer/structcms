@@ -67,7 +67,7 @@ describe('SectionEditor', () => {
     expect(screen.getByLabelText(/Title/)).toHaveValue('Hello');
   });
 
-  it('calls onChange with form data on submit', async () => {
+  it('calls onChange automatically on field change', async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();
 
@@ -80,34 +80,20 @@ describe('SectionEditor', () => {
     );
 
     await user.type(screen.getByLabelText(/Title/), 'New Title');
-    await user.click(screen.getByTestId('form-submit'));
 
     await waitFor(() => {
       expect(handleChange).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'New Title' }),
-        expect.anything()
+        expect.objectContaining({ title: 'New Title' })
       );
     });
   });
 
-  it('renders with custom submit label', () => {
-    renderWithProvider(
-      <SectionEditor
-        sectionType="hero"
-        onChange={() => {}}
-        submitLabel="Update"
-      />
-    );
-
-    expect(screen.getByText('Update')).toBeInTheDocument();
-  });
-
-  it('renders with default submit label', () => {
+  it('hides submit button when onChange auto-syncs', () => {
     renderWithProvider(
       <SectionEditor sectionType="hero" onChange={() => {}} />
     );
 
-    expect(screen.getByText('Save Section')).toBeInTheDocument();
+    expect(screen.queryByTestId('form-submit')).not.toBeInTheDocument();
   });
 
   it('applies custom className', () => {
@@ -120,23 +106,5 @@ describe('SectionEditor', () => {
     );
 
     expect(screen.getByTestId('section-editor')).toHaveClass('custom-class');
-  });
-
-  it('shows validation errors from Zod schema', async () => {
-    const user = userEvent.setup();
-
-    renderWithProvider(
-      <SectionEditor
-        sectionType="hero"
-        data={{ title: '', subtitle: '' }}
-        onChange={() => {}}
-      />
-    );
-
-    await user.click(screen.getByTestId('form-submit'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Title is required')).toBeInTheDocument();
-    });
   });
 });
