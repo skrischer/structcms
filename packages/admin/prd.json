@@ -247,7 +247,7 @@
         "Pagination or infinite scroll",
         "Unit test: browse and select flow"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Layout",

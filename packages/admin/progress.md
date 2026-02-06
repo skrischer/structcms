@@ -560,3 +560,46 @@ _No tasks in progress._
   - `src/components/content/navigation-editor.tsx` - NavigationEditor component
   - `src/components/content/__tests__/navigation-editor.test.tsx` - 14 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Media Browser Component
+
+**Task:** Browse, upload, and select media files.
+
+**Acceptance Criteria:**
+1. Grid display of uploaded media
+2. Upload button with file input
+3. Click to select (for Image Picker integration)
+4. Delete button on each media item
+5. Pagination or infinite scroll
+6. Unit test: browse and select flow
+
+**Plan:**
+- Create `src/components/media/media-browser.tsx` - MediaBrowser component
+- Write unit test `src/components/media/__tests__/media-browser.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/media/media-browser.tsx`
+- `src/components/media/__tests__/media-browser.test.tsx`
+
+**Approach:**
+- MediaBrowser fetches media from API via useApiClient (`/media`)
+- Grid layout for media items (thumbnail + filename)
+- Upload button with hidden file input
+- Click on item calls onSelect callback (for ImagePicker integration)
+- Delete button on each item calls API delete
+- Simple pagination with "Load More" button
+- Loading/error states
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 153 tests passed (139 previous + 14 MediaBrowser)
+- Typecheck passed
+- Created files:
+  - `src/components/media/media-browser.tsx` - MediaBrowser component
+  - `src/components/media/__tests__/media-browser.test.tsx` - 14 unit tests
+- Updated `src/index.ts` with exports

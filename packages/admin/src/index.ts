@@ -16,4 +16,5 @@ export { SectionEditor, type SectionEditorProps } from './components/editors/sec
 export { PageEditor, type PageEditorProps } from './components/editors/page-editor';
 export { PageList, type PageListProps, type PageSummary } from './components/content/page-list';
 export { NavigationEditor, type NavigationEditorProps, type NavItem } from './components/content/navigation-editor';
+export { MediaBrowser, type MediaBrowserProps, type MediaItem } from './components/media/media-browser';
 export { cn } from './lib/utils';
