@@ -115,7 +115,7 @@
         "seedNavigations array with main navigation including children",
         "Data covers all section types and nested structures"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Lib",

@@ -191,3 +191,40 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Seed Data Definitions
+
+**Selected because:** Next logical step in Lib group. Seed Runner depends on this. Data structures defined by Registry and API types.
+
+### Plan
+
+**Files to create:**
+- `lib/seed.ts` - Seed data arrays for pages and navigations
+
+**Approach:**
+1. Import CreatePageInput, CreateNavigationInput types from @structcms/api
+2. Create seedPages array with 3 pages:
+   - Home (landing): hero + content sections
+   - About Us (landing): hero + content sections
+   - Blog Post Example (blog): content section
+3. Create seedNavigations array with main navigation including nested children
+4. Export both arrays
+
+**Acceptance Criteria:**
+- [x] seedPages array with 3 pages (Home, About, Blog Post)
+- [x] seedNavigations array with main navigation including children
+- [x] Data covers all section types and nested structures
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- lib/seed.ts created with 3 pages (Home, About, Blog Post Example)
+- Main navigation with nested children (About > Our Team, Contact)
+- All section types covered: hero (title, subtitle, image), content (body richtext)
+
+---
+
