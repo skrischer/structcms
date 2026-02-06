@@ -228,3 +228,41 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Seed Runner
+
+**Selected because:** Last task in Lib group. All dependencies met (Adapters ✅, Seed Data ✅). Required by Test Reset/Seed Endpoints.
+
+### Plan
+
+**Files to create:**
+- `lib/seed-runner.ts` - runSeed() function
+
+**Approach:**
+1. Import storageAdapter from ./adapters
+2. Import seedPages, seedNavigations from ./seed
+3. Import handleCreatePage, handleCreateNavigation from @structcms/api
+4. Create runSeed() async function that:
+   - Creates all pages via handleCreatePage
+   - Creates all navigations via handleCreateNavigation
+   - Returns summary of created items
+5. Handle errors gracefully with try/catch
+
+**Acceptance Criteria:**
+- [x] runSeed() function creates pages and navigations via adapters
+- [x] Handles errors gracefully
+- [x] Can be called from API route or CLI
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- lib/seed-runner.ts created with runSeed() function
+- SeedResult interface for tracking created items and errors
+- Graceful error handling with try/catch per item
+
+---
+

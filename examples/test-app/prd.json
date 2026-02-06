@@ -126,7 +126,7 @@
         "Handles errors gracefully",
         "Can be called from API route or CLI"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Route Handlers",
