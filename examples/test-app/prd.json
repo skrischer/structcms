@@ -217,7 +217,7 @@
         "Page type selector available",
         "Save creates page and redirects to list"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Admin Pages",

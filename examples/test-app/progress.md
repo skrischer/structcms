@@ -513,3 +513,37 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Create Page View
+
+**Selected because:** Next task in Admin Pages group. Page List ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `app/(admin)/pages/new/page.tsx` - Create new page view
+
+**Approach:**
+1. Import PageEditor from @structcms/admin
+2. Import useApiClient for API calls
+3. Render PageEditor with empty initial data
+4. onSave creates page via API and redirects to list
+
+**Acceptance Criteria:**
+- [x] app/(admin)/pages/new/page.tsx renders PageEditor with empty data
+- [x] Page type selector available
+- [x] Save creates page and redirects to list
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/(admin)/pages/new/page.tsx created with PageEditor
+- Title, slug, and page type inputs
+- Page type selector from registry.getAllPageTypes()
+
+---
+
