@@ -613,3 +613,33 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Media View
+
+**Selected because:** Next task in Admin Pages group. Navigation View ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `app/(admin)/media/page.tsx` - Media browser view
+
+**Approach:**
+1. Render MediaBrowser component from @structcms/admin
+2. MediaBrowser handles upload, browse, delete internally via apiClient
+
+**Acceptance Criteria:**
+- [x] app/(admin)/media/page.tsx renders MediaBrowser component
+- [x] Upload, browse, delete functionality works
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- app/(admin)/media/page.tsx created
+- MediaBrowser component handles all functionality
+
+---
+

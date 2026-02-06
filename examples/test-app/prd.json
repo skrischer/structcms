@@ -249,7 +249,7 @@
         "app/(admin)/media/page.tsx renders MediaBrowser component",
         "Upload, browse, delete functionality works"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Tests",
