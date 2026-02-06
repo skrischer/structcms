@@ -726,3 +726,36 @@ pnpm --filter @structcms/api typecheck
 - Removed `contentDisposition` from barrel exports (internal-only now)
 - Extracted `toNavigationExport()` helper, used in both `handleExportNavigations` and `handleExportSite`
 - 24 tests still passing, typecheck clean
+
+---
+
+## Working on: Remove Dead Code
+
+**Selected because:** `supabase-client.ts` is unused dead code. Confirmed: no imports found in `src/`.
+
+### Plan
+
+**Files to delete:**
+- `src/storage/supabase-client.ts`
+
+**Approach:**
+1. Delete the file
+2. Verify no imports reference it (already confirmed)
+3. Run tests and typecheck
+
+**Acceptance Criteria:**
+- [x] supabase-client.ts removed
+- [x] No remaining imports of supabase-client
+- [x] All existing tests still pass
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Deleted `src/storage/supabase-client.ts`
+- No imports referenced it (confirmed via grep)
+- 76 tests passing, typecheck clean

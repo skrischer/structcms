@@ -9,7 +9,6 @@ This package provides the backend infrastructure:
 - Content CRUD operations
 - Delivery endpoints
 - Storage interface (Supabase-agnostic)
-- Auth interface (Supabase-agnostic)
 - Media upload, storage, and referencing
 - JSON export of content
 - Database backup strategy

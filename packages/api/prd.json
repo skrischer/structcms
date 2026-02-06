@@ -364,7 +364,7 @@
         "No remaining imports of supabase-client",
         "All existing tests still pass"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Storage",
