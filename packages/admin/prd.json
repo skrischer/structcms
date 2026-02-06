@@ -191,7 +191,7 @@
         "Emits onChange with updated section data",
         "Unit test: renders form for section type"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Editors",

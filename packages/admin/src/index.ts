@@ -12,4 +12,5 @@ export { Textarea, type TextareaProps } from './components/ui/textarea';
 export { Label, type LabelProps } from './components/ui/label';
 export { Button, type ButtonProps, buttonVariants } from './components/ui/button';
 export { FormGenerator, type FormGeneratorProps, resolveFieldType, fieldNameToLabel } from './lib/form-generator';
+export { SectionEditor, type SectionEditorProps } from './components/editors/section-editor';
 export { cn } from './lib/utils';

@@ -388,3 +388,44 @@ _No tasks in progress._
   - `src/lib/__tests__/form-generator.test.tsx` - 18 unit tests (6 resolveFieldType + 3 fieldNameToLabel + 9 FormGenerator)
 - Updated `src/index.ts` with exports
 - Installed dependencies: react-hook-form, @hookform/resolvers, zod
+
+---
+
+## Working on Section Editor Component
+
+**Task:** Component that renders form for a section based on its schema from registry.
+
+**Acceptance Criteria:**
+1. Accepts section type and data
+2. Looks up schema from registry
+3. Generates form using Form Generator
+4. Emits onChange with updated section data
+5. Unit test: renders form for section type
+
+**Plan:**
+- Create `src/components/editors/section-editor.tsx` - SectionEditor component
+- Write unit test `src/components/editors/__tests__/section-editor.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/editors/section-editor.tsx`
+- `src/components/editors/__tests__/section-editor.test.tsx`
+
+**Approach:**
+- SectionEditor accepts sectionType (string), data (Record<string, unknown>), onChange callback
+- Uses useAdmin() hook to get registry
+- Looks up section definition via registry.getSection(sectionType)
+- Passes section schema to FormGenerator
+- On form submit, calls onChange with updated data
+- Shows error if section type not found in registry
+
+**Verification:** `pnpm --filter @structcms/admin test run`
+
+**Result:** Success
+
+- All 100 tests passed (91 previous + 9 SectionEditor)
+- Typecheck passed
+- Created files:
+  - `src/components/editors/section-editor.tsx` - SectionEditor component
+  - `src/components/editors/__tests__/section-editor.test.tsx` - 9 unit tests
+- Updated `src/index.ts` with exports
