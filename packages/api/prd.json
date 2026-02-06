@@ -341,7 +341,7 @@
         "Guidance on restoring from export",
         "Media backup considerations documented"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

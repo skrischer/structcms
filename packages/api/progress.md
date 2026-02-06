@@ -650,3 +650,36 @@ pnpm test --filter @structcms/api -- --run src/export/handlers.test.ts
 - `handleExportSite(storageAdapter, mediaAdapter)` returns `{ pages, navigations, media, exportedAt }`
 - Pages with resolved media, navigations with nested items, media with URLs for download
 - Content-Disposition: `site-export.json`
+
+---
+
+## Working on: Backup Documentation
+
+**Selected because:** Last remaining task in the backlog. All export handlers are implemented.
+
+### Plan
+
+**Files to modify:**
+- `README.md` - Add Backup & Export section
+
+**Approach:**
+1. Add "Backup & Export" section to README after Database Migrations
+2. Document all export endpoints with curl examples
+3. Explain restore strategy
+4. Document media backup considerations
+
+**Acceptance Criteria:**
+- [x] README section on backup strategy
+- [x] Example curl commands for export
+- [x] Guidance on restoring from export
+- [x] Media backup considerations documented
+
+**Verification:** Manual review of README content
+
+**Result:** ✅ Success
+
+- Added "Backup & Export" section to README.md
+- Export endpoints table, route setup example, curl commands
+- Full export JSON format documented
+- Restore strategy for pages, navigations, and media
+- Media backup considerations (Storage vs DB, URL stability, allowed types)

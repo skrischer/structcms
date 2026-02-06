@@ -296,3 +296,132 @@ Creates the `media` table for storing media file metadata.
 - `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
 
 ---
+
+## Backup & Export
+
+All content can be exported as JSON via handler functions. The export includes resolved media URLs so that media files can be downloaded separately.
+
+### Export Endpoints
+
+Set up these routes in your host project using the exported handlers:
+
+| Endpoint | Handler | Description |
+|----------|---------|-------------|
+| `GET /api/cms/export/pages/:slug` | `handleExportPage` | Export a single page with resolved media |
+| `GET /api/cms/export/pages` | `handleExportAllPages` | Export all pages |
+| `GET /api/cms/export/navigation` | `handleExportNavigations` | Export all navigation structures |
+| `GET /api/cms/export` | `handleExportSite` | Full site export (pages + navigations + media metadata) |
+
+### Example: Setting Up Export Routes
+
+```typescript
+// app/api/cms/export/route.ts
+import { handleExportSite } from '@structcms/api';
+import { storageAdapter, mediaAdapter } from '@/lib/cms-adapters';
+
+export async function GET() {
+  const result = await handleExportSite(storageAdapter, mediaAdapter);
+  return new Response(JSON.stringify(result.data, null, 2), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Disposition': result.contentDisposition,
+    },
+  });
+}
+```
+
+### Example: curl Commands
+
+```bash
+# Export full site
+curl -H "Authorization: Bearer $TOKEN" \
+  https://your-site.com/api/cms/export \
+  -o site-export.json
+
+# Export single page
+curl -H "Authorization: Bearer $TOKEN" \
+  https://your-site.com/api/cms/export/pages/home \
+  -o home.json
+
+# Export all pages
+curl -H "Authorization: Bearer $TOKEN" \
+  https://your-site.com/api/cms/export/pages \
+  -o pages-export.json
+
+# Export navigations
+curl -H "Authorization: Bearer $TOKEN" \
+  https://your-site.com/api/cms/export/navigation \
+  -o navigation-export.json
+```
+
+### Export Format
+
+The full site export (`handleExportSite`) returns:
+
+```json
+{
+  "pages": [
+    {
+      "id": "uuid",
+      "slug": "home",
+      "pageType": "landing",
+      "title": "Home Page",
+      "sections": [
+        {
+          "id": "section-uuid",
+          "type": "hero",
+          "data": { "title": "Welcome", "image": "https://cdn.example.com/hero.jpg" }
+        }
+      ],
+      "createdAt": "2025-01-15T10:00:00.000Z",
+      "updatedAt": "2025-01-15T10:00:00.000Z"
+    }
+  ],
+  "navigations": [
+    {
+      "id": "uuid",
+      "name": "main",
+      "items": [{ "label": "Home", "href": "/" }],
+      "updatedAt": "2025-01-15T10:00:00.000Z"
+    }
+  ],
+  "media": [
+    {
+      "id": "uuid",
+      "filename": "hero.jpg",
+      "url": "https://cdn.example.com/hero.jpg",
+      "mimeType": "image/jpeg",
+      "size": 204800,
+      "createdAt": "2025-01-15T10:00:00.000Z"
+    }
+  ],
+  "exportedAt": "2025-06-01T12:00:00.000Z"
+}
+```
+
+### Restoring from Export
+
+To restore content from an export:
+
+1. **Pages:** Iterate over `pages` array and call `storageAdapter.createPage()` for each entry. Map the `sections` data directly — media URLs in sections are already resolved strings and will be stored as-is.
+
+2. **Navigations:** Iterate over `navigations` array and call `storageAdapter.createNavigation()` for each entry.
+
+3. **Media:** The `media` array contains metadata and public URLs. To fully restore media:
+   - Download each file from its `url`
+   - Re-upload via `mediaAdapter.upload()` with the original `filename` and `mimeType`
+   - Update any page sections that reference the old media URLs with the new ones
+
+### Media Backup Considerations
+
+- **Media files are stored in Supabase Storage**, not in the database. The export contains metadata and public URLs, not the file bytes.
+- **Download media files separately** using the URLs in the `media` array of the export. Example:
+  ```bash
+  # Download all media files from export
+  cat site-export.json | jq -r '.media[].url' | xargs -I {} curl -O {}
+  ```
+- **Supabase Storage has its own backup mechanisms.** For production, consider enabling Supabase's Point-in-Time Recovery for the database and using the Storage API for file backups.
+- **Allowed file types:** Only image files are accepted (`image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`).
+- **URL stability:** Media URLs depend on the Supabase project. If migrating to a different Supabase project, all media must be re-uploaded and references updated.
+
+---
