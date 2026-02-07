@@ -1120,3 +1120,42 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Frontend Layout Integration
+
+**Selected because:** Only open unblocked Frontend task. All dependencies met (Navigation Component ✅, Dynamic Page Rendering ✅).
+
+### Plan
+
+**Files to modify:**
+- `app/layout.tsx` — Load navigation data via handleGetNavigation, render Navigation component in header
+- `app/page.tsx` — Render CMS page with slug 'home' or show fallback
+
+**Approach:**
+1. In layout.tsx: import handleGetNavigation, storageAdapter, Navigation component
+2. Make RootLayout async, fetch navigation 'main' data
+3. Render Navigation in a header element above {children}
+4. In page.tsx: reuse the same pattern as [slug]/page.tsx but hardcoded to slug 'home'
+5. Show fallback text if no 'home' page exists
+
+**Potential challenges:**
+- RootLayout as async Server Component — should work in Next.js 15 App Router
+- Navigation should not render on admin routes — but for now keep it simple, admin has its own layout
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+# + browser verification with seeded data
+```
+
+**Result:** ✅ Success
+
+- app/layout.tsx: async Server Component, loads navigation 'main' via handleGetNavigation, renders Navigation in header
+- app/page.tsx: renders CMS page with slug 'home', shows fallback if no page found
+- Browser verified: Navigation with Home, About, Blog links visible
+- Browser verified: About dropdown shows "Our Team" and "Contact" children
+- Browser verified: Clicking links routes to correct [slug] pages
+- No console errors
+- TypeScript typecheck passed
+
+---
+

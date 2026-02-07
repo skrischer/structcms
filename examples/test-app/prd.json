@@ -397,6 +397,18 @@
       "passes": true
     },
     {
+      "group": "Frontend",
+      "feature": "Frontend Layout Integration",
+      "description": "Integrate Navigation component into the root layout and connect the homepage to CMS content. This makes the frontend rendering visible as a cohesive app in the browser.",
+      "acceptance_criteria": [
+        "app/layout.tsx loads navigation data via handleGetNavigation and renders Navigation component",
+        "Homepage (app/page.tsx) renders the CMS page with slug 'home' or shows a fallback",
+        "Navigation links work and route to [slug] pages",
+        "Browser verified: navigation visible, pages reachable via nav links"
+      ],
+      "passes": true
+    },
+    {
       "group": "Documentation",
       "feature": "Setup Guide in Root README",
       "description": "Add a Setup Guide section to the root README.md with step-by-step instructions and code examples for integrating StructCMS into a host project",
