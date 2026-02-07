@@ -408,9 +408,9 @@ type SectionDataMap = {
   content: ContentData;
 };
 
-type SectionType = keyof SectionDataMap;
+export type SectionType = keyof SectionDataMap;
 
-interface SectionComponentProps<T extends SectionType> {
+export interface SectionComponentProps<T extends SectionType> {
   data: SectionDataMap[T];
 }
 
@@ -424,7 +424,18 @@ export const sectionComponents: {
 export function isSectionType(type: string): type is SectionType {
   return type in sectionComponents;
 }
+
+export function getComponent(
+  type: SectionType
+): React.ComponentType<{ data: Record<string, unknown> }> {
+  return sectionComponents[type] as React.ComponentType<{
+    data: Record<string, unknown>;
+  }>;
+}
 ```
+
+The `getComponent` helper bridges the gap between the API layer (`Record<string, unknown>`) and
+the typed component props. The data is already validated by the Zod schemas on write.
 
 ### Section Components
 
@@ -463,32 +474,24 @@ export function ContentSection({ data }: { data: ContentData }) {
 
 ### Page Rendering
 
-Fetch page data and render sections dynamically:
+Pages are rendered as async Server Components. The catch-all route `[...slug]` supports
+nested slugs like `about/team`. Data is fetched directly via `handleGetPageBySlug` — no
+HTTP roundtrip needed since we have access to the storage adapter.
 
 ```typescript
-// app/[slug]/page.tsx
+// app/[...slug]/page.tsx
 import { notFound } from 'next/navigation';
-import { sectionComponents, isSectionType } from '@/lib/components';
+import { handleGetPageBySlug } from '@structcms/api';
+import { storageAdapter } from '@/lib/adapters';
+import { isSectionType, getComponent } from '@/lib/components';
 
-interface PageData {
-  id: string;
-  slug: string;
-  title: string;
-  pageType: string;
-  sections: Array<{ type: string; data: unknown }>;
-}
-
-async function getPage(slug: string): Promise<PageData | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cms/pages/${slug}`, {
-    cache: 'no-store',
-  });
-  if (!res.ok) return null;
-  return res.json();
-}
-
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}) {
   const { slug } = await params;
-  const page = await getPage(slug);
+  const page = await handleGetPageBySlug(storageAdapter, slug.join('/'));
 
   if (!page) {
     notFound();
@@ -502,7 +505,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           console.warn(`Unknown section type: ${section.type}`);
           return null;
         }
-        const Component = sectionComponents[section.type];
+        const Component = getComponent(section.type);
         return <Component key={index} data={section.data} />;
       })}
     </main>
@@ -512,79 +515,94 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
 ### Navigation Rendering
 
-Fetch and render navigation with support for nested items:
+The navigation component uses `NavigationItem` from `@structcms/core` and renders
+nested dropdowns via the Tailwind `group`/`group-hover` pattern:
 
 ```typescript
 // lib/components/navigation.tsx
 import Link from 'next/link';
+import type { NavigationItem } from '@structcms/core';
 
-interface NavigationItem {
-  label: string;
-  href: string;
-  children?: NavigationItem[];
-}
+function NavItem({ item }: { item: NavigationItem }) {
+  const hasChildren = item.children && item.children.length > 0;
 
-interface NavigationProps {
-  items: NavigationItem[];
-}
+  if (!hasChildren) {
+    return (
+      <li>
+        <Link
+          href={item.href}
+          className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+        >
+          {item.label}
+        </Link>
+      </li>
+    );
+  }
 
-export function Navigation({ items }: NavigationProps) {
   return (
-    <nav className="flex gap-6">
-      {items.map((item) => (
-        <div key={item.href} className="relative group">
-          <Link href={item.href} className="hover:text-primary">
-            {item.label}
-          </Link>
-          {item.children && item.children.length > 0 && (
-            <div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-lg rounded-md py-2 min-w-[160px]">
-              {item.children.map((child) => (
-                <Link
-                  key={child.href}
-                  href={child.href}
-                  className="block px-4 py-2 hover:bg-gray-100"
-                >
-                  {child.label}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+    <li className="group relative">
+      <Link
+        href={item.href}
+        className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+      >
+        {item.label}
+      </Link>
+      <ul className="absolute left-0 top-full hidden min-w-40 rounded-md bg-white py-1 shadow-lg group-hover:block">
+        {item.children!.map((child) => (
+          <li key={child.href}>
+            <Link
+              href={child.href}
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              {child.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </li>
+  );
+}
+
+export function Navigation({ items }: { items: NavigationItem[] }) {
+  return (
+    <nav>
+      <ul className="flex items-center gap-1">
+        {items.map((item) => (
+          <NavItem key={item.href} item={item} />
+        ))}
+      </ul>
     </nav>
   );
 }
 ```
 
-### Fetching Navigation in Layout
+### Layout Integration
+
+The root layout loads navigation data directly via `handleGetNavigation` and renders
+the `Navigation` component in a header:
 
 ```typescript
-// app/layout.tsx (or a header component)
+// app/layout.tsx
+import './globals.css';
+import { handleGetNavigation } from '@structcms/api';
+import { storageAdapter } from '@/lib/adapters';
 import { Navigation } from '@/lib/components/navigation';
 
-interface NavigationData {
-  name: string;
-  items: NavigationItem[];
-}
-
-async function getNavigation(name: string): Promise<NavigationData | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cms/navigation/${name}`, {
-    cache: 'no-store',
-  });
-  if (!res.ok) return null;
-  return res.json();
-}
-
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const navigation = await getNavigation('main');
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const nav = await handleGetNavigation(storageAdapter, 'main');
 
   return (
     <html lang="en">
-      <body>
-        <header className="border-b py-4 px-6 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">StructCMS</Link>
-          {navigation && <Navigation items={navigation.items} />}
-        </header>
+      <body className="min-h-screen bg-gray-50">
+        {nav && (
+          <header className="border-b bg-white px-6 py-3">
+            <Navigation items={nav.items} />
+          </header>
+        )}
         {children}
       </body>
     </html>
@@ -597,13 +615,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 For static site generation, generate paths from the CMS:
 
 ```typescript
-// app/[slug]/page.tsx
+// app/[...slug]/page.tsx
+import { handleListPages } from '@structcms/api';
+import { storageAdapter } from '@/lib/adapters';
+
 export async function generateStaticParams() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cms/pages`);
-  const pages: Array<{ slug: string }> = await res.json();
-  
+  const pages = await handleListPages(storageAdapter);
+
   return pages.map((page) => ({
-    slug: page.slug,
+    slug: page.slug.split('/'),
   }));
 }
 ```
