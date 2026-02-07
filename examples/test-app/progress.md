@@ -975,3 +975,14 @@ pnpm --filter test-app exec tsc --noEmit
 pnpm --filter test-app exec tsc --noEmit
 ```
 
+**Result:** ✅ Success
+
+- lib/components/index.ts created with type-safe registry
+- HeroData and ContentData inferred via InferSectionData — no manual type duplication
+- SectionDataMap, SectionType, SectionComponentProps exported
+- isSectionType type guard exported
+- sectionComponents map deferred until Hero/Content components exist
+- TypeScript typecheck passed
+
+---
+
