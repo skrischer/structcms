@@ -332,7 +332,7 @@
         "Test page type filter",
         "Click row navigates to edit page"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Documentation",

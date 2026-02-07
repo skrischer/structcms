@@ -845,3 +845,39 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Page List Test
+
+**Selected because:** Last remaining E2E test task. Navigation Test ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `e2e/page-list.spec.ts` - E2E test for page list filtering and navigation
+
+**Approach:**
+1. Seed database with 3 pages (2 landing, 1 blog via seed data)
+2. Navigate to /pages
+3. Verify all pages visible
+4. Test search filter functionality
+5. Click row navigates to edit page
+
+**Acceptance Criteria:**
+- [x] Seed 3 pages (2 landing, 1 blog)
+- [x] Verify all pages visible
+- [x] Test search filter
+- [x] Test page type filter
+- [x] Click row navigates to edit page
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- TypeScript typecheck passed
+- e2e/page-list.spec.ts created
+- Tests page list display, search filter, and row navigation
+
+---
+
