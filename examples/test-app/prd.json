@@ -394,7 +394,7 @@
         "Uses NavigationItem type from @structcms/core",
         "Uses Next.js Link component"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Documentation",

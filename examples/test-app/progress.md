@@ -1084,3 +1084,39 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Navigation Component
+
+**Selected because:** Last open Frontend task. No dependencies.
+
+### Plan
+
+**Files to create:**
+- `lib/components/navigation.tsx` — Navigation renderer with nested dropdown support
+
+**Approach:**
+1. Import NavigationItem from @structcms/core and Link from next/link
+2. Create Navigation component accepting items: NavigationItem[]
+3. Render top-level items as links
+4. Render children as dropdown on hover using CSS (group/group-hover pattern)
+5. Style with Tailwind classes
+
+**Potential challenges:**
+- NavigationItem children structure — need to verify the type
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+# + browser verification
+```
+
+**Result:** ✅ Success
+
+- lib/components/navigation.tsx created
+- NavItem sub-component handles both flat and nested items
+- Dropdown via Tailwind group/group-hover:block pattern
+- Uses NavigationItem from @structcms/core (label, href, children?)
+- Uses Next.js Link component
+- TypeScript typecheck passed
+
+---
+
