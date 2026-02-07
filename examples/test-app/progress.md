@@ -986,3 +986,32 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Hero Section Component
+
+**Selected because:** Registry types ready (HeroData exported). Next logical Frontend task.
+
+### Plan
+
+**Files to create:**
+- `lib/components/hero.tsx` — Hero section renderer
+
+**Approach:**
+1. Import HeroData from component registry
+2. Create HeroSection component with typed props
+3. Render title as h1, optional subtitle as p, optional image as img
+4. Use Tailwind classes for styling
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- lib/components/hero.tsx created
+- Props typed via HeroData (inferred from registry)
+- Renders h1 title, optional subtitle, optional image
+- TypeScript typecheck passed
+
+---
+

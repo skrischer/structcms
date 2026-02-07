@@ -997,3 +997,35 @@ pnpm --filter @structcms/api typecheck
 - 27 new unit tests in `src/utils/sanitize.test.ts` (all passing)
 - 27 existing handler tests still passing
 - Typecheck clean
+
+---
+
+## Working on: Sanitization Integration Tests
+
+**Selected because:** Only remaining `passes: false` task. Dependency (Sanitization on Write) just completed.
+
+### Plan
+
+**Files to modify:**
+- `src/storage/handlers.test.ts` - Add integration tests verifying sanitization through handlers
+
+**Approach:**
+1. Add `describe('sanitization integration')` block to existing `handlers.test.ts`
+2. Test `handleCreatePage` with malicious HTML in section data → verify stored content is sanitized
+3. Test `handleUpdatePage` with malicious HTML in section data → verify stored content is sanitized
+4. Test nested string values in array/object section data are sanitized
+5. For delivery endpoint test: verify `handleGetPageBySlug` returns sanitized content (data was sanitized on write, so delivery just returns what's stored)
+
+**Note:** These are "integration" tests through the handler layer using mock adapters. The mock adapter stores what it receives, so we verify the input passed to the adapter is already sanitized.
+
+**Acceptance Criteria:**
+- [ ] Integration test: create page with malicious HTML in section data, verify stored content is sanitized
+- [ ] Integration test: update page with malicious HTML in section data, verify stored content is sanitized
+- [ ] Integration test: delivery endpoint returns sanitized HTML
+- [ ] Integration test: nested string values in array/object section data are sanitized
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/storage/handlers.test.ts
+pnpm --filter @structcms/api typecheck
+```

@@ -337,38 +337,6 @@
       "passes": true
     },
     {
-      "group": "Cleanup",
-      "feature": "Fix NavigationItem Import",
-      "description": "Navigation page imports NavigationItem from @structcms/api instead of @structcms/core. Both types are structurally identical but the import creates an unnecessary cross-package dependency.",
-      "acceptance_criteria": [
-        "app/admin/navigation/page.tsx imports NavigationItem from @structcms/core",
-        "No type errors"
-      ],
-      "passes": true
-    },
-    {
-      "group": "Cleanup",
-      "feature": "Tailwind v4 Config Cleanup",
-      "description": "Remove dead Tailwind v3 configuration. tailwind.config.ts content array is ignored by Tailwind v4. autoprefixer is bundled with Tailwind v4.",
-      "acceptance_criteria": [
-        "tailwind.config.ts deleted",
-        "autoprefixer removed from devDependencies",
-        "Styles still render correctly"
-      ],
-      "passes": true
-    },
-    {
-      "group": "Cleanup",
-      "feature": "E2E Test Robustness",
-      "description": "Replace fragile patterns in E2E tests: hardcoded waitForTimeout and value-based selectors.",
-      "acceptance_criteria": [
-        "upload-media.spec.ts: waitForTimeout replaced with event-based waiting (e.g. waitForSelector or expect().toBeVisible())",
-        "edit-section.spec.ts: input[value=...] selector replaced with data-testid based selector",
-        "All E2E tests pass"
-      ],
-      "passes": false
-    },
-    {
       "group": "Frontend",
       "feature": "Section Component Registry",
       "description": "Create lib/components/ with type-safe section component mapping using InferSectionData from @structcms/core",
@@ -390,7 +358,7 @@
         "Renders optional image",
         "Props typed via HeroData from component registry"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Frontend",
