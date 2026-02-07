@@ -1,7 +1,7 @@
 export const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 export async function resetOnly(): Promise<void> {
-  const response = await fetch(`${BASE_URL}/api/cms/__test__/reset`, {
+  const response = await fetch(`${BASE_URL}/api/cms/testing/reset`, {
     method: 'POST',
   });
   if (!response.ok) {
@@ -10,7 +10,7 @@ export async function resetOnly(): Promise<void> {
 }
 
 export async function seedOnly(): Promise<void> {
-  const response = await fetch(`${BASE_URL}/api/cms/__test__/seed`, {
+  const response = await fetch(`${BASE_URL}/api/cms/testing/seed`, {
     method: 'POST',
   });
   if (!response.ok) {

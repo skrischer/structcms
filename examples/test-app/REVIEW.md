@@ -3,55 +3,68 @@
 **Date:** 2026-02-07  
 **Reviewer:** Cascade (AI pair programmer)  
 **Scope:** Full review of test-app implementation (Setup, Lib, Route Handlers, Admin Pages, E2E Tests)  
+**Updated:** 2026-02-07 (Browser-Test mit Chrome DevTools)  
 **Status:** All tasks bis auf Documentation abgeschlossen
 
 ---
 
 ## Summary
 
-Die test-app ist solide aufgebaut. Setup, Lib-Layer und Route Handlers sind sauber implementiert. Bei den Admin Pages und E2E Tests haben sich durch die Nachtschicht einige Flüchtigkeitsfehler eingeschlichen — **2 Bugs** und **5 Unsauberkeiten**.
+Die test-app ist solide aufgebaut. Setup, Lib-Layer und Route Handlers sind sauber implementiert. Bei den Admin Pages und E2E Tests haben sich durch die Nachtschicht einige Flüchtigkeitsfehler eingeschlichen.
+
+Nach dem Code-Review wurde die App zusätzlich im Browser mit Chrome DevTools getestet. Dabei wurden **2 weitere kritische Bugs** gefunden, die alle E2E Tests blockieren.
+
+**Gesamt: 4 Bugs, 5 Unsauberkeiten.**
 
 ---
 
 ## Bugs
 
-### 🔴 1. Edit Page: Save-Button sendet immer initiale Sections
+### 🔴 1. `__test__` Routes geben 404 zurück — Seed/Reset blockiert
 
-**File:** `app/(admin)/pages/[slug]/page.tsx:128`
+**Files:** `app/api/cms/__test__/reset/route.ts`, `app/api/cms/__test__/seed/route.ts`
 
-```typescript
-onClick={() => handleSave(page.sections)}
-```
+**Gefunden durch:** Browser-Test (Chrome DevTools, `fetch('/api/cms/__test__/seed', { method: 'POST' })` → 404)
 
-Der externe "Save Page"-Button ruft `handleSave(page.sections)` auf — das sind die **beim Laden geladenen** Sections. Wenn der User über den `PageEditor` Sections bearbeitet, verwaltet dieser seinen eigenen internen State (Stale-State-Pattern). Der externe Button hat keinen Zugriff auf die bearbeiteten Daten.
+Next.js App Router behandelt Ordner mit `_`-Prefix als **Private Folders**, die nicht als Routen exponiert werden. `__test__` hat einen doppelten Underscore-Prefix und wird daher vom Router komplett ignoriert.
 
-Zusätzlich rendert der `PageEditor` selbst einen "Save Page"-Button, der korrekt funktioniert. Es gibt also **zwei Save-Buttons** — einer korrekt (intern), einer fehlerhaft (extern, sendet stale data).
+**Impact:** Kritisch — Seed und Reset Endpoints sind nicht erreichbar. Alle E2E Tests, die `resetAndSeed()` oder `resetOnly()` aufrufen, schlagen fehl.
 
-**Impact:** Datenverlust — User-Änderungen an Sections gehen verloren wenn der externe Button genutzt wird.
+**Fix:** Ordner umbenennen, z.B. `app/api/cms/testing/` oder URL-Encoding nutzen: `app/api/cms/%5F%5Ftest%5F%5F/`. Empfehlung: Einfach `testing` verwenden.
 
-**Fix:** Den externen Save-Button und die zugehörige Button-Leiste (Zeile 120-133) entfernen. Der `PageEditor` bringt seinen eigenen Save-Button mit.
+### 🔴 2. Fehlende `.env.local` — API-Endpoints crashen
 
-### 🔴 2. Create Page: Gleicher doppelter Save-Button
+**File:** `lib/adapters.ts:5`
 
-**File:** `app/(admin)/pages/new/page.tsx:112`
+**Gefunden durch:** Browser-Test (Startseite OK, aber `/pages` zeigt "Internal Server Error")
 
-```typescript
-onClick={() => handleSave(sections)}
-```
+Die test-app hat keine `.env.local`. Die Supabase-Variablen liegen in der Root-`.env`, aber Next.js lädt nur `.env`-Dateien aus dem eigenen Projektverzeichnis. Zusätzlich heißt der Key im Root `SUPABASE_SECRET_KEY`, die test-app erwartet aber `SUPABASE_SERVICE_ROLE_KEY`.
 
-Gleiches Problem: `sections` ist der lokale State, der beim Initialisieren leer ist und nie aktualisiert wird wenn der User im `PageEditor` Sections hinzufügt oder bearbeitet. Der `PageEditor` verwaltet seinen eigenen internen State.
+**Impact:** Kritisch — Alle API-Endpoints crashen mit `SUPABASE_URL environment variable is required`.
 
-**Impact:** Erstellt immer eine Page ohne Sections, unabhängig davon was der User im Editor eingegeben hat.
+**Fix:** `.env.local` in `examples/test-app/` erstellen (bereits während des Tests angelegt). Variablennamen-Mapping dokumentieren. `.env.example` für die test-app anlegen.
 
-**Fix:** Den externen Save-Button und die Button-Leiste (Zeile 104-117) entfernen. Der `PageEditor` bringt seinen eigenen Save-Button mit.
+### 🔴 3. Edit Page: Save-Button sendete initiale Sections *(teilweise gefixt)*
+
+**File:** `app/(admin)/pages/[slug]/page.tsx`
+
+**Status:** Der externe Save-Button mit `page.sections` wurde entfernt. Nur noch "Cancel" ist übrig. Der `PageEditor` bringt seinen eigenen korrekten Save-Button mit. **Fix verifiziert im Browser.**
+
+### 🔴 4. Create Page: Doppelter Save-Button *(teilweise gefixt)*
+
+**File:** `app/(admin)/pages/new/page.tsx`
+
+**Status:** Der externe "Create Page"-Button wurde entfernt. Nur noch "Cancel" ist übrig. **Fix verifiziert im Browser.**
 
 ---
 
 ## Unsauberkeiten
 
-### ⚠️ 3. Tailwind Styles für Admin-Komponenten fehlen
+### ⚠️ 3. Tailwind Styles für Admin-Komponenten fehlen *(im Browser bestätigt)*
 
 **File:** `app/globals.css`
+
+**Bestätigt durch:** Browser-Test (Screenshot zeigt unstyled Buttons, Inputs, Layout)
 
 Die `@structcms/admin`-Komponenten nutzen Tailwind-Klassen (`bg-muted`, `text-destructive`, `border-input`, etc.). Tailwind v4 mit `@tailwindcss/postcss` scannt automatisch lokale Dateien, aber **nicht** `node_modules`. Die Admin-Komponenten werden ohne Styles gerendert.
 
@@ -134,8 +147,8 @@ Selektor basiert auf dem Feldwert statt auf einem stabilen Identifier. Funktioni
 - `navigation/[name]/route.ts` — GET/PUT korrekt
 - `media/route.ts` — GET/POST mit FormData-Handling
 - `media/[id]/route.ts` — DELETE korrekt
-- `__test__/reset/route.ts` — Löscht Pages, Navigations, Media
-- `__test__/seed/route.ts` — Ruft `runSeed()` auf
+- `__test__/reset/route.ts` — Löscht Pages, Navigations, Media *(Code korrekt, Route nicht erreichbar — siehe Bug #1)*
+- `__test__/seed/route.ts` — Ruft `runSeed()` auf *(Code korrekt, Route nicht erreichbar — siehe Bug #1)*
 
 ### Admin Pages
 - `(admin)/layout.tsx` — `AdminProvider` + `AdminLayout` mit `useRouter`
@@ -153,11 +166,35 @@ Selektor basiert auf dem Feldwert statt auf einem stabilen Identifier. Funktioni
 
 ## Recommendations (Priorität)
 
-1. 🔴 **Doppelte Save-Buttons entfernen** in Create/Edit Page — Datenverlust
-2. 🔴 **Tailwind `@source`** für Admin-Komponenten — UI ohne Styles
-3. ⚠️ **NavigationItem Import** korrigieren (`@structcms/core`)
-4. ⚠️ **Upload-Test** `waitForTimeout` → Event-basiert
-5. ⚠️ **Edit-Section-Test** Selektor robuster machen
-6. ⚠️ **Tailwind v4 Cleanup** — Config + autoprefixer entfernen
+1. 🔴 **`__test__` Ordner umbenennen** → `testing/` — Seed/Reset komplett blockiert, alle E2E Tests betroffen
+2. 🔴 **`.env.local` anlegen** + `.env.example` erstellen — API crasht ohne Env-Variablen
+3. 🔴 **Tailwind `@source`** für Admin-Komponenten — UI ohne Styles (im Browser bestätigt)
+4. ✅ ~~Doppelte Save-Buttons~~ — bereits gefixt (im Browser verifiziert)
+5. ⚠️ **NavigationItem Import** korrigieren (`@structcms/core`)
+6. ⚠️ **Upload-Test** `waitForTimeout` → Event-basiert
+7. ⚠️ **Edit-Section-Test** Selektor robuster machen
+8. ⚠️ **Tailwind v4 Cleanup** — Config + autoprefixer entfernen
+
+---
+
+## Browser-Test Protokoll
+
+**Durchgeführt:** 2026-02-07, Chrome DevTools via MCP
+
+| Test | Ergebnis | Details |
+|------|----------|---------|
+| Startseite `/` | ✅ | "StructCMS Test App" sichtbar |
+| API `GET /api/cms/pages` | ✅ | Gibt `[]` zurück (nach .env.local Fix) |
+| API `POST /api/cms/pages` | ✅ | Page erfolgreich erstellt |
+| API `DELETE /api/cms/pages/home` | ✅ | Page erfolgreich gelöscht |
+| API `POST /api/cms/__test__/seed` | 🔴 404 | Private Folder Convention |
+| API `POST /api/cms/__test__/reset` | 🔴 404 | Private Folder Convention |
+| Admin `/pages` | ✅ | PageList zeigt Pages, Filter funktioniert |
+| Admin `/pages/home` (Edit) | ✅ | Sections laden korrekt, Save-Button Fix verifiziert |
+| Admin `/pages/new` (Create) | ✅ | PageType-Auswahl → PageEditor erscheint |
+| Admin `/navigation` | ✅ | "No navigation found" (erwartet ohne Seed) |
+| Admin `/media` | ✅ | Empty State korrekt |
+| Styling | 🔴 | Kein Tailwind-Styling auf Admin-Komponenten |
+| Console Errors | ✅ | Keine Errors (nach .env.local Fix) |
 
 ---
