@@ -6,10 +6,10 @@ import { isSectionType, getComponent } from '@/lib/components';
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
-  const page = await handleGetPageBySlug(storageAdapter, slug);
+  const page = await handleGetPageBySlug(storageAdapter, slug.join('/'));
 
   if (!page) {
     notFound();
