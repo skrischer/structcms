@@ -32,7 +32,10 @@ The app connects to the existing Supabase test instance using the real `Supabase
 examples/test-app/
 ├── app/
 │   ├── layout.tsx                        # Root layout (html, body)
-│   ├── (admin)/
+│   ├── page.tsx                          # Home page
+│   ├── [slug]/
+│   │   └── page.tsx                      # Dynamic page rendering
+│   ├── admin/
 │   │   ├── layout.tsx                    # AdminProvider + AdminLayout
 │   │   ├── pages/
 │   │   │   ├── page.tsx                  # PageList view
@@ -57,7 +60,7 @@ examples/test-app/
 │           │   ├── route.ts              # GET (list), POST (upload)
 │           │   └── [id]/
 │           │       └── route.ts          # DELETE
-│           └── __test__/
+│           └── testing/
 │               ├── reset/
 │               │   └── route.ts          # POST — clear all data
 │               └── seed/
@@ -66,7 +69,11 @@ examples/test-app/
 │   ├── registry.ts                       # Example sections + page types
 │   ├── adapters.ts                       # Supabase client + real adapters
 │   ├── seed.ts                           # Seed data definitions
-│   └── seed-runner.ts                    # Seed execution logic
+│   ├── seed-runner.ts                    # Seed execution logic
+│   └── components/                       # Frontend section components
+│       ├── index.ts                      # Component registry
+│       ├── hero.tsx                      # Hero section renderer
+│       └── content.tsx                   # Content section renderer
 ├── e2e/
 │   ├── helpers.ts                        # resetAndSeed(), resetOnly()
 │   ├── create-page.spec.ts
@@ -188,14 +195,20 @@ export async function POST(request: Request) {
 Thin wrappers around `@structcms/admin` components:
 
 ```typescript
-// app/(admin)/layout.tsx
+// app/admin/layout.tsx
 import { AdminProvider, AdminLayout } from '@structcms/admin';
 import { registry } from '@/lib/registry';
 
 export default function Layout({ children }) {
   return (
     <AdminProvider registry={registry} apiBaseUrl="/api/cms">
-      <AdminLayout onNavigate={(path) => /* Next.js router.push */}>
+      <AdminLayout 
+        navItems={[
+          { label: 'Pages', path: '/admin/pages' },
+          { label: 'Navigation', path: '/admin/navigation' },
+          { label: 'Media', path: '/admin/media' },
+        ]}
+        onNavigate={(path) => /* Next.js router.push */}>
         {children}
       </AdminLayout>
     </AdminProvider>
@@ -251,7 +264,7 @@ export const seedNavigations: CreateNavigationInput[] = [
 ```
 
 The seed can be triggered via:
-- **API route**: `POST /api/cms/__test__/seed` (for Playwright `beforeEach`)
+- **API route**: `POST /api/cms/testing/seed` (for Playwright `beforeEach`)
 - **CLI script**: `pnpm --filter test-app seed` (for manual development)
 
 ## Cleanup Strategy
@@ -261,7 +274,7 @@ Since the Supabase instance is exclusively for testing, cleanup is straightforwa
 ### Reset Endpoint
 
 ```typescript
-// app/api/cms/__test__/reset/route.ts
+// app/api/cms/testing/reset/route.ts
 export async function POST() {
   const pages = await storageAdapter.listPages();
   for (const page of pages) { await storageAdapter.deletePage(page.id); }
@@ -283,12 +296,12 @@ export async function POST() {
 const BASE_URL = 'http://localhost:3000';
 
 export async function resetAndSeed() {
-  await fetch(`${BASE_URL}/api/cms/__test__/reset`, { method: 'POST' });
-  await fetch(`${BASE_URL}/api/cms/__test__/seed`, { method: 'POST' });
+  await fetch(`${BASE_URL}/api/cms/testing/reset`, { method: 'POST' });
+  await fetch(`${BASE_URL}/api/cms/testing/seed`, { method: 'POST' });
 }
 
 export async function resetOnly() {
-  await fetch(`${BASE_URL}/api/cms/__test__/reset`, { method: 'POST' });
+  await fetch(`${BASE_URL}/api/cms/testing/reset`, { method: 'POST' });
 }
 ```
 
@@ -302,7 +315,7 @@ Tests choose their setup:
 
 Tests use Playwright and follow this pattern:
 
-1. **Reset state** via `POST /api/cms/__test__/reset`
+1. **Reset state** via `POST /api/cms/testing/reset`
 2. **Seed data** if needed via API calls
 3. **Navigate** to admin page
 4. **Interact** with UI components
@@ -311,7 +324,7 @@ Tests use Playwright and follow this pattern:
 ### Test: Create Page
 
 ```
-1. Navigate to /pages
+1. Navigate to /admin/pages
 2. Click "Create New Page"
 3. Select page type "landing"
 4. Add a "hero" section
@@ -325,7 +338,7 @@ Tests use Playwright and follow this pattern:
 
 ```
 1. Seed a page with a hero section via API
-2. Navigate to /pages/:slug
+2. Navigate to /admin/pages/:slug
 3. Edit the hero title field
 4. Save the page
 5. Assert: updated data persisted via API
@@ -334,7 +347,7 @@ Tests use Playwright and follow this pattern:
 ### Test: Upload Media
 
 ```
-1. Navigate to /media
+1. Navigate to /admin/media
 2. Click "Upload"
 3. Select a test image file
 4. Assert: image appears in media grid
@@ -347,7 +360,7 @@ Tests use Playwright and follow this pattern:
 ### Test: Navigation
 
 ```
-1. Navigate to /navigation
+1. Navigate to /admin/navigation
 2. Add a navigation item (label + href)
 3. Add a child item
 4. Click "Save Navigation"
@@ -358,11 +371,221 @@ Tests use Playwright and follow this pattern:
 
 ```
 1. Seed 3 pages via API (2 landing, 1 blog)
-2. Navigate to /pages
+2. Navigate to /admin/pages
 3. Assert: all 3 pages visible
 4. Type search term → assert filtered results
 5. Select page type filter → assert filtered results
 6. Click a page row → assert navigation to edit page
+```
+
+---
+
+## Frontend Rendering
+
+The test-app demonstrates how to render CMS content on the frontend. This includes:
+
+- **Component Mapping**: Mapping section types to React components
+- **Page Resolving**: Fetching and rendering pages by slug
+- **Navigation Rendering**: Displaying navigation menus
+
+### Component Registry
+
+Create a mapping from section types to React components:
+
+```typescript
+// lib/components/index.ts
+import { HeroSection } from './hero';
+import { ContentSection } from './content';
+
+export const sectionComponents: Record<string, React.ComponentType<{ data: unknown }>> = {
+  hero: HeroSection,
+  content: ContentSection,
+};
+```
+
+### Section Components
+
+Each section component receives the section data as props:
+
+```typescript
+// lib/components/hero.tsx
+interface HeroData {
+  title: string;
+  subtitle?: string;
+  image?: string;
+}
+
+export function HeroSection({ data }: { data: HeroData }) {
+  return (
+    <section className="py-20 text-center">
+      <h1 className="text-4xl font-bold">{data.title}</h1>
+      {data.subtitle && <p className="mt-4 text-xl text-gray-600">{data.subtitle}</p>}
+      {data.image && <img src={data.image} alt="" className="mt-8 mx-auto max-w-2xl" />}
+    </section>
+  );
+}
+```
+
+```typescript
+// lib/components/content.tsx
+interface ContentData {
+  body: string;
+}
+
+export function ContentSection({ data }: { data: ContentData }) {
+  return (
+    <section className="prose max-w-3xl mx-auto py-12">
+      <div dangerouslySetInnerHTML={{ __html: data.body }} />
+    </section>
+  );
+}
+```
+
+### Page Rendering
+
+Fetch page data and render sections dynamically:
+
+```typescript
+// app/[slug]/page.tsx
+import { notFound } from 'next/navigation';
+import { sectionComponents } from '@/lib/components';
+
+interface PageData {
+  id: string;
+  slug: string;
+  title: string;
+  pageType: string;
+  sections: Array<{ type: string; data: unknown }>;
+}
+
+async function getPage(slug: string): Promise<PageData | null> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cms/pages/${slug}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const page = await getPage(slug);
+
+  if (!page) {
+    notFound();
+  }
+
+  return (
+    <main>
+      <h1 className="sr-only">{page.title}</h1>
+      {page.sections.map((section, index) => {
+        const Component = sectionComponents[section.type];
+        if (!Component) {
+          console.warn(`Unknown section type: ${section.type}`);
+          return null;
+        }
+        return <Component key={index} data={section.data} />;
+      })}
+    </main>
+  );
+}
+```
+
+### Navigation Rendering
+
+Fetch and render navigation with support for nested items:
+
+```typescript
+// lib/components/navigation.tsx
+import Link from 'next/link';
+
+interface NavigationItem {
+  label: string;
+  href: string;
+  children?: NavigationItem[];
+}
+
+interface NavigationProps {
+  items: NavigationItem[];
+}
+
+export function Navigation({ items }: NavigationProps) {
+  return (
+    <nav className="flex gap-6">
+      {items.map((item) => (
+        <div key={item.href} className="relative group">
+          <Link href={item.href} className="hover:text-primary">
+            {item.label}
+          </Link>
+          {item.children && item.children.length > 0 && (
+            <div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-lg rounded-md py-2 min-w-[160px]">
+              {item.children.map((child) => (
+                <Link
+                  key={child.href}
+                  href={child.href}
+                  className="block px-4 py-2 hover:bg-gray-100"
+                >
+                  {child.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
+  );
+}
+```
+
+### Fetching Navigation in Layout
+
+```typescript
+// app/layout.tsx (or a header component)
+import { Navigation } from '@/lib/components/navigation';
+
+interface NavigationData {
+  name: string;
+  items: NavigationItem[];
+}
+
+async function getNavigation(name: string): Promise<NavigationData | null> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cms/navigation/${name}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const navigation = await getNavigation('main');
+
+  return (
+    <html lang="en">
+      <body>
+        <header className="border-b py-4 px-6 flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold">StructCMS</Link>
+          {navigation && <Navigation items={navigation.items} />}
+        </header>
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+### Static Generation (Optional)
+
+For static site generation, generate paths from the CMS:
+
+```typescript
+// app/[slug]/page.tsx
+export async function generateStaticParams() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cms/pages`);
+  const pages: Array<{ slug: string }> = await res.json();
+  
+  return pages.map((page) => ({
+    slug: page.slug,
+  }));
+}
 ```
 
 ---
