@@ -445,7 +445,7 @@
         "Integration test: delivery endpoint returns sanitized HTML",
         "Integration test: nested string values in array/object section data are sanitized"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

@@ -1015,3 +1015,33 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Content Section Component
+
+**Selected because:** Hero done. Content is the last component before we can complete the sectionComponents map and build Dynamic Page Rendering.
+
+### Plan
+
+**Files to create:**
+- `lib/components/content.tsx` — Content section renderer
+
+**Files to modify:**
+- `lib/components/index.ts` — Add sectionComponents map now that both components exist
+
+**Approach:**
+1. Create content.tsx with ContentData props, render body via dangerouslySetInnerHTML in prose wrapper
+2. Update index.ts to import both components and export the sectionComponents map
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- lib/components/content.tsx created with prose wrapper and dangerouslySetInnerHTML
+- lib/components/index.ts updated: imports both components, exports sectionComponents map
+- isSectionType now uses `type in sectionComponents` instead of hardcoded check
+- TypeScript typecheck passed
+
+---
+

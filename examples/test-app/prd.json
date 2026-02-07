@@ -369,7 +369,7 @@
         "Props typed via ContentData from component registry",
         "Wrapped in prose class for typography"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Frontend",

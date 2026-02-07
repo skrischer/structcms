@@ -1,8 +1,10 @@
 import type { InferSectionData } from '@structcms/core';
-import type { HeroSection, ContentSection } from '@/lib/registry';
+import type { HeroSection as HeroSectionDef, ContentSection as ContentSectionDef } from '@/lib/registry';
+import { HeroSection } from './hero';
+import { ContentSection } from './content';
 
-export type HeroData = InferSectionData<typeof HeroSection>;
-export type ContentData = InferSectionData<typeof ContentSection>;
+export type HeroData = InferSectionData<typeof HeroSectionDef>;
+export type ContentData = InferSectionData<typeof ContentSectionDef>;
 
 type SectionDataMap = {
   hero: HeroData;
@@ -15,6 +17,13 @@ export interface SectionComponentProps<T extends SectionType> {
   data: SectionDataMap[T];
 }
 
+export const sectionComponents: {
+  [K in SectionType]: React.ComponentType<SectionComponentProps<K>>;
+} = {
+  hero: HeroSection,
+  content: ContentSection,
+};
+
 export function isSectionType(type: string): type is SectionType {
-  return type === 'hero' || type === 'content';
+  return type in sectionComponents;
 }

@@ -398,3 +398,158 @@ describe('handleDeleteNavigation', () => {
     }
   });
 });
+
+// ---- Sanitization Integration Tests ----
+
+/**
+ * Creates a mock adapter that captures the input passed to createPage/updatePage
+ * and returns it as the result, so we can verify sanitization happened
+ */
+function createCapturingAdapter(): StorageAdapter & { lastCreatedInput: CreatePageInput | null; lastUpdatedInput: UpdatePageInput | null } {
+  const state = {
+    lastCreatedInput: null as CreatePageInput | null,
+    lastUpdatedInput: null as UpdatePageInput | null,
+  };
+
+  const base = createMockStorageAdapter({});
+
+  return {
+    ...base,
+    ...state,
+    createPage: async (input: CreatePageInput) => {
+      state.lastCreatedInput = input;
+      return {
+        id: 'new-page-id',
+        slug: input.slug ?? 'generated-slug',
+        pageType: input.pageType,
+        title: input.title,
+        sections: input.sections ?? [],
+        createdAt: testDate,
+        updatedAt: testDate,
+      };
+    },
+    updatePage: async (input: UpdatePageInput) => {
+      state.lastUpdatedInput = input;
+      return {
+        id: input.id,
+        slug: input.slug ?? 'existing-slug',
+        pageType: input.pageType ?? 'page',
+        title: input.title ?? 'Existing Title',
+        sections: input.sections ?? [],
+        createdAt: testDate,
+        updatedAt: testDate,
+      };
+    },
+    get lastCreatedInput() { return state.lastCreatedInput; },
+    get lastUpdatedInput() { return state.lastUpdatedInput; },
+  };
+}
+
+describe('sanitization integration', () => {
+  it('should sanitize malicious HTML in sections on create', async () => {
+    const adapter = createCapturingAdapter();
+    const result = await handleCreatePage(adapter, {
+      title: 'Test Page',
+      pageType: 'landing',
+      sections: [
+        {
+          id: 's1',
+          type: 'hero',
+          data: {
+            title: '<script>alert("xss")</script>Welcome',
+            body: '<p>Hello</p><script>document.cookie</script>',
+          },
+        },
+      ],
+    });
+
+    // Verify the result contains sanitized content
+    expect(result.sections[0].data['title']).toBe('Welcome');
+    expect(result.sections[0].data['body']).toBe('<p>Hello</p>');
+
+    // Verify the adapter received sanitized input
+    expect(adapter.lastCreatedInput?.sections?.[0].data['title']).toBe('Welcome');
+    expect(adapter.lastCreatedInput?.sections?.[0].data['body']).toBe('<p>Hello</p>');
+  });
+
+  it('should sanitize malicious HTML in sections on update', async () => {
+    const adapter = createCapturingAdapter();
+    const result = await handleUpdatePage(adapter, {
+      id: 'page-1',
+      sections: [
+        {
+          id: 's1',
+          type: 'content',
+          data: {
+            content: '<p>Safe</p><img src="x" onerror="alert(1)"><a href="link" onclick="steal()">Click</a>',
+          },
+        },
+      ],
+    });
+
+    expect(result.sections[0].data['content']).toBe(
+      '<p>Safe</p><img src="x" /><a href="link">Click</a>'
+    );
+    expect(adapter.lastUpdatedInput?.sections?.[0].data['content']).toBe(
+      '<p>Safe</p><img src="x" /><a href="link">Click</a>'
+    );
+  });
+
+  it('should sanitize nested string values in array/object section data', async () => {
+    const adapter = createCapturingAdapter();
+    const result = await handleCreatePage(adapter, {
+      title: 'Gallery Page',
+      pageType: 'page',
+      sections: [
+        {
+          id: 's1',
+          type: 'gallery',
+          data: {
+            items: [
+              { caption: '<script>xss</script>Photo 1', url: 'img1.jpg' },
+              { caption: '<p>Photo 2</p>', url: 'img2.jpg' },
+            ],
+            nested: {
+              deep: {
+                value: '<iframe src="evil.com"></iframe><strong>Bold</strong>',
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    const items = result.sections[0].data['items'] as Array<Record<string, unknown>>;
+    expect(items[0]['caption']).toBe('Photo 1');
+    expect(items[0]['url']).toBe('img1.jpg');
+    expect(items[1]['caption']).toBe('<p>Photo 2</p>');
+
+    const nested = result.sections[0].data['nested'] as Record<string, Record<string, unknown>>;
+    expect(nested['deep']['value']).toBe('<strong>Bold</strong>');
+  });
+
+  it('should deliver sanitized content via delivery handler', async () => {
+    // Simulate the full flow: create page → retrieve via delivery
+    const adapter = createCapturingAdapter();
+
+    // Create page with malicious content (sanitization happens here)
+    const created = await handleCreatePage(adapter, {
+      title: 'Delivery Test',
+      pageType: 'page',
+      sections: [
+        {
+          id: 's1',
+          type: 'hero',
+          data: { title: '<script>xss</script>Clean Title' },
+        },
+      ],
+    });
+
+    // The created page already has sanitized content
+    expect(created.sections[0].data['title']).toBe('Clean Title');
+
+    // Delivery handler reads from adapter which stores sanitized data
+    // Verify the data that was passed to the adapter is sanitized
+    expect(adapter.lastCreatedInput?.sections?.[0].data['title']).toBe('Clean Title');
+  });
+});

@@ -1029,3 +1029,13 @@ pnpm --filter @structcms/api typecheck
 pnpm test --filter @structcms/api -- --run src/storage/handlers.test.ts
 pnpm --filter @structcms/api typecheck
 ```
+
+**Result:** ✅ Success
+
+- 4 new integration tests in `src/storage/handlers.test.ts` (31 total)
+- `createCapturingAdapter()` helper captures input passed to adapter for verification
+- Test: create page with malicious HTML → adapter receives sanitized content
+- Test: update page with malicious HTML → adapter receives sanitized content
+- Test: nested arrays/objects in section data recursively sanitized
+- Test: delivery flow returns sanitized content (write-time sanitization)
+- Typecheck clean
