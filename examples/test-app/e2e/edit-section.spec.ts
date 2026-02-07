@@ -7,7 +7,7 @@ test.describe('Edit Section', () => {
   });
 
   test('should edit hero section title', async ({ page }) => {
-    await page.goto('/pages/home');
+    await page.goto('/admin/pages/home');
 
     const titleInput = page.locator('input[name="title"]').first();
     await expect(titleInput).toBeVisible();
@@ -16,7 +16,7 @@ test.describe('Edit Section', () => {
 
     await page.click('text=Save Page');
 
-    await page.waitForURL('/pages');
+    await page.waitForURL('/admin/pages');
 
     const response = await fetch(`${BASE_URL}/api/cms/pages/home`);
     expect(response.ok).toBe(true);

@@ -7,11 +7,11 @@ export default function PagesPage() {
   const router = useRouter();
 
   const handleSelectPage = (page: PageSummary) => {
-    router.push(`/pages/${page.slug}`);
+    router.push(`/admin/pages/${page.slug}`);
   };
 
   const handleCreatePage = () => {
-    router.push('/pages/new');
+    router.push('/admin/pages/new');
   };
 
   return (

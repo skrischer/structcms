@@ -31,7 +31,7 @@ export default function CreatePagePage() {
         pageType,
         sections: updatedSections,
       });
-      router.push('/pages');
+      router.push('/admin/pages');
     } catch (error) {
       console.error('Failed to create page:', error);
     } finally {
@@ -104,7 +104,7 @@ export default function CreatePagePage() {
       <div className="flex gap-2">
         <Button
           variant="outline"
-          onClick={() => router.push('/pages')}
+          onClick={() => router.push('/admin/pages')}
         >
           Cancel
         </Button>

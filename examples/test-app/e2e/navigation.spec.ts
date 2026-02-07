@@ -7,7 +7,7 @@ test.describe('Navigation Editor', () => {
   });
 
   test('should display and edit navigation', async ({ page }) => {
-    await page.goto('/navigation');
+    await page.goto('/admin/navigation');
 
     await expect(page.locator('text=Navigation: main')).toBeVisible();
 

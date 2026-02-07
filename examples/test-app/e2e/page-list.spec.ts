@@ -7,7 +7,7 @@ test.describe('Page List', () => {
   });
 
   test('should display all seeded pages', async ({ page }) => {
-    await page.goto('/pages');
+    await page.goto('/admin/pages');
 
     await expect(page.locator('text=Home')).toBeVisible();
     await expect(page.locator('text=About')).toBeVisible();
@@ -15,7 +15,7 @@ test.describe('Page List', () => {
   });
 
   test('should filter pages by search', async ({ page }) => {
-    await page.goto('/pages');
+    await page.goto('/admin/pages');
 
     const searchInput = page.locator('input[placeholder*="Search"]');
     if (await searchInput.isVisible()) {
@@ -25,11 +25,11 @@ test.describe('Page List', () => {
   });
 
   test('should navigate to edit page on row click', async ({ page }) => {
-    await page.goto('/pages');
+    await page.goto('/admin/pages');
 
     await page.click('text=Home');
 
-    await page.waitForURL(/\/pages\/home/);
-    await expect(page).toHaveURL(/\/pages\/home/);
+    await page.waitForURL(/\/admin\/pages\/home/);
+    await expect(page).toHaveURL(/\/admin\/pages\/home/);
   });
 });

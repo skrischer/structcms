@@ -56,7 +56,7 @@ export default function EditPagePage() {
         title,
         sections: updatedSections,
       });
-      router.push('/pages');
+      router.push('/admin/pages');
     } catch (err) {
       console.error('Failed to update page:', err);
     } finally {
@@ -120,7 +120,7 @@ export default function EditPagePage() {
       <div className="flex gap-2">
         <Button
           variant="outline"
-          onClick={() => router.push('/pages')}
+          onClick={() => router.push('/admin/pages')}
         >
           Cancel
         </Button>

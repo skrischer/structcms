@@ -7,11 +7,11 @@ test.describe('Create Page', () => {
   });
 
   test('should create a new landing page', async ({ page }) => {
-    await page.goto('/pages');
+    await page.goto('/admin/pages');
 
     await page.click('text=Create New Page');
 
-    await page.waitForURL('/pages/new');
+    await page.waitForURL('/admin/pages/new');
 
     await page.fill('input#title', 'Test Landing Page');
     await page.fill('input#slug', 'test-landing');
@@ -19,7 +19,7 @@ test.describe('Create Page', () => {
 
     await page.click('text=Create Page');
 
-    await page.waitForURL('/pages');
+    await page.waitForURL('/admin/pages');
 
     await expect(page.locator('text=Test Landing Page')).toBeVisible();
 

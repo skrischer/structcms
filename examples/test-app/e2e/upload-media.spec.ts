@@ -8,7 +8,7 @@ test.describe('Upload Media', () => {
   });
 
   test('should upload an image and verify it appears', async ({ page }) => {
-    await page.goto('/media');
+    await page.goto('/admin/media');
 
     const fileInput = page.locator('input[type="file"]');
     
