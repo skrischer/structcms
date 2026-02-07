@@ -881,3 +881,97 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Fix NavigationItem Import
+
+**Selected because:** Smallest independent cleanup task. Fixes an unnecessary cross-package dependency before starting Frontend features.
+
+### Plan
+
+**Files to modify:**
+- `app/admin/navigation/page.tsx` — Change import from `@structcms/api` to `@structcms/core`
+
+**Approach:**
+1. Change `import type { NavigationItem } from '@structcms/api'` to `import type { NavigationItem } from '@structcms/core'`
+2. Verify no type errors
+
+**Potential challenges:**
+- None expected — types are structurally identical
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success (already fixed)
+
+- Import was already `@structcms/core` — colleague fixed this during bugfix round
+- TypeScript typecheck passed
+- No code changes needed, marked as passes: true
+
+---
+
+## Working on: Tailwind v4 Config Cleanup
+
+**Selected because:** Independent cleanup task. Removes dead Tailwind v3 config code. No dependencies on other tasks.
+
+### Plan
+
+**Files to delete:**
+- `tailwind.config.ts` — Dead code, Tailwind v4 with `@tailwindcss/postcss` ignores this file
+
+**Files to modify:**
+- `package.json` — Remove `autoprefixer` from devDependencies (bundled with Tailwind v4)
+
+**Approach:**
+1. Delete `tailwind.config.ts`
+2. Remove `autoprefixer` from devDependencies in `package.json`
+3. Verify styles still render correctly via dev server + browser
+
+**Potential challenges:**
+- None expected — config is already unused
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+# + browser verification that styles still work
+```
+
+**Result:** ✅ Success (already fixed)
+
+- `tailwind.config.ts` already deleted by colleague
+- `autoprefixer` already removed from devDependencies
+- No code changes needed, marked as passes: true
+
+---
+
+## Working on: Section Component Registry
+
+**Selected because:** Foundation task for all Frontend features. Hero, Content, Dynamic Page Rendering all depend on this. Skipped E2E Test Robustness (blocked — requires Playwright runtime to verify).
+
+### Plan
+
+**Files to create:**
+- `lib/components/index.ts` — Type-safe component registry with InferSectionData
+
+**Approach:**
+1. Import InferSectionData from @structcms/core
+2. Import HeroSection and ContentSection definitions from lib/registry
+3. Define HeroData and ContentData types via InferSectionData
+4. Create SectionDataMap mapping section names to data types
+5. Create type-safe sectionComponents map
+6. Export isSectionType type guard
+
+**Potential challenges:**
+- Component imports will reference hero.tsx and content.tsx which don't exist yet — will use placeholder imports that compile once those files are created
+- Actually: we should only export types and the map structure, components will be added in next tasks
+
+**Revised approach:**
+- Create the registry file with types and map, but import the actual components only after they exist
+- For now, export only the types (HeroData, ContentData, SectionDataMap, SectionType, isSectionType)
+- The sectionComponents map will be completed when Hero and Content components are created
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+

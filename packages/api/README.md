@@ -12,6 +12,16 @@ This package provides the backend infrastructure:
 - Media upload, storage, and referencing
 - JSON export of content
 - Database backup strategy
+- HTML sanitization on write (XSS protection)
+
+## Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `@supabase/supabase-js` | Database and storage client |
+| `sanitize-html` | Server-side HTML sanitization for XSS protection |
+
+**Why `sanitize-html`?** Server-native (no jsdom/DOM emulation needed), configurable allowlists for tags and attributes, ~3.8M weekly downloads. Chosen over `isomorphic-dompurify` (pulls in jsdom) and DIY regex (security risk).
 
 ## Architecture
 
@@ -181,7 +191,7 @@ This package contains three domains: Storage, Media, and Export.
 
 ### Domain: STORAGE
 
-**Dependencies:** Modeling (@structcms/core)  
+**Dependencies:** None  
 **Estimated Effort:** Medium
 
 | ID | Task | Acceptance Criteria | Status |
@@ -206,7 +216,7 @@ This package contains three domains: Storage, Media, and Export.
 
 ### Domain: MEDIA
 
-**Dependencies:** Modeling (@structcms/core)  
+**Dependencies:** None  
 **Estimated Effort:** Medium
 
 | ID | Task | Acceptance Criteria | Status |

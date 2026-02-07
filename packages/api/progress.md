@@ -936,3 +936,64 @@ pnpm --filter @structcms/api typecheck
 - Removed 2 section separators (`// ====== ... ======`) from `supabase-adapter.ts`
 - `getAllSlugs` was already removed in previous cycle — N/A
 - 103 tests passing, typecheck clean
+
+---
+
+## Working on: Richtext HTML Sanitization on Write
+
+**Selected because:** First `passes: false` task. No dependencies on other open tasks. The second sanitization task (integration tests) builds on this.
+
+### Plan
+
+**Files to create:**
+- `src/utils/sanitize.ts` - `sanitizeSectionData()` function that recursively sanitizes all string values
+- `src/utils/sanitize.test.ts` - Unit tests
+
+**Files to modify:**
+- `src/storage/handlers.ts` - Call `sanitizeSectionData()` in `handleCreatePage` and `handleUpdatePage` before passing to adapter
+- `src/utils/index.ts` - Export sanitize utility
+
+**Dependencies to install:**
+- `sanitize-html` (runtime)
+- `@types/sanitize-html` (dev)
+
+**Approach:**
+1. Install `sanitize-html` + `@types/sanitize-html`
+2. Create `sanitizeSectionData(sections)` that:
+   - Takes `PageSection[]`, returns sanitized `PageSection[]`
+   - Recursively walks `data` (Record<string, unknown>)
+   - For every string value: run through `sanitize-html` with allowlist config
+   - For arrays/objects: recurse
+   - Non-string primitives (number, boolean, null): pass through unchanged
+3. Configure allowlist: p, h1-h6, ul, ol, li, a[href], strong, em, br, blockquote, code, pre, img[src,alt]
+4. Integrate into `handleCreatePage` and `handleUpdatePage`
+5. Unit tests: script tags stripped, safe HTML preserved, nested data recursed, plain text unchanged
+
+**Acceptance Criteria:**
+- [ ] handleCreatePage sanitizes all string values in sections[].data before storage
+- [ ] handleUpdatePage sanitizes all string values in sections[].data before storage
+- [ ] Sanitization strips script tags, event handlers, and dangerous attributes
+- [ ] Allowed tags: p, h1-h6, ul, ol, li, a (href only), strong, em, br, blockquote, code, pre, img (src, alt only)
+- [ ] Sanitization recursively walks nested objects and arrays in section data
+- [ ] Plain text strings pass through unchanged (no HTML tags to strip)
+- [ ] Unit test: script tags stripped from string values
+- [ ] Unit test: safe HTML preserved unchanged
+- [ ] Unit test: nested objects and arrays are recursively sanitized
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/utils/sanitize.test.ts
+pnpm test --filter @structcms/api -- --run src/storage/handlers.test.ts
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Installed `sanitize-html` + `@types/sanitize-html`
+- Created `src/utils/sanitize.ts` with `sanitizeString`, `sanitizeValue`, `sanitizeSectionData`
+- Allowlist: p, h1-h6, ul, ol, li, a[href], strong, em, br, blockquote, code, pre, img[src,alt]
+- Recursive sanitization of nested objects and arrays in section data
+- Integrated into `handleCreatePage` and `handleUpdatePage` in `src/storage/handlers.ts`
+- 27 new unit tests in `src/utils/sanitize.test.ts` (all passing)
+- 27 existing handler tests still passing
+- Typecheck clean

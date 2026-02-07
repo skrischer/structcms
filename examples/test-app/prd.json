@@ -23,13 +23,15 @@
     },
     "file_structure": {
       "app/": "Next.js App Router pages and layouts",
-      "app/(admin)/": "Admin route group with AdminProvider",
-      "app/(admin)/pages/": "Page list and editor views",
-      "app/(admin)/navigation/": "Navigation editor view",
-      "app/(admin)/media/": "Media browser view",
+      "app/admin/": "Admin pages with AdminProvider",
+      "app/admin/pages/": "Page list and editor views",
+      "app/admin/navigation/": "Navigation editor view",
+      "app/admin/media/": "Media browser view",
+      "app/[slug]/": "Dynamic frontend page rendering",
       "app/api/cms/": "Route handlers wrapping @structcms/api",
-      "app/api/cms/__test__/": "Test-only reset and seed endpoints",
+      "app/api/cms/testing/": "Test-only reset and seed endpoints",
       "lib/": "Shared utilities (registry, adapters, seed data)",
+      "lib/components/": "Frontend section components (hero, content, navigation)",
       "e2e/": "Playwright test specs"
     },
     "example_sections": {
@@ -45,8 +47,8 @@
       "navigations": ["main (with nested children)"]
     },
     "e2e_test_lifecycle": {
-      "reset": "POST /api/cms/__test__/reset — clears all pages, navigations, media",
-      "seed": "POST /api/cms/__test__/seed — inserts seed data",
+      "reset": "POST /api/cms/testing/reset — clears all pages, navigations, media",
+      "seed": "POST /api/cms/testing/seed — inserts seed data",
       "pattern": "beforeEach: resetAndSeed() or resetOnly()"
     },
     "notes": [
@@ -333,6 +335,98 @@
         "Click row navigates to edit page"
       ],
       "passes": true
+    },
+    {
+      "group": "Cleanup",
+      "feature": "Fix NavigationItem Import",
+      "description": "Navigation page imports NavigationItem from @structcms/api instead of @structcms/core. Both types are structurally identical but the import creates an unnecessary cross-package dependency.",
+      "acceptance_criteria": [
+        "app/admin/navigation/page.tsx imports NavigationItem from @structcms/core",
+        "No type errors"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Cleanup",
+      "feature": "Tailwind v4 Config Cleanup",
+      "description": "Remove dead Tailwind v3 configuration. tailwind.config.ts content array is ignored by Tailwind v4. autoprefixer is bundled with Tailwind v4.",
+      "acceptance_criteria": [
+        "tailwind.config.ts deleted",
+        "autoprefixer removed from devDependencies",
+        "Styles still render correctly"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Cleanup",
+      "feature": "E2E Test Robustness",
+      "description": "Replace fragile patterns in E2E tests: hardcoded waitForTimeout and value-based selectors.",
+      "acceptance_criteria": [
+        "upload-media.spec.ts: waitForTimeout replaced with event-based waiting (e.g. waitForSelector or expect().toBeVisible())",
+        "edit-section.spec.ts: input[value=...] selector replaced with data-testid based selector",
+        "All E2E tests pass"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Frontend",
+      "feature": "Section Component Registry",
+      "description": "Create lib/components/ with type-safe section component mapping using InferSectionData from @structcms/core",
+      "acceptance_criteria": [
+        "lib/components/index.ts exports sectionComponents map and isSectionType type guard",
+        "Types inferred via InferSectionData — no manual type duplication",
+        "SectionDataMap maps section names to their inferred data types",
+        "Component registry is type-safe: each component receives correctly typed props"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Frontend",
+      "feature": "Hero Section Component",
+      "description": "Create lib/components/hero.tsx rendering hero section data",
+      "acceptance_criteria": [
+        "Renders title as h1",
+        "Renders optional subtitle as paragraph",
+        "Renders optional image",
+        "Props typed via HeroData from component registry"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Frontend",
+      "feature": "Content Section Component",
+      "description": "Create lib/components/content.tsx rendering richtext content. HTML is safe because @structcms/api sanitizes on write.",
+      "acceptance_criteria": [
+        "Renders body HTML via dangerouslySetInnerHTML",
+        "Props typed via ContentData from component registry",
+        "Wrapped in prose class for typography"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Frontend",
+      "feature": "Dynamic Page Rendering",
+      "description": "Create app/[slug]/page.tsx that fetches a page by slug and renders its sections using the component registry",
+      "acceptance_criteria": [
+        "Server component fetching page data via storageAdapter",
+        "Renders sections dynamically using sectionComponents map",
+        "Unknown section types logged with console.warn and skipped",
+        "Returns notFound() for non-existent slugs",
+        "Next.js 15 params handled as Promise"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Frontend",
+      "feature": "Navigation Component",
+      "description": "Create lib/components/navigation.tsx rendering navigation with nested dropdown support",
+      "acceptance_criteria": [
+        "Renders top-level navigation items as links",
+        "Renders children as dropdown on hover",
+        "Uses NavigationItem type from @structcms/core",
+        "Uses Next.js Link component"
+      ],
+      "passes": false
     },
     {
       "group": "Documentation",

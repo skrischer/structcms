@@ -1,5 +1,6 @@
 import type { StorageAdapter, Page, Navigation, CreatePageInput, UpdatePageInput, CreateNavigationInput, UpdateNavigationInput } from './types';
 import { generateSlug, ensureUniqueSlug } from '../utils/slug';
+import { sanitizeSectionData } from '../utils/sanitize';
 
 /**
  * Error thrown when storage validation fails
@@ -43,9 +44,14 @@ export async function handleCreatePage(
   const existingSlugs = existingPages.map((p) => p.slug);
   const uniqueSlug = ensureUniqueSlug(slug, existingSlugs);
 
+  const sanitizedSections = input.sections
+    ? sanitizeSectionData(input.sections)
+    : undefined;
+
   return adapter.createPage({
     ...input,
     slug: uniqueSlug,
+    sections: sanitizedSections,
   });
 }
 
@@ -93,7 +99,11 @@ export async function handleUpdatePage(
     }
   }
 
-  return adapter.updatePage(input);
+  const sanitizedInput = input.sections
+    ? { ...input, sections: sanitizeSectionData(input.sections) }
+    : input;
+
+  return adapter.updatePage(sanitizedInput);
 }
 
 /**

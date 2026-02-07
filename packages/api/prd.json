@@ -6,8 +6,8 @@
   },
   "context": {
     "dependencies": {
-      "runtime": ["@structcms/core", "@supabase/supabase-js"],
-      "dev": ["vitest", "typescript"]
+      "runtime": ["@supabase/supabase-js", "sanitize-html"],
+      "dev": ["vitest", "typescript", "@types/sanitize-html"]
     },
     "environment_variables": {
       "SUPABASE_URL": "https://your-project.supabase.co",
@@ -417,6 +417,35 @@
         "All existing tests still pass"
       ],
       "passes": true
+    },
+    {
+      "group": "Storage",
+      "feature": "Richtext HTML Sanitization on Write",
+      "description": "Sanitize all string values in page sections when pages are created or updated via handleCreatePage/handleUpdatePage. Recursively walks sections[].data and sanitizes every string value. This ensures the database only ever contains safe HTML, protecting all consumers (frontend, export, API) from XSS. No dependency on @structcms/core registry — keeps the API package decoupled.",
+      "acceptance_criteria": [
+        "handleCreatePage sanitizes all string values in sections[].data before storage",
+        "handleUpdatePage sanitizes all string values in sections[].data before storage",
+        "Sanitization strips script tags, event handlers, and dangerous attributes",
+        "Allowed tags: p, h1-h6, ul, ol, li, a (href only), strong, em, br, blockquote, code, pre, img (src, alt only)",
+        "Sanitization recursively walks nested objects and arrays in section data",
+        "Plain text strings pass through unchanged (no HTML tags to strip)",
+        "Unit test: script tags stripped from string values",
+        "Unit test: safe HTML preserved unchanged",
+        "Unit test: nested objects and arrays are recursively sanitized"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Storage",
+      "feature": "Sanitization Integration Tests",
+      "description": "Integration tests verifying that richtext sanitization works end-to-end through the storage handlers",
+      "acceptance_criteria": [
+        "Integration test: create page with malicious HTML in section data, verify stored content is sanitized",
+        "Integration test: update page with malicious HTML in section data, verify stored content is sanitized",
+        "Integration test: delivery endpoint returns sanitized HTML",
+        "Integration test: nested string values in array/object section data are sanitized"
+      ],
+      "passes": false
     }
   ]
 }

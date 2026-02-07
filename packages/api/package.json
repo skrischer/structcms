@@ -18,7 +18,9 @@
       }
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -27,10 +29,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@structcms/core": "workspace:*",
-    "@supabase/supabase-js": "^2.45.0"
+    "@supabase/supabase-js": "^2.45.0",
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
+    "@types/sanitize-html": "^2.16.0",
     "typescript": "~5.7.0"
   },
   "publishConfig": {

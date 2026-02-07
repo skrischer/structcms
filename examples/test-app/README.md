@@ -390,30 +390,49 @@ The test-app demonstrates how to render CMS content on the frontend. This includ
 
 ### Component Registry
 
-Create a mapping from section types to React components:
+Section data types are inferred directly from the registry definitions using `InferSectionData`.
+This ensures the component props stay in sync with the Zod schemas — no manual type duplication.
 
 ```typescript
 // lib/components/index.ts
+import type { InferSectionData } from '@structcms/core';
+import type { HeroSection as HeroSectionDef, ContentSection as ContentSectionDef } from '@/lib/registry';
 import { HeroSection } from './hero';
 import { ContentSection } from './content';
 
-export const sectionComponents: Record<string, React.ComponentType<{ data: unknown }>> = {
+export type HeroData = InferSectionData<typeof HeroSectionDef>;
+export type ContentData = InferSectionData<typeof ContentSectionDef>;
+
+type SectionDataMap = {
+  hero: HeroData;
+  content: ContentData;
+};
+
+type SectionType = keyof SectionDataMap;
+
+interface SectionComponentProps<T extends SectionType> {
+  data: SectionDataMap[T];
+}
+
+export const sectionComponents: {
+  [K in SectionType]: React.ComponentType<SectionComponentProps<K>>;
+} = {
   hero: HeroSection,
   content: ContentSection,
 };
+
+export function isSectionType(type: string): type is SectionType {
+  return type in sectionComponents;
+}
 ```
 
 ### Section Components
 
-Each section component receives the section data as props:
+Each section component receives fully typed props inferred from the section schema:
 
 ```typescript
 // lib/components/hero.tsx
-interface HeroData {
-  title: string;
-  subtitle?: string;
-  image?: string;
-}
+import type { HeroData } from '.';
 
 export function HeroSection({ data }: { data: HeroData }) {
   return (
@@ -428,9 +447,7 @@ export function HeroSection({ data }: { data: HeroData }) {
 
 ```typescript
 // lib/components/content.tsx
-interface ContentData {
-  body: string;
-}
+import type { ContentData } from '.';
 
 export function ContentSection({ data }: { data: ContentData }) {
   return (
@@ -441,6 +458,9 @@ export function ContentSection({ data }: { data: ContentData }) {
 }
 ```
 
+> **Note:** `dangerouslySetInnerHTML` is safe here because `@structcms/api` sanitizes all
+> richtext HTML on write. The database only ever contains sanitized content.
+
 ### Page Rendering
 
 Fetch page data and render sections dynamically:
@@ -448,7 +468,7 @@ Fetch page data and render sections dynamically:
 ```typescript
 // app/[slug]/page.tsx
 import { notFound } from 'next/navigation';
-import { sectionComponents } from '@/lib/components';
+import { sectionComponents, isSectionType } from '@/lib/components';
 
 interface PageData {
   id: string;
@@ -478,11 +498,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     <main>
       <h1 className="sr-only">{page.title}</h1>
       {page.sections.map((section, index) => {
-        const Component = sectionComponents[section.type];
-        if (!Component) {
+        if (!isSectionType(section.type)) {
           console.warn(`Unknown section type: ${section.type}`);
           return null;
         }
+        const Component = sectionComponents[section.type];
         return <Component key={index} data={section.data} />;
       })}
     </main>
