@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { NavigationEditor, useApiClient, Button, Skeleton } from '@structcms/admin';
-import type { NavigationItem } from '@structcms/api';
+import type { NavigationItem } from '@structcms/core';
 
 interface NavigationData {
   id: string;

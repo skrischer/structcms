@@ -16,7 +16,11 @@ test.describe('Upload Media', () => {
     
     await fileInput.setInputFiles(testImagePath);
 
-    await page.waitForTimeout(2000);
+    await expect(async () => {
+      const response = await fetch(`${BASE_URL}/api/cms/media`);
+      const mediaList = await response.json();
+      expect(mediaList.length).toBeGreaterThan(0);
+    }).toPass({ timeout: 5000 });
 
     const response = await fetch(`${BASE_URL}/api/cms/media`);
     expect(response.ok).toBe(true);

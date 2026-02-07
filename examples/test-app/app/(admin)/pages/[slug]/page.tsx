@@ -124,12 +124,6 @@ export default function EditPagePage() {
         >
           Cancel
         </Button>
-        <Button
-          onClick={() => handleSave(page.sections)}
-          disabled={!title || saving}
-        >
-          {saving ? 'Saving...' : 'Save Page'}
-        </Button>
       </div>
     </div>
   );

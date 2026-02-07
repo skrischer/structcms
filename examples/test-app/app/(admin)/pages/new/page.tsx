@@ -108,12 +108,6 @@ export default function CreatePagePage() {
         >
           Cancel
         </Button>
-        <Button
-          onClick={() => handleSave(sections)}
-          disabled={!title || !pageType || saving}
-        >
-          {saving ? 'Creating...' : 'Create Page'}
-        </Button>
       </div>
     </div>
   );

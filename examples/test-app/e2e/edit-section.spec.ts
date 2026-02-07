@@ -9,9 +9,10 @@ test.describe('Edit Section', () => {
   test('should edit hero section title', async ({ page }) => {
     await page.goto('/pages/home');
 
-    await page.waitForSelector('input[value="Welcome to StructCMS"]');
+    const titleInput = page.locator('input[name="title"]').first();
+    await expect(titleInput).toBeVisible();
 
-    await page.fill('input[value="Welcome to StructCMS"]', 'Updated Hero Title');
+    await titleInput.fill('Updated Hero Title');
 
     await page.click('text=Save Page');
 
