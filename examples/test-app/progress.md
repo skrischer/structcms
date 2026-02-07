@@ -1045,3 +1045,42 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Dynamic Page Rendering
+
+**Selected because:** All component dependencies met (Registry ✅, Hero ✅, Content ✅). Core frontend feature.
+
+### Plan
+
+**Files to create:**
+- `app/[slug]/page.tsx` — Server component that fetches page by slug and renders sections
+
+**Approach:**
+1. Import storageAdapter and handleGetPage from @structcms/api
+2. Import sectionComponents and isSectionType from lib/components
+3. Fetch page by slug via storageAdapter (direct adapter access, no HTTP roundtrip)
+4. Return notFound() for non-existent slugs
+5. Render sections dynamically using sectionComponents map
+6. Handle Next.js 15 params as Promise
+
+**Potential challenges:**
+- Need to check handleGetPage signature — may need to use adapter directly
+- Slug routing may conflict with admin/ route — should be fine since admin/ is a static segment
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+# + browser verification with seeded data
+```
+
+**Result:** ✅ Success
+
+- app/[slug]/page.tsx created as async Server Component
+- Uses handleGetPageBySlug with storageAdapter (direct, no HTTP roundtrip)
+- Added getComponent() helper in index.ts to bridge Record<string, unknown> → typed props
+- Browser verified: /home renders Hero + Content sections correctly
+- Browser verified: /non-existent-page returns 404
+- No console errors
+- TypeScript typecheck passed
+
+---
+

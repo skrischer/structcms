@@ -382,7 +382,7 @@
         "Returns notFound() for non-existent slugs",
         "Next.js 15 params handled as Promise"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Frontend",

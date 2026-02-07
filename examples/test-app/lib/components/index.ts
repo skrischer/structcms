@@ -27,3 +27,11 @@ export const sectionComponents: {
 export function isSectionType(type: string): type is SectionType {
   return type in sectionComponents;
 }
+
+export function getComponent(
+  type: SectionType
+): React.ComponentType<{ data: Record<string, unknown> }> {
+  return sectionComponents[type] as React.ComponentType<{
+    data: Record<string, unknown>;
+  }>;
+}
