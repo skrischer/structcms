@@ -92,6 +92,7 @@ function RichTextEditor({
       }),
     ],
     content: value,
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class:
