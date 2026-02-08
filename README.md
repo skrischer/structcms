@@ -75,9 +75,9 @@ pnpm test
 pnpm test:run
 
 # Tests for a specific package
-pnpm test @structcms/core
-pnpm test @structcms/api
-pnpm test @structcms/admin
+pnpm --filter @structcms/core test
+pnpm --filter @structcms/api test
+pnpm --filter @structcms/admin test
 
 # E2E tests (requires running test-app dev server)
 pnpm --filter test-app dev          # Terminal 1
