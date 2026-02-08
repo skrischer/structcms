@@ -57,18 +57,31 @@ pnpm typecheck
 ## Development
 
 ```bash
-# Run unit tests (watch mode)
-pnpm test
-
-# Run tests for a specific package
-pnpm test -w @structcms/core
+# Start test app dev server
+pnpm --filter test-app dev
 
 # Lint & format
 pnpm lint
 pnpm format
+```
 
-# Start test app dev server
-pnpm --filter test-app dev
+## Testing
+
+```bash
+# Unit tests (all packages, watch mode)
+pnpm test
+
+# Unit tests (single run)
+pnpm test:run
+
+# Tests for a specific package
+pnpm test @structcms/core
+pnpm test @structcms/api
+pnpm test @structcms/admin
+
+# E2E tests (requires running test-app dev server)
+pnpm --filter test-app dev          # Terminal 1
+npx playwright test --project=chromium  # Terminal 2 (from examples/test-app/)
 ```
 
 ## Architecture
