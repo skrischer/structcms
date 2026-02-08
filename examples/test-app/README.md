@@ -154,6 +154,12 @@ The seed can be triggered via:
 
 ## E2E Tests
 
+```bash
+# Run E2E tests (requires running dev server in another terminal)
+pnpm --filter test-app dev          # Terminal 1
+pnpm --filter test-app test:e2e     # Terminal 2
+```
+
 Tests use Playwright and follow this lifecycle:
 
 1. **Reset state** via `POST /api/cms/testing/reset`

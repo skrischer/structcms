@@ -81,7 +81,7 @@ pnpm --filter @structcms/admin test
 
 # E2E tests (requires running test-app dev server)
 pnpm --filter test-app dev          # Terminal 1
-npx playwright test --project=chromium  # Terminal 2 (from examples/test-app/)
+pnpm --filter test-app test:e2e     # Terminal 2
 ```
 
 ## Architecture
