@@ -26,6 +26,8 @@ export function defineSection<T extends z.ZodRawShape>(
   return {
     name: config.name,
     schema,
+    // TODO: Phantom type — `as unknown as` is required here because _type exists only
+    // for compile-time type inference (InferSectionData<T>) and is never read at runtime.
     _type: undefined as unknown as z.infer<typeof schema>,
   };
 }

@@ -14,18 +14,29 @@
       "definePageType",
       "defineNavigation",
       "createRegistry",
+      "createSectionRenderer",
       "fields",
       "getFieldMeta",
       "isFieldType",
       "defaultNavigationItemSchema",
+      "DefineSectionConfig (type)",
       "SectionDefinition (type)",
+      "DefinePageTypeConfig (type)",
       "PageTypeDefinition (type)",
+      "DefineNavigationConfig (type)",
       "NavigationDefinition (type)",
+      "CreateRegistryConfig (type)",
       "Registry (type)",
       "FieldType (type)",
       "FieldMeta (type)",
       "InferSectionData (type)",
-      "NavigationItem (type)"
+      "NavigationItem (type)",
+      "SectionData (type)",
+      "SectionComponentProps (type)",
+      "SectionComponent (type)",
+      "SectionComponentMap (type)",
+      "CreateSectionRendererConfig (type)",
+      "SectionRenderer (type)"
     ],
     "api_examples": {
       "defineSection": "const HeroSection = defineSection({ name: 'hero', fields: { title: z.string().min(1), subtitle: z.string().optional(), image: z.string().url() } });",
@@ -142,10 +153,10 @@
     {
       "group": "Rendering",
       "feature": "Section Renderer Utility",
-      "description": "Create createSectionRenderer() utility that maps section types to React components for type-safe rendering in host projects",
+      "description": "Create createSectionRenderer() utility that maps section types to components for type-safe rendering in host projects. Framework-agnostic (React, Preact, Vue, or plain functions).",
       "acceptance_criteria": [
         "createSectionRenderer({ sectionName: Component }) creates render function",
-        "renderSection(section, key) returns React element for matching section type",
+        "renderSection(section, key) returns component result for matching section type",
         "TypeScript enforces correct props for each section component",
         "Handles unknown section types gracefully (returns null or fallback)",
         "Unit test: renderer maps sections to correct components"

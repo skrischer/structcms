@@ -336,11 +336,11 @@ pnpm test --filter @structcms/core -- --run --coverage
 - This works with React, Preact, Vue render functions, or plain functions
 
 **Acceptance Criteria:**
-- [ ] createSectionRenderer({ sectionName: Component }) creates render function
-- [ ] renderSection(section, key) returns component result for matching section type
-- [ ] TypeScript enforces correct props for each section component
-- [ ] Handles unknown section types gracefully (returns null or fallback)
-- [ ] Unit test: renderer maps sections to correct components
+- [x] createSectionRenderer({ sectionName: Component }) creates render function
+- [x] renderSection(section, key) returns component result for matching section type
+- [x] TypeScript enforces correct props for each section component
+- [x] Handles unknown section types gracefully (returns null or fallback)
+- [x] Unit test: renderer maps sections to correct components
 
 **Verification:**
 ```bash

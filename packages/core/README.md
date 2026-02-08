@@ -57,6 +57,11 @@ The registry collects all section, page type, and navigation definitions at star
 
 Each field helper wraps a Zod schema with metadata used by `@structcms/admin` for dynamic form generation. See `src/fields.ts`.
 
+### Field Utilities
+
+- **`getFieldMeta(schema)`** — Extract `FieldMeta` (including `fieldType`) from a Zod schema. Returns `null` if no metadata is present. See `src/fields.ts`.
+- **`isFieldType(schema, fieldType)`** — Check whether a Zod schema has a specific field type (e.g. `'richtext'`). See `src/fields.ts`.
+
 ### Registry
 
 - **`createRegistry({ sections, pageTypes?, navigations? })`** — Creates a registry instance that provides `getSection()`, `getAllSections()`, `getPageType()`, `getAllPageTypes()`, `getNavigation()`, `getAllNavigations()`. See `src/registry.ts`.
@@ -74,7 +79,7 @@ Each field helper wraps a Zod schema with metadata used by `@structcms/admin` fo
 
 | Package | Purpose |
 |---------|----------|
-| `zod` | Schema definition and validation (peer dependency, `^3.23.0`) |
+| `zod` | Schema definition and validation (dependency + peer dependency, `^3.23.0`) |
 
 ## Development
 
