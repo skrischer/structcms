@@ -1,128 +1,77 @@
 # @structcms/core
 
-Core modeling, validation, and types for StructCMS.
+Core modeling, validation, and types for StructCMS. Provides code-first content schema definitions, a registry for section/page type registration, type inference, and a framework-agnostic section renderer.
 
-## Description
+For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 1: Modeling, Layer 2: Registry, Layer 7: Rendering).
 
-This package provides the foundation for StructCMS:
+## File Structure
 
-- Code-defined schemas (Zod)
-- Section/block content definitions
-- Page structures
-- Navigation models
-- Type inference from schemas
-- Registry for section/page type registration
-
-## Architecture
-
-### Modeling Layer
-
-Defines schemas and content structures using Zod.
-
-**Responsibilities:**
-- Section schema definitions
-- Field type definitions (text, richtext, image, reference, etc.)
-- Validation rules
-- TypeScript type inference from schemas
-
-**Key Concepts:**
-- **Section**: A reusable content block with defined fields
-- **Page Type**: A template defining which sections a page can contain
-- **Field Types**: Primitives and complex types for content fields
-
-**Example:**
-```typescript
-import { z } from 'zod';
-import { defineSection } from '@structcms/core';
-
-export const HeroSection = defineSection({
-  name: 'hero',
-  fields: {
-    title: z.string().min(1),
-    subtitle: z.string().optional(),
-    image: z.string().url(),
-    cta: z.object({
-      label: z.string(),
-      href: z.string(),
-    }).optional(),
-  },
-});
+```
+packages/core/
+├── src/
+│   ├── index.ts                  # Public exports
+│   ├── define-section.ts         # defineSection() API
+│   ├── define-page-type.ts       # definePageType() API
+│   ├── define-navigation.ts      # defineNavigation() API
+│   ├── fields.ts                 # Field type helpers (string, text, richtext, image, etc.)
+│   ├── registry.ts               # createRegistry() API
+│   ├── section-renderer.ts       # createSectionRenderer() API
+│   ├── types.ts                  # All type definitions
+│   ├── *.test.ts                 # Unit tests (co-located)
+├── package.json
+├── tsconfig.json
+└── tsup.config.ts                # Build config
 ```
 
-### Registry Layer
+## Public API
 
-Registers models from the host website project.
+### Modeling
 
-**Responsibilities:**
-- Section registry (collect all section definitions)
-- Page type registry
-- Navigation model registry
-- Runtime type resolution
+- **`defineSection({ name, fields })`** — Define a section with Zod schema fields. Returns a typed `SectionDefinition`. See `src/define-section.ts`.
+- **`definePageType({ name, allowedSections })`** — Define which sections a page type allows. See `src/define-page-type.ts`.
+- **`defineNavigation({ name, schema? })`** — Define a navigation structure with optional custom item schema. See `src/define-navigation.ts`.
 
-**Key Concepts:**
-- **Registry**: Central store for all content model definitions
-- **Dynamic Registration**: Host projects register their own models at startup
+### Fields
 
-**Example:**
-```typescript
-import { createRegistry } from '@structcms/core';
-import { HeroSection, TextSection, GallerySection } from './sections';
+- **`fields.string()`** — Short text (single line input)
+- **`fields.text()`** — Long text (textarea)
+- **`fields.richtext()`** — Rich text (WYSIWYG, outputs HTML)
+- **`fields.image()`** — Image reference (media ID or URL)
+- **`fields.reference()`** — Page reference (slug or ID)
+- **`fields.array(itemSchema)`** — Array field
+- **`fields.object(shape)`** — Object field
 
-export const registry = createRegistry({
-  sections: [HeroSection, TextSection, GallerySection],
-  pageTypes: ['landing', 'article', 'contact'],
-});
+Each field helper wraps a Zod schema with metadata used by `@structcms/admin` for dynamic form generation. See `src/fields.ts`.
+
+### Registry
+
+- **`createRegistry({ sections, pageTypes?, navigations? })`** — Creates a registry instance that provides `getSection()`, `getAllSections()`, `getPageType()`, `getAllPageTypes()`, `getNavigation()`, `getAllNavigations()`. See `src/registry.ts`.
+
+### Rendering
+
+- **`createSectionRenderer({ components, fallback? })`** — Maps section types to components. Framework-agnostic (React, Preact, Vue, or plain functions). See `src/section-renderer.ts`.
+
+### Type Utilities
+
+- **`InferSectionData<T>`** — Extract the data type from a `SectionDefinition`
+- **`SectionComponentProps<T>`** — Props type for section components (`{ data: T, sectionKey: string | number }`)
+
+## Dependencies
+
+- `zod` (peer dependency, `^3.23.0`)
+
+## Development
+
+```bash
+# Run tests (watch mode)
+pnpm test
+
+# Run tests once
+pnpm test run
+
+# Build
+pnpm build
+
+# Type check
+pnpm typecheck
 ```
-
-### Rendering Integration Layer
-
-Maps CMS content to frontend components.
-
-**Responsibilities:**
-- Section → Component mapping
-- Typed props delivery to components
-- Rendering utilities for host projects
-
-**Example:**
-```typescript
-import { createSectionRenderer } from '@structcms/core';
-import { HeroComponent, TextComponent } from './components';
-
-const renderSection = createSectionRenderer({
-  hero: HeroComponent,
-  text: TextComponent,
-  gallery: GalleryComponent,
-});
-
-export function Page({ sections }) {
-  return sections.map((section, i) => renderSection(section, i));
-}
-```
-
----
-
-## Backlog
-
-**Dependencies:** None  
-**Estimated Effort:** Medium
-
-### Tasks
-
-| ID | Task | Acceptance Criteria | Status |
-|----|------|---------------------|--------|
-| M-1 | Define Section API | `defineSection()` function accepts Zod schema and returns typed section definition | Todo |
-| M-2 | Field Type Definitions | Support for: `string`, `text`, `richtext`, `image`, `reference`, `array`, `object` | Todo |
-| M-3 | Type Inference | Zod schema infers TypeScript types for section data | Todo |
-| M-4 | Registry API | `createRegistry()` collects and exposes all registered sections | Todo |
-| M-5 | Page Type Definition | `definePageType()` specifies allowed sections per page type | Todo |
-| M-6 | Navigation Model | `defineNavigation()` for menu/navigation structures | Todo |
-| M-7 | Unit Tests | All public APIs have unit tests with >80% coverage | Todo |
-
-### Done Criteria
-
-- [ ] All field types implemented and tested
-- [ ] Type inference works end-to-end
-- [ ] Registry can be created and queried
-- [ ] Package builds and exports correctly
-
----

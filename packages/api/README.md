@@ -1,18 +1,111 @@
 # @structcms/api
 
-Storage, domain API, and delivery API for StructCMS.
+Storage, domain API, delivery API, and content export for StructCMS. Provides Supabase-agnostic adapter interfaces, handler functions for content CRUD, media management, and JSON export.
 
-## Description
+For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 3: Storage, Layer 4: Domain API, Layer 5: Delivery API).
 
-This package provides the backend infrastructure:
+## File Structure
 
-- Content CRUD operations
-- Delivery endpoints
-- Storage interface (Supabase-agnostic)
-- Media upload, storage, and referencing
-- JSON export of content
-- Database backup strategy
-- HTML sanitization on write (XSS protection)
+```
+packages/api/
+├── src/
+│   ├── index.ts                          # Public exports
+│   ├── storage/
+│   │   ├── types.ts                      # StorageAdapter interface, Page, Navigation types
+│   │   ├── supabase-adapter.ts           # Supabase implementation of StorageAdapter
+│   │   ├── handlers.ts                   # Page/Navigation CRUD handlers
+│   │   └── *.test.ts
+│   ├── delivery/
+│   │   ├── types.ts                      # PageResponse, NavigationResponse types
+│   │   ├── handlers.ts                   # Delivery handlers (list, get by slug)
+│   │   └── *.test.ts
+│   ├── media/
+│   │   ├── types.ts                      # MediaAdapter interface, MediaFile types
+│   │   ├── supabase-adapter.ts           # Supabase implementation of MediaAdapter
+│   │   ├── handlers.ts                   # Upload, list, delete handlers
+│   │   ├── resolve.ts                    # Media reference resolution
+│   │   └── *.test.ts
+│   ├── export/
+│   │   ├── types.ts                      # Export response types
+│   │   ├── handlers.ts                   # Export handlers (page, site, navigation)
+│   │   └── *.test.ts
+│   ├── utils/
+│   │   ├── slug.ts                       # Slug generation and uniqueness
+│   │   └── sanitize.ts                   # HTML sanitization (XSS protection)
+│   └── types/
+│       └── database.types.ts             # Generated Supabase types
+├── migrations/                           # Legacy (migrations now in /supabase/migrations/)
+├── package.json
+├── tsconfig.json
+└── tsup.config.ts
+```
+
+## Key Concepts
+
+### Handler Functions
+
+This package exports **handler functions**, not complete route handlers. This keeps the package framework-agnostic and allows adapter injection. Host projects create thin route handlers that inject their adapters. See `examples/test-app/app/api/cms/` for a reference implementation.
+
+### Adapter Interfaces
+
+- **`StorageAdapter`** — Interface for page and navigation persistence. See `src/storage/types.ts`.
+- **`MediaAdapter`** — Interface for media file operations. See `src/media/types.ts`.
+
+Both have Supabase implementations (`SupabaseStorageAdapter`, `SupabaseMediaAdapter`) but the interfaces are Supabase-agnostic for future portability.
+
+### HTML Sanitization
+
+Rich text content is sanitized on write using `sanitize-html` to prevent XSS. See `src/utils/sanitize.ts`.
+
+## Public API
+
+### Storage Handlers
+
+- **`handleCreatePage(adapter, input)`** — Create a page with auto-generated slug
+- **`handleUpdatePage(adapter, input)`** — Update an existing page
+- **`handleDeletePage(adapter, id)`** — Delete a page by ID
+- **`handleCreateNavigation(adapter, input)`** — Create a navigation
+- **`handleUpdateNavigation(adapter, input)`** — Update a navigation
+- **`handleDeleteNavigation(adapter, id)`** — Delete a navigation
+
+See `src/storage/handlers.ts` for implementation.
+
+### Delivery Handlers
+
+- **`handleListPages(adapter, options?)`** — List pages with optional filtering
+- **`handleGetPageBySlug(adapter, slug)`** — Get a single page by slug
+- **`handleGetNavigation(adapter, name)`** — Get a navigation by name
+
+See `src/delivery/handlers.ts` for implementation.
+
+### Media Handlers
+
+- **`handleUploadMedia(adapter, input)`** — Upload a media file (validates MIME type)
+- **`handleGetMedia(adapter, id)`** — Get media by ID
+- **`handleListMedia(adapter, filter?)`** — List media files
+- **`handleDeleteMedia(adapter, id)`** — Delete a media file
+- **`resolveMediaReferences(adapter, sections)`** — Resolve media IDs to URLs in section data
+
+Allowed MIME types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`. See `src/media/types.ts`.
+
+### Export Handlers
+
+- **`handleExportPage(adapter, mediaAdapter, slug)`** — Export a single page with resolved media
+- **`handleExportAllPages(adapter, mediaAdapter)`** — Export all pages
+- **`handleExportNavigations(adapter)`** — Export all navigations
+- **`handleExportSite(adapter, mediaAdapter)`** — Full site export (pages + navigations + media metadata)
+
+See `src/export/handlers.ts` for implementation and `src/export/types.ts` for the export format.
+
+### Adapter Factories
+
+- **`createStorageAdapter({ client })`** — Create a Supabase storage adapter
+- **`createMediaAdapter({ client, bucketName? })`** — Create a Supabase media adapter
+
+### Utilities
+
+- **`generateSlug(title)`** — Generate a URL-safe slug from a title
+- **`ensureUniqueSlug(adapter, slug)`** — Ensure slug uniqueness by appending a suffix if needed
 
 ## Dependencies
 
@@ -21,416 +114,25 @@ This package provides the backend infrastructure:
 | `@supabase/supabase-js` | Database and storage client |
 | `sanitize-html` | Server-side HTML sanitization for XSS protection |
 
-**Why `sanitize-html`?** Server-native (no jsdom/DOM emulation needed), configurable allowlists for tags and attributes, ~3.8M weekly downloads. Chosen over `isomorphic-dompurify` (pulls in jsdom) and DIY regex (security risk).
+## Database
 
-## Architecture
+Migrations live in `supabase/migrations/` at the monorepo root. See [ARCHITECTURE.md](../../ARCHITECTURE.md) for the database schema.
 
-### Storage Layer
-
-Persists structured content in PostgreSQL.
-
-**Responsibilities:**
-- Content CRUD operations
-- JSONB storage for section data
-- Media reference management
-- Database schema management
-
-**Database Schema (Conceptual):**
-```
-pages
-├─ id (uuid)
-├─ slug (text, unique)
-├─ page_type (text)
-├─ sections (jsonb)
-├─ created_at (timestamp)
-└─ updated_at (timestamp)
-
-media
-├─ id (uuid)
-├─ filename (text)
-├─ storage_path (text)
-├─ mime_type (text)
-├─ size (integer)
-└─ created_at (timestamp)
-
-navigation
-├─ id (uuid)
-├─ name (text)
-├─ items (jsonb)
-└─ updated_at (timestamp)
-```
-
-**Abstraction:**
-
-Storage operations are behind interfaces to allow future migration away from Supabase:
-
-```typescript
-interface StorageAdapter {
-  getPage(slug: string): Promise<Page | null>;
-  savePage(page: Page): Promise<Page>;
-  deletePage(id: string): Promise<void>;
-  listPages(filter?: PageFilter): Promise<Page[]>;
-}
-```
-
-### Domain API Layer
-
-Applies business logic to content operations.
-
-**Responsibilities:**
-- Content validation against registered schemas
-- Slug generation and uniqueness handling
-- Business rule enforcement
-
-**MVP Scope:**
-- Validation
-- Slug handling
-- CRUD orchestration
-
-**Phase 2 Additions:**
-- Publish state management (draft/published)
-- Locale resolution and fallback
-
-### Delivery API Layer
-
-Optimized REST endpoints for frontend consumption.
-
-**Responsibilities:**
-- Typed JSON responses
-- Section union types for frontend type safety
-- Response shaping for rendering
-
-**Endpoints (MVP):**
-```
-GET  /api/cms/pages              # List all pages
-GET  /api/cms/pages/:slug        # Get page by slug
-GET  /api/cms/navigation/:name   # Get navigation by name
-GET  /api/cms/media              # List media
-```
-
-### API Implementation Strategy
-
-This package exports **handler functions**, not complete route handlers.
-
-**Rationale:**
-- Framework-agnostic (not tied to Next.js)
-- Adapter injection for storage abstraction
-- Host projects control middleware, auth, caching
-- Easy unit testing without HTTP layer
-
-**Exported Handlers:**
-```typescript
-// Delivery API
-export function handleListPages(adapter: StorageAdapter): Promise<PageResponse[]>;
-export function handleGetPageBySlug(adapter: StorageAdapter, slug: string): Promise<PageResponse | null>;
-export function handleGetNavigation(adapter: StorageAdapter, name: string): Promise<NavigationResponse | null>;
-export function handleListMedia(adapter: MediaAdapter): Promise<MediaResponse[]>;
-
-// Admin API
-export function handleCreatePage(adapter: StorageAdapter, data: CreatePageInput): Promise<PageResponse>;
-export function handleUpdatePage(adapter: StorageAdapter, id: string, data: UpdatePageInput): Promise<PageResponse>;
-export function handleDeletePage(adapter: StorageAdapter, id: string): Promise<void>;
-export function handleUploadMedia(adapter: MediaAdapter, file: File): Promise<MediaResponse>;
-export function handleDeleteMedia(adapter: MediaAdapter, id: string): Promise<void>;
-```
-
-**Usage in Host Project:**
-```typescript
-// app/api/cms/pages/route.ts
-import { handleListPages, handleCreatePage } from '@structcms/api';
-import { adapter } from '@/lib/cms-adapter';
-
-export async function GET() {
-  const pages = await handleListPages(adapter);
-  return Response.json(pages);
-}
-
-export async function POST(request: Request) {
-  const data = await request.json();
-  const page = await handleCreatePage(adapter, data);
-  return Response.json(page, { status: 201 });
-}
-```
-
-```typescript
-// app/api/cms/pages/[slug]/route.ts
-import { handleGetPageBySlug, handleUpdatePage, handleDeletePage } from '@structcms/api';
-import { adapter } from '@/lib/cms-adapter';
-
-export async function GET(
-  request: Request,
-  { params }: { params: { slug: string } }
-) {
-  const page = await handleGetPageBySlug(adapter, params.slug);
-  if (!page) {
-    return Response.json({ error: 'Not found' }, { status: 404 });
-  }
-  return Response.json(page);
-}
-```
-
-**Response Format:**
-```typescript
-interface PageResponse {
-  id: string;
-  slug: string;
-  pageType: string;
-  sections: Section[];
-  meta: {
-    createdAt: string;
-    updatedAt: string;
-  };
-}
-```
-
----
-
-## Backlog
-
-This package contains three domains: Storage, Media, and Export.
-
-### Domain: STORAGE
-
-**Dependencies:** None  
-**Estimated Effort:** Medium
-
-| ID | Task | Acceptance Criteria | Status |
-|----|------|---------------------|--------|
-| S-1 | Storage Interface | `StorageAdapter` interface defined with CRUD methods | Todo |
-| S-2 | Supabase Adapter | `SupabaseStorageAdapter` implements `StorageAdapter` | Todo |
-| S-3 | DB Schema: Pages | `pages` table created with id, slug, page_type, sections (jsonb), timestamps | Todo |
-| S-4 | DB Schema: Navigation | `navigation` table created with id, name, items (jsonb), timestamps | Todo |
-| S-5 | Page CRUD | Create, Read, Update, Delete operations for pages | Todo |
-| S-6 | Navigation CRUD | Create, Read, Update, Delete operations for navigation | Todo |
-| S-7 | Slug Handling | Auto-generate slug from title, ensure uniqueness | Todo |
-| S-8 | Delivery Endpoints | `GET /api/cms/pages`, `GET /api/cms/pages/:slug`, `GET /api/cms/navigation/:name` | Todo |
-| S-9 | Integration Tests | All CRUD operations tested against Supabase | Todo |
-
-**Done Criteria:**
-- [ ] Storage interface is Supabase-agnostic
-- [ ] All CRUD operations work
-- [ ] Delivery endpoints return typed responses
-- [ ] Database migrations documented
-
----
-
-### Domain: MEDIA
-
-**Dependencies:** None  
-**Estimated Effort:** Medium
-
-| ID | Task | Acceptance Criteria | Status |
-|----|------|---------------------|--------|
-| ME-1 | Media Interface | `MediaAdapter` interface defined with upload/list/delete methods | Todo |
-| ME-2 | Supabase Media Adapter | `SupabaseMediaAdapter` implements `MediaAdapter` using Supabase Storage | Todo |
-| ME-3 | DB Schema: Media | `media` table with id, filename, storage_path, mime_type, size, timestamps | Todo |
-| ME-4 | Upload Endpoint | `POST /api/cms/media` accepts file upload, stores in Supabase Storage | Todo |
-| ME-5 | List Endpoint | `GET /api/cms/media` returns paginated media list | Todo |
-| ME-6 | Delete Endpoint | `DELETE /api/cms/media/:id` removes file and DB record | Todo |
-| ME-7 | Media Reference Type | `image` field type resolves to media URL in delivery | Todo |
-| ME-8 | Integration Tests | Upload, list, delete tested against Supabase Storage | Todo |
-
-**Done Criteria:**
-- [ ] Media interface is Supabase-agnostic
-- [ ] Files upload to Supabase Storage
-- [ ] Media can be referenced in content
-- [ ] URLs are publicly accessible
-
----
-
-### Domain: EXPORT
-
-**Dependencies:** Storage  
-**Estimated Effort:** Low
-
-| ID | Task | Acceptance Criteria | Status |
-|----|------|---------------------|--------|
-| E-1 | Single Page Export | `GET /api/cms/export/pages/:slug` returns full page JSON | Todo |
-| E-2 | All Pages Export | `GET /api/cms/export/pages` returns all pages as JSON array | Todo |
-| E-3 | Navigation Export | `GET /api/cms/export/navigation` returns all navigation as JSON | Todo |
-| E-4 | Full Export | `GET /api/cms/export` returns complete site content | Todo |
-| E-5 | Backup Documentation | Document backup strategy using export endpoints | Todo |
-
-**Done Criteria:**
-- [ ] All content exportable as JSON
-- [ ] Export format is documented
-- [ ] Backup process documented in README
-
----
-
-## Database Migrations
-
-SQL migrations are located in `migrations/`. Apply them in order via Supabase SQL Editor or CLI.
-
-### 001_create_pages_table.sql
-
-Creates the `pages` table for storing CMS pages.
-
-```sql
--- Apply via Supabase SQL Editor
--- Or: supabase db push (if using Supabase CLI)
-```
-
-**Schema:**
-- `id` (UUID, primary key, auto-generated)
-- `slug` (TEXT, unique, indexed)
-- `page_type` (TEXT, indexed)
-- `title` (TEXT)
-- `sections` (JSONB, default `[]`)
-- `created_at` (TIMESTAMPTZ, auto-set)
-- `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
-
-### 002_create_navigation_table.sql
-
-Creates the `navigation` table for storing navigation structures.
-
-**Schema:**
-- `id` (UUID, primary key, auto-generated)
-- `name` (TEXT, unique, indexed)
-- `items` (JSONB, default `[]`)
-- `created_at` (TIMESTAMPTZ, auto-set)
-- `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
-
-### 003_create_media_table.sql
-
-Creates the `media` table for storing media file metadata.
-
-**Schema:**
-- `id` (UUID, primary key, auto-generated)
-- `filename` (TEXT, original filename)
-- `storage_path` (TEXT, path in Supabase Storage bucket, indexed)
-- `mime_type` (TEXT, indexed)
-- `size` (INTEGER, file size in bytes)
-- `created_at` (TIMESTAMPTZ, auto-set, indexed DESC)
-- `updated_at` (TIMESTAMPTZ, auto-updated via trigger)
-
----
-
-## Backup & Export
-
-All content can be exported as JSON via handler functions. The export includes resolved media URLs so that media files can be downloaded separately.
-
-### Export Endpoints
-
-Set up these routes in your host project using the exported handlers:
-
-| Endpoint | Handler | Description |
-|----------|---------|-------------|
-| `GET /api/cms/export/pages/:slug` | `handleExportPage` | Export a single page with resolved media |
-| `GET /api/cms/export/pages` | `handleExportAllPages` | Export all pages |
-| `GET /api/cms/export/navigation` | `handleExportNavigations` | Export all navigation structures |
-| `GET /api/cms/export` | `handleExportSite` | Full site export (pages + navigations + media metadata) |
-
-### Example: Setting Up Export Routes
-
-```typescript
-// app/api/cms/export/route.ts
-import { handleExportSite } from '@structcms/api';
-import { storageAdapter, mediaAdapter } from '@/lib/cms-adapters';
-
-export async function GET() {
-  const result = await handleExportSite(storageAdapter, mediaAdapter);
-  return new Response(JSON.stringify(result.data, null, 2), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Disposition': result.contentDisposition,
-    },
-  });
-}
-```
-
-### Example: curl Commands
+## Development
 
 ```bash
-# Export full site
-curl -H "Authorization: Bearer $TOKEN" \
-  https://your-site.com/api/cms/export \
-  -o site-export.json
+# Run tests (watch mode)
+pnpm test
 
-# Export single page
-curl -H "Authorization: Bearer $TOKEN" \
-  https://your-site.com/api/cms/export/pages/home \
-  -o home.json
+# Run tests once
+pnpm test run
 
-# Export all pages
-curl -H "Authorization: Bearer $TOKEN" \
-  https://your-site.com/api/cms/export/pages \
-  -o pages-export.json
+# Build
+pnpm build
 
-# Export navigations
-curl -H "Authorization: Bearer $TOKEN" \
-  https://your-site.com/api/cms/export/navigation \
-  -o navigation-export.json
+# Type check
+pnpm typecheck
+
+# Regenerate Supabase types
+pnpm gen:types
 ```
-
-### Export Format
-
-The full site export (`handleExportSite`) returns:
-
-```json
-{
-  "pages": [
-    {
-      "id": "uuid",
-      "slug": "home",
-      "pageType": "landing",
-      "title": "Home Page",
-      "sections": [
-        {
-          "id": "section-uuid",
-          "type": "hero",
-          "data": { "title": "Welcome", "image": "https://cdn.example.com/hero.jpg" }
-        }
-      ],
-      "createdAt": "2025-01-15T10:00:00.000Z",
-      "updatedAt": "2025-01-15T10:00:00.000Z"
-    }
-  ],
-  "navigations": [
-    {
-      "id": "uuid",
-      "name": "main",
-      "items": [{ "label": "Home", "href": "/" }],
-      "updatedAt": "2025-01-15T10:00:00.000Z"
-    }
-  ],
-  "media": [
-    {
-      "id": "uuid",
-      "filename": "hero.jpg",
-      "url": "https://cdn.example.com/hero.jpg",
-      "mimeType": "image/jpeg",
-      "size": 204800,
-      "createdAt": "2025-01-15T10:00:00.000Z"
-    }
-  ],
-  "exportedAt": "2025-06-01T12:00:00.000Z"
-}
-```
-
-### Restoring from Export
-
-To restore content from an export:
-
-1. **Pages:** Iterate over `pages` array and call `storageAdapter.createPage()` for each entry. Map the `sections` data directly — media URLs in sections are already resolved strings and will be stored as-is.
-
-2. **Navigations:** Iterate over `navigations` array and call `storageAdapter.createNavigation()` for each entry.
-
-3. **Media:** The `media` array contains metadata and public URLs. To fully restore media:
-   - Download each file from its `url`
-   - Re-upload via `mediaAdapter.upload()` with the original `filename` and `mimeType`
-   - Update any page sections that reference the old media URLs with the new ones
-
-### Media Backup Considerations
-
-- **Media files are stored in Supabase Storage**, not in the database. The export contains metadata and public URLs, not the file bytes.
-- **Download media files separately** using the URLs in the `media` array of the export. Example:
-  ```bash
-  # Download all media files from export
-  cat site-export.json | jq -r '.media[].url' | xargs -I {} curl -O {}
-  ```
-- **Supabase Storage has its own backup mechanisms.** For production, consider enabling Supabase's Point-in-Time Recovery for the database and using the Storage API for file backups.
-- **Allowed file types:** Only image files are accepted (`image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`).
-- **URL stability:** Media URLs depend on the Supabase project. If migrating to a different Supabase project, all media must be re-uploaded and references updated.
-
----

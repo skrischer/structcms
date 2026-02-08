@@ -1,75 +1,118 @@
 # @structcms/admin
 
-Admin UI components for StructCMS.
+Admin UI components for StructCMS. Provides dynamic form generation from Zod schemas, section/page editors, media browser, navigation editor, and a layout shell for the admin interface.
 
-## Description
+For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 6: Admin UI).
 
-This package provides the content management interface:
+## File Structure
 
-- Dynamic form generation from schemas
-- Section editors
-- Media selection
-- Basic content listing & editing
+```
+packages/admin/
+├── src/
+│   ├── index.ts                              # Public exports
+│   ├── components/
+│   │   ├── editors/
+│   │   │   ├── page-editor.tsx               # Page editor with section management
+│   │   │   └── section-editor.tsx            # Section form from Zod schema
+│   │   ├── inputs/
+│   │   │   ├── string-input.tsx              # Single-line text input
+│   │   │   ├── text-input.tsx                # Textarea input
+│   │   │   ├── rich-text-editor.tsx          # WYSIWYG editor (Tiptap)
+│   │   │   ├── image-picker.tsx              # Media browser integration
+│   │   │   ├── array-field.tsx               # Add/remove/reorder items
+│   │   │   └── object-field.tsx              # Nested object form
+│   │   ├── content/
+│   │   │   ├── page-list.tsx                 # Page listing with search/filter
+│   │   │   └── navigation-editor.tsx         # Navigation item editor
+│   │   ├── media/
+│   │   │   └── media-browser.tsx             # Browse, upload, select media
+│   │   ├── layout/
+│   │   │   └── admin-layout.tsx              # Admin shell with sidebar
+│   │   └── ui/                               # Base UI primitives (button, input, label, etc.)
+│   ├── context/
+│   │   └── admin-context.tsx                 # AdminProvider (registry, API base URL)
+│   ├── hooks/
+│   │   ├── use-admin.ts                      # Access admin context
+│   │   └── use-api-client.ts                 # HTTP client for CMS API
+│   ├── lib/
+│   │   ├── form-generator.tsx                # Zod schema → React Hook Form mapping
+│   │   └── utils.ts                          # cn() utility (clsx + tailwind-merge)
+│   └── test/                                 # Test setup (jsdom, testing-library)
+├── package.json
+├── tsconfig.json
+├── vitest.config.ts
+└── tsup.config.ts
+```
 
-## Architecture
+## Key Concepts
 
-### Admin UI Layer
+### Form Generation
 
-Content management interface for editors.
+The `FormGenerator` component reads a Zod schema and renders the appropriate input component for each field based on its `FieldType` metadata (set by `fields.*` helpers from `@structcms/core`). See `src/lib/form-generator.tsx`.
 
-**Responsibilities (MVP):**
-- Dynamic form generation from Zod schemas
-- Section editors with field-type-specific inputs
-- Media browser and upload
-- Content listing
+### AdminProvider
 
-**Phase 2 Additions:**
-- Locale switching UI
-- Draft/publish toggle
+Wraps the admin UI with context providing the `registry` (from `@structcms/core`) and `apiBaseUrl`. All admin components access this via the `useAdmin()` hook. See `src/context/admin-context.tsx`.
 
-**Components:**
-- **PageEditor**: Edit page content and sections
-- **SectionEditor**: Edit individual section fields
-- **MediaBrowser**: Browse and select media
-- **ContentList**: List and filter content
+### API Client
 
-**Tech Stack:**
-- React
-- Tailwind CSS
-- shadcn/ui components
-- React Hook Form + Zod resolver
+The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `del`) for communicating with the CMS API routes in the host project. See `src/hooks/use-api-client.ts`.
 
----
+## Components
 
-## Backlog
+### Editors
+- **`PageEditor`** — Edit page title and sections (add, remove, reorder). See `src/components/editors/page-editor.tsx`.
+- **`SectionEditor`** — Renders a form for a single section based on its Zod schema. See `src/components/editors/section-editor.tsx`.
 
-**Dependencies:** Modeling (@structcms/core), Storage (@structcms/api), Media (@structcms/api)  
-**Estimated Effort:** High (largest domain)
+### Field Inputs
+- **`StringInput`** — Single-line text (`fields.string()`)
+- **`TextInput`** — Textarea (`fields.text()`)
+- **`RichTextEditor`** — WYSIWYG editor using Tiptap (`fields.richtext()`)
+- **`ImagePicker`** — Media browser integration (`fields.image()`)
+- **`ArrayField`** — Dynamic list with add/remove (`fields.array()`)
+- **`ObjectField`** — Nested form (`fields.object()`)
 
-### Tasks
+### Content
+- **`PageList`** — List pages with search and filter. See `src/components/content/page-list.tsx`.
+- **`NavigationEditor`** — Edit navigation items with nested children. See `src/components/content/navigation-editor.tsx`.
 
-| ID | Task | Acceptance Criteria | Status |
-|----|------|---------------------|--------|
-| A-1 | Form Generator | Generate React Hook Form from Zod schema | Todo |
-| A-2 | String Input | Text input for `string` fields | Todo |
-| A-3 | Text Input | Textarea for `text` fields | Todo |
-| A-4 | RichText Editor | WYSIWYG editor for `richtext` fields | Todo |
-| A-5 | Image Picker | Media browser integration for `image` fields | Todo |
-| A-6 | Array Field | Add/remove/reorder items for `array` fields | Todo |
-| A-7 | Object Field | Nested form for `object` fields | Todo |
-| A-8 | Section Editor | Render form for section based on registry | Todo |
-| A-9 | Page Editor | Edit page with multiple sections, add/remove/reorder sections | Todo |
-| A-10 | Page List | List all pages with filter/search | Todo |
-| A-11 | Navigation Editor | Edit navigation items | Todo |
-| A-12 | Media Browser | Browse, upload, select media | Todo |
-| A-13 | Layout Shell | Admin layout with sidebar navigation | Todo |
+### Media
+- **`MediaBrowser`** — Browse, upload, and select media files. See `src/components/media/media-browser.tsx`.
 
-### Done Criteria
+### Layout
+- **`AdminLayout`** — Admin shell with sidebar navigation. See `src/components/layout/admin-layout.tsx`.
 
-- [ ] All field types have working input components
-- [ ] Pages can be created, edited, deleted via UI
-- [ ] Media can be uploaded and selected
-- [ ] Navigation can be edited
-- [ ] UI is responsive and accessible
+### UI Primitives
+`Button`, `Input`, `Textarea`, `Label`, `Skeleton`, `Toast`, `ErrorBoundary` — base components in `src/components/ui/`.
 
----
+## Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `@structcms/core` | Registry, field type metadata |
+| `react-hook-form` | Form state management |
+| `@hookform/resolvers` | Zod resolver for react-hook-form |
+| `@tiptap/react` | Rich text editor |
+| `class-variance-authority` | Component variant styling |
+| `tailwind-merge` + `clsx` | Conditional class merging |
+| `zod` | Schema validation |
+
+Peer dependencies: `react ^19.0.0`, `react-dom ^19.0.0`
+
+## Development
+
+```bash
+# Run tests (watch mode)
+pnpm test
+
+# Run tests once
+pnpm test run
+
+# Build
+pnpm build
+
+# Type check
+pnpm typecheck
+```
+
+Tests use `@testing-library/react` with `jsdom`. See `src/test/setup.ts` for configuration.
