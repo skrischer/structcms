@@ -11,13 +11,7 @@ Minimal Next.js host application for E2E testing and reference implementation of
 
 ## Completed Tasks
 
-_No tasks completed yet._
-
----
-
-## In Progress
-
-_No tasks in progress._
+30 features implemented, 2 cleanup tasks completed. See detailed log below.
 
 ---
 
@@ -387,7 +381,7 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/api/cms/__test__/reset/route.ts` - POST to clear all data
+- `app/api/cms/testing/reset/route.ts` - POST to clear all data
 
 **Approach:**
 1. List all pages, navigations, media via adapters
@@ -408,7 +402,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/api/cms/__test__/reset/route.ts created
+- app/api/cms/testing/reset/route.ts created
 - Deletes all pages, navigations, and media
 
 ---
@@ -420,7 +414,7 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/api/cms/__test__/seed/route.ts` - POST to insert seed data
+- `app/api/cms/testing/seed/route.ts` - POST to insert seed data
 
 **Approach:**
 1. Import runSeed from seed-runner
@@ -440,7 +434,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/api/cms/__test__/seed/route.ts created
+- app/api/cms/testing/seed/route.ts created
 - Calls runSeed() and returns status with result details
 
 ---
@@ -452,7 +446,7 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/(admin)/layout.tsx` - Admin layout with AdminProvider
+- `app/admin/layout.tsx` - Admin layout with AdminProvider
 
 **Approach:**
 1. Create route group (admin) for admin pages
@@ -462,7 +456,7 @@ pnpm --filter test-app exec tsc --noEmit
 5. Use AdminLayout with onNavigate for client-side routing
 
 **Acceptance Criteria:**
-- [x] app/(admin)/layout.tsx wraps children with AdminProvider
+- [x] app/admin/layout.tsx wraps children with AdminProvider
 - [x] Passes registry and apiBaseUrl to AdminProvider
 - [x] Uses AdminLayout with onNavigate for client-side routing
 - [x] Sidebar navigation works (Pages, Navigation, Media)
@@ -475,7 +469,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/(admin)/layout.tsx created with AdminProvider and AdminLayout
+- app/admin/layout.tsx created with AdminProvider and AdminLayout
 - Client-side routing via useRouter
 
 ---
@@ -487,7 +481,7 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/(admin)/pages/page.tsx` - Page list view
+- `app/admin/pages/page.tsx` - Page list view
 
 **Approach:**
 1. Import PageList from @structcms/admin
@@ -496,7 +490,7 @@ pnpm --filter test-app exec tsc --noEmit
 4. onCreatePage navigates to /pages/new
 
 **Acceptance Criteria:**
-- [x] app/(admin)/pages/page.tsx renders PageList component
+- [x] app/admin/pages/page.tsx renders PageList component
 - [x] onSelectPage navigates to /pages/[slug]
 - [x] onCreatePage navigates to /pages/new
 
@@ -508,7 +502,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/(admin)/pages/page.tsx created with PageList component
+- app/admin/pages/page.tsx created with PageList component
 - Navigation handlers for select and create
 
 ---
@@ -520,7 +514,7 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/(admin)/pages/new/page.tsx` - Create new page view
+- `app/admin/pages/new/page.tsx` - Create new page view
 
 **Approach:**
 1. Import PageEditor from @structcms/admin
@@ -529,7 +523,7 @@ pnpm --filter test-app exec tsc --noEmit
 4. onSave creates page via API and redirects to list
 
 **Acceptance Criteria:**
-- [x] app/(admin)/pages/new/page.tsx renders PageEditor with empty data
+- [x] app/admin/pages/new/page.tsx renders PageEditor with empty data
 - [x] Page type selector available
 - [x] Save creates page and redirects to list
 
@@ -541,7 +535,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/(admin)/pages/new/page.tsx created with PageEditor
+- app/admin/pages/new/page.tsx created with PageEditor
 - Title, slug, and page type inputs
 - Page type selector from registry.getAllPageTypes()
 
@@ -554,7 +548,7 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/(admin)/pages/[slug]/page.tsx` - Edit page view
+- `app/admin/pages/[slug]/page.tsx` - Edit page view
 
 **Approach:**
 1. Fetch page by slug via useApiClient
@@ -562,7 +556,7 @@ pnpm --filter test-app exec tsc --noEmit
 3. onSave updates page via API
 
 **Acceptance Criteria:**
-- [x] app/(admin)/pages/[slug]/page.tsx fetches page by slug
+- [x] app/admin/pages/[slug]/page.tsx fetches page by slug
 - [x] Renders PageEditor with existing data
 - [x] Save updates page
 
@@ -574,7 +568,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/(admin)/pages/[slug]/page.tsx created
+- app/admin/pages/[slug]/page.tsx created
 - Fetches page data, renders PageEditor with existing sections
 - Loading skeleton and error handling
 
@@ -587,7 +581,7 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/(admin)/navigation/page.tsx` - Navigation editor view
+- `app/admin/navigation/page.tsx` - Navigation editor view
 
 **Approach:**
 1. Fetch main navigation via useApiClient
@@ -595,7 +589,7 @@ pnpm --filter test-app exec tsc --noEmit
 3. onSave updates navigation via API
 
 **Acceptance Criteria:**
-- [x] app/(admin)/navigation/page.tsx fetches main navigation
+- [x] app/admin/navigation/page.tsx fetches main navigation
 - [x] Renders NavigationEditor component
 - [x] Save persists changes
 
@@ -607,7 +601,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/(admin)/navigation/page.tsx created
+- app/admin/navigation/page.tsx created
 - Fetches main navigation, renders NavigationEditor
 - Loading skeleton and error handling
 
@@ -620,14 +614,14 @@ pnpm --filter test-app exec tsc --noEmit
 ### Plan
 
 **Files to create:**
-- `app/(admin)/media/page.tsx` - Media browser view
+- `app/admin/media/page.tsx` - Media browser view
 
 **Approach:**
 1. Render MediaBrowser component from @structcms/admin
 2. MediaBrowser handles upload, browse, delete internally via apiClient
 
 **Acceptance Criteria:**
-- [x] app/(admin)/media/page.tsx renders MediaBrowser component
+- [x] app/admin/media/page.tsx renders MediaBrowser component
 - [x] Upload, browse, delete functionality works
 
 **Verification:**
@@ -638,7 +632,7 @@ pnpm --filter test-app exec tsc --noEmit
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- app/(admin)/media/page.tsx created
+- app/admin/media/page.tsx created
 - MediaBrowser component handles all functionality
 
 ---

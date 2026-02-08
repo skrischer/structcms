@@ -27,9 +27,6 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest"
   },
-  "dependencies": {
-    "zod": "^3.23.0"
-  },
   "devDependencies": {
     "@vitest/coverage-v8": "2.1.9",
     "typescript": "~5.7.0"

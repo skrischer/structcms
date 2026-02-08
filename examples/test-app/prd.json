@@ -15,11 +15,20 @@
         "react-dom",
         "@supabase/supabase-js"
       ],
-      "dev": ["@playwright/test", "typescript"]
+      "dev": [
+        "@playwright/test",
+        "@tailwindcss/postcss",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "postcss",
+        "tailwindcss",
+        "typescript"
+      ]
     },
     "environment_variables": {
       "SUPABASE_URL": "https://xxx.supabase.co",
-      "SUPABASE_SERVICE_ROLE_KEY": "Service role key for server-side operations"
+      "SUPABASE_SECRET_KEY": "Service role key for server-side operations"
     },
     "file_structure": {
       "app/": "Next.js App Router pages and layouts",
@@ -27,7 +36,7 @@
       "app/admin/pages/": "Page list and editor views",
       "app/admin/navigation/": "Navigation editor view",
       "app/admin/media/": "Media browser view",
-      "app/[slug]/": "Dynamic frontend page rendering",
+      "app/[...slug]/": "Dynamic frontend page rendering",
       "app/api/cms/": "Route handlers wrapping @structcms/api",
       "app/api/cms/testing/": "Test-only reset and seed endpoints",
       "lib/": "Shared utilities (registry, adapters, seed data)",
@@ -167,7 +176,7 @@
     {
       "group": "Route Handlers",
       "feature": "Test Reset Endpoint",
-      "description": "Create POST /api/cms/__test__/reset to clear all data",
+      "description": "Create POST /api/cms/testing/reset to clear all data",
       "acceptance_criteria": [
         "Deletes all pages via storageAdapter",
         "Deletes all navigations via storageAdapter",
@@ -179,7 +188,7 @@
     {
       "group": "Route Handlers",
       "feature": "Test Seed Endpoint",
-      "description": "Create POST /api/cms/__test__/seed to insert seed data",
+      "description": "Create POST /api/cms/testing/seed to insert seed data",
       "acceptance_criteria": [
         "Calls runSeed() from seed-runner",
         "Returns { status: 'seeded' }",
@@ -192,7 +201,7 @@
       "feature": "Admin Layout",
       "description": "Create admin route group with AdminProvider and AdminLayout",
       "acceptance_criteria": [
-        "app/(admin)/layout.tsx wraps children with AdminProvider",
+        "app/admin/layout.tsx wraps children with AdminProvider",
         "Passes registry and apiBaseUrl to AdminProvider",
         "Uses AdminLayout with onNavigate for client-side routing",
         "Sidebar navigation works (Pages, Navigation, Media)"
@@ -204,7 +213,7 @@
       "feature": "Page List View",
       "description": "Create page list view at /pages",
       "acceptance_criteria": [
-        "app/(admin)/pages/page.tsx renders PageList component",
+        "app/admin/pages/page.tsx renders PageList component",
         "onSelectPage navigates to /pages/[slug]",
         "onCreatePage navigates to /pages/new"
       ],
@@ -215,7 +224,7 @@
       "feature": "Create Page View",
       "description": "Create new page view at /pages/new",
       "acceptance_criteria": [
-        "app/(admin)/pages/new/page.tsx renders PageEditor with empty data",
+        "app/admin/pages/new/page.tsx renders PageEditor with empty data",
         "Page type selector available",
         "Save creates page and redirects to list"
       ],
@@ -226,7 +235,7 @@
       "feature": "Edit Page View",
       "description": "Create edit page view at /pages/[slug]",
       "acceptance_criteria": [
-        "app/(admin)/pages/[slug]/page.tsx fetches page by slug",
+        "app/admin/pages/[slug]/page.tsx fetches page by slug",
         "Renders PageEditor with existing data",
         "Save updates page"
       ],
@@ -237,7 +246,7 @@
       "feature": "Navigation View",
       "description": "Create navigation editor view at /navigation",
       "acceptance_criteria": [
-        "app/(admin)/navigation/page.tsx fetches main navigation",
+        "app/admin/navigation/page.tsx fetches main navigation",
         "Renders NavigationEditor component",
         "Save persists changes"
       ],
@@ -248,7 +257,7 @@
       "feature": "Media View",
       "description": "Create media browser view at /media",
       "acceptance_criteria": [
-        "app/(admin)/media/page.tsx renders MediaBrowser component",
+        "app/admin/media/page.tsx renders MediaBrowser component",
         "Upload, browse, delete functionality works"
       ],
       "passes": true
@@ -405,6 +414,27 @@
         "Homepage (app/page.tsx) renders the CMS page with slug 'home' or shows a fallback",
         "Navigation links work and route to [slug] pages",
         "Browser verified: navigation visible, pages reachable via nav links"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Cleanup",
+      "feature": "Fix NavigationItem Import",
+      "description": "Change NavigationItem import in admin navigation page from @structcms/api to @structcms/core",
+      "acceptance_criteria": [
+        "app/admin/navigation/page.tsx imports NavigationItem from @structcms/core",
+        "TypeScript typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Cleanup",
+      "feature": "Tailwind v4 Config Cleanup",
+      "description": "Remove dead Tailwind v3 config file and unused autoprefixer dependency",
+      "acceptance_criteria": [
+        "tailwind.config.ts deleted (unused by Tailwind v4)",
+        "autoprefixer removed from devDependencies",
+        "Styles still render correctly"
       ],
       "passes": true
     },

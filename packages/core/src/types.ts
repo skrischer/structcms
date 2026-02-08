@@ -33,7 +33,6 @@ export interface DefineSectionConfig<T extends z.ZodRawShape> {
 export interface SectionDefinition<T extends z.ZodRawShape> {
   name: string;
   schema: z.ZodObject<T>;
-  _type: z.infer<z.ZodObject<T>>;
 }
 
 /**
@@ -43,7 +42,7 @@ export interface SectionDefinition<T extends z.ZodRawShape> {
  * type HeroData = InferSectionData<typeof HeroSection>; // { title: string }
  */
 export type InferSectionData<T extends SectionDefinition<z.ZodRawShape>> =
-  T['_type'];
+  z.infer<T['schema']>;
 
 /**
  * Configuration for defining a page type
@@ -75,7 +74,6 @@ export interface DefineNavigationConfig<T extends z.ZodTypeAny> {
 export interface NavigationDefinition<T extends z.ZodTypeAny = z.ZodTypeAny> {
   name: string;
   schema: T;
-  _itemType: z.infer<T>;
 }
 
 /**
