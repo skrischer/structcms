@@ -23,6 +23,20 @@ packages/core/
 └── tsup.config.ts                # Build config
 ```
 
+## Key Concepts
+
+### Code-First Modeling
+
+Content schemas are defined in TypeScript using Zod, not in a GUI. The `fields.*` helpers attach metadata that `@structcms/admin` uses for dynamic form generation. See `src/fields.ts`.
+
+### Registry Pattern
+
+The registry collects all section, page type, and navigation definitions at startup and provides runtime access via `getSection()`, `getPageType()`, etc. Host projects create one registry and pass it to `@structcms/admin`. See `src/registry.ts`.
+
+### Type Inference
+
+`InferSectionData<T>` extracts the TypeScript data type from a `SectionDefinition`, enabling fully typed frontend components without manual type definitions. See `src/types.ts`.
+
 ## Public API
 
 ### Modeling
@@ -58,7 +72,9 @@ Each field helper wraps a Zod schema with metadata used by `@structcms/admin` fo
 
 ## Dependencies
 
-- `zod` (peer dependency, `^3.23.0`)
+| Package | Purpose |
+|---------|----------|
+| `zod` | Schema definition and validation (peer dependency, `^3.23.0`) |
 
 ## Development
 
