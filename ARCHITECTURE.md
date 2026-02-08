@@ -6,7 +6,9 @@ For package-specific details, see:
 - [@structcms/core](./packages/core/README.md) — Modeling, Registry, Types
 - [@structcms/api](./packages/api/README.md) — Storage, Domain API, Delivery API
 - [@structcms/admin](./packages/admin/README.md) — Admin UI Components
-- [E2E Test App](./examples/test-app/README.md) — Integration Testing, Reference Implementation
+- [E2E Test App](./examples/test-app/README.md) — Integration Testing
+
+For product scope and roadmap, see [CONCEPT.md](./CONCEPT.md).
 
 ---
 
@@ -29,88 +31,53 @@ StructCMS is embedded into the host project but connects to managed backend infr
 
 ---
 
-## Layer 1: Modeling Layer
+## Layer 1: Modeling Layer (`@structcms/core`)
 
 **Purpose**: Defines schemas and content structures using Zod.
 
-### Responsibilities
-- Section schema definitions
-- Field type definitions (text, richtext, image, reference, etc.)
+- Section schema definitions via `defineSection`
+- Field type definitions (`fields.string()`, `fields.richtext()`, `fields.image()`, etc.)
 - Validation rules
-- TypeScript type inference from schemas
+- TypeScript type inference from schemas via `InferSectionData`
 
-### Key Concepts
-- **Section**: A reusable content block with defined fields
-- **Page Type**: A template defining which sections a page can contain
-- **Field Types**: Primitives and complex types for content fields
+Key concepts: **Section** (reusable content block with defined fields), **Page Type** (template defining which sections a page can contain), **Field Types** (primitives and complex types for content fields).
 
-### Example
-```typescript
-import { z } from 'zod';
-import { defineSection } from '@structcms/core';
-
-export const HeroSection = defineSection({
-  name: 'hero',
-  fields: {
-    title: z.string().min(1),
-    subtitle: z.string().optional(),
-    image: z.string().url(), // Media reference
-    cta: z.object({
-      label: z.string(),
-      href: z.string(),
-    }).optional(),
-  },
-});
-```
+See `packages/core/src/` for implementation.
 
 ---
 
-## Layer 2: Registry Layer
+## Layer 2: Registry Layer (`@structcms/core`)
 
 **Purpose**: Registers models from the host website project.
 
-### Responsibilities
 - Section registry (collect all section definitions)
 - Page type registry
 - Navigation model registry
-- Runtime type resolution
+- Runtime type resolution via `createRegistry`
 
-### Key Concepts
-- **Registry**: Central store for all content model definitions
-- **Dynamic Registration**: Host projects register their own models at startup
-
-### Example
-```typescript
-import { createRegistry } from '@structcms/core';
-import { HeroSection, TextSection, GallerySection } from './sections';
-
-export const registry = createRegistry({
-  sections: [HeroSection, TextSection, GallerySection],
-  pageTypes: ['landing', 'article', 'contact'],
-});
-```
+The registry is the central store for all content model definitions. Host projects register their own models at startup.
 
 ---
 
-## Layer 3: Storage Layer
+## Layer 3: Storage Layer (`@structcms/api`)
 
-**Purpose**: Persists structured content in PostgreSQL.
+**Purpose**: Persists structured content in PostgreSQL via Supabase.
 
-### Responsibilities
 - Content CRUD operations
 - JSONB storage for section data
-- Media reference management
-- Database schema management
+- Media file management (Supabase Storage)
 
-### Database Schema (Conceptual)
+### Database Schema
+
 ```
 pages
 ├─ id (uuid)
 ├─ slug (text, unique)
 ├─ page_type (text)
+├─ title (text)
 ├─ sections (jsonb)
-├─ created_at (timestamp)
-└─ updated_at (timestamp)
+├─ created_at (timestamptz)
+└─ updated_at (timestamptz)
 
 media
 ├─ id (uuid)
@@ -118,199 +85,97 @@ media
 ├─ storage_path (text)
 ├─ mime_type (text)
 ├─ size (integer)
-└─ created_at (timestamp)
+├─ created_at (timestamptz)
+└─ updated_at (timestamptz)
 
 navigation
 ├─ id (uuid)
 ├─ name (text)
 ├─ items (jsonb)
-└─ updated_at (timestamp)
+├─ created_at (timestamptz)
+└─ updated_at (timestamptz)
 ```
 
-### Abstraction
-Storage operations are behind interfaces to allow future migration away from Supabase:
-
-```typescript
-interface StorageAdapter {
-  getPage(slug: string): Promise<Page | null>;
-  savePage(page: Page): Promise<Page>;
-  deletePage(id: string): Promise<void>;
-  listPages(filter?: PageFilter): Promise<Page[]>;
-}
-```
+Storage operations are behind `StorageAdapter` and `MediaAdapter` interfaces to allow future migration away from Supabase. See `packages/api/src/storage/` for the adapter interfaces and Supabase implementation.
 
 ---
 
-## Layer 4: Domain API Layer
+## Layer 4: Domain API Layer (`@structcms/api`)
 
 **Purpose**: Applies business logic to content operations.
 
-### Responsibilities
 - Content validation against registered schemas
 - Slug generation and uniqueness handling
-- Business rule enforcement
-
-### MVP Scope
-- Validation
-- Slug handling
 - CRUD orchestration
 
-### Phase 2 Additions
-- Publish state management (draft/published)
-- Locale resolution and fallback
+`@structcms/api` exports **handler functions** (e.g. `handleListPages`, `handleCreatePage`), not complete route handlers. This keeps the package framework-agnostic and allows adapter injection. See `packages/api/src/storage/` and `packages/api/src/delivery/` for implementation.
 
 ---
 
-## Layer 5: Delivery API Layer
+## Layer 5: Delivery API Layer (Host Project)
 
-**Purpose**: Optimized REST endpoints for frontend consumption.
+**Purpose**: REST endpoints for frontend consumption.
 
-### Responsibilities
-- Typed JSON responses
-- Section union types for frontend type safety
-- Response shaping for rendering
+The host project creates thin route handlers that inject adapters into the handler functions from `@structcms/api`. See `examples/test-app/app/api/cms/` for a reference implementation.
 
-### Endpoints (MVP)
+### Endpoints
+
 ```
 GET  /api/cms/pages              # List all pages
 GET  /api/cms/pages/:slug        # Get page by slug
+POST /api/cms/pages              # Create page
+PUT  /api/cms/pages/:slug        # Update page
+DELETE /api/cms/pages/:slug      # Delete page
 GET  /api/cms/navigation/:name   # Get navigation by name
+PUT  /api/cms/navigation/:name   # Update navigation
 GET  /api/cms/media              # List media
-```
-
-### API Implementation Strategy
-
-`@structcms/api` exports **handler functions**, not complete route handlers. This approach:
-
-- Keeps the package framework-agnostic (not tied to Next.js)
-- Allows adapter injection for storage abstraction
-- Gives host projects full control over middleware, auth, and caching
-- Enables easy unit testing without HTTP layer
-
-**Package exports:**
-```typescript
-// @structcms/api
-export function handleListPages(adapter: StorageAdapter): Promise<PageResponse[]>;
-export function handleGetPageBySlug(adapter: StorageAdapter, slug: string): Promise<PageResponse | null>;
-export function handleGetNavigation(adapter: StorageAdapter, name: string): Promise<NavigationResponse | null>;
-export function handleListMedia(adapter: MediaAdapter): Promise<MediaResponse[]>;
-```
-
-**Host project usage:**
-```typescript
-// app/api/cms/pages/route.ts
-import { handleListPages } from '@structcms/api';
-import { adapter } from '@/lib/cms-adapter';
-
-export async function GET() {
-  const pages = await handleListPages(adapter);
-  return Response.json(pages);
-}
-```
-
-```typescript
-// app/api/cms/pages/[slug]/route.ts
-import { handleGetPageBySlug } from '@structcms/api';
-import { adapter } from '@/lib/cms-adapter';
-
-export async function GET(
-  request: Request,
-  { params }: { params: { slug: string } }
-) {
-  const page = await handleGetPageBySlug(adapter, params.slug);
-  if (!page) {
-    return Response.json({ error: 'Not found' }, { status: 404 });
-  }
-  return Response.json(page);
-}
-```
-
-### Response Format
-```typescript
-interface PageResponse {
-  id: string;
-  slug: string;
-  pageType: string;
-  sections: Section[]; // Union of all registered section types
-  meta: {
-    createdAt: string;
-    updatedAt: string;
-  };
-}
+POST /api/cms/media              # Upload media
+DELETE /api/cms/media/:id        # Delete media
 ```
 
 ---
 
-## Layer 6: Admin UI Layer
+## Layer 6: Admin UI Layer (`@structcms/admin`)
 
 **Purpose**: Content management interface for editors.
 
-### Responsibilities (MVP)
 - Dynamic form generation from Zod schemas
 - Section editors with field-type-specific inputs
 - Media browser and upload
-- Content listing
+- Content listing and filtering
 
-### Phase 2 Additions
-- Locale switching UI
-- Draft/publish toggle
+Key components: `PageEditor`, `SectionEditor`, `MediaBrowser`, `PageList`, `NavigationEditor`, `AdminLayout`, `AdminProvider`.
 
-### Components
-- **PageEditor**: Edit page content and sections
-- **SectionEditor**: Edit individual section fields
-- **MediaBrowser**: Browse and select media
-- **ContentList**: List and filter content
-
-### Tech Stack
-- React
-- Tailwind CSS
-- shadcn/ui components
-- React Hook Form + Zod resolver
+See `packages/admin/src/components/` for implementation.
 
 ---
 
-## Layer 7: Rendering Integration Layer
+## Layer 7: Rendering Integration (Host Project)
 
-**Purpose**: Maps CMS content to frontend components.
+**Purpose**: Maps CMS content to frontend React components.
 
-### Responsibilities
-- Section → Component mapping
-- Typed props delivery to components
-- Rendering utilities for host projects
+- Section type → Component mapping via a component registry
+- Type-safe props via `InferSectionData` from `@structcms/core`
+- Server Component rendering with direct adapter access (no HTTP roundtrip)
 
-### Example
-```typescript
-import { createSectionRenderer } from '@structcms/core';
-import { HeroComponent, TextComponent } from './components';
-
-const renderSection = createSectionRenderer({
-  hero: HeroComponent,
-  text: TextComponent,
-  gallery: GalleryComponent,
-});
-
-// In page component
-export function Page({ sections }) {
-  return sections.map((section, i) => renderSection(section, i));
-}
-```
+See `examples/test-app/lib/components/` for a reference implementation.
 
 ---
 
 ## Data Flow
 
 ```
-1. Developer defines sections (Modeling Layer)
+1. Developer defines sections          (Modeling Layer)
          ↓
-2. Sections registered at startup (Registry Layer)
+2. Sections registered at startup      (Registry Layer)
          ↓
-3. Admin UI generates forms from schemas (Admin UI Layer)
+3. Admin UI generates forms            (Admin UI Layer)
          ↓
-4. Content validated and saved (Domain API → Storage Layer)
+4. Content validated and saved          (Domain API → Storage Layer)
          ↓
-5. Frontend fetches content (Delivery API Layer)
+5. Frontend fetches content             (Delivery API Layer)
          ↓
-6. Content rendered to components (Rendering Integration Layer)
+6. Content rendered to components       (Rendering Integration)
 ```
 
 ---
@@ -319,33 +184,14 @@ export function Page({ sections }) {
 
 | Package | Contains | Depends On |
 |---------|----------|------------|
-| `@structcms/core` | Modeling, Registry, Types | zod |
-| `@structcms/api` | Storage, Domain API, Delivery API | `@structcms/core`, supabase-js |
-| `@structcms/admin` | Admin UI components | `@structcms/core`, react, shadcn/ui |
+| `@structcms/core` | Modeling, Registry, Types | `zod` |
+| `@structcms/api` | Storage, Domain API, Delivery API | `@structcms/core`, `@supabase/supabase-js` |
+| `@structcms/admin` | Admin UI components | `@structcms/core`, `react`, `tailwindcss`, `shadcn/ui` |
 
 ---
 
-## E2E Testing Layer
+## E2E Testing
 
-**Purpose**: Integration testing of all packages together in a realistic host application.
+Integration testing of all packages together in a realistic host application (`examples/test-app/`). Uses Playwright against a real Supabase test instance — no mocks.
 
-### Responsibilities
-- Full-stack validation: Admin UI → API handlers → Supabase DB/Storage
-- E2E tests for critical admin flows (Playwright)
-- Reference implementation for host project integration
-- Seed data and cleanup for reproducible test runs
-
-### Key Concepts
-- **Test App**: Minimal Next.js App Router project in `examples/test-app/`
-- **Real Backend**: Connects to Supabase test instance — no mocks
-- **Seed Data**: Representative pages, sections, and navigation for test scenarios
-- **Reset/Seed Endpoints**: `POST /api/cms/__test__/reset` and `/seed` for test lifecycle
-
-### Tech Stack
-- Next.js (App Router)
-- Playwright
-- Supabase (test instance)
-
-For file structure, adapter setup, seed data, cleanup strategy, and E2E test specifications, see the [E2E Test App README](./examples/test-app/README.md).
-
----
+For details, see the [E2E Test App README](./examples/test-app/README.md).

@@ -1,214 +1,86 @@
-# StructCMS — MVP
+# StructCMS
 
-## Idea / Purpose
+A code-first, installable headless CMS framework that lives inside your website codebase. Content models are defined in TypeScript, validated with Zod, and rendered with full type safety.
 
-StructCMS is an installable, code-first headless CMS framework designed for modern website projects.  
-It is built to live **inside** the website codebase rather than as an external SaaS platform.
+For product vision, scope, and positioning, see [CONCEPT.md](./CONCEPT.md).
 
-The goal is to provide a lightweight, developer‑first content system that enables structured content modeling, typed delivery, and section‑based page building — without platform lock‑in or GUI‑driven schema management.
+## Monorepo Structure
 
----
-
-## Core Value Proposition
-
-StructCMS exists to solve common friction in agency and corporate website development:
-
-- External CMS platforms create deployment, modeling, and preview complexity
-- GUI‑driven schema modeling breaks versioning and type safety
-- SaaS CMS setups are often oversized for marketing sites
-- Multi‑project reuse of CMS infrastructure is inefficient
-
-StructCMS embeds content infrastructure directly into the site stack.
-
----
-
-## Unique Selling Points (USPs)
-
-### 1. Code‑First Modeling
-Content models are defined in TypeScript, not in a GUI.
-
-### 2. Embedded Architecture
-The CMS runs inside the website repository.
-
-### 3. Installable Framework
-Distributed as a dependency, not a platform.
-
-### 4. Typed Content Delivery
-Frontend rendering is fully type‑safe.
-
-### 5. Section‑Native Content
-Optimized for page builders and structured website layouts.
-
-### 6. Registry‑Driven Extensibility
-Website projects register their own models dynamically.
-
----
-
-## Project Description
-
-StructCMS provides:
-
-- Content storage with PostgreSQL/JSONB
-- Code-first model registry
-- Admin UI with dynamic form generation
-- REST Delivery API
-- Media management
-
-Planned for Phase 2:
-- Multisite capability
-- Localization support
-- Draft/Publish workflow
-
-It is designed primarily for:
-
-- Agency websites
-- Corporate marketing sites
-- Landing pages
-
----
-
-## In Scope (MVP)
-
-### Content Modeling
-- Code‑defined schemas (Zod)
-- Section/block content
-- Page structures
-- Navigation models
-
-### Admin UI
-- Dynamic form generation from schemas
-- Section editors
-- Media selection
-- Basic content listing & editing
-
-### API
-- Content CRUD
-- Delivery endpoints
-
-### Backend Abstraction
-- Storage interface (Supabase-agnostic)
-- Auth interface (Supabase-agnostic)
-- Future portability to self-hosted PostgreSQL
-
-### Media
-- Upload
-- Storage (Supabase Storage)
-- Referencing in content
-
-### Content Export
-- JSON export of content
-- Database backup strategy
-
----
-
-## In Scope (Phase 2)
-
-### Draft/Publish States
-- Content draft mode
-- Publish workflow
-- Preview endpoints
-
-### Localization
-- Field‑level translations
-- Configurable locales
-- Fallback handling
-- Admin UI locale switching
-
-### Multisite
-- Site isolation
-- Domain mapping
-- Content isolation
-
----
-
-## Out of Scope
-
-- Visual drag‑and‑drop page builder
-- Workflow/approval systems
-- Role hierarchies beyond basic auth
-- Version history / Content versioning
-- AI content generation
-- Translation automation
-- Enterprise publishing pipelines
-- Advanced caching layers
-- GraphQL API
-- Plugin marketplace
-
----
-
-## Tech Stack
-
-### Runtime
-- Next.js (App Router)
-- Node.js
-- React
-
-### Language
-- TypeScript
-
-### Modeling & Validation
-- Zod
-
-### Database
-- PostgreSQL
-
-### Backend Platform
-- Supabase (DB, Auth, Storage)
-- **Abstraction Layer**: Storage and Auth behind interfaces for future portability
-
-### API Layer
-- REST (Route Handlers)
-- PostgREST (storage access)
-
-### Admin UI
-- React
-- Tailwind
-- shadcn/ui
-- React Hook Form
-
-### Media Storage
-- Supabase Storage (S3‑compatible)
-
----
-
-## Distribution Strategy
-
-StructCMS is distributed as an **npm package** installed into the host project.
-
-### Package Structure
 ```
-@structcms/core      # Models, validation, types
-@structcms/admin     # Admin UI components
-@structcms/api       # Route handlers, delivery API
+structcms/
+├── packages/
+│   ├── core/                  # @structcms/core — Modeling, Registry, Types
+│   ├── api/                   # @structcms/api — Storage, Domain API, Delivery API
+│   └── admin/                 # @structcms/admin — Admin UI Components
+├── examples/
+│   └── test-app/              # E2E test app (Next.js + Playwright)
+├── supabase/                  # Database migrations
+├── ARCHITECTURE.md            # Technical layer documentation
+├── CONCEPT.md                 # Product vision, scope, risks
+├── biome.json                 # Linter/formatter config
+├── tsconfig.base.json         # Shared TypeScript config
+├── vitest.workspace.ts        # Test workspace config
+└── pnpm-workspace.yaml        # Monorepo workspace definition
 ```
 
-For package-specific documentation, see:
-- [@structcms/core](./packages/core/README.md)
-- [@structcms/api](./packages/api/README.md)
-- [@structcms/admin](./packages/admin/README.md)
-- [E2E Test App](./examples/test-app/README.md)
+## Packages
 
-### Versioning
-- Semantic versioning (semver)
-- Breaking changes only in major versions
-- Migration guides for major updates
+| Package | Description | Docs |
+|---|---|---|
+| `@structcms/core` | Section definitions, page types, registry, type inference | [README](./packages/core/README.md) |
+| `@structcms/api` | Supabase storage/media adapters, handler functions | [README](./packages/api/README.md) |
+| `@structcms/admin` | Admin UI components (React, Tailwind, shadcn/ui) | [README](./packages/admin/README.md) |
+| `test-app` | E2E integration test app | [README](./examples/test-app/README.md) |
 
-### Update Strategy
-- Host projects pin to specific versions
-- Changelog documents all changes
-- Non-breaking updates via `npm update`
+## Setup
 
----
+```bash
+# 1. Clone and install
+git clone https://github.com/skrischer/structcms.git
+cd structcms
+pnpm install
 
-## High‑Level Architecture
+# 2. Environment variables
+cp .env.example .env
+# Fill in SUPABASE_URL and SUPABASE_SECRET_KEY
+
+# 3. Build all packages
+pnpm build
+
+# 4. Run tests
+pnpm test:run
+
+# 5. Type check
+pnpm typecheck
+```
+
+## Development
+
+```bash
+# Run unit tests (watch mode)
+pnpm test
+
+# Run tests for a specific package
+pnpm test -w @structcms/core
+
+# Lint & format
+pnpm lint
+pnpm format
+
+# Start test app dev server
+pnpm --filter test-app dev
+```
+
+## Architecture
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical layer documentation.
 
 ```
 Website Project
 │
-├─ StructCMS Core
-├─ StructCMS Admin
-├─ StructCMS API
-├─ StructCMS Models
+├─ @structcms/core       # Models, validation, types
+├─ @structcms/admin      # Admin UI components
+├─ @structcms/api        # Route handlers, delivery API
 │
 └─ Supabase Backend
     ├─ PostgreSQL
@@ -216,55 +88,9 @@ Website Project
     └─ Storage
 ```
 
-StructCMS is embedded but connects to managed backend infrastructure.
+## Environment Variables
 
----
-
-## E2E Test Application
-
-A minimal Next.js host application in `examples/test-app/` integrates all three packages for end-to-end testing with Playwright. It connects to the real Supabase test instance — no mocks.
-
-For details, see the [E2E Test App README](./examples/test-app/README.md).
-
----
-
-## Technical Layers
-
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical layer documentation.
-
-Summary:
-1. **Modeling Layer** - Zod schemas, field types
-2. **Registry Layer** - Section/page type registration
-3. **Storage Layer** - PostgreSQL, JSONB sections
-4. **Domain API Layer** - Validation, slug handling
-5. **Delivery API Layer** - Typed REST responses
-6. **Admin UI Layer** - Dynamic forms, media browser
-7. **Rendering Integration** - Section → Component mapping
-
----
-
-## Known Limitations & Risks
-
-### Technical Risks
-- **Admin UI Complexity**: Dynamic form generation is the largest development effort
-- **Supabase Dependency**: Currently tied to Supabase; abstraction layer mitigates but doesn't eliminate
-
-### Operational Risks
-- **Multi-Project Updates**: Breaking changes require coordinated updates across client projects
-- **Schema Migrations**: Content model changes may require data migrations
-
-### Mitigations
-- Abstraction interfaces for Storage and Auth
-- Semantic versioning with clear migration paths
-- Content export for data portability
-- Comprehensive TypeScript types for early error detection
-
----
-
-## Positioning Statement
-
-StructCMS is a developer‑first, installable headless CMS framework that enables structured, typed content modeling directly inside modern website applications.
-
-It prioritizes architecture simplicity, modeling flexibility, and deployment ownership over SaaS abstraction.
-
----
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SECRET_KEY=your-service-role-key
+```

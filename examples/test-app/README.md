@@ -96,7 +96,7 @@ examples/test-app/
 ```bash
 # 1. Copy environment variables
 cp .env.example .env.local
-# Fill in SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+# Fill in SUPABASE_URL and SUPABASE_SECRET_KEY
 
 # 2. Install dependencies (from monorepo root)
 pnpm install
@@ -113,7 +113,7 @@ curl -X POST http://localhost:3000/api/cms/testing/seed
 ```bash
 # .env.local (gitignored)
 SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
+SUPABASE_SECRET_KEY=eyJ...
 ```
 
 CI uses GitHub Secrets for the same variables.
