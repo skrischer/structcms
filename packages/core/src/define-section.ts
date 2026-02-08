@@ -16,7 +16,7 @@ import type { DefineSectionConfig, SectionDefinition } from './types';
  * });
  *
  * // Type is inferred: { title: string; subtitle?: string; image: string }
- * type HeroData = typeof HeroSection._type;
+ * type HeroData = InferSectionData<typeof HeroSection>;
  */
 export function defineSection<T extends z.ZodRawShape>(
   config: DefineSectionConfig<T>
@@ -26,8 +26,5 @@ export function defineSection<T extends z.ZodRawShape>(
   return {
     name: config.name,
     schema,
-    // TODO: Phantom type — `as unknown as` is required here because _type exists only
-    // for compile-time type inference (InferSectionData<T>) and is never read at runtime.
-    _type: undefined as unknown as z.infer<typeof schema>,
   };
 }

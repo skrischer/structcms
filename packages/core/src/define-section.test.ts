@@ -88,7 +88,7 @@ describe('defineSection', () => {
       },
     });
 
-    type TestType = typeof TestSection._type;
+    type TestType = InferSectionData<typeof TestSection>;
 
     const testData: TestType = {
       requiredString: 'hello',
