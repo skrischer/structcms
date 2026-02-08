@@ -34,7 +34,6 @@ packages/api/
 │   │   └── sanitize.ts                   # HTML sanitization (XSS protection)
 │   └── types/
 │       └── database.types.ts             # Generated Supabase types
-├── migrations/                           # Legacy (migrations now in /supabase/migrations/)
 ├── package.json
 ├── tsconfig.json
 └── tsup.config.ts
