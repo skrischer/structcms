@@ -52,6 +52,8 @@ export function defineNavigation<T extends z.ZodTypeAny>(
   return {
     name: config.name,
     schema: schema as T | typeof defaultNavigationItemSchema,
+    // TODO: Phantom type — `as unknown as` is required here because _itemType exists only
+    // for compile-time type inference and is never read at runtime.
     _itemType: undefined as unknown as z.infer<
       T | typeof defaultNavigationItemSchema
     >,
