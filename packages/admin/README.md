@@ -93,6 +93,9 @@ The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `de
 | `react-hook-form` | Form state management |
 | `@hookform/resolvers` | Zod resolver for react-hook-form |
 | `@tiptap/react` | Rich text editor |
+| `@tiptap/starter-kit` | TipTap base extensions (bold, italic, lists, headings) |
+| `@tiptap/extension-link` | TipTap link extension |
+| `@tiptap/pm` | TipTap ProseMirror bindings |
 | `class-variance-authority` | Component variant styling |
 | `tailwind-merge` + `clsx` | Conditional class merging |
 | `zod` | Schema validation |

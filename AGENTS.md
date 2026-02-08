@@ -176,8 +176,36 @@ export { generateSlug, ensureUniqueSlug } from './utils';
 
 ### @structcms/admin
 ```typescript
-export { PageEditor } from './components/page-editor';
-export { SectionEditor } from './components/section-editor';
-export { MediaBrowser } from './components/media-browser';
-export { AdminLayout } from './components/admin-layout';
+// Context & Hooks
+export { AdminProvider } from './context/admin-context';
+export { useAdmin } from './hooks/use-admin';
+export { useApiClient } from './hooks/use-api-client';
+export type { AdminProviderProps, AdminContextValue, ApiClient, ApiResponse, ApiError } from '...';
+
+// Editors
+export { PageEditor } from './components/editors/page-editor';
+export { SectionEditor } from './components/editors/section-editor';
+
+// Field Inputs
+export { StringInput, TextInput, RichTextEditor, ImagePicker,
+  ArrayField, ObjectField } from './components/inputs/...';
+
+// Content
+export { PageList } from './components/content/page-list';
+export { NavigationEditor } from './components/content/navigation-editor';
+
+// Media & Layout
+export { MediaBrowser } from './components/media/media-browser';
+export { AdminLayout } from './components/layout/admin-layout';
+export type { SidebarNavItem } from './components/layout/admin-layout';
+
+// Form Generation
+export { FormGenerator, resolveFieldType, fieldNameToLabel } from './lib/form-generator';
+
+// UI Primitives
+export { Button, Input, Textarea, Label, Skeleton, ToastProvider,
+  useToast, ErrorBoundary } from './components/ui/...';
+
+// Utilities
+export { cn } from './lib/utils';
 ```
