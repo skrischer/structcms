@@ -138,16 +138,40 @@ docs: update README with examples
 ```typescript
 export { defineSection } from './define-section';
 export { definePageType } from './define-page-type';
-export { defineNavigation } from './define-navigation';
+export { defineNavigation, defaultNavigationItemSchema } from './define-navigation';
+export { fields, getFieldMeta, isFieldType } from './fields';
 export { createRegistry } from './registry';
-export type { SectionDefinition, PageTypeDefinition, Registry } from './types';
+export { createSectionRenderer } from './section-renderer';
+export type { SectionDefinition, PageTypeDefinition, NavigationDefinition, Registry,
+  FieldType, FieldMeta, InferSectionData, NavigationItem,
+  SectionData, SectionComponentProps, SectionRenderer } from './types';
 ```
 
 ### @structcms/api
 ```typescript
-export { createStorageAdapter } from './storage';
-export { createMediaAdapter } from './media';
-export type { StorageAdapter, MediaAdapter, Page, MediaFile } from './types';
+// Storage
+export { createStorageAdapter, SupabaseStorageAdapter, StorageError } from './storage';
+export { handleCreatePage, handleUpdatePage, handleDeletePage,
+  handleCreateNavigation, handleUpdateNavigation, handleDeleteNavigation,
+  StorageValidationError } from './storage';
+export type { StorageAdapter, Page, PageSection, Navigation, NavigationItem } from './storage';
+
+// Delivery
+export { handleListPages, handleGetPageBySlug, handleGetNavigation } from './delivery';
+export type { PageResponse, NavigationResponse, ListPagesOptions } from './delivery';
+
+// Media
+export { createMediaAdapter, SupabaseMediaAdapter, MediaError,
+  handleUploadMedia, handleGetMedia, handleListMedia, handleDeleteMedia,
+  MediaValidationError, resolveMediaReferences, ALLOWED_MIME_TYPES } from './media';
+export type { MediaAdapter, MediaFile, UploadMediaInput, MediaFilter } from './media';
+
+// Export
+export { handleExportPage, handleExportAllPages, handleExportNavigations, handleExportSite } from './export';
+export type { PageExportResponse, SiteExportResponse, MediaExportEntry } from './export';
+
+// Utils
+export { generateSlug, ensureUniqueSlug } from './utils';
 ```
 
 ### @structcms/admin

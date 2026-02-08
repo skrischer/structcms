@@ -98,13 +98,29 @@ See `src/export/handlers.ts` for implementation and `src/export/types.ts` for th
 
 ### Adapter Factories
 
-- **`createStorageAdapter({ client })`** — Create a Supabase storage adapter
-- **`createMediaAdapter({ client, bucketName? })`** — Create a Supabase media adapter
+- **`createStorageAdapter({ client })`** — Create a Supabase storage adapter. Returns `SupabaseStorageAdapter`.
+- **`createMediaAdapter({ client, bucketName? })`** — Create a Supabase media adapter. Returns `SupabaseMediaAdapter`.
+
+### Adapter Classes
+
+- **`SupabaseStorageAdapter`** — Supabase implementation of `StorageAdapter`. See `src/storage/supabase-adapter.ts`.
+- **`SupabaseMediaAdapter`** — Supabase implementation of `MediaAdapter`. See `src/media/supabase-adapter.ts`.
+
+### Error Classes
+
+- **`StorageError`** — Thrown by `SupabaseStorageAdapter` on database errors.
+- **`StorageValidationError`** — Thrown by storage handlers on validation failures (empty title, duplicate slug). Has `code` property.
+- **`MediaError`** — Thrown by `SupabaseMediaAdapter` on storage/database errors.
+- **`MediaValidationError`** — Thrown by media handlers on validation failures (invalid MIME type). Has `code` property.
+
+### Constants
+
+- **`ALLOWED_MIME_TYPES`** — Readonly array of allowed MIME types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`. See `src/media/types.ts`.
 
 ### Utilities
 
 - **`generateSlug(title)`** — Generate a URL-safe slug from a title
-- **`ensureUniqueSlug(adapter, slug)`** — Ensure slug uniqueness by appending a suffix if needed
+- **`ensureUniqueSlug(slug, existingSlugs)`** — Ensure slug uniqueness by appending a suffix if needed
 
 ## Dependencies
 

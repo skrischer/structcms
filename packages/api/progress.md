@@ -970,15 +970,15 @@ pnpm --filter @structcms/api typecheck
 5. Unit tests: script tags stripped, safe HTML preserved, nested data recursed, plain text unchanged
 
 **Acceptance Criteria:**
-- [ ] handleCreatePage sanitizes all string values in sections[].data before storage
-- [ ] handleUpdatePage sanitizes all string values in sections[].data before storage
-- [ ] Sanitization strips script tags, event handlers, and dangerous attributes
-- [ ] Allowed tags: p, h1-h6, ul, ol, li, a (href only), strong, em, br, blockquote, code, pre, img (src, alt only)
-- [ ] Sanitization recursively walks nested objects and arrays in section data
-- [ ] Plain text strings pass through unchanged (no HTML tags to strip)
-- [ ] Unit test: script tags stripped from string values
-- [ ] Unit test: safe HTML preserved unchanged
-- [ ] Unit test: nested objects and arrays are recursively sanitized
+- [x] handleCreatePage sanitizes all string values in sections[].data before storage
+- [x] handleUpdatePage sanitizes all string values in sections[].data before storage
+- [x] Sanitization strips script tags, event handlers, and dangerous attributes
+- [x] Allowed tags: p, h1-h6, ul, ol, li, a (href only), strong, em, br, blockquote, code, pre, img (src, alt only)
+- [x] Sanitization recursively walks nested objects and arrays in section data
+- [x] Plain text strings pass through unchanged (no HTML tags to strip)
+- [x] Unit test: script tags stripped from string values
+- [x] Unit test: safe HTML preserved unchanged
+- [x] Unit test: nested objects and arrays are recursively sanitized
 
 **Verification:**
 ```bash
@@ -1019,10 +1019,10 @@ pnpm --filter @structcms/api typecheck
 **Note:** These are "integration" tests through the handler layer using mock adapters. The mock adapter stores what it receives, so we verify the input passed to the adapter is already sanitized.
 
 **Acceptance Criteria:**
-- [ ] Integration test: create page with malicious HTML in section data, verify stored content is sanitized
-- [ ] Integration test: update page with malicious HTML in section data, verify stored content is sanitized
-- [ ] Integration test: delivery endpoint returns sanitized HTML
-- [ ] Integration test: nested string values in array/object section data are sanitized
+- [x] Integration test: create page with malicious HTML in section data, verify stored content is sanitized
+- [x] Integration test: update page with malicious HTML in section data, verify stored content is sanitized
+- [x] Integration test: delivery endpoint returns sanitized HTML
+- [x] Integration test: nested string values in array/object section data are sanitized
 
 **Verification:**
 ```bash
