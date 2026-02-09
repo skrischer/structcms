@@ -604,7 +604,7 @@
         "All tests use data-testid selectors where available",
         "Tests pass with pnpm test:e2e"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
