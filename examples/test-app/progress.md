@@ -1206,3 +1206,63 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Dashboard E2E Tests
+
+**Selected because:** Last failing task in test-app. Dashboard Route Integration ✅ and Dashboard Navigation Update ✅ complete. All dependencies met.
+
+### Plan
+
+**Files to create:**
+- `e2e/dashboard.spec.ts` — Playwright E2E test suite for dashboard
+
+**Files to create (prerequisite fix):**
+- `app/api/cms/navigation/route.ts` — GET list endpoint. KpiCards fetches `/navigation` but only `/navigation/[name]` exists. Without this, the Navigation KPI card always shows an error.
+
+**Approach:**
+1. Create navigation list route handler (thin wrapper around `storageAdapter.listNavigations()`)
+2. Create `e2e/dashboard.spec.ts` with test cases covering:
+   - Dashboard loads at `/admin`
+   - KPI cards display correct counts (pages=5, media=0, navigation=1, sections=2)
+   - Recent pages list shows seeded pages sorted by updatedAt
+   - Quick actions buttons present and clickable
+   - Quick action "Create New Page" navigates to `/admin/pages/new`
+   - Quick action "Upload Media" navigates to `/admin/media`
+   - Recent page click navigates to page editor
+
+**Test data (from seed.ts):**
+- 5 pages: Home, About Us, Blog, Our Team, Contact
+- 1 navigation set: main
+- 0 media files
+- 2 sections: hero, content (from registry)
+
+**Selectors (from component data-testid attributes):**
+- `[data-testid="dashboard-page"]` — DashboardPage container
+- `[data-testid="kpi-cards"]` — KPI cards grid
+- `[data-testid="kpi-pages-value"]` — Pages count
+- `[data-testid="kpi-media-value"]` — Media count
+- `[data-testid="kpi-navigation-value"]` — Navigation count
+- `[data-testid="kpi-sections-value"]` — Sections count
+- `[data-testid="recent-pages-list"]` — Recent pages list
+- `[data-testid="quick-actions"]` — Quick actions section
+- `[data-testid="quick-action-create-page"]` — Create page button
+- `[data-testid="quick-action-upload-media"]` — Upload media button
+
+**Potential challenges:**
+- Navigation list endpoint missing — must create first
+- KPI cards load async — need to wait for values to appear
+- Timing: skeleton → value transitions
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+pnpm --filter test-app exec playwright test e2e/dashboard.spec.ts --workers=1
+```
+
+**Result:** ✅ Success
+
+- `app/api/cms/navigation/route.ts` created — GET list endpoint for KPI navigation count
+- `e2e/dashboard.spec.ts` created with 10 tests (serial mode, single beforeAll reset+seed)
+- Tests cover: dashboard load, KPI cards (values + labels), loading skeletons, recent pages list, max 10 items limit, quick actions buttons, navigation to create page, navigation to media, navigation to page editor on recent page click
+- TypeScript typecheck passed
+- All 10 E2E tests passed (17.8s)
+

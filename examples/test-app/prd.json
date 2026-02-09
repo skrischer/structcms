@@ -483,7 +483,7 @@
         "Test loading states: skeleton loaders appear during data fetching",
         "All tests pass with pnpm test:e2e"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Documentation",

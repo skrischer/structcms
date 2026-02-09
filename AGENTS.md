@@ -17,8 +17,8 @@ structcms/
 ## Language & Runtime
 
 - **Language**: TypeScript (strict mode)
-- **Runtime**: Node.js 18+
-- **Package Manager**: npm (workspaces)
+- **Runtime**: Node.js 22+
+- **Package Manager**: pnpm (workspaces)
 
 ## Core Dependencies
 
@@ -26,17 +26,23 @@ structcms/
 - `zod` - Schema definition and validation
 
 ### @structcms/api
-- `@structcms/core` - Internal dependency
 - `@supabase/supabase-js` - Database and storage client
+- `sanitize-html` - HTML sanitization
 
 ### @structcms/admin
 - `@structcms/core` - Internal dependency
-- `react` - UI framework
+- `react` - UI framework (peer dependency)
+- `react-dom` - DOM rendering (peer dependency)
 - `react-hook-form` - Form state management
 - `@hookform/resolvers` - Zod resolver for react-hook-form
-- `tailwindcss` - Styling
 - `@tiptap/react` - RichText editor
-- shadcn/ui components (installed individually)
+- `@tiptap/starter-kit` - RichText editor starter kit
+- `@tiptap/extension-link` - Link extension for rich text
+- `@tiptap/pm` - ProseMirror core
+- `zod` - Schema validation
+- `class-variance-authority` - Utility for component variants
+- `clsx` - Utility for constructing className strings
+- `tailwind-merge` - Utility for merging Tailwind CSS classes
 
 ## Code Conventions
 
@@ -135,77 +141,10 @@ docs: update README with examples
 ## Package Exports
 
 ### @structcms/core
-```typescript
-export { defineSection } from './define-section';
-export { definePageType } from './define-page-type';
-export { defineNavigation, defaultNavigationItemSchema } from './define-navigation';
-export { fields, getFieldMeta, isFieldType } from './fields';
-export { createRegistry } from './registry';
-export { createSectionRenderer } from './section-renderer';
-export type { SectionDefinition, PageTypeDefinition, NavigationDefinition, Registry,
-  FieldType, FieldMeta, InferSectionData, NavigationItem,
-  SectionData, SectionComponentProps, SectionRenderer } from './types';
-```
+See `packages/core/src/index.ts` for all exports including `defineSection`, `createRegistry`, and related types.
 
-### @structcms/api
-```typescript
-// Storage
-export { createStorageAdapter, SupabaseStorageAdapter, StorageError } from './storage';
-export { handleCreatePage, handleUpdatePage, handleDeletePage,
-  handleCreateNavigation, handleUpdateNavigation, handleDeleteNavigation,
-  StorageValidationError } from './storage';
-export type { StorageAdapter, Page, PageSection, Navigation, NavigationItem } from './storage';
-
-// Delivery
-export { handleListPages, handleGetPageBySlug, handleGetNavigation } from './delivery';
-export type { PageResponse, NavigationResponse, ListPagesOptions } from './delivery';
-
-// Media
-export { createMediaAdapter, SupabaseMediaAdapter, MediaError,
-  handleUploadMedia, handleGetMedia, handleListMedia, handleDeleteMedia,
-  MediaValidationError, resolveMediaReferences, ALLOWED_MIME_TYPES } from './media';
-export type { MediaAdapter, MediaFile, UploadMediaInput, MediaFilter } from './media';
-
-// Export
-export { handleExportPage, handleExportAllPages, handleExportNavigations, handleExportSite } from './export';
-export type { PageExportResponse, SiteExportResponse, MediaExportEntry } from './export';
-
-// Utils
-export { generateSlug, ensureUniqueSlug } from './utils';
-```
+### @structcms/api  
+See `packages/api/src/index.ts` for all exports including storage, delivery, media, and export handlers.
 
 ### @structcms/admin
-```typescript
-// Context & Hooks
-export { AdminProvider } from './context/admin-context';
-export { useAdmin } from './hooks/use-admin';
-export { useApiClient } from './hooks/use-api-client';
-export type { AdminProviderProps, AdminContextValue, ApiClient, ApiResponse, ApiError } from '...';
-
-// Editors
-export { PageEditor } from './components/editors/page-editor';
-export { SectionEditor } from './components/editors/section-editor';
-
-// Field Inputs
-export { StringInput, TextInput, RichTextEditor, ImagePicker,
-  ArrayField, ObjectField } from './components/inputs/...';
-
-// Content
-export { PageList } from './components/content/page-list';
-export { NavigationEditor } from './components/content/navigation-editor';
-
-// Media & Layout
-export { MediaBrowser } from './components/media/media-browser';
-export { AdminLayout } from './components/layout/admin-layout';
-export type { SidebarNavItem } from './components/layout/admin-layout';
-
-// Form Generation
-export { FormGenerator, resolveFieldType, fieldNameToLabel } from './lib/form-generator';
-
-// UI Primitives
-export { Button, Input, Textarea, Label, Skeleton, ToastProvider,
-  useToast, ErrorBoundary } from './components/ui/...';
-
-// Utilities
-export { cn } from './lib/utils';
-```
+See `packages/admin/src/index.ts` for all exports including UI components, form generators, and admin utilities.

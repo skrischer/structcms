@@ -11,6 +11,11 @@ packages/admin/
 ├── src/
 │   ├── index.ts                              # Public exports
 │   ├── components/
+│   │   ├── dashboard/
+│   │   │   ├── dashboard-page.tsx             # Main dashboard with KPIs, recent pages, quick actions
+│   │   │   ├── kpi-cards.tsx                  # KPI overview cards (pages, media, navigation, sections)
+│   │   │   ├── recent-pages.tsx               # Recently updated pages list
+│   │   │   └── quick-actions.tsx              # Quick action buttons (create page, upload media)
 │   │   ├── editors/
 │   │   │   ├── page-editor.tsx               # Page editor with section management
 │   │   │   └── section-editor.tsx            # Section form from Zod schema
@@ -27,7 +32,7 @@ packages/admin/
 │   │   ├── media/
 │   │   │   └── media-browser.tsx             # Browse, upload, select media
 │   │   ├── layout/
-│   │   │   └── admin-layout.tsx              # Admin shell with sidebar
+│   │   │   └── admin-layout.tsx              # Admin shell with sidebar (includes Dashboard)
 │   │   └── ui/                               # Base UI primitives (button, input, label, etc.)
 │   ├── context/
 │   │   └── admin-context.tsx                 # AdminProvider (registry, API base URL)
@@ -60,6 +65,12 @@ The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `de
 
 ## Components
 
+### Dashboard
+- **`DashboardPage`** — Main dashboard with KPI cards, recent pages, and quick actions. See `src/components/dashboard/dashboard-page.tsx`.
+- **`KpiCards`** — KPI overview showing total pages, media files, navigation sets, and sections. See `src/components/dashboard/kpi-cards.tsx`.
+- **`RecentPages`** — List of recently updated pages with links to page editor. See `src/components/dashboard/recent-pages.tsx`.
+- **`QuickActions`** — Quick action buttons for creating pages and uploading media. See `src/components/dashboard/quick-actions.tsx`.
+
 ### Editors
 - **`PageEditor`** — Edit page title and sections (add, remove, reorder). See `src/components/editors/page-editor.tsx`.
 - **`SectionEditor`** — Renders a form for a single section based on its Zod schema. See `src/components/editors/section-editor.tsx`.
@@ -80,7 +91,13 @@ The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `de
 - **`MediaBrowser`** — Browse, upload, and select media files. See `src/components/media/media-browser.tsx`.
 
 ### Layout
-- **`AdminLayout`** — Admin shell with sidebar navigation. See `src/components/layout/admin-layout.tsx`.
+- **`AdminLayout`** — Admin shell with sidebar navigation (includes Dashboard as default). See `src/components/layout/admin-layout.tsx`.
+
+### Dashboard Components
+- **`DashboardPage`** — Main dashboard container with error boundaries and loading states
+- **`KpiCards`** — Metrics display with skeleton loaders and error handling
+- **`RecentPages`** — Paginated recent pages list with error fallbacks
+- **`QuickActions`** — Action buttons that don't require API calls
 
 ### UI Primitives
 `Button`, `Input`, `Textarea`, `Label`, `Skeleton`, `Toast`, `ErrorBoundary` — base components in `src/components/ui/`.
