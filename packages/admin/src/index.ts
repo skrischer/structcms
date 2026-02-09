@@ -23,4 +23,5 @@ export { ToastProvider, useToast, type ToastProviderProps, type Toast, type Toas
 export { ErrorBoundary, type ErrorBoundaryProps } from './components/ui/error-boundary';
 export { QuickActions, type QuickActionsProps } from './components/dashboard/quick-actions';
 export { KpiCards, type KpiCardsProps } from './components/dashboard/kpi-cards';
+export { RecentPages, type RecentPagesProps } from './components/dashboard/recent-pages';
 export { cn } from './lib/utils';

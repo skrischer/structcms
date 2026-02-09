@@ -1099,3 +1099,51 @@ All components will include:
   - `src/components/dashboard/kpi-cards.tsx` — KpiCards component with parallel API fetching, skeleton loaders, error/retry per card
   - `src/components/dashboard/__tests__/kpi-cards.test.tsx` — 11 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Recent Pages Component
+
+**Task:** List of recently updated pages with error fallbacks. Fetches all pages, sorts client-side by updatedAt DESC, limits to 10.
+
+**Acceptance Criteria:**
+1. Fetches all pages from /api/cms/pages (same as PageList)
+2. Client-side filtering: sort by updatedAt DESC, limit to 10
+3. Shows page title, slug, and last updated timestamp
+4. Uses onSelectPage callback prop for navigation (like PageList)
+5. Error state shows 'Unable to load recent pages'
+6. Loading state shows skeleton list
+
+**Plan:**
+- Create `src/components/dashboard/recent-pages.tsx` — RecentPages component
+- Write unit test `src/components/dashboard/__tests__/recent-pages.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/dashboard/recent-pages.tsx`
+- `src/components/dashboard/__tests__/recent-pages.test.tsx`
+
+**Approach:**
+- RecentPages accepts `onSelectPage: (page: PageSummary) => void` and optional `className`
+- Reuses `PageSummary` type from `page-list.tsx` (already exported)
+- Uses `useApiClient()` to fetch `/pages`, follows PageList pattern (cancelled flag, loading/error states)
+- Client-side: sort by `updatedAt` DESC, take first 10
+- Loading: Skeleton list (multiple skeleton rows)
+- Error: shows 'Unable to load recent pages' with retry button
+- Each row shows title, slug, formatted updatedAt timestamp
+- Click calls `onSelectPage(page)`
+
+**Challenges:**
+- `updatedAt` is optional in PageSummary — pages without it sort last
+- Timestamp formatting: use `toLocaleDateString()` or similar (no extra dependency)
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 226 tests passed (213 previous + 13 RecentPages)
+- Typecheck passed
+- Created files:
+  - `src/components/dashboard/recent-pages.tsx` — RecentPages component with client-side sort/limit, skeleton loading, error/retry
+  - `src/components/dashboard/__tests__/recent-pages.test.tsx` — 13 unit tests
+- Updated `src/index.ts` with exports

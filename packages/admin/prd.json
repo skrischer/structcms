@@ -448,7 +448,7 @@
         "Error state shows 'Unable to load recent pages'",
         "Loading state shows skeleton list"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Dashboard",
