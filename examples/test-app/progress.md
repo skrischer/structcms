@@ -1332,3 +1332,60 @@ pnpm --filter test-app exec tsc --noEmit
   - Line 17: `page.click('text=Save Page')` → `page.locator('[data-testid="save-page"]').click()` (consistent with create-page.spec.ts)
 - TypeScript typecheck passed
 - Verified `data-testid="section-editor"` exists in `section-editor.tsx:56` as ancestor of FormGenerator inputs
+
+---
+
+## Working on: PageList Filter Tests
+
+**Selected because:** Extends existing `page-list.spec.ts` (lower risk than creating new files). Covers 3 untested features: page type filter, empty state, error state. No dependencies.
+
+### Plan
+
+**Files to modify:**
+- `e2e/page-list.spec.ts` — Add 3 new test cases
+
+**Approach:**
+
+Restructure into nested describe blocks for different data states:
+
+1. **"with seeded data"** block (existing tests + new page type filter test):
+   - `beforeAll: resetAndSeed()`, serial mode
+   - New test: Select "landing" in `[data-testid="page-type-filter"]`, verify 4 landing pages visible (Home, About Us, Our Team, Contact), Blog NOT visible
+
+2. **"empty state"** block:
+   - `beforeEach: resetOnly()` (no seed data)
+   - Verify `[data-testid="empty-state"]` shows "No pages yet"
+
+3. **"error state"** block:
+   - Use Playwright `page.route()` to intercept `/api/cms/pages` and return 500
+   - Verify `[data-testid="error"]` is visible
+
+**Relevant data-testid selectors from PageList component:**
+- `page-type-filter` — select dropdown (options: "", "landing", "blog")
+- `empty-state` — "No pages yet." / "No pages match your search."
+- `error` — error message display
+- `page-table` — table with page rows
+
+**Seed data for filter assertion:**
+- 4 landing pages: Home, About Us, Our Team, Contact
+- 1 blog page: Blog
+
+**Potential challenges:**
+- Playwright's `page.route()` must be set BEFORE `page.goto()` to intercept the initial API call
+- Empty state text depends on whether pages array is empty vs filter results empty
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- `e2e/page-list.spec.ts` restructured into 3 nested describe blocks:
+  - "with seeded data" (serial, beforeAll: resetAndSeed) — 4 tests (3 existing + 1 new page type filter)
+  - "empty state" (beforeEach: resetOnly) — 1 test verifying "No pages yet" message
+  - "error state" (Playwright route interception) — 1 test verifying error display on 500 response
+- Page type filter test covers: landing filter (4 pages), blog filter (1 page), reset to all
+- Error test uses `page.route('**/api/cms/pages')` — confirmed this only matches exact path, not subroutes
+- TypeScript typecheck passed
+- ApiClient error handling verified: 500 → `{ error: { message } }` → `setError()` → `[data-testid="error"]`

@@ -544,7 +544,7 @@
         "All assertions use proper data-testid selectors",
         "New tests pass with pnpm test:e2e"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Coverage",
