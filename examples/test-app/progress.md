@@ -1503,3 +1503,62 @@ pnpm --filter test-app exec tsc --noEmit
 - All tests use `data-testid` selectors and `beforeEach: resetAndSeed()` for isolation
 - API verification via `GET /api/cms/navigation/main` after each save
 - TypeScript typecheck passed
+
+---
+
+## Working on: PageEditor Section Management Tests
+
+**Selected because:** Next failing E2E Coverage task. All dependencies met. NavigationEditor tests ✅ complete.
+
+### Plan
+
+**Files to create:**
+- `e2e/section-management.spec.ts` — PageEditor section management tests
+
+**Approach:**
+
+Navigate to `/admin/pages/home` (landing page with 2 sections: hero at index 0, content at index 1). AllowedSections: hero, content.
+
+Tests:
+1. **Add section:** Select "content" in `[data-testid="section-type-select"]` → click `[data-testid="add-section"]` → verify `[data-testid="page-section-2"]` appears → save → verify API has 3 sections
+2. **Remove section:** Click `[data-testid="section-remove-1"]` (remove content) → verify only 1 section remains → save → verify API has 1 section
+3. **Move section up:** Click `[data-testid="section-move-up-1"]` (move content up) → save → verify API sections[0].type === 'content' and sections[1].type === 'hero'
+4. **Move section down:** Click `[data-testid="section-move-down-0"]` (move hero down) → save → verify API sections[0].type === 'content' and sections[1].type === 'hero'
+5. **Section type selection:** Verify `[data-testid="section-type-select"]` has options for "hero" and "content". Add hero → verify hero form fields (input[name="title"]) appear.
+
+**Relevant data-testid selectors:**
+- `page-editor` — container
+- `page-section-N` — section wrapper
+- `section-move-up-N` / `section-move-down-N` — reorder buttons
+- `section-remove-N` — remove button
+- `section-type-select` — section type dropdown
+- `add-section` — add section button
+- `save-page` — save button
+- `section-editor` — SectionEditor wrapper (renders FormGenerator)
+
+**API verification:** Fetch `GET /api/cms/pages/home` after save, check `page.sections`
+
+**Note:** After save, EditPagePage does `router.push('/admin/pages')` (redirect to list). We need to wait for navigation to complete before making API calls, or use `page.waitForURL`.
+
+**Potential challenges:**
+- Save triggers redirect to `/admin/pages` — API verification must happen after redirect completes
+- FormGenerator renders fields with `input[name="fieldName"]` via react-hook-form's `register()`
+- Each test modifies state — use `beforeEach: resetAndSeed()` for isolation
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- `e2e/section-management.spec.ts` created with 5 tests:
+  1. Add section: Select content type → click add → verify new section at index 2 → save → verify API has 3 sections
+  2. Remove section: Remove content (index 1) → verify only hero remains → save → verify API has 1 section
+  3. Move section up: Move content (index 1) up → save → verify API sections[0].type === 'content'
+  4. Move section down: Move hero (index 0) down → save → verify API sections[0].type === 'content'
+  5. Section type selection: Verify dropdown options (hero, content) → add hero → verify form fields (input[name="title"], textarea[name="subtitle"])
+- All tests use `data-testid` selectors and `beforeEach: resetAndSeed()` for isolation
+- API verification via `GET /api/cms/pages/home` after save (post-redirect)
+- Used typed `PageResponse` interface with non-null assertions after `toHaveLength` checks (noUncheckedIndexedAccess)
+- TypeScript typecheck passed
