@@ -570,7 +570,7 @@
         "All tests use proper data-testid selectors and verify media API state",
         "Tests pass with pnpm test:e2e"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Coverage",

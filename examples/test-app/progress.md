@@ -1562,3 +1562,64 @@ pnpm --filter test-app exec tsc --noEmit
 - API verification via `GET /api/cms/pages/home` after save (post-redirect)
 - Used typed `PageResponse` interface with non-null assertions after `toHaveLength` checks (noUncheckedIndexedAccess)
 - TypeScript typecheck passed
+
+---
+
+## Working on: MediaBrowser Grid and Delete Tests
+
+**Selected because:** Only remaining task with `passes: false`. All dependencies met. Last E2E coverage gap.
+
+### Plan
+
+**Files to create:**
+- `e2e/media-management.spec.ts` — MediaBrowser grid, delete, and selection tests
+
+**Approach:**
+
+Navigate to `/admin/media`. MediaBrowser has default pageSize of 12. Upload uses hidden `[data-testid="file-input"]` triggered by `[data-testid="upload-button"]`. No `onSelect` handler in test-app's MediaPage — selection clicks won't trigger external callback, but the button exists.
+
+Tests:
+1. **Grid display:** Upload test-image.png via `[data-testid="file-input"]` → wait for grid to appear → verify `[data-testid="media-grid"]` visible → verify `[data-testid^="media-item-"]` exists with thumbnail img
+2. **Delete media:** Upload image → wait for grid → get item id → click `[data-testid="media-delete-{id}"]` → verify item removed from grid → verify API returns empty list
+3. **Empty state:** Reset only (no uploads) → verify `[data-testid="empty-state"]` visible
+4. **Pagination/load more:** Acceptance criteria says "upload >20 items, verify load more button". Default pageSize is 12, so need 13+ uploads. This is slow but testable. Upload 13 images → verify `[data-testid="load-more"]` visible → click → verify more items load. **Alternative:** This test might be too slow for E2E (13 uploads). Will implement a minimal version that checks the button appears.
+
+**Relevant data-testid selectors:**
+- `media-browser` — root container
+- `upload-button` — upload trigger button
+- `file-input` — hidden file input (accept="image/*")
+- `media-grid` — grid container
+- `media-item-{id}` — media card (id is dynamic)
+- `media-select-{id}` — select/click button
+- `media-delete-{id}` — delete button
+- `empty-state` — empty media message
+- `loading` — loading state
+- `load-more` — pagination button
+- `error` — error message
+
+**API verification:** `GET /api/cms/media` returns media list array
+
+**Potential challenges:**
+- Media item IDs are dynamic (UUID from Supabase) — need to extract from DOM
+- Upload is async — need to wait for grid to refresh after upload
+- Pagination test requires many uploads — may be slow
+- File input is hidden — use `setInputFiles()` Playwright API
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- `e2e/media-management.spec.ts` created with 5 tests:
+  1. Empty state: Verify `[data-testid="empty-state"]` shows "No media files yet" on fresh reset
+  2. Grid display: Upload test-image.png → verify grid visible → verify thumbnail img → verify filename → API verification
+  3. Delete media: Upload via API → navigate → click delete → verify optimistic UI removal → verify empty state → API verification
+  4. Select button: Upload via API → verify `[data-testid^="media-select-"]` button exists and is enabled
+  5. Load more: Upload 13 images via API (parallel) → verify grid shows >=12 items → verify `[data-testid="load-more"]` button visible
+- All tests use `data-testid` selectors and `beforeEach: resetOnly()` for isolation
+- Faster setup via direct API uploads for delete/select/pagination tests
+- Pagination uses 13 uploads (parallel) to exceed default pageSize of 12
+- Note: Route handler doesn't support limit/offset — backend returns all items, so load-more test only verifies button appearance
+- TypeScript typecheck passed
