@@ -1049,3 +1049,53 @@ All components will include:
   - `src/components/dashboard/__tests__/quick-actions.test.tsx` — 9 unit tests
 - Updated `src/index.ts` with exports
 - Resolved merge conflicts in `prd.json` and `DASHBOARD_MVP.md` (kept detailed worktree versions)
+
+---
+
+## Working on KPI Cards Component
+
+**Task:** Metrics display with skeleton loaders and error handling. Shows 4 KPIs: Pages, Media, Navigation (from API), Sections (from registry).
+
+**Acceptance Criteria:**
+1. Shows total pages from /api/cms/pages
+2. Shows total media files from /api/cms/media
+3. Shows navigation sets from /api/cms/navigation
+4. Shows sections count from registry using registry.getAllSections().length
+5. Skeleton loaders during data fetching
+6. Error fallbacks with retry buttons
+7. Parallel fetching with Promise.allSettled()
+
+**Plan:**
+- Create `src/components/dashboard/kpi-cards.tsx` — KpiCards component
+- Write unit test `src/components/dashboard/__tests__/kpi-cards.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/dashboard/kpi-cards.tsx`
+- `src/components/dashboard/__tests__/kpi-cards.test.tsx`
+
+**Approach:**
+- KpiCards uses `useApiClient()` for API calls and `useAdmin()` for registry
+- Fetches 3 endpoints in parallel with `Promise.allSettled()`: /pages, /media, /navigation
+- Sections count derived synchronously from `registry.getAllSections().length`
+- Each KPI card shows: label, count value, skeleton during loading, error with retry button
+- Individual error states per card (one failed endpoint shouldn't block others)
+- Uses Skeleton component for loading states
+- Uses Button component for retry
+- Follows PageList pattern: cancelled flag, data-testid attributes, cn() utility
+
+**Challenges:**
+- Each API endpoint can fail independently — need per-endpoint error/loading state
+- Promise.allSettled returns PromiseSettledResult[] — need to handle fulfilled/rejected per result
+- Retry should re-fetch only the failed endpoint, not all
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 213 tests passed (202 previous + 11 KpiCards)
+- Typecheck passed
+- Created files:
+  - `src/components/dashboard/kpi-cards.tsx` — KpiCards component with parallel API fetching, skeleton loaders, error/retry per card
+  - `src/components/dashboard/__tests__/kpi-cards.test.tsx` — 11 unit tests
+- Updated `src/index.ts` with exports

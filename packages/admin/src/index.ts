@@ -22,4 +22,5 @@ export { Skeleton, type SkeletonProps } from './components/ui/skeleton';
 export { ToastProvider, useToast, type ToastProviderProps, type Toast, type ToastVariant } from './components/ui/toast';
 export { ErrorBoundary, type ErrorBoundaryProps } from './components/ui/error-boundary';
 export { QuickActions, type QuickActionsProps } from './components/dashboard/quick-actions';
+export { KpiCards, type KpiCardsProps } from './components/dashboard/kpi-cards';
 export { cn } from './lib/utils';

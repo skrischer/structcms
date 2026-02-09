@@ -434,7 +434,7 @@
         "Error fallbacks with retry buttons",
         "Parallel fetching with Promise.allSettled()"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Dashboard",
