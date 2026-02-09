@@ -1183,3 +1183,26 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Dashboard Navigation Update
+
+**Selected because:** Dashboard Route Integration ✅ complete. This adds Dashboard to sidebar so users can navigate back to it.
+
+### Plan
+
+**Files to modify:**
+- `app/admin/layout.tsx` — Add Dashboard as first item in navItems array
+
+**Approach:**
+1. Add `{ label: 'Dashboard', path: '/admin' }` as first entry in navItems
+2. Keep existing Pages, Navigation, Media items unchanged
+
+**Verification:** `pnpm --filter test-app exec tsc --noEmit`
+
+**Result:** ✅ Success
+
+- Dashboard added as first nav item with path '/admin'
+- Existing nav items unchanged
+- TypeScript typecheck passed
+
+---
+

@@ -465,7 +465,7 @@
         "Dashboard highlighted as active when on /admin route",
         "Navigation test passes for dashboard route"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E",

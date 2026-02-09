@@ -5,6 +5,7 @@ import { AdminProvider, AdminLayout } from '@structcms/admin';
 import { registry } from '@/lib/registry';
 
 const navItems = [
+  { label: 'Dashboard', path: '/admin' },
   { label: 'Pages', path: '/admin/pages' },
   { label: 'Navigation', path: '/admin/navigation' },
   { label: 'Media', path: '/admin/media' },
