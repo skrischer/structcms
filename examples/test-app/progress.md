@@ -1447,3 +1447,59 @@ pnpm --filter test-app exec tsc --noEmit
 - All tests use `data-testid` selectors (`nav-link-/admin`, `nav-link-/admin/pages`, etc.)
 - Active link highlighting skipped — component uses CSS class not aria-current, and test-app doesn't pass activePath
 - TypeScript typecheck passed
+
+---
+
+## Working on: NavigationEditor Item Management Tests
+
+**Selected because:** NavigationEditor component is familiar from the P0 fix. All data-testid selectors are known. Tests CRUD operations (add, remove, edit, children) with API verification.
+
+### Plan
+
+**Files to create:**
+- `e2e/navigation-management.spec.ts` — NavigationEditor item management tests
+
+**Approach:**
+
+Use `resetAndSeed()` as setup. Seed data provides 3 top-level items + 2 children:
+- Index 0: Home (href: /)
+- Index 1: About (href: /about) → children: Our Team, Contact
+- Index 2: Blog (href: /blog)
+
+Tests:
+1. **Add item:** Click `[data-testid="nav-add-item"]` → verify new empty row at index 3 → fill label/href → save → verify API has 4 items
+2. **Remove item:** Click `[data-testid="nav-item-remove-2"]` (remove Blog) → save → verify API has 2 items
+3. **Edit item:** Fill `[data-testid="nav-item-label-0"]` with "Homepage" → save → verify API `items[0].label === "Homepage"`
+4. **Add child:** Click `[data-testid="nav-add-child-0"]` (add child to Home) → verify child row appears → fill → save → verify API
+
+**Relevant data-testid selectors:**
+- `nav-add-item` — Add Item button
+- `nav-item-remove-N` — Remove button per item
+- `nav-item-label-N` / `nav-item-href-N` — Label/Href inputs
+- `nav-add-child-N` — Add Child button per item
+- `nav-child-label-N-M` / `nav-child-href-N-M` — Child inputs
+- `nav-child-remove-N-M` — Remove child button
+- `nav-save` — Save button
+
+**API verification:** Fetch `GET /api/cms/navigation/main` after save, check `navData.items`
+
+**Potential challenges:**
+- Each test modifies state — use `beforeEach: resetAndSeed()` for isolation
+- NavigationPage has its own "Save Navigation" button AND NavigationEditor has `[data-testid="nav-save"]` — use data-testid only
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- `e2e/navigation-management.spec.ts` created with 5 tests:
+  1. Add item: Click add → fill label/href → save → verify API has 4 items
+  2. Remove item: Remove Blog (index 2) → save → verify API has 2 items
+  3. Edit item: Change Home to Homepage → save → verify API persistence
+  4. Add child: Add child to Home → fill → save → verify API nested structure
+  5. Remove child: Remove Our Team from About's children → verify Contact remains
+- All tests use `data-testid` selectors and `beforeEach: resetAndSeed()` for isolation
+- API verification via `GET /api/cms/navigation/main` after each save
+- TypeScript typecheck passed
