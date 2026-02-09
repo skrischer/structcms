@@ -9,20 +9,29 @@ test.describe('Create Page', () => {
   test('should create a new landing page', async ({ page }) => {
     await page.goto('/admin/pages');
 
-    await page.click('text=Create New Page');
-
+    // Click "Create New Page" button in the page list
+    await page.locator('[data-testid="create-page"]').click();
     await page.waitForURL('/admin/pages/new');
 
-    await page.fill('input#title', 'Test Landing Page');
-    await page.fill('input#slug', 'test-landing');
-    await page.selectOption('select#pageType', 'landing');
+    // Fill in page metadata
+    await page.fill('#title', 'Test Landing Page');
+    await page.fill('#slug', 'test-landing');
+    await page.selectOption('#pageType', 'landing');
 
-    await page.click('text=Create Page');
+    // Wait for PageEditor to appear (renders after pageType is selected)
+    await expect(page.locator('[data-testid="page-editor"]')).toBeVisible();
 
+    // Click "Save Page" button inside the PageEditor
+    await page.locator('[data-testid="save-page"]').click();
+
+    // Should redirect back to page list
     await page.waitForURL('/admin/pages');
 
-    await expect(page.locator('text=Test Landing Page')).toBeVisible();
+    const table = page.locator('[data-testid="page-table"]');
+    await expect(table).toBeVisible({ timeout: 10000 });
+    await expect(table.locator('text=Test Landing Page')).toBeVisible();
 
+    // Verify via API
     const response = await fetch(`${BASE_URL}/api/cms/pages/test-landing`);
     expect(response.ok).toBe(true);
     const pageData = await response.json();
