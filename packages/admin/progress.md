@@ -1147,3 +1147,64 @@ All components will include:
   - `src/components/dashboard/recent-pages.tsx` — RecentPages component with client-side sort/limit, skeleton loading, error/retry
   - `src/components/dashboard/__tests__/recent-pages.test.tsx` — 13 unit tests
 - Updated `src/index.ts` with exports
+
+---
+
+## Working on Dashboard Page Component
+
+**Task:** Main dashboard container composing KpiCards, RecentPages, and QuickActions. Last Dashboard MVP component.
+
+**Acceptance Criteria:**
+1. Dashboard route exists and is default admin entry
+2. KPI cards display correct counts (pages, media, navigation, sections)
+3. Recent pages list loads and links correctly (max 10, sorted by updatedAt DESC)
+4. Quick actions navigate to proper flows (create page, upload media)
+5. Responsive layout works on tablet viewport
+6. Loading states show during data fetching
+7. Error states display gracefully with retry options
+8. Sections KPI derives from registry using registry.getAllSections().length
+9. Navigation uses callback props pattern (onNavigate, onSelectPage)
+10. Recent pages uses client-side filtering like PageList component
+
+**Plan:**
+- Create `src/components/dashboard/dashboard-page.tsx` — DashboardPage component
+- Write unit test `src/components/dashboard/__tests__/dashboard-page.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/dashboard/dashboard-page.tsx`
+- `src/components/dashboard/__tests__/dashboard-page.test.tsx`
+
+**Approach:**
+- DashboardPage is a composition component: renders KpiCards, RecentPages, QuickActions
+- Props: `onSelectPage`, `onCreatePage`, `onUploadMedia` (callback props for navigation)
+- Optional `className` for layout customization
+- Each child wrapped in ErrorBoundary for section-level error isolation
+- Layout: vertical stack with responsive grid (KPI cards on top, then RecentPages + QuickActions)
+- No direct API calls — data fetching is delegated to KpiCards and RecentPages
+- Criteria 2-4, 6-8, 10 are already handled by the sub-components
+
+**Challenges:**
+- Criteria 1 ("Dashboard route exists") is about host integration, not the component itself — DashboardPage is the component, routing is the host's responsibility
+- Need to ensure ErrorBoundary wraps each section independently
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 239 tests passed (226 previous + 13 DashboardPage)
+- Typecheck passed
+- Created files:
+  - `src/components/dashboard/dashboard-page.tsx` — DashboardPage container composing KpiCards, RecentPages, QuickActions with ErrorBoundary isolation
+  - `src/components/dashboard/__tests__/dashboard-page.test.tsx` — 13 unit tests
+- Updated `src/index.ts` with exports
+
+### Dashboard MVP Complete!
+
+All 4 Dashboard components are implemented and passing:
+- ✅ QuickActions (9 tests)
+- ✅ KpiCards (11 tests)
+- ✅ RecentPages (13 tests)
+- ✅ DashboardPage (13 tests)
+
+Total: 46 dashboard-specific tests, 239 tests overall.

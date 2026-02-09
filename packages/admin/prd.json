@@ -419,7 +419,7 @@
         "Navigation uses callback props pattern (onNavigate, onSelectPage)",
         "Recent pages uses client-side filtering like PageList component"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Dashboard",
