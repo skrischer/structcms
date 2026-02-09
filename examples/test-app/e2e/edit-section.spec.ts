@@ -9,19 +9,20 @@ test.describe('Edit Section', () => {
   test('should edit hero section title', async ({ page }) => {
     await page.goto('/admin/pages/home');
 
-    const titleInput = page.locator('input[name="title"]').first();
+    // Scope to section-editor to avoid matching the page-level title input
+    const titleInput = page.locator('[data-testid="section-editor"] input[name="title"]').first();
     await expect(titleInput).toBeVisible();
 
     await titleInput.fill('Updated Hero Title');
 
-    await page.click('text=Save Page');
+    await page.locator('[data-testid="save-page"]').click();
 
     await page.waitForURL('/admin/pages');
 
     const response = await fetch(`${BASE_URL}/api/cms/pages/home`);
     expect(response.ok).toBe(true);
     const pageData = await response.json();
-    
+
     const heroSection = pageData.sections.find((s: { type: string }) => s.type === 'hero');
     expect(heroSection).toBeDefined();
     expect(heroSection.data.title).toBe('Updated Hero Title');

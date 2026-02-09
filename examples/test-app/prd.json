@@ -530,7 +530,7 @@
         "Change 'text=Save Navigation' to '[data-testid=\"nav-save\"]'",
         "All tests pass with pnpm test:e2e"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "E2E Coverage",

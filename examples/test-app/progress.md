@@ -1297,3 +1297,38 @@ pnpm --filter test-app exec tsc --noEmit
 - Replaced `text=Save Navigation` with `[data-testid="nav-save"]` to avoid button ambiguity
 - TypeScript typecheck passed
 - data-testid selectors verified in `navigation-editor.tsx` (lines 131, 232)
+
+---
+
+## Working on: Fix Edit Section Test Selectors (P1)
+
+**Selected because:** Next priority fix after P0. The edit-section.spec.ts has two fragile selectors:
+1. `input[name="title"]` — Ambiguous: matches hero section title via react-hook-form, but would break if page-level title input gets a `name` attribute
+2. `text=Save Page` — Text selector instead of available `data-testid="save-page"`
+
+### Plan
+
+**Files to modify:**
+- `e2e/edit-section.spec.ts` — Fix selectors on lines 12 and 17
+
+**Approach:**
+1. Line 12: Scope `input[name="title"]` to within `[data-testid="section-editor"]` to avoid matching page-level title input
+2. Line 17: Replace `page.click('text=Save Page')` with `page.locator('[data-testid="save-page"]').click()` for consistency with `create-page.spec.ts`
+
+**Note:** Acceptance criteria line "Change 'text=Save Navigation' to '[data-testid=\"nav-save\"]'" appears to be a copy-paste error — edit-section.spec.ts has no "Save Navigation" button. Ignoring this criterion.
+
+**Potential challenges:**
+- Need to verify `data-testid="section-editor"` exists and is an ancestor of the title input
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- `e2e/edit-section.spec.ts` updated:
+  - Line 12: `input[name="title"]` → `[data-testid="section-editor"] input[name="title"]` (scoped to section context)
+  - Line 17: `page.click('text=Save Page')` → `page.locator('[data-testid="save-page"]').click()` (consistent with create-page.spec.ts)
+- TypeScript typecheck passed
+- Verified `data-testid="section-editor"` exists in `section-editor.tsx:56` as ancestor of FormGenerator inputs
