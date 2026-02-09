@@ -439,6 +439,53 @@
       "passes": true
     },
     {
+      "group": "Admin",
+      "feature": "Dashboard Route Integration",
+      "description": "Add dashboard route as the default admin entry point with proper navigation callbacks",
+      "acceptance_criteria": [
+        "app/admin/page.tsx created with DashboardPage component",
+        "DashboardPage imported from @structcms/admin",
+        "Navigation callbacks implemented: onNavigate, onSelectPage, onCreatePage, onUploadMedia",
+        "onNavigate routes to /admin/pages, /admin/navigation, /admin/media",
+        "onSelectPage routes to /admin/pages/[id]",
+        "onCreatePage routes to /admin/pages/new",
+        "onUploadMedia routes to /admin/media",
+        "TypeScript typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Admin",
+      "feature": "Dashboard Navigation Update",
+      "description": "Update admin layout navigation to include dashboard as the first item",
+      "acceptance_criteria": [
+        "app/admin/layout.tsx navItems array updated",
+        "Dashboard added as first nav item with path '/admin'",
+        "Existing nav items (Pages, Navigation, Media) remain in order",
+        "Dashboard highlighted as active when on /admin route",
+        "Navigation test passes for dashboard route"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E",
+      "feature": "Dashboard E2E Tests",
+      "description": "Add end-to-end tests for dashboard functionality including KPI cards, recent pages, and quick actions",
+      "acceptance_criteria": [
+        "e2e/dashboard.spec.ts created with dashboard test suite",
+        "Test visits /admin and verifies dashboard loads",
+        "Test verifies KPI cards display (pages, media, navigation, sections counts)",
+        "Test verifies recent pages list shows max 10 items sorted by updatedAt",
+        "Test verifies quick actions buttons are present and clickable",
+        "Test quick actions navigate to correct pages (/admin/pages/new, /admin/media)",
+        "Test recent page click navigates to page editor",
+        "Test error handling: API failures show error states with retry buttons",
+        "Test loading states: skeleton loaders appear during data fetching",
+        "All tests pass with pnpm test:e2e"
+      ],
+      "passes": false
+    },
+    {
       "group": "Documentation",
       "feature": "Setup Guide in Root README",
       "description": "Add a Setup Guide section to the root README.md with step-by-step instructions and code examples for integrating StructCMS into a host project",

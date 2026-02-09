@@ -1153,3 +1153,33 @@ pnpm --filter test-app exec tsc --noEmit
 
 ---
 
+## Working on: Dashboard Route Integration
+
+**Selected because:** First failing task in test-app. Prerequisite for Dashboard Navigation Update and Dashboard E2E Tests.
+
+### Plan
+
+**Files to create:**
+- `app/admin/page.tsx` — Dashboard page with DashboardPage component from @structcms/admin
+
+**Approach:**
+1. Create `app/admin/page.tsx` as 'use client' component (needs useRouter)
+2. Import DashboardPage from @structcms/admin
+3. Implement navigation callbacks following PagesPage pattern:
+   - `onSelectPage` → routes to `/admin/pages/${page.slug}`
+   - `onCreatePage` → routes to `/admin/pages/new`
+   - `onUploadMedia` → routes to `/admin/media`
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- app/admin/page.tsx created with DashboardPage component
+- Navigation callbacks: onSelectPage → /admin/pages/[slug], onCreatePage → /admin/pages/new, onUploadMedia → /admin/media
+- TypeScript typecheck passed
+
+---
+
