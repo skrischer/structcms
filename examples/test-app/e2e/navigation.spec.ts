@@ -11,16 +11,18 @@ test.describe('Navigation Editor', () => {
 
     await expect(page.locator('text=Navigation: main')).toBeVisible();
 
-    await expect(page.locator('text=Home')).toBeVisible();
-    await expect(page.locator('text=About')).toBeVisible();
-    await expect(page.locator('text=Blog')).toBeVisible();
+    // NavigationEditor renders labels as input values, not text content
+    await expect(page.locator('[data-testid="nav-item-label-0"]')).toHaveValue('Home');
+    await expect(page.locator('[data-testid="nav-item-label-1"]')).toHaveValue('About');
+    await expect(page.locator('[data-testid="nav-item-label-2"]')).toHaveValue('Blog');
 
-    await page.click('text=Save Navigation');
+    // Use data-testid to avoid ambiguity with NavigationPage's own save button
+    await page.locator('[data-testid="nav-save"]').click();
 
     const response = await fetch(`${BASE_URL}/api/cms/navigation/main`);
     expect(response.ok).toBe(true);
     const navData = await response.json();
-    
+
     expect(navData.items.length).toBeGreaterThan(0);
     expect(navData.items[0].label).toBe('Home');
   });

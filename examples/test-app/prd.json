@@ -503,6 +503,108 @@
         "Link to examples/test-app as full reference implementation"
       ],
       "passes": false
+    },
+    {
+      "group": "E2E Fixes",
+      "feature": "Fix Navigation Test Selectors (P0)",
+      "description": "Fix critical selector bug in navigation.spec.ts where text selectors don't match input values",
+      "acceptance_criteria": [
+        "e2e/navigation.spec.ts lines 14-16 updated to use data-testid selectors",
+        "Replace text=Home with [data-testid=\"nav-item-label-0\"] and toHaveValue('Home')",
+        "Replace text=About with [data-testid=\"nav-item-label-1\"] and toHaveValue('About')",
+        "Replace text=Blog with [data-testid=\"nav-item-label-2\"] and toHaveValue('Blog')",
+        "Test passes with pnpm test:e2e"
+      ],
+      "passes": true
+    },
+    {
+      "group": "E2E Fixes",
+      "feature": "Fix Edit Section Test Selectors (P1)",
+      "description": "Fix fragile selectors in edit-section.spec.ts for better reliability",
+      "acceptance_criteria": [
+        "e2e/edit-section.spec.ts line 12: Update title input selector to be section-specific",
+        "Change to page.locator('[data-testid=\"section-editor\"] input[name=\"title\"]').first()",
+        "e2e/edit-section.spec.ts line 17: Replace text selector with data-testid",
+        "Change 'text=Save Page' to '[data-testid=\"save-page\"]'",
+        "e2e/edit-section.spec.ts line 18: Replace text selector with data-testid",
+        "Change 'text=Save Navigation' to '[data-testid=\"nav-save\"]'",
+        "All tests pass with pnpm test:e2e"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Coverage",
+      "feature": "PageList Filter Tests",
+      "description": "Add E2E tests for PageList filtering functionality including page type filter, error states, and empty states",
+      "acceptance_criteria": [
+        "e2e/page-list.spec.ts extended with new test cases",
+        "Test page type filter: select 'landing' shows only landing pages",
+        "Test error state: simulate API failure and verify error message display",
+        "Test empty state: resetOnly() then verify 'No pages yet' message",
+        "All assertions use proper data-testid selectors",
+        "New tests pass with pnpm test:e2e"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Coverage",
+      "feature": "PageEditor Section Management Tests",
+      "description": "Add E2E tests for section management in PageEditor including add, remove, move, and type selection",
+      "acceptance_criteria": [
+        "e2e/section-management.spec.ts created with comprehensive section tests",
+        "Test add section: select content type, click add, verify new section editor appears",
+        "Test remove section: click remove button, verify section count decreases",
+        "Test move section: click up/down buttons, verify order changes in API",
+        "Test section type selection: different types show appropriate form fields",
+        "All tests use proper data-testid selectors and verify API state",
+        "Tests pass with pnpm test:e2e"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Coverage",
+      "feature": "NavigationEditor Item Management Tests",
+      "description": "Add E2E tests for NavigationEditor item management including add, remove, edit, and nested items",
+      "acceptance_criteria": [
+        "e2e/navigation-management.spec.ts created with navigation item tests",
+        "Test add navigation item: click add, fill label/href, save, verify API count increases",
+        "Test remove navigation item: click remove, save, verify API count decreases",
+        "Test add child item: click add child, verify nested structure",
+        "Test edit item: change label/href values, save, verify API persistence",
+        "All tests use data-testid selectors and verify navigation API response",
+        "Tests pass with pnpm test:e2e"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Coverage",
+      "feature": "MediaBrowser Grid and Delete Tests",
+      "description": "Add E2E tests for MediaBrowser grid display, delete functionality, and media selection",
+      "acceptance_criteria": [
+        "e2e/media-management.spec.ts created with comprehensive media tests",
+        "Test grid display: upload image, verify thumbnail appears in grid",
+        "Test delete media: click delete button, verify media disappears from grid and API",
+        "Test media selection: open media browser, select item, verify callback behavior",
+        "Test pagination: upload >20 items, verify load more button works",
+        "All tests use proper data-testid selectors and verify media API state",
+        "Tests pass with pnpm test:e2e"
+      ],
+      "passes": false
+    },
+    {
+      "group": "E2E Coverage",
+      "feature": "AdminLayout Navigation Tests",
+      "description": "Add E2E tests for AdminLayout sidebar navigation between admin pages and active link highlighting",
+      "acceptance_criteria": [
+        "e2e/admin-navigation.spec.ts created with sidebar navigation tests",
+        "Test sidebar navigation: click Pages, Navigation, Media, Dashboard links",
+        "Verify each click navigates to correct URL (/admin/pages, /admin/navigation, etc.)",
+        "Test active link highlighting: verify aria-current=\"page\" on active nav item",
+        "Test navigation flow: navigate through multiple admin pages in sequence",
+        "All tests use data-testid selectors where available",
+        "Tests pass with pnpm test:e2e"
+      ],
+      "passes": false
     }
   ]
 }

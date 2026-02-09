@@ -1266,3 +1266,34 @@ pnpm --filter test-app exec playwright test e2e/dashboard.spec.ts --workers=1
 - TypeScript typecheck passed
 - All 10 E2E tests passed (17.8s)
 
+---
+
+## Working on: Fix Navigation Test Selectors (P0)
+
+**Selected because:** Critical bug — `navigation.spec.ts` uses `text=` selectors to match Navigation item labels, but NavigationEditor renders them as `<input value="...">`. Playwright's `text=` selector does NOT match input values, only text content. This test will fail on every run.
+
+### Plan
+
+**Files to modify:**
+- `e2e/navigation.spec.ts` — Fix selectors on lines 14-16 and line 18
+
+**Approach:**
+1. Replace `text=Home` with `[data-testid="nav-item-label-0"]` + `toHaveValue('Home')`
+2. Replace `text=About` with `[data-testid="nav-item-label-1"]` + `toHaveValue('About')`
+3. Replace `text=Blog` with `[data-testid="nav-item-label-2"]` + `toHaveValue('Blog')`
+4. Replace `text=Save Navigation` with `[data-testid="nav-save"]` (avoids ambiguity with NavigationPage's own save button)
+
+**Potential challenges:**
+- None — data-testid attributes already exist in NavigationEditor component
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- `e2e/navigation.spec.ts` updated: replaced `text=Home/About/Blog` with `[data-testid="nav-item-label-N"]` + `toHaveValue()`
+- Replaced `text=Save Navigation` with `[data-testid="nav-save"]` to avoid button ambiguity
+- TypeScript typecheck passed
+- data-testid selectors verified in `navigation-editor.tsx` (lines 131, 232)
