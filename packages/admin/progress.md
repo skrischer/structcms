@@ -4,20 +4,49 @@
 Admin UI components for StructCMS.
 
 ## Current Status
-**Phase**: MVP Development  
-**Started**: 2026-02-05
+**Phase**: MVP Development - Dashboard Implementation  
+**Started**: 2026-02-05  
+**Focus**: Building Dashboard MVP components with KPI cards, recent pages, and quick actions
 
 ---
 
 ## Completed Tasks
 
-_No tasks completed yet._
+### Core Infrastructure (100% Complete)
+- ✅ AdminProvider Context with registry and API client
+- ✅ Form Generator from Zod schemas  
+- ✅ All Field Input Components (String, Text, RichText, Image, Array, Object)
+- ✅ Editor Components (Section, Page)
+- ✅ Content Management (Page List, Navigation Editor)
+- ✅ Media Browser with upload/delete
+- ✅ Admin Layout with responsive sidebar
+- ✅ Loading and Error States (Skeleton, Toast, ErrorBoundary)
+- ✅ Bugfixes and Refactoring (Upload URL, Array/Object cases, Memoization, Type consolidation)
+
+### Dashboard MVP (Ready to Start)
+- 📋 Dashboard Page Component (main container)
+- 📋 KPI Cards Component (metrics display)
+- 📋 Recent Pages Component (recent content list)  
+- 📋 Quick Actions Component (navigation shortcuts)
 
 ---
 
 ## In Progress
 
-_No tasks in progress._
+**Next: Dashboard MVP Implementation**
+
+Based on [DASHBOARD_MVP.md](../../DASHBOARD_MVP.md), we need to implement:
+
+1. **DashboardPage** - Main container with error boundaries
+2. **KpiCards** - Metrics from API endpoints and registry
+3. **RecentPages** - Recent pages list with pagination
+4. **QuickActions** - Navigation buttons (no API dependency)
+
+All components will include:
+- Skeleton loading states
+- Error handling with retry buttons
+- Parallel data fetching with `Promise.allSettled()`
+- Responsive design for tablet viewport
 
 ---
 
@@ -978,3 +1007,45 @@ _No tasks in progress._
 - Modified files:
   - `src/components/ui/toast.tsx` — replaced module-level `toastCounter` with `useRef` inside ToastProvider
   - `src/components/ui/__tests__/toast.test.tsx` — added test for independent counters across instances
+
+---
+
+## Working on Quick Actions Component
+
+**Task:** Action buttons that don't require API calls — "Create New Page" and "Upload Media".
+
+**Acceptance Criteria:**
+1. Create New Page button navigates to page creation flow
+2. Upload Media button navigates to media browser
+3. Always available (no API dependency)
+4. Styled consistently with shadcn/ui Button components
+5. Accessible with proper ARIA labels
+
+**Plan:**
+- Create `src/components/dashboard/quick-actions.tsx` — QuickActions component
+- Write unit test `src/components/dashboard/__tests__/quick-actions.test.tsx`
+- Export from `src/index.ts`
+
+**Files to create:**
+- `src/components/dashboard/quick-actions.tsx`
+- `src/components/dashboard/__tests__/quick-actions.test.tsx`
+
+**Approach:**
+- QuickActions accepts `onCreatePage: () => void` and `onUploadMedia: () => void` callbacks (following DASHBOARD_MVP.md spec)
+- Renders two shadcn/ui Button components with clear labels
+- No API calls, no loading/error states needed
+- Follows existing component patterns (cn() utility, data-testid attributes)
+- ARIA labels on buttons for accessibility
+- Optional `className` prop for layout customization
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 202 tests passed (193 previous + 9 QuickActions)
+- Typecheck passed
+- Created files:
+  - `src/components/dashboard/quick-actions.tsx` — QuickActions component with onCreatePage/onUploadMedia callbacks
+  - `src/components/dashboard/__tests__/quick-actions.test.tsx` — 9 unit tests
+- Updated `src/index.ts` with exports
+- Resolved merge conflicts in `prd.json` and `DASHBOARD_MVP.md` (kept detailed worktree versions)
