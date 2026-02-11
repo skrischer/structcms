@@ -1,9 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { resetOnly, BASE_URL } from './helpers';
+import { resetOnly, resetAndSeed, BASE_URL } from './helpers';
 
 test.describe('Create Page', () => {
-  test.beforeEach(async () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async () => {
     await resetOnly();
+  });
+
+  test.afterAll(async () => {
+    await resetAndSeed();
   });
 
   test('should create a new landing page', async ({ page }) => {

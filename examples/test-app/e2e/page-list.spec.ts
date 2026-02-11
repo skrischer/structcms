@@ -2,6 +2,10 @@ import { test, expect } from '@playwright/test';
 import { resetAndSeed, resetOnly } from './helpers';
 
 test.describe('Page List', () => {
+  test.afterAll(async () => {
+    await resetAndSeed();
+  });
+
   test.describe('with seeded data', () => {
     test.describe.configure({ mode: 'serial' });
 
@@ -81,7 +85,9 @@ test.describe('Page List', () => {
   });
 
   test.describe('empty state', () => {
-    test.beforeEach(async () => {
+    test.describe.configure({ mode: 'serial' });
+
+    test.beforeAll(async () => {
       await resetOnly();
     });
 

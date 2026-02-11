@@ -2,7 +2,13 @@ import { test, expect } from '@playwright/test';
 import { resetAndSeed, BASE_URL } from './helpers';
 
 test.describe('Navigation Editor', () => {
-  test.beforeEach(async () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async () => {
+    await resetAndSeed();
+  });
+
+  test.afterAll(async () => {
     await resetAndSeed();
   });
 

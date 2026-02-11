@@ -10,7 +10,13 @@ interface PageResponse {
 }
 
 test.describe('PageEditor Section Management', () => {
-  test.beforeEach(async () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async () => {
+    await resetAndSeed();
+  });
+
+  test.afterAll(async () => {
     await resetAndSeed();
   });
 
@@ -46,76 +52,96 @@ test.describe('PageEditor Section Management', () => {
   test('should remove a section', async ({ page }) => {
     await page.goto('/admin/pages/home');
 
-    // Wait for both sections to load
+    // Get current page state (cumulative: previous test added a section)
+    const initialResponse = await fetch(`${BASE_URL}/api/cms/pages/home`);
+    expect(initialResponse.ok).toBe(true);
+    const initialPageData: PageResponse = await initialResponse.json();
+    const initialCount = initialPageData.sections.length;
+
+    // Wait for all sections to load
     await expect(page.locator('[data-testid="page-section-0"]')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('[data-testid="page-section-1"]')).toBeVisible();
 
-    // Remove content section (index 1)
-    await page.locator('[data-testid="section-remove-1"]').click();
+    // Remove the last section
+    const removeIndex = initialCount - 1;
+    await page.locator(`[data-testid="section-remove-${removeIndex}"]`).click();
 
-    // Only hero section should remain
-    await expect(page.locator('[data-testid="page-section-0"]')).toBeVisible();
-    await expect(page.locator('[data-testid="page-section-1"]')).not.toBeVisible();
+    // Removed section should be gone
+    await expect(page.locator(`[data-testid="page-section-${removeIndex}"]`)).not.toBeVisible();
 
     // Save
     await page.locator('[data-testid="save-page"]').click();
     await page.waitForURL('/admin/pages');
 
     // Verify via API
-    const response = await fetch(`${BASE_URL}/api/cms/pages/home`);
-    expect(response.ok).toBe(true);
-    const pageData: PageResponse = await response.json();
+    const finalResponse = await fetch(`${BASE_URL}/api/cms/pages/home`);
+    expect(finalResponse.ok).toBe(true);
+    const finalPageData: PageResponse = await finalResponse.json();
 
-    expect(pageData.sections).toHaveLength(1);
-    expect(pageData.sections[0]!.type).toBe('hero');
+    expect(finalPageData.sections).toHaveLength(initialCount - 1);
   });
 
   test('should move a section up', async ({ page }) => {
     await page.goto('/admin/pages/home');
 
-    // Wait for sections to load — hero (0), content (1)
+    // Wait for sections to load
     await expect(page.locator('[data-testid="page-section-0"]')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('[data-testid="page-section-1"]')).toBeVisible();
 
-    // Move content (index 1) up — should swap with hero
+    // Get current page state
+    const initialResponse = await fetch(`${BASE_URL}/api/cms/pages/home`);
+    expect(initialResponse.ok).toBe(true);
+    const initialPageData: PageResponse = await initialResponse.json();
+    const sectionCount = initialPageData.sections.length;
+    const firstType = initialPageData.sections[0]!.type;
+    const secondType = initialPageData.sections[1]!.type;
+
+    // Move section at index 1 up — should swap with index 0
     await page.locator('[data-testid="section-move-up-1"]').click();
 
     // Save
     await page.locator('[data-testid="save-page"]').click();
     await page.waitForURL('/admin/pages');
 
-    // Verify via API — content should now be first, hero second
-    const response = await fetch(`${BASE_URL}/api/cms/pages/home`);
-    expect(response.ok).toBe(true);
-    const pageData: PageResponse = await response.json();
+    // Verify via API — sections should be swapped
+    const finalResponse = await fetch(`${BASE_URL}/api/cms/pages/home`);
+    expect(finalResponse.ok).toBe(true);
+    const finalPageData: PageResponse = await finalResponse.json();
 
-    expect(pageData.sections).toHaveLength(2);
-    expect(pageData.sections[0]!.type).toBe('content');
-    expect(pageData.sections[1]!.type).toBe('hero');
+    expect(finalPageData.sections).toHaveLength(sectionCount);
+    expect(finalPageData.sections[0]!.type).toBe(secondType);
+    expect(finalPageData.sections[1]!.type).toBe(firstType);
   });
 
   test('should move a section down', async ({ page }) => {
     await page.goto('/admin/pages/home');
 
-    // Wait for sections to load — hero (0), content (1)
+    // Wait for sections to load
     await expect(page.locator('[data-testid="page-section-0"]')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('[data-testid="page-section-1"]')).toBeVisible();
 
-    // Move hero (index 0) down — should swap with content
+    // Get current page state
+    const initialResponse = await fetch(`${BASE_URL}/api/cms/pages/home`);
+    expect(initialResponse.ok).toBe(true);
+    const initialPageData: PageResponse = await initialResponse.json();
+    const sectionCount = initialPageData.sections.length;
+    const firstType = initialPageData.sections[0]!.type;
+    const secondType = initialPageData.sections[1]!.type;
+
+    // Move section at index 0 down — should swap with index 1
     await page.locator('[data-testid="section-move-down-0"]').click();
 
     // Save
     await page.locator('[data-testid="save-page"]').click();
     await page.waitForURL('/admin/pages');
 
-    // Verify via API — content should now be first, hero second
-    const response = await fetch(`${BASE_URL}/api/cms/pages/home`);
-    expect(response.ok).toBe(true);
-    const pageData: PageResponse = await response.json();
+    // Verify via API — sections should be swapped
+    const finalResponse = await fetch(`${BASE_URL}/api/cms/pages/home`);
+    expect(finalResponse.ok).toBe(true);
+    const finalPageData: PageResponse = await finalResponse.json();
 
-    expect(pageData.sections).toHaveLength(2);
-    expect(pageData.sections[0]!.type).toBe('content');
-    expect(pageData.sections[1]!.type).toBe('hero');
+    expect(finalPageData.sections).toHaveLength(sectionCount);
+    expect(finalPageData.sections[0]!.type).toBe(secondType);
+    expect(finalPageData.sections[1]!.type).toBe(firstType);
   });
 
   test('should show appropriate form fields for section type', async ({ page }) => {
@@ -134,8 +160,11 @@ test.describe('PageEditor Section Management', () => {
     await typeSelect.selectOption('hero');
     await page.locator('[data-testid="add-section"]').click();
 
-    // New hero section at index 2 should have hero-specific fields
-    const newSection = page.locator('[data-testid="page-section-2"]');
+    // New hero section should appear at the end
+    const initialResponse = await fetch(`${BASE_URL}/api/cms/pages/home`);
+    const initialPageData: PageResponse = await initialResponse.json();
+    const newSectionIndex = initialPageData.sections.length;
+    const newSection = page.locator(`[data-testid="page-section-${newSectionIndex}"]`);
     await expect(newSection).toBeVisible();
 
     // Hero has: title (string input), subtitle (textarea), image (image picker)

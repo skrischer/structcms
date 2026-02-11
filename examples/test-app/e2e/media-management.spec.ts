@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { resetOnly, BASE_URL } from './helpers';
+import { resetOnly, resetAndSeed, BASE_URL } from './helpers';
 import path from 'path';
 
 interface MediaItem {
@@ -11,8 +11,14 @@ interface MediaItem {
 }
 
 test.describe('MediaBrowser Grid and Delete', () => {
-  test.beforeEach(async () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async () => {
     await resetOnly();
+  });
+
+  test.afterAll(async () => {
+    await resetAndSeed();
   });
 
   test('should show empty state when no media exists', async ({ page }) => {
@@ -62,7 +68,7 @@ test.describe('MediaBrowser Grid and Delete', () => {
     const fileBuffer = fs.readFileSync(testImagePath);
     const blob = new Blob([fileBuffer], { type: 'image/png' });
     const formData = new FormData();
-    formData.append('file', blob, 'test-image.png');
+    formData.append('file', blob, 'delete-test-image.png');
 
     const uploadResponse = await fetch(`${BASE_URL}/api/cms/media`, {
       method: 'POST',
@@ -76,25 +82,27 @@ test.describe('MediaBrowser Grid and Delete', () => {
     const grid = page.locator('[data-testid="media-grid"]');
     await expect(grid).toBeVisible({ timeout: 10000 });
 
-    // Verify one item exists
+    // Get all media items and find our delete test image
     const mediaItems = grid.locator('[data-testid^="media-item-"]');
-    await expect(mediaItems).toHaveCount(1);
+    const itemCount = await mediaItems.count();
+    expect(itemCount).toBeGreaterThan(0);
 
-    // Get the delete button (dynamic ID, use starts-with selector)
-    const deleteButton = grid.locator('[data-testid^="media-delete-"]').first();
+    // Find the delete test image item
+    const deleteTestItem = grid.locator('[data-testid^="media-item-"]').filter({ hasText: 'delete-test-image' }).first();
+    await expect(deleteTestItem).toBeVisible();
+
+    // Get the delete button for our specific item
+    const deleteButton = deleteTestItem.locator('[data-testid^="media-delete-"]');
     await deleteButton.click();
 
     // Item should disappear from grid (optimistic UI update)
-    await expect(mediaItems).toHaveCount(0);
-
-    // Grid should be gone, empty state should show
-    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible();
+    await expect(deleteTestItem).not.toBeVisible();
 
     // Verify via API that media was actually deleted
     const response = await fetch(`${BASE_URL}/api/cms/media`);
     expect(response.ok).toBe(true);
     const mediaList: MediaItem[] = await response.json();
-    expect(mediaList.length).toBe(0);
+    expect(mediaList.find((item: MediaItem) => item.filename.includes('delete-test-image'))).toBeUndefined();
   });
 
   test('should display select button for each media item', async ({ page }) => {

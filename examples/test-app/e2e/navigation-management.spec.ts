@@ -2,7 +2,13 @@ import { test, expect } from '@playwright/test';
 import { resetAndSeed, BASE_URL } from './helpers';
 
 test.describe('NavigationEditor Item Management', () => {
-  test.beforeEach(async () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async () => {
+    await resetAndSeed();
+  });
+
+  test.afterAll(async () => {
     await resetAndSeed();
   });
 
@@ -12,12 +18,19 @@ test.describe('NavigationEditor Item Management', () => {
     // Wait for navigation editor to load with seeded items
     await expect(page.locator('[data-testid="nav-item-label-0"]')).toHaveValue('Home');
 
-    // Seed has 3 items (Home, About, Blog) — add a 4th
+    // Get current item count before adding
+    const response = await fetch(`${BASE_URL}/api/cms/navigation/main`);
+    expect(response.ok).toBe(true);
+    const initialNavData = await response.json();
+    const initialCount = initialNavData.items.length;
+
+    // Add a new item
     await page.locator('[data-testid="nav-add-item"]').click();
 
-    // New empty item should appear at index 3
-    const newLabel = page.locator('[data-testid="nav-item-label-3"]');
-    const newHref = page.locator('[data-testid="nav-item-href-3"]');
+    // New empty item should appear at the end
+    const newIndex = initialCount;
+    const newLabel = page.locator(`[data-testid="nav-item-label-${newIndex}"]`);
+    const newHref = page.locator(`[data-testid="nav-item-href-${newIndex}"]`);
     await expect(newLabel).toBeVisible();
     await expect(newLabel).toHaveValue('');
 
@@ -25,41 +38,59 @@ test.describe('NavigationEditor Item Management', () => {
     await newLabel.fill('Docs');
     await newHref.fill('/docs');
 
-    // Save
-    await page.locator('[data-testid="nav-save"]').click();
+    // Save and wait for PUT request to complete
+    const [saveResponse] = await Promise.all([
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.locator('[data-testid="nav-save"]').click(),
+    ]);
+    expect(saveResponse.ok()).toBe(true);
 
     // Verify via API
-    const response = await fetch(`${BASE_URL}/api/cms/navigation/main`);
-    expect(response.ok).toBe(true);
-    const navData = await response.json();
+    const finalResponse = await fetch(`${BASE_URL}/api/cms/navigation/main`);
+    expect(finalResponse.ok).toBe(true);
+    const finalNavData = await finalResponse.json();
 
-    expect(navData.items).toHaveLength(4);
-    expect(navData.items[3].label).toBe('Docs');
-    expect(navData.items[3].href).toBe('/docs');
+    expect(finalNavData.items).toHaveLength(initialCount + 1);
+    expect(finalNavData.items[newIndex].label).toBe('Docs');
+    expect(finalNavData.items[newIndex].href).toBe('/docs');
   });
 
   test('should remove a navigation item', async ({ page }) => {
     await page.goto('/admin/navigation');
 
     // Wait for items to load
-    await expect(page.locator('[data-testid="nav-item-label-2"]')).toHaveValue('Blog');
+    await expect(page.locator('[data-testid="nav-item-label-0"]')).toHaveValue('Home');
 
-    // Remove Blog (index 2)
-    await page.locator('[data-testid="nav-item-remove-2"]').click();
+    // Get current navigation state
+    const initialResponse = await fetch(`${BASE_URL}/api/cms/navigation/main`);
+    expect(initialResponse.ok).toBe(true);
+    const initialNavData = await initialResponse.json();
+    const initialCount = initialNavData.items.length;
 
-    // Blog row should be gone — only 2 items remain
-    await expect(page.locator('[data-testid="nav-item-label-2"]')).not.toBeVisible();
+    // Find Blog item index (it might not be at index 2 if previous tests modified it)
+    const blogIndex = initialNavData.items.findIndex((item: { label: string }) => item.label === 'Blog');
+    expect(blogIndex).toBeGreaterThanOrEqual(0);
 
-    // Save
-    await page.locator('[data-testid="nav-save"]').click();
+    // Remove Blog
+    await page.locator(`[data-testid="nav-item-remove-${blogIndex}"]`).click();
+
+    // Last item index should be gone (items shifted up)
+    await expect(page.locator(`[data-testid="nav-item-label-${initialCount - 1}"]`)).not.toBeVisible();
+
+    // Save and wait for PUT request to complete
+    const [saveResponse] = await Promise.all([
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.locator('[data-testid="nav-save"]').click(),
+    ]);
+    expect(saveResponse.ok()).toBe(true);
 
     // Verify via API
-    const response = await fetch(`${BASE_URL}/api/cms/navigation/main`);
-    expect(response.ok).toBe(true);
-    const navData = await response.json();
+    const finalResponse = await fetch(`${BASE_URL}/api/cms/navigation/main`);
+    expect(finalResponse.ok).toBe(true);
+    const finalNavData = await finalResponse.json();
 
-    expect(navData.items).toHaveLength(2);
-    expect(navData.items.find((i: { label: string }) => i.label === 'Blog')).toBeUndefined();
+    expect(finalNavData.items).toHaveLength(initialCount - 1);
+    expect(finalNavData.items.find((i: { label: string }) => i.label === 'Blog')).toBeUndefined();
   });
 
   test('should edit a navigation item', async ({ page }) => {
@@ -78,8 +109,12 @@ test.describe('NavigationEditor Item Management', () => {
     await homeHref.clear();
     await homeHref.fill('/home');
 
-    // Save
-    await page.locator('[data-testid="nav-save"]').click();
+    // Save and wait for PUT request to complete
+    const [saveResponse] = await Promise.all([
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.locator('[data-testid="nav-save"]').click(),
+    ]);
+    expect(saveResponse.ok()).toBe(true);
 
     // Verify via API
     const response = await fetch(`${BASE_URL}/api/cms/navigation/main`);
@@ -93,15 +128,22 @@ test.describe('NavigationEditor Item Management', () => {
   test('should add a child item', async ({ page }) => {
     await page.goto('/admin/navigation');
 
-    // Wait for items to load
-    await expect(page.locator('[data-testid="nav-item-label-0"]')).toHaveValue('Home');
+    // Get current state to find first item without children
+    const initialResponse = await fetch(`${BASE_URL}/api/cms/navigation/main`);
+    expect(initialResponse.ok).toBe(true);
+    const initialNavData = await initialResponse.json();
+    const targetIndex = initialNavData.items.findIndex((item: { children?: unknown[] }) => !item.children || item.children.length === 0);
+    expect(targetIndex).toBeGreaterThanOrEqual(0);
 
-    // Add child to Home (index 0) — Home initially has no children
-    await page.locator('[data-testid="nav-add-child-0"]').click();
+    // Wait for items to load
+    await expect(page.locator(`[data-testid="nav-item-label-${targetIndex}"]`)).toBeVisible();
+
+    // Add child to the target item
+    await page.locator(`[data-testid="nav-add-child-${targetIndex}"]`).click();
 
     // New child should appear
-    const childLabel = page.locator('[data-testid="nav-child-label-0-0"]');
-    const childHref = page.locator('[data-testid="nav-child-href-0-0"]');
+    const childLabel = page.locator(`[data-testid="nav-child-label-${targetIndex}-0"]`);
+    const childHref = page.locator(`[data-testid="nav-child-href-${targetIndex}-0"]`);
     await expect(childLabel).toBeVisible();
     await expect(childLabel).toHaveValue('');
 
@@ -109,42 +151,60 @@ test.describe('NavigationEditor Item Management', () => {
     await childLabel.fill('Getting Started');
     await childHref.fill('/getting-started');
 
-    // Save
-    await page.locator('[data-testid="nav-save"]').click();
+    // Save and wait for PUT request to complete
+    const [saveResponse] = await Promise.all([
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.locator('[data-testid="nav-save"]').click(),
+    ]);
+    expect(saveResponse.ok()).toBe(true);
 
     // Verify via API
     const response = await fetch(`${BASE_URL}/api/cms/navigation/main`);
     expect(response.ok).toBe(true);
     const navData = await response.json();
 
-    expect(navData.items[0].children).toHaveLength(1);
-    expect(navData.items[0].children[0].label).toBe('Getting Started');
-    expect(navData.items[0].children[0].href).toBe('/getting-started');
+    expect(navData.items[targetIndex].children).toHaveLength(1);
+    expect(navData.items[targetIndex].children[0].label).toBe('Getting Started');
+    expect(navData.items[targetIndex].children[0].href).toBe('/getting-started');
   });
 
   test('should remove a child item', async ({ page }) => {
     await page.goto('/admin/navigation');
 
-    // Wait for items to load — About (index 1) has 2 children: Our Team, Contact
-    await expect(page.locator('[data-testid="nav-child-label-1-0"]')).toHaveValue('Our Team');
-    await expect(page.locator('[data-testid="nav-child-label-1-1"]')).toHaveValue('Contact');
+    // Get current state to find an item with multiple children
+    const initialResponse = await fetch(`${BASE_URL}/api/cms/navigation/main`);
+    expect(initialResponse.ok).toBe(true);
+    const initialNavData = await initialResponse.json();
+    const parentIndex = initialNavData.items.findIndex((item: { children?: unknown[] }) => item.children && item.children.length >= 2);
+    expect(parentIndex).toBeGreaterThanOrEqual(0);
+    const initialChildCount = initialNavData.items[parentIndex].children.length;
+    const firstChildLabel = initialNavData.items[parentIndex].children[0].label;
+    const secondChildLabel = initialNavData.items[parentIndex].children[1].label;
 
-    // Remove first child (Our Team)
-    await page.locator('[data-testid="nav-child-remove-1-0"]').click();
+    // Wait for children to load
+    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-0"]`)).toHaveValue(firstChildLabel);
+    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-1"]`)).toHaveValue(secondChildLabel);
 
-    // Only Contact should remain (now at index 0)
-    await expect(page.locator('[data-testid="nav-child-label-1-0"]')).toHaveValue('Contact');
-    await expect(page.locator('[data-testid="nav-child-label-1-1"]')).not.toBeVisible();
+    // Remove first child
+    await page.locator(`[data-testid="nav-child-remove-${parentIndex}-0"]`).click();
 
-    // Save
-    await page.locator('[data-testid="nav-save"]').click();
+    // Second child should now be at index 0
+    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-0"]`)).toHaveValue(secondChildLabel);
+    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-${initialChildCount - 1}"]`)).not.toBeVisible();
+
+    // Save and wait for PUT request to complete
+    const [saveResponse] = await Promise.all([
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.locator('[data-testid="nav-save"]').click(),
+    ]);
+    expect(saveResponse.ok()).toBe(true);
 
     // Verify via API
     const response = await fetch(`${BASE_URL}/api/cms/navigation/main`);
     expect(response.ok).toBe(true);
     const navData = await response.json();
 
-    expect(navData.items[1].children).toHaveLength(1);
-    expect(navData.items[1].children[0].label).toBe('Contact');
+    expect(navData.items[parentIndex].children).toHaveLength(initialChildCount - 1);
+    expect(navData.items[parentIndex].children[0].label).toBe(secondChildLabel);
   });
 });

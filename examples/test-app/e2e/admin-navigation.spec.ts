@@ -8,6 +8,10 @@ test.describe('Admin Sidebar Navigation', () => {
     await resetAndSeed();
   });
 
+  test.afterAll(async () => {
+    await resetAndSeed();
+  });
+
   test('should display sidebar with all nav links', async ({ page }) => {
     await page.goto('/admin');
 

@@ -1,10 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { resetOnly, BASE_URL } from './helpers';
+import { resetOnly, resetAndSeed, BASE_URL } from './helpers';
 import path from 'path';
 
 test.describe('Upload Media', () => {
-  test.beforeEach(async () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async () => {
     await resetOnly();
+  });
+
+  test.afterAll(async () => {
+    await resetAndSeed();
   });
 
   test('should upload an image and verify it appears', async ({ page }) => {

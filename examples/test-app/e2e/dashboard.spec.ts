@@ -8,6 +8,10 @@ test.describe('Dashboard', () => {
     await resetAndSeed();
   });
 
+  test.afterAll(async () => {
+    await resetAndSeed();
+  });
+
   test('should load dashboard at /admin', async ({ page }) => {
     await page.goto('/admin');
 
