@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
+import { Dialog } from '../ui/dialog';
+import { MediaBrowser, type MediaItem } from '../media/media-browser';
 import { cn } from '../../lib/utils';
 
 export interface ImagePickerProps {
@@ -42,9 +44,17 @@ function ImagePicker({
   name,
 }: ImagePickerProps) {
   const inputId = id || name || React.useId();
+  const [mediaBrowserOpen, setMediaBrowserOpen] = React.useState(false);
 
   const handleClear = () => {
     onChange?.('');
+  };
+
+  const handleBrowse = onBrowse ?? (() => setMediaBrowserOpen(true));
+
+  const handleMediaSelect = (item: MediaItem) => {
+    onChange?.(item.url);
+    setMediaBrowserOpen(false);
   };
 
   return (
@@ -74,7 +84,7 @@ function ImagePicker({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={onBrowse}
+                onClick={handleBrowse}
               >
                 Change
               </Button>
@@ -98,7 +108,7 @@ function ImagePicker({
             <Button
               type="button"
               variant="outline"
-              onClick={onBrowse}
+              onClick={handleBrowse}
               id={inputId}
               data-testid="browse-button"
             >
@@ -111,6 +121,15 @@ function ImagePicker({
         <p id={`${inputId}-error`} className="text-sm text-destructive">
           {error}
         </p>
+      )}
+      {!onBrowse && (
+        <Dialog
+          open={mediaBrowserOpen}
+          onClose={() => setMediaBrowserOpen(false)}
+          title="Select Media"
+        >
+          <MediaBrowser onSelect={handleMediaSelect} />
+        </Dialog>
       )}
     </div>
   );

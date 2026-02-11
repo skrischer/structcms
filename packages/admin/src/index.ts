@@ -21,6 +21,7 @@ export { AdminLayout, type AdminLayoutProps, type SidebarNavItem } from './compo
 export { Skeleton, type SkeletonProps } from './components/ui/skeleton';
 export { ToastProvider, useToast, type ToastProviderProps, type Toast, type ToastVariant } from './components/ui/toast';
 export { ErrorBoundary, type ErrorBoundaryProps } from './components/ui/error-boundary';
+export { Dialog, type DialogProps } from './components/ui/dialog';
 export { DashboardPage, type DashboardPageProps } from './components/dashboard/dashboard-page';
 export { QuickActions, type QuickActionsProps } from './components/dashboard/quick-actions';
 export { KpiCards, type KpiCardsProps } from './components/dashboard/kpi-cards';

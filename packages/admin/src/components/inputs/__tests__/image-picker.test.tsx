@@ -1,6 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRegistry } from '@structcms/core';
+import { AdminProvider } from '../../../context/admin-context';
 import { ImagePicker } from '../image-picker';
 
 describe('ImagePicker', () => {
@@ -132,5 +134,100 @@ describe('ImagePicker', () => {
     );
 
     expect(container.firstChild).toHaveClass('custom-class');
+  });
+});
+
+const registry = createRegistry({ sections: [] });
+
+function renderWithProvider(ui: React.ReactElement) {
+  return render(
+    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
+      {ui}
+    </AdminProvider>
+  );
+}
+
+function mockFetchSuccess(data: Array<{ id: string; url: string; filename: string }>) {
+  vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+    new Response(JSON.stringify(data), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  );
+}
+
+describe('ImagePicker built-in MediaBrowser dialog', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('opens MediaBrowser dialog when Browse Media is clicked without onBrowse', async () => {
+    mockFetchSuccess([]);
+    const user = userEvent.setup();
+
+    renderWithProvider(<ImagePicker label="Hero Image" name="hero" />);
+
+    await user.click(screen.getByTestId('browse-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('dialog-overlay')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Select Media')).toBeInTheDocument();
+    expect(screen.getByTestId('media-browser')).toBeInTheDocument();
+  });
+
+  it('closes dialog when close button is clicked', async () => {
+    mockFetchSuccess([]);
+    const user = userEvent.setup();
+
+    renderWithProvider(<ImagePicker label="Hero Image" name="hero" />);
+
+    await user.click(screen.getByTestId('browse-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('dialog-overlay')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId('dialog-close'));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('dialog-overlay')).not.toBeInTheDocument();
+    });
+  });
+
+  it('selects media item and closes dialog', async () => {
+    const mockMedia = [
+      { id: '1', url: 'https://example.com/img1.jpg', filename: 'img1.jpg' },
+    ];
+    mockFetchSuccess(mockMedia);
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithProvider(
+      <ImagePicker label="Hero Image" name="hero" onChange={handleChange} />
+    );
+
+    await user.click(screen.getByTestId('browse-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('media-select-1')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId('media-select-1'));
+
+    expect(handleChange).toHaveBeenCalledWith('https://example.com/img1.jpg');
+    await waitFor(() => {
+      expect(screen.queryByTestId('dialog-overlay')).not.toBeInTheDocument();
+    });
+  });
+
+  it('does not render dialog when onBrowse is provided', () => {
+    const handleBrowse = vi.fn();
+
+    render(
+      <ImagePicker label="Hero Image" name="hero" onBrowse={handleBrowse} />
+    );
+
+    expect(screen.queryByTestId('dialog-overlay')).not.toBeInTheDocument();
   });
 });
