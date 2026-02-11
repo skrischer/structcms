@@ -51,6 +51,22 @@ test.describe('Page List', () => {
       await expect(page).toHaveURL(/\/admin\/pages\//);
     });
 
+    test('should navigate to edit page with multi-segment slug', async ({ page }) => {
+      await page.goto('/admin/pages');
+
+      const table = page.locator('[data-testid="page-table"]');
+      await expect(table).toBeVisible({ timeout: 10000 });
+
+      // Click the row containing "Contact" which has slug "about/contact"
+      await table.locator('tr', { hasText: 'Contact' }).first().click();
+
+      await page.waitForURL('/admin/pages/about/contact');
+      await expect(page).toHaveURL('/admin/pages/about/contact');
+
+      // Verify the edit page loaded correctly
+      await expect(page.locator('h1', { hasText: 'Edit Page: Contact' })).toBeVisible({ timeout: 10000 });
+    });
+
     test('should filter pages by type', async ({ page }) => {
       await page.goto('/admin/pages');
 

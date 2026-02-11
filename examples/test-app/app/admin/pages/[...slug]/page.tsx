@@ -16,7 +16,8 @@ interface PageData {
 export default function EditPagePage() {
   const router = useRouter();
   const params = useParams();
-  const slug = params.slug as string;
+  const slugSegments = params.slug as string[];
+  const slug = slugSegments.join('/');
   const { registry } = useAdmin();
   const apiClient = useApiClient();
   

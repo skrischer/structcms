@@ -3,12 +3,13 @@ import { handleGetPageBySlug, handleUpdatePage, handleDeletePage } from '@struct
 import { storageAdapter } from '@/lib/adapters';
 
 interface RouteParams {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string[] }>;
 }
 
 export async function GET(_request: Request, { params }: RouteParams) {
   try {
-    const { slug } = await params;
+    const { slug: slugSegments } = await params;
+    const slug = slugSegments.join('/');
     const page = await handleGetPageBySlug(storageAdapter, slug);
     if (!page) {
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
@@ -22,7 +23,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
-    const { slug } = await params;
+    const { slug: slugSegments } = await params;
+    const slug = slugSegments.join('/');
     const existingPage = await handleGetPageBySlug(storageAdapter, slug);
     if (!existingPage) {
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
@@ -38,7 +40,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
   try {
-    const { slug } = await params;
+    const { slug: slugSegments } = await params;
+    const slug = slugSegments.join('/');
     const existingPage = await handleGetPageBySlug(storageAdapter, slug);
     if (!existingPage) {
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
