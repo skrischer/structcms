@@ -13,11 +13,6 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50">
-        {nav && (
-          <header className="border-b bg-white px-6 py-3">
-            <Navigation items={nav.items} />
-          </header>
-        )}
         {children}
       </body>
     </html>

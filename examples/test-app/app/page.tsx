@@ -1,9 +1,11 @@
-import { handleGetPageBySlug } from '@structcms/api';
+import { handleGetPageBySlug, handleGetNavigation } from '@structcms/api';
 import { storageAdapter } from '@/lib/adapters';
 import { isSectionType, getComponent } from '@/lib/components';
+import { Navigation } from '@/lib/components/navigation';
 
 export default async function Home() {
   const page = await handleGetPageBySlug(storageAdapter, 'home');
+  const nav = await handleGetNavigation(storageAdapter, 'main');
 
   if (!page) {
     return (
@@ -18,16 +20,24 @@ export default async function Home() {
   }
 
   return (
-    <main>
-      <h1 className="sr-only">{page.title}</h1>
-      {page.sections.map((section, index) => {
-        if (!isSectionType(section.type)) {
-          console.warn(`Unknown section type: ${section.type}`);
-          return null;
-        }
-        const Component = getComponent(section.type);
-        return <Component key={index} data={section.data} />;
-      })}
-    </main>
+    <>
+      {nav && (
+        <header className="border-b bg-white px-6 py-3">
+          <Navigation items={nav.items} />
+        </header>
+      )}
+      <main>
+        <h1 className="sr-only">{page.title}</h1>
+        {page.sections.map((section, index) => {
+          if (!isSectionType(section.type)) {
+            console.warn(`Unknown section type: ${section.type}`);
+            return null;
+          }
+          const Component = getComponent(section.type);
+          return <Component key={index} data={section.data} />;
+        })}
+      </main>
+    </>
+
   );
 }
