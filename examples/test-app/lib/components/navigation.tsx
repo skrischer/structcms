@@ -9,7 +9,7 @@ function NavItem({ item }: { item: NavigationItem }) {
       <li>
         <Link
           href={item.href}
-          className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+          className="inline-flex rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary/70 hover:text-secondary-foreground"
         >
           {item.label}
         </Link>
@@ -21,16 +21,16 @@ function NavItem({ item }: { item: NavigationItem }) {
     <li className="group relative">
       <Link
         href={item.href}
-        className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+        className="inline-flex rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary/70 hover:text-secondary-foreground"
       >
         {item.label}
       </Link>
-      <ul className="absolute left-0 top-full hidden min-w-40 rounded-md bg-white py-1 shadow-lg group-hover:block">
+      <ul className="absolute left-0 top-[calc(100%+0.4rem)] hidden min-w-44 rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-xl shadow-primary/10 backdrop-blur-sm group-hover:block">
         {item.children!.map((child) => (
           <li key={child.href}>
             <Link
               href={child.href}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary/70 hover:text-secondary-foreground"
             >
               {child.label}
             </Link>
@@ -44,7 +44,7 @@ function NavItem({ item }: { item: NavigationItem }) {
 export function Navigation({ items }: { items: NavigationItem[] }) {
   return (
     <nav>
-      <ul className="flex items-center gap-1">
+      <ul className="flex flex-wrap items-center gap-1">
         {items.map((item) => (
           <NavItem key={item.href} item={item} />
         ))}

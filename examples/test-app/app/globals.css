@@ -2,21 +2,45 @@
 @source "../node_modules/@structcms/admin/dist/**/*.js";
 
 @theme {
-  --color-background: #ffffff;
-  --color-foreground: #0a0a0a;
-  --color-muted: #f5f5f5;
-  --color-muted-foreground: #737373;
+  --color-background: #f3f6ff;
+  --color-foreground: #111827;
+  --color-muted: #e9eefb;
+  --color-muted-foreground: #5b6472;
   --color-card: #ffffff;
-  --color-card-foreground: #0a0a0a;
-  --color-primary: #171717;
-  --color-primary-foreground: #fafafa;
-  --color-secondary: #f5f5f5;
-  --color-secondary-foreground: #171717;
-  --color-accent: #f5f5f5;
-  --color-accent-foreground: #171717;
+  --color-card-foreground: #111827;
+  --color-primary: #0f3d6e;
+  --color-primary-foreground: #f8fbff;
+  --color-secondary: #d7e6ff;
+  --color-secondary-foreground: #0f2d4a;
+  --color-accent: #d7f4ec;
+  --color-accent-foreground: #11483a;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #fafafa;
-  --color-border: #e5e5e5;
-  --color-input: #e5e5e5;
-  --color-ring: #0a0a0a;
+  --color-border: #cdd8f0;
+  --color-input: #cdd8f0;
+  --color-ring: #2267b3;
+}
+
+@layer base {
+  body {
+    @apply min-h-screen bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(34, 103, 179, 0.22) 0%, transparent 42%),
+      radial-gradient(circle at 85% -30%, rgba(51, 181, 145, 0.2) 0%, transparent 40%);
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply tracking-tight text-foreground;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
 }
