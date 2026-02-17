@@ -123,18 +123,9 @@ CI uses GitHub Secrets for the same variables.
 
 ### Adapter Setup
 
-The app uses the `createSupabaseAdapters()` factory from `@structcms/api/supabase` to bootstrap both storage and media adapters with minimal configuration:
+The app uses the `createSupabaseAdapters()` factory from `@structcms/api/supabase` to bootstrap both storage and media adapters. The factory automatically reads `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SUPABASE_STORAGE_BUCKET` from environment variables.
 
-```typescript
-// lib/adapters.ts
-import { createSupabaseAdapters } from '@structcms/api/supabase';
-
-const { storageAdapter, mediaAdapter } = createSupabaseAdapters();
-
-export { storageAdapter, mediaAdapter };
-```
-
-The factory automatically reads `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SUPABASE_STORAGE_BUCKET` from environment variables. This is the recommended quickstart path.
+See `lib/adapters.ts` for the implementation.
 
 ### Registry
 
@@ -142,67 +133,15 @@ Section definitions (`hero`, `content`) and page types (`landing`, `blog`) are d
 
 ### Route Handlers
 
-All API routes under `app/api/cms/` use the Next.js preset factories from `@structcms/api/next` for minimal boilerplate:
+All API routes under `app/api/cms/` use the Next.js preset factories from `@structcms/api/next` for minimal boilerplate. The preset factories handle request parsing, validation, error handling, and response formatting.
 
-```typescript
-// app/api/cms/pages/route.ts
-import { createNextPagesRoute } from '@structcms/api/next';
-import { storageAdapter } from '@/lib/adapters';
-
-const pagesRoute = createNextPagesRoute({ storageAdapter });
-
-export async function GET(request: Request): Promise<Response> {
-  return pagesRoute.GET(request) as Promise<Response>;
-}
-
-export async function POST(request: Request): Promise<Response> {
-  return pagesRoute.POST(request) as Promise<Response>;
-}
-```
-
-The preset factories handle request parsing, validation, error handling, and response formatting. This is the recommended quickstart path. For more control, you can use the core handler functions directly (see `@structcms/api` documentation).
+See `app/api/cms/pages/route.ts`, `app/api/cms/media/route.ts`, and `app/api/cms/navigation/route.ts` for the implementations.
 
 ### Admin Pages
 
-Admin pages use the `AdminProvider` + `AdminLayout` pattern for a complete admin shell:
+Admin pages use the `AdminProvider` + `AdminLayout` pattern for a complete admin shell. Individual admin views (`DashboardPage`, `PageList`, `PageEditor`, `NavigationEditor`, `MediaBrowser`) are mounted as child routes under `/admin`.
 
-```typescript
-// app/admin/layout.tsx
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { AdminProvider, AdminLayout } from '@structcms/admin';
-import { registry } from '@/lib/registry';
-
-const navItems = [
-  { label: 'Dashboard', path: '/admin' },
-  { label: 'Pages', path: '/admin/pages' },
-  { label: 'Navigation', path: '/admin/navigation' },
-  { label: 'Media', path: '/admin/media' },
-];
-
-export default function AdminRootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const router = useRouter();
-
-  const handleNavigate = (path: string) => {
-    router.push(path);
-  };
-
-  return (
-    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
-      <AdminLayout navItems={navItems} onNavigate={handleNavigate}>
-        {children}
-      </AdminLayout>
-    </AdminProvider>
-  );
-}
-```
-
-Individual admin views (`DashboardPage`, `PageList`, `PageEditor`, `NavigationEditor`, `MediaBrowser`) are mounted as child routes under `/admin`. This is the recommended quickstart pattern.
+See `app/admin/layout.tsx` for the provider and layout setup, and `app/admin/page.tsx`, `app/admin/pages/page.tsx`, `app/admin/navigation/page.tsx`, `app/admin/media/page.tsx` for the view implementations.
 
 ### Frontend Rendering
 

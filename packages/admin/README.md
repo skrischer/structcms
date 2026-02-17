@@ -65,253 +65,30 @@ The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `de
 
 ## Quickstart
 
-This section shows how to integrate the admin UI into a Next.js App Router project. For a complete working example, see `examples/test-app`.
+This package provides React components for building a CMS admin interface. For a complete working integration example, see `examples/test-app`.
 
-### 1. Create Registry
+### Integration Steps
 
-Define your sections and page types using `@structcms/core`:
+1. **Create Registry** — Define your sections and page types using `@structcms/core` (`defineSection`, `definePageType`, `createRegistry`). See `examples/test-app/lib/registry.ts` for the implementation.
 
-```typescript
-// lib/registry.ts
-import { createRegistry, defineSection, definePageType, fields } from '@structcms/core';
+2. **Admin Layout** — Create an admin route group with `AdminProvider` and `AdminLayout`. The provider requires two props:
+   - `registry` — Your section and page type registry from `@structcms/core`
+   - `apiBaseUrl` — Base URL for CMS API routes (e.g., `/api/cms`)
+   
+   See `examples/test-app/app/admin/layout.tsx` for the complete setup.
 
-const heroSection = defineSection({
-  name: 'hero',
-  label: 'Hero Section',
-  fields: {
-    title: fields.string({ label: 'Title' }),
-    subtitle: fields.text({ label: 'Subtitle', optional: true }),
-    image: fields.image({ label: 'Hero Image', optional: true }),
-  },
-});
+3. **Admin Views** — Create routes for each admin view using the provided components:
+   - `DashboardPage` — Main dashboard with KPIs, recent pages, and quick actions
+   - `PageList` — Page listing with search and filter
+   - `PageEditor` — Page editor with section management
+   - `NavigationEditor` — Navigation item editor
+   - `MediaBrowser` — Media browser with upload
+   
+   See `examples/test-app/app/admin/` for complete view implementations.
 
-const contentSection = defineSection({
-  name: 'content',
-  label: 'Content Section',
-  fields: {
-    body: fields.richtext({ label: 'Body' }),
-  },
-});
+4. **Styling** — The admin components use Tailwind CSS. Include `./node_modules/@structcms/admin/dist/**/*.{js,mjs}` in your `tailwind.config.ts` content array.
 
-const landingPage = definePageType({
-  name: 'landing',
-  label: 'Landing Page',
-  allowedSections: ['hero', 'content'],
-});
-
-export const registry = createRegistry({
-  sections: [heroSection, contentSection],
-  pageTypes: [landingPage],
-});
-```
-
-### 2. Admin Layout with AdminProvider
-
-Create an admin route group with `AdminProvider` and `AdminLayout`:
-
-```typescript
-// app/admin/layout.tsx
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { AdminProvider, AdminLayout } from '@structcms/admin';
-import { registry } from '@/lib/registry';
-
-const navItems = [
-  { label: 'Dashboard', path: '/admin' },
-  { label: 'Pages', path: '/admin/pages' },
-  { label: 'Navigation', path: '/admin/navigation' },
-  { label: 'Media', path: '/admin/media' },
-];
-
-export default function AdminRootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const router = useRouter();
-
-  const handleNavigate = (path: string) => {
-    router.push(path);
-  };
-
-  return (
-    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
-      <AdminLayout navItems={navItems} onNavigate={handleNavigate}>
-        {children}
-      </AdminLayout>
-    </AdminProvider>
-  );
-}
-```
-
-**Required Props:**
-- `registry` — Your section and page type registry from `@structcms/core`
-- `apiBaseUrl` — Base URL for CMS API routes (e.g., `/api/cms`)
-
-### 3. Dashboard Page
-
-Create the dashboard as your admin entry point:
-
-```typescript
-// app/admin/page.tsx
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { DashboardPage, type PageSummary } from '@structcms/admin';
-
-export default function AdminDashboard() {
-  const router = useRouter();
-
-  const handleSelectPage = (page: PageSummary) => {
-    router.push(`/admin/pages/${page.slug}`);
-  };
-
-  const handleCreatePage = () => {
-    router.push('/admin/pages/new');
-  };
-
-  const handleUploadMedia = () => {
-    router.push('/admin/media');
-  };
-
-  return (
-    <DashboardPage
-      onSelectPage={handleSelectPage}
-      onCreatePage={handleCreatePage}
-      onUploadMedia={handleUploadMedia}
-    />
-  );
-}
-```
-
-### 4. Individual Admin Views
-
-Create routes for each admin view using the provided components:
-
-**Page List** (`app/admin/pages/page.tsx`):
-
-```typescript
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { PageList, type PageSummary } from '@structcms/admin';
-
-export default function PagesView() {
-  const router = useRouter();
-
-  const handleSelectPage = (page: PageSummary) => {
-    router.push(`/admin/pages/${page.slug}`);
-  };
-
-  const handleCreatePage = () => {
-    router.push('/admin/pages/new');
-  };
-
-  return (
-    <PageList
-      onSelectPage={handleSelectPage}
-      onCreatePage={handleCreatePage}
-    />
-  );
-}
-```
-
-**Page Editor** (`app/admin/pages/[slug]/page.tsx`):
-
-```typescript
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { PageEditor } from '@structcms/admin';
-import { use } from 'react';
-
-export default function EditPageView({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const router = useRouter();
-  const { slug } = use(params);
-
-  const handleSave = () => {
-    router.push('/admin/pages');
-  };
-
-  return <PageEditor slug={slug} onSave={handleSave} />;
-}
-```
-
-**Navigation Editor** (`app/admin/navigation/page.tsx`):
-
-```typescript
-'use client';
-
-import { NavigationEditor } from '@structcms/admin';
-
-export default function NavigationView() {
-  return <NavigationEditor />;
-}
-```
-
-**Media Browser** (`app/admin/media/page.tsx`):
-
-```typescript
-'use client';
-
-import { MediaBrowser } from '@structcms/admin';
-
-export default function MediaView() {
-  return <MediaBrowser />;
-}
-```
-
-### 5. Styling
-
-The admin components use Tailwind CSS. Ensure your `tailwind.config.ts` includes the admin package:
-
-```typescript
-import type { Config } from 'tailwindcss';
-
-const config: Config = {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@structcms/admin/dist/**/*.{js,mjs}',
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
-
-export default config;
-```
-
-### Advanced: Using Individual Components
-
-For more control, you can use `AdminProvider` with individual components instead of the full layout:
-
-```typescript
-'use client';
-
-import { AdminProvider, PageList } from '@structcms/admin';
-import { registry } from '@/lib/registry';
-
-export default function CustomAdminPage() {
-  return (
-    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
-      <div className="custom-layout">
-        <PageList
-          onSelectPage={(page) => console.log('Selected:', page)}
-          onCreatePage={() => console.log('Create new page')}
-        />
-      </div>
-    </AdminProvider>
-  );
-}
-```
-
-This approach gives you full control over layout, routing, and composition while still benefiting from the admin components and context.
+5. **Advanced Usage** — For more control, use `AdminProvider` with individual components instead of the full layout. This gives you complete control over layout, routing, and composition.
 
 ## Components
 
