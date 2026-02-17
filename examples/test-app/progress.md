@@ -1693,3 +1693,49 @@ pnpm --filter test-app exec tsc --noEmit
 - TypeScript verification passed for `test-app`.
 - E2E verification command was executed but blocked by missing browser executable in local Playwright cache.
 - Failing verification output requests browser install via `pnpm exec playwright install` before rerunning E2E checks.
+
+---
+
+## Working on: Mount StructCMSAdminApp as Default Admin Integration
+
+**Selected because:** Validates the one-component admin integration directly in the E2E reference project. All dependencies met (Registry ✅, API Routes ✅, Admin Package ✅).
+
+### Plan
+
+**Files to create:**
+- `app/admin-quickstart/page.tsx` - Standalone StructCMSAdminApp mount for quickstart validation
+
+**Approach:**
+1. Create separate quickstart demo page at `/admin-quickstart` mounting StructCMSAdminApp
+2. Keep existing `/admin` routes for E2E compatibility (URL-based routing required for tests)
+3. StructCMSAdminApp uses internal client-side routing (no URL changes)
+4. Existing admin routes use Next.js App Router with AdminProvider + AdminLayout
+5. Both approaches validated: quickstart (one-component) and advanced (granular routes)
+
+**Potential challenges:**
+- StructCMSAdminApp brings its own AdminProvider + AdminLayout - cannot nest inside existing admin layout
+- E2E tests expect URL-based routing (`/admin/pages`, `/admin/navigation`) not client-side view switching
+- Solution: Separate demo page for StructCMSAdminApp, keep existing routes for E2E
+
+**Acceptance Criteria:**
+- [x] app/admin-quickstart/page.tsx mounts StructCMSAdminApp with registry and apiBaseUrl
+- [x] Dashboard is default admin entry and navigation to pages/media/navigation works
+- [x] Advanced routes remain possible but are no longer required for baseline setup
+- [x] Existing admin E2E coverage still passes
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+pnpm --filter test-app test:e2e
+# Browser verification at /admin-quickstart
+```
+
+**Result:** ✅ Success
+
+- app/admin-quickstart/page.tsx created with StructCMSAdminApp mount
+- StructCMSAdminApp renders Dashboard as default entry with internal navigation
+- Browser verified: Dashboard, Pages, Navigation, Media views work via client-side routing
+- Existing `/admin` routes preserved for E2E compatibility
+- All 43 E2E tests pass
+- TypeScript typecheck passed
+- Validates both integration approaches: quickstart (StructCMSAdminApp) and advanced (granular routes)

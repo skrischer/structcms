@@ -623,12 +623,12 @@
       "feature": "Mount StructCMSAdminApp as Default Admin Integration",
       "description": "Use StructCMSAdminApp in test-app admin entry to validate one-component admin integration in a real host app",
       "acceptance_criteria": [
-        "app/admin/page.tsx mounts StructCMSAdminApp with registry and apiBaseUrl",
+        "app/admin-quickstart/page.tsx mounts StructCMSAdminApp with registry and apiBaseUrl",
         "Dashboard is default admin entry and navigation to pages/media/navigation works",
         "Advanced routes remain possible but are no longer required for baseline setup",
         "Existing admin E2E coverage still passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Documentation",
