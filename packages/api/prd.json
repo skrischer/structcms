@@ -587,7 +587,7 @@
         "Shows one-line route file examples for pages/media/navigation",
         "Explains that presets are opt-in and core handlers remain available"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

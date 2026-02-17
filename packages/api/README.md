@@ -56,6 +56,208 @@ Both have Supabase implementations (`SupabaseStorageAdapter`, `SupabaseMediaAdap
 
 Rich text content is sanitized on write using `sanitize-html` to prevent XSS. See `src/utils/sanitize.ts`.
 
+## Quickstart
+
+This section shows the minimal setup path for integrating `@structcms/api` into a Next.js App Router project. For a complete working example, see `examples/test-app`.
+
+### 1. Environment Variables
+
+Create a `.env.local` file with your Supabase credentials:
+
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SECRET_KEY=your-service-role-key
+SUPABASE_STORAGE_BUCKET=media  # optional, defaults to "media"
+```
+
+### 2. Adapter Setup
+
+Create `lib/adapters.ts` to bootstrap Supabase adapters:
+
+```typescript
+import { createSupabaseAdapters } from '@structcms/api/supabase';
+
+const { storageAdapter, mediaAdapter } = createSupabaseAdapters();
+
+export { storageAdapter, mediaAdapter };
+```
+
+The `createSupabaseAdapters()` factory reads environment variables automatically. You can also pass explicit configuration:
+
+```typescript
+const { storageAdapter, mediaAdapter } = createSupabaseAdapters({
+  url: process.env.SUPABASE_URL,
+  key: process.env.SUPABASE_SECRET_KEY,
+  storage: { bucketName: 'custom-bucket' }
+});
+```
+
+### 3. Route Handlers (Next.js Preset Factories)
+
+Use the `@structcms/api/next` preset factories to create route handlers with minimal boilerplate:
+
+**Pages Route** (`app/api/cms/pages/route.ts`):
+
+```typescript
+import { createNextPagesRoute } from '@structcms/api/next';
+import { storageAdapter } from '@/lib/adapters';
+
+const pagesRoute = createNextPagesRoute({ storageAdapter });
+
+export async function GET(request: Request): Promise<Response> {
+  return pagesRoute.GET(request) as Promise<Response>;
+}
+
+export async function POST(request: Request): Promise<Response> {
+  return pagesRoute.POST(request) as Promise<Response>;
+}
+```
+
+**Page by Slug Route** (`app/api/cms/pages/[slug]/route.ts`):
+
+```typescript
+import { createNextPageBySlugRoute } from '@structcms/api/next';
+import { storageAdapter } from '@/lib/adapters';
+
+const pageBySlugRoute = createNextPageBySlugRoute({ storageAdapter });
+
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ slug: string }> }
+): Promise<Response> {
+  return pageBySlugRoute.GET(request, context) as Promise<Response>;
+}
+```
+
+**Page by ID Route** (`app/api/cms/pages/[id]/route.ts`):
+
+```typescript
+import { createNextPageByIdRoute } from '@structcms/api/next';
+import { storageAdapter } from '@/lib/adapters';
+
+const pageByIdRoute = createNextPageByIdRoute({ storageAdapter });
+
+export async function PUT(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  return pageByIdRoute.PUT(request, context) as Promise<Response>;
+}
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  return pageByIdRoute.DELETE(request, context) as Promise<Response>;
+}
+```
+
+**Media Route** (`app/api/cms/media/route.ts`):
+
+```typescript
+import { createNextMediaRoute } from '@structcms/api/next';
+import { mediaAdapter } from '@/lib/adapters';
+
+const mediaRoute = createNextMediaRoute({ mediaAdapter });
+
+export async function GET(request: Request): Promise<Response> {
+  return mediaRoute.GET(request) as Promise<Response>;
+}
+
+export async function POST(request: Request): Promise<Response> {
+  return mediaRoute.POST(request) as Promise<Response>;
+}
+```
+
+**Media by ID Route** (`app/api/cms/media/[id]/route.ts`):
+
+```typescript
+import { createNextMediaByIdRoute } from '@structcms/api/next';
+import { mediaAdapter } from '@/lib/adapters';
+
+const mediaByIdRoute = createNextMediaByIdRoute({ mediaAdapter });
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  return mediaByIdRoute.DELETE(request, context) as Promise<Response>;
+}
+```
+
+**Navigation Route** (`app/api/cms/navigation/route.ts`):
+
+```typescript
+import { createNextNavigationRoute } from '@structcms/api/next';
+import { storageAdapter } from '@/lib/adapters';
+
+const navigationRoute = createNextNavigationRoute({ storageAdapter });
+
+export async function GET(request: Request): Promise<Response> {
+  return navigationRoute.GET(request) as Promise<Response>;
+}
+
+export async function POST(request: Request): Promise<Response> {
+  return navigationRoute.POST(request) as Promise<Response>;
+}
+```
+
+**Navigation by ID Route** (`app/api/cms/navigation/[id]/route.ts`):
+
+```typescript
+import { createNextNavigationByIdRoute } from '@structcms/api/next';
+import { storageAdapter } from '@/lib/adapters';
+
+const navigationByIdRoute = createNextNavigationByIdRoute({ storageAdapter });
+
+export async function PUT(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  return navigationByIdRoute.PUT(request, context) as Promise<Response>;
+}
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  return navigationByIdRoute.DELETE(request, context) as Promise<Response>;
+}
+```
+
+### 4. Advanced: Using Core Handlers Directly
+
+The preset factories are **opt-in convenience APIs**. You can use the core handler functions directly for full control:
+
+```typescript
+import { handleListPages, handleCreatePage } from '@structcms/api';
+import { storageAdapter } from '@/lib/adapters';
+
+export async function GET(request: Request) {
+  try {
+    const url = new URL(request.url);
+    const pageType = url.searchParams.get('pageType') || undefined;
+    
+    const pages = await handleListPages(storageAdapter, { pageType });
+    return Response.json({ data: pages });
+  } catch (error) {
+    return Response.json({ error: { message: 'Failed to list pages' } }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const input = await request.json();
+    const page = await handleCreatePage(storageAdapter, input);
+    return Response.json({ data: page }, { status: 201 });
+  } catch (error) {
+    return Response.json({ error: { message: 'Failed to create page' } }, { status: 500 });
+  }
+}
+```
+
+This approach gives you complete control over request parsing, validation, error handling, and response formatting.
+
 ## Public API
 
 ### Storage Handlers
