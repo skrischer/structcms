@@ -166,4 +166,93 @@ describe('StructCMSAdminApp', () => {
     
     expect(screen.getByTestId('admin-layout')).toBeInTheDocument();
   });
+
+  it('supports custom navigation items', async () => {
+    const user = userEvent.setup();
+    const customNavItems = [
+      { label: 'Custom View', path: '/custom' },
+      { label: 'Another View', path: '/another' },
+    ];
+
+    render(
+      <StructCMSAdminApp 
+        registry={mockRegistry} 
+        customNavItems={customNavItems}
+      />
+    );
+    
+    expect(screen.getByText('Custom View')).toBeInTheDocument();
+    expect(screen.getByText('Another View')).toBeInTheDocument();
+    
+    await user.click(screen.getByText('Custom View'));
+    expect(screen.getByTestId('custom-view')).toBeInTheDocument();
+    expect(screen.getByText(/Custom view for path: \/custom/)).toBeInTheDocument();
+  });
+
+  it('custom nav items are appended to default nav items', () => {
+    const customNavItems = [{ label: 'Settings', path: '/settings' }];
+
+    render(
+      <StructCMSAdminApp 
+        registry={mockRegistry} 
+        customNavItems={customNavItems}
+      />
+    );
+    
+    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Pages')).toBeInTheDocument();
+    expect(screen.getByText('Media')).toBeInTheDocument();
+    expect(screen.getByText('Navigation')).toBeInTheDocument();
+    expect(screen.getByText('Settings')).toBeInTheDocument();
+  });
+
+  it('supports view override via renderView prop', async () => {
+    const user = userEvent.setup();
+    const customRenderView = vi.fn((view) => {
+      if (view.type === 'pages') {
+        return <div data-testid="custom-pages-view">Custom Pages View</div>;
+      }
+      return null;
+    });
+
+    render(
+      <StructCMSAdminApp 
+        registry={mockRegistry} 
+        renderView={customRenderView}
+      />
+    );
+    
+    await user.click(screen.getByText('Pages'));
+    
+    expect(customRenderView).toHaveBeenCalled();
+    expect(screen.getByTestId('custom-pages-view')).toBeInTheDocument();
+    expect(screen.getByText('Custom Pages View')).toBeInTheDocument();
+  });
+
+  it('falls back to default view when renderView returns null', async () => {
+    const user = userEvent.setup();
+    const customRenderView = vi.fn(() => null);
+
+    render(
+      <StructCMSAdminApp 
+        registry={mockRegistry} 
+        renderView={customRenderView}
+      />
+    );
+    
+    expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    
+    await user.click(screen.getByText('Pages'));
+    expect(screen.getByTestId('page-list')).toBeInTheDocument();
+  });
+
+  it('default behavior works without any overrides', () => {
+    render(<StructCMSAdminApp registry={mockRegistry} />);
+    
+    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Pages')).toBeInTheDocument();
+    expect(screen.getByText('Media')).toBeInTheDocument();
+    expect(screen.getByText('Navigation')).toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+  });
 });

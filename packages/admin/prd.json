@@ -516,7 +516,7 @@
         "Unit test: override route replaces default view",
         "Unit test: custom sidebar items render and navigate"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "group": "Documentation",

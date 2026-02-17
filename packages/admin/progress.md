@@ -1263,3 +1263,65 @@ Total: 46 dashboard-specific tests, 239 tests overall.
 - Updated `prd.json`: StructCMSAdminApp Export task marked as passing
 
 ---
+
+## Working on Admin Shell Navigation and Route Overrides
+
+**Task:** Keep admin shell flexible with opt-in escape hatches while preserving default quickstart behavior.
+
+**Acceptance Criteria:**
+1. Supports custom sidebar items via props
+2. Supports route override for built-in admin views
+3. Default behavior works without any overrides
+4. Unit test: override route replaces default view
+5. Unit test: custom sidebar items render and navigate
+
+**Plan:**
+- Extend `StructCMSAdminAppProps` with optional `customNavItems` and `renderView` override props
+- Allow consumers to add custom navigation items alongside defaults
+- Allow consumers to override specific view rendering (e.g., custom PageEditor)
+- Maintain backward compatibility - default behavior unchanged
+- Write unit tests for custom nav items and view overrides
+- Update existing tests to ensure defaults still work
+
+**Approach:**
+- Add `customNavItems?: SidebarNavItem[]` prop - appended to default nav items
+- Add `renderView?: (view: View) => React.ReactNode | null` prop - allows full view override
+- Export `View` type so consumers can use it in their renderView implementation
+- If `renderView` provided, call it first; if returns null, fall back to default rendering
+- Add `custom` view type for custom routes that don't match built-in views
+- This gives consumers full flexibility while keeping simple cases simple
+
+**Files modified:**
+- `src/components/app/struct-cms-admin-app.tsx` - added customNavItems and renderView props
+- `src/components/app/__tests__/struct-cms-admin-app.test.tsx` - added 5 new tests
+- `src/index.ts` - exported View type
+
+**Implementation details:**
+- `customNavItems` are appended to default nav items (Dashboard, Pages, Navigation, Media)
+- Custom routes trigger `{ type: 'custom', path: string }` view
+- `renderView` is called before default view rendering
+- If `renderView` returns null, falls back to default view for that route
+- Default fallback for custom routes shows placeholder with path
+- All existing tests still pass - backward compatibility maintained
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 258 tests passed (253 previous + 5 new navigation/override tests)
+- Typecheck passed
+- Modified files:
+  - `src/components/app/struct-cms-admin-app.tsx` - added customNavItems, renderView, custom view type
+  - `src/components/app/__tests__/struct-cms-admin-app.test.tsx` - added 5 tests for custom nav and view overrides
+  - `src/index.ts` - exported View type
+- Updated `prd.json`: Admin Shell Navigation and Route Overrides task marked as passing
+
+### Admin Shell Productization Complete!
+
+Both App Shell tasks are now complete:
+- ✅ StructCMSAdminApp Export (10 tests)
+- ✅ Admin Shell Navigation and Route Overrides (5 additional tests)
+
+Total: 15 app shell tests, 258 tests overall.
+
+---

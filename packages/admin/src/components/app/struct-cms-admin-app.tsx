@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Registry } from '@structcms/core';
 import { AdminProvider } from '../../context/admin-context';
-import { AdminLayout } from '../layout/admin-layout';
+import { AdminLayout, type SidebarNavItem } from '../layout/admin-layout';
 import { DashboardPage } from '../dashboard/dashboard-page';
 import { PageList, type PageSummary } from '../content/page-list';
 import { PageEditor } from '../editors/page-editor';
@@ -12,19 +12,24 @@ export interface StructCMSAdminAppProps {
   registry: Registry;
   apiBaseUrl?: string;
   className?: string;
+  customNavItems?: SidebarNavItem[];
+  renderView?: (view: View) => React.ReactNode | null;
 }
 
-type View = 
+export type View = 
   | { type: 'dashboard' }
   | { type: 'pages' }
   | { type: 'page-editor' }
   | { type: 'media' }
-  | { type: 'navigation' };
+  | { type: 'navigation' }
+  | { type: 'custom'; path: string };
 
 export function StructCMSAdminApp({ 
   registry, 
   apiBaseUrl = '/api/cms',
-  className 
+  className,
+  customNavItems = [],
+  renderView: customRenderView,
 }: StructCMSAdminAppProps) {
   const [currentView, setCurrentView] = useState<View>({ type: 'dashboard' });
 
@@ -37,6 +42,8 @@ export function StructCMSAdminApp({
       setCurrentView({ type: 'media' });
     } else if (path === '/navigation') {
       setCurrentView({ type: 'navigation' });
+    } else {
+      setCurrentView({ type: 'custom', path });
     }
   };
 
@@ -53,6 +60,13 @@ export function StructCMSAdminApp({
   };
 
   const renderView = () => {
+    if (customRenderView) {
+      const customView = customRenderView(currentView);
+      if (customView !== null) {
+        return customView;
+      }
+    }
+
     switch (currentView.type) {
       case 'dashboard':
         return (
@@ -90,17 +104,25 @@ export function StructCMSAdminApp({
             }}
           />
         );
+      case 'custom':
+        return (
+          <div data-testid="custom-view">
+            Custom view for path: {currentView.path}
+          </div>
+        );
       default:
         return null;
     }
   };
 
-  const navItems = [
+  const defaultNavItems = [
     { label: 'Dashboard', path: '/' },
     { label: 'Pages', path: '/pages' },
     { label: 'Navigation', path: '/navigation' },
     { label: 'Media', path: '/media' },
   ];
+
+  const navItems = [...defaultNavItems, ...customNavItems];
 
   return (
     <AdminProvider registry={registry} apiBaseUrl={apiBaseUrl}>
