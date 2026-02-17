@@ -28,16 +28,17 @@
     },
     "environment_variables": {
       "SUPABASE_URL": "https://xxx.supabase.co",
-      "SUPABASE_SECRET_KEY": "Service role key for server-side operations"
+      "SUPABASE_SECRET_KEY": "Service role key for server-side operations",
+      "SUPABASE_STORAGE_BUCKET": "Storage bucket for media uploads (default: media)"
     },
     "file_structure": {
       "app/": "Next.js App Router pages and layouts",
-      "app/admin/": "Admin pages with AdminProvider",
+      "app/admin/": "Admin pages mounted via StructCMSAdminApp quickstart shell",
       "app/admin/pages/": "Page list and editor views",
       "app/admin/navigation/": "Navigation editor view",
       "app/admin/media/": "Media browser view",
       "app/[...slug]/": "Dynamic frontend page rendering",
-      "app/api/cms/": "Route handlers wrapping @structcms/api",
+      "app/api/cms/": "Route handlers using @structcms/api preset factories",
       "app/api/cms/testing/": "Test-only reset and seed endpoints",
       "lib/": "Shared utilities (registry, adapters, seed data)",
       "lib/components/": "Frontend section components (hero, content, navigation)",
@@ -60,11 +61,16 @@
       "seed": "POST /api/cms/testing/seed — inserts seed data",
       "pattern": "beforeEach: resetAndSeed() or resetOnly()"
     },
+    "integration_in_host": {
+      "quickstart_goal": "Use test-app as canonical quickstart reference for presets + adapter factory + admin app shell",
+      "api_quickstart": "createSupabaseAdapters() + @structcms/api/next factory handlers",
+      "admin_quickstart": "StructCMSAdminApp as one-component admin mount"
+    },
     "notes": [
       "This is NOT a publishable package — testing and reference only",
       "Uses real Supabase adapters — no mocks",
-      "Route handlers are thin wrappers around @structcms/api handlers",
-      "Admin pages are thin wrappers around @structcms/admin components",
+      "Route handlers should follow preset-based quickstart integration",
+      "Admin integration should prioritize StructCMSAdminApp quickstart path",
       "CI uses GitHub Secrets for Supabase credentials"
     ]
   },
@@ -586,6 +592,55 @@
         "Tests pass with pnpm test:e2e"
       ],
       "passes": true
+    },
+    {
+      "group": "Quickstart",
+      "feature": "Adopt Supabase Adapter Factory in test-app",
+      "description": "Refactor test-app adapter bootstrap to use createSupabaseAdapters() as canonical P1 quickstart path",
+      "acceptance_criteria": [
+        "lib adapter setup uses createSupabaseAdapters() from @structcms/api/supabase",
+        "Factory reads SUPABASE_URL and SUPABASE_SECRET_KEY with optional explicit overrides",
+        "Media bucket setup uses SUPABASE_STORAGE_BUCKET with fallback to default",
+        "Existing route handlers and E2E flows continue to work"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Quickstart",
+      "feature": "Migrate CMS API Routes to Next Preset Factories",
+      "description": "Replace manual CMS route boilerplate with @structcms/api/next preset factories so test-app mirrors quickstart docs",
+      "acceptance_criteria": [
+        "Pages routes use createNextPagesRoute, createNextPageBySlugRoute, createNextPageByIdRoute",
+        "Media routes use createNextMediaRoute and createNextMediaByIdRoute",
+        "Navigation routes use createNextNavigationRoute and createNextNavigationByIdRoute",
+        "Write/delete operations use canonical id-based routes",
+        "E2E tests pass without behavior regressions"
+      ],
+      "passes": true
+    },
+    {
+      "group": "Quickstart",
+      "feature": "Mount StructCMSAdminApp as Default Admin Integration",
+      "description": "Use StructCMSAdminApp in test-app admin entry to validate one-component admin integration in a real host app",
+      "acceptance_criteria": [
+        "app/admin/page.tsx mounts StructCMSAdminApp with registry and apiBaseUrl",
+        "Dashboard is default admin entry and navigation to pages/media/navigation works",
+        "Advanced routes remain possible but are no longer required for baseline setup",
+        "Existing admin E2E coverage still passes"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Documentation",
+      "feature": "Quickstart Documentation Alignment (test-app)",
+      "description": "Document test-app as the source-of-truth quickstart implementation and keep README examples aligned with actual code",
+      "acceptance_criteria": [
+        "examples/test-app/README documents preset + factory + admin shell integration path",
+        "README env section uses SUPABASE_SECRET_KEY and SUPABASE_STORAGE_BUCKET",
+        "API route examples match current preset factory usage",
+        "Doc checks confirm no drift between README and implementation"
+      ],
+      "passes": false
     }
   ]
 }
