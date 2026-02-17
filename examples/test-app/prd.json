@@ -641,7 +641,7 @@
         "API route examples match current preset factory usage",
         "Doc checks confirm no drift between README and implementation"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

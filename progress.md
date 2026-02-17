@@ -35,3 +35,18 @@ This file tracks the implementation progress following the Ralph Wiggum Methodol
 
 **Result:** Success
 
+## Working on Quickstart Documentation Alignment (test-app)
+
+**Task:** Document test-app as the source-of-truth quickstart implementation and keep README examples aligned with actual code
+
+**Approach:**
+- Update examples/test-app/README.md to document preset + factory + admin shell integration
+- Update environment section to use SUPABASE_SECRET_KEY and SUPABASE_STORAGE_BUCKET
+- Align API route examples with current preset factory usage
+- Ensure no drift between README and implementation
+
+**Files to modify:**
+- examples/test-app/README.md
+
+**Result:** Success
+
