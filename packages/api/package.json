@@ -16,6 +16,26 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./next": {
+      "import": {
+        "types": "./dist/next/index.d.ts",
+        "default": "./dist/next/index.js"
+      },
+      "require": {
+        "types": "./dist/next/index.d.cts",
+        "default": "./dist/next/index.cjs"
+      }
+    },
+    "./supabase": {
+      "import": {
+        "types": "./dist/supabase/index.d.ts",
+        "default": "./dist/supabase/index.js"
+      },
+      "require": {
+        "types": "./dist/supabase/index.d.cts",
+        "default": "./dist/supabase/index.cjs"
+      }
     }
   },
   "files": [

@@ -62,6 +62,14 @@ export {
 } from './media';
 
 export type {
+  SupabaseAdapterFactoryStorageConfig,
+  SupabaseAdapterFactoryConfig,
+  SupabaseAdapters,
+} from './supabase';
+
+export { createSupabaseAdapters } from './supabase';
+
+export type {
   PageExportResponse,
   AllPagesExportResponse,
   NavigationExportResponse,

@@ -1,18 +1,18 @@
-import { NextResponse } from 'next/server';
-import { handleDeleteMedia } from '@structcms/api';
+import { createNextMediaByIdRoute } from '@structcms/api/next';
 import { mediaAdapter } from '@/lib/adapters';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function DELETE(_request: Request, { params }: RouteParams) {
-  try {
-    const { id } = await params;
-    await handleDeleteMedia(mediaAdapter, id);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+const mediaByIdRoute = createNextMediaByIdRoute({ mediaAdapter });
+
+export async function GET(request: Request, context: RouteParams): Promise<Response> {
+  const response = await mediaByIdRoute.GET(request, context);
+  return response as Response;
+}
+
+export async function DELETE(request: Request, context: RouteParams): Promise<Response> {
+  const response = await mediaByIdRoute.DELETE(request, context);
+  return response as Response;
 }

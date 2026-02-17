@@ -1,12 +1,14 @@
-import { NextResponse } from 'next/server';
+import { createNextNavigationRoute } from '@structcms/api/next';
 import { storageAdapter } from '@/lib/adapters';
 
-export async function GET() {
-  try {
-    const navigations = await storageAdapter.listNavigations();
-    return NextResponse.json(navigations);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+const navigationRoute = createNextNavigationRoute({ storageAdapter });
+
+export async function GET(request: Request): Promise<Response> {
+  const response = await navigationRoute.GET(request);
+  return response as Response;
+}
+
+export async function POST(request: Request): Promise<Response> {
+  const response = await navigationRoute.POST(request);
+  return response as Response;
 }
