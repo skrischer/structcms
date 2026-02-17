@@ -1730,12 +1730,40 @@ pnpm --filter test-app test:e2e
 # Browser verification at /admin-quickstart
 ```
 
-**Result:** ✅ Success
+**Result:** ❌ Failed - StructCMSAdminApp not production-ready
 
+**Initial Implementation:**
 - app/admin-quickstart/page.tsx created with StructCMSAdminApp mount
-- StructCMSAdminApp renders Dashboard as default entry with internal navigation
-- Browser verified: Dashboard, Pages, Navigation, Media views work via client-side routing
-- Existing `/admin` routes preserved for E2E compatibility
-- All 43 E2E tests pass
+- Dashboard and PageList views worked (they fetch data internally)
 - TypeScript typecheck passed
-- Validates both integration approaches: quickstart (StructCMSAdminApp) and advanced (granular routes)
+- All 43 E2E tests pass (testing /admin routes, not /admin-quickstart)
+
+**Critical Issue Discovered:**
+- NavigationEditor rendered with `items={[]}` - no data fetching
+- PageEditor rendered with `sections={[]}` - no data fetching
+- Navigation view in /admin-quickstart showed empty state despite data existing
+- StructCMSAdminApp is a demo component, not a production-ready integration
+
+**Root Cause:**
+```tsx
+// packages/admin/src/components/app/struct-cms-admin-app.tsx:98-105
+case 'navigation':
+  return (
+    <NavigationEditor
+      items={[]}  // ❌ Hardcoded empty array
+      onSave={async () => { setCurrentView({ type: 'navigation' }); }}
+    />
+  );
+```
+
+**Conclusion:**
+- Server-side routing approach (`/admin` with granular routes) is the correct production pattern
+- Each route loads its own data server-side (see `app/admin/navigation/page.tsx`)
+- StructCMSAdminApp would need significant refactoring to support data fetching
+- Removed /admin-quickstart demo page
+- Task marked as `passes: false` with notes explaining the issue
+
+**Recommendation:**
+- Use `/admin` approach with AdminProvider + AdminLayout + per-route pages
+- Each page component fetches its own data via useApiClient
+- This pattern is E2E tested and production-ready

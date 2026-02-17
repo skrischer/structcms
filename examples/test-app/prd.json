@@ -623,12 +623,13 @@
       "feature": "Mount StructCMSAdminApp as Default Admin Integration",
       "description": "Use StructCMSAdminApp in test-app admin entry to validate one-component admin integration in a real host app",
       "acceptance_criteria": [
-        "app/admin-quickstart/page.tsx mounts StructCMSAdminApp with registry and apiBaseUrl",
-        "Dashboard is default admin entry and navigation to pages/media/navigation works",
-        "Advanced routes remain possible but are no longer required for baseline setup",
-        "Existing admin E2E coverage still passes"
+        "StructCMSAdminApp needs data fetching implementation for NavigationEditor and PageEditor views",
+        "Current implementation renders empty data (items=[], sections=[]) making it non-functional",
+        "Server-side routing approach (/admin with granular routes) is production-ready and recommended",
+        "Task blocked: StructCMSAdminApp requires refactoring to support data loading before it can be used as quickstart"
       ],
-      "passes": true
+      "passes": false,
+      "notes": "StructCMSAdminApp is a demo component without real data fetching. PageList and MediaBrowser work because they fetch internally, but NavigationEditor and PageEditor receive hardcoded empty arrays. The /admin approach with server-side routing and per-route data loading is the correct production pattern."
     },
     {
       "group": "Documentation",
