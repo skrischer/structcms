@@ -52,13 +52,20 @@ export default function EditPagePage() {
     if (!page) return;
     
     setSaving(true);
+    setError(null);
     try {
-      await apiClient.put(`/pages/${slug}`, {
+      const result = await apiClient.put(`/pages/id/${page.id}`, {
         title,
         sections: updatedSections,
       });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
       router.push('/admin/pages');
     } catch (err) {
+      setError('Failed to update page');
       console.error('Failed to update page:', err);
     } finally {
       setSaving(false);

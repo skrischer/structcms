@@ -40,7 +40,7 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -79,7 +79,7 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -111,7 +111,7 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -153,7 +153,7 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -194,7 +194,7 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/main') && resp.request().method() === 'PUT'),
+      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);

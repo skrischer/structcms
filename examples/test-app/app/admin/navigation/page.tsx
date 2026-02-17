@@ -40,7 +40,7 @@ export default function NavigationPage() {
     
     setSaving(true);
     try {
-      await apiClient.put('/navigation/main', {
+      await apiClient.put(`/navigation/id/${navigation.id}`, {
         items,
       });
       setNavigation({ ...navigation, items });
