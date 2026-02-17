@@ -528,7 +528,7 @@
         "Explains advanced fallback path with AdminProvider + individual components",
         "References test-app as canonical integration example"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

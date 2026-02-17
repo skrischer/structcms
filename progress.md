@@ -19,3 +19,19 @@ This file tracks the implementation progress following the Ralph Wiggum Methodol
 
 **Result:** Success
 
+## Working on Quickstart Documentation (Admin)
+
+**Task:** Document one-component admin integration using StructCMSAdminApp and align host setup instructions with examples/test-app
+
+**Approach:**
+- Add a "Quickstart" section to packages/admin/README.md after "Key Concepts"
+- Document StructCMSAdminApp as the primary quickstart path
+- Show required props (registry, apiBaseUrl)
+- Explain advanced fallback with AdminProvider + individual components
+- Reference test-app as canonical integration example
+
+**Files to modify:**
+- packages/admin/README.md
+
+**Result:** Success
+
