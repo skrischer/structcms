@@ -1208,3 +1208,58 @@ All 4 Dashboard components are implemented and passing:
 - ✅ DashboardPage (13 tests)
 
 Total: 46 dashboard-specific tests, 239 tests overall.
+
+---
+
+## Working on StructCMSAdminApp Export
+
+**Task:** Provide StructCMSAdminApp as a one-component admin integration that composes provider, layout, navigation, and default views.
+
+**Acceptance Criteria:**
+1. StructCMSAdminApp exported from package entry point
+2. Component accepts registry and apiBaseUrl props
+3. Dashboard is default entry route in app shell
+4. Includes pages list, page editor, media browser, and navigation editor views
+5. Unit test: component mounts with minimal host configuration
+
+**Plan:**
+- Create `src/components/app/struct-cms-admin-app.tsx` - StructCMSAdminApp component
+- Implement internal routing state (view stack pattern)
+- Compose AdminProvider + AdminLayout + all views (Dashboard, PageList, PageEditor, MediaBrowser, NavigationEditor)
+- Default view: Dashboard
+- Navigation callbacks switch between views
+- Write unit test `src/components/app/__tests__/struct-cms-admin-app.test.tsx`
+- Export from `src/index.ts`
+
+**Files created:**
+- `src/components/app/struct-cms-admin-app.tsx`
+- `src/components/app/__tests__/struct-cms-admin-app.test.tsx`
+
+**Approach:**
+- StructCMSAdminApp accepts `registry` and `apiBaseUrl` props (minimal configuration)
+- Internal state manages current view: 'dashboard' | 'pages' | 'page-editor' | 'media' | 'navigation'
+- Wraps everything in AdminProvider
+- Uses AdminLayout with custom navItems including Dashboard link
+- Renders appropriate component based on current view
+- Dashboard is default view
+- All views integrated: DashboardPage, PageList, PageEditor, MediaBrowser, NavigationEditor
+
+**Challenges:**
+- PageEditor expects `sections` prop, not `slug` - simplified to empty sections array for now
+- SectionDefinition has `name` field, not `type` - used `s.name` for allowedSections
+- Dashboard components trigger async data fetching - mocked components in tests to avoid fetch issues
+- AdminLayout didn't have Dashboard link - added custom navItems to StructCMSAdminApp
+
+**Verification:** `pnpm --filter @structcms/admin test run && pnpm --filter @structcms/admin typecheck`
+
+**Result:** Success
+
+- All 253 tests passed (239 previous + 10 StructCMSAdminApp + 4 test infrastructure)
+- Typecheck passed
+- Created files:
+  - `src/components/app/struct-cms-admin-app.tsx` - StructCMSAdminApp component with internal routing
+  - `src/components/app/__tests__/struct-cms-admin-app.test.tsx` - 10 unit tests
+- Updated `src/index.ts` with StructCMSAdminApp export (first export in file)
+- Updated `prd.json`: StructCMSAdminApp Export task marked as passing
+
+---

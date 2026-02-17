@@ -27,6 +27,7 @@
       "shadcn_components": ["button", "input", "textarea", "card", "dialog", "select", "label", "separator", "toast", "skeleton"]
     },
     "package_exports": [
+      "StructCMSAdminApp",
       "AdminProvider",
       "useAdmin",
       "useApiClient",
@@ -92,6 +93,7 @@
       "ToastProviderProps (type)",
       "Toast (type)",
       "ToastVariant (type)",
+      "StructCMSAdminAppProps (type)",
       "ErrorBoundaryProps (type)"
     ],
     "api_configuration": {
@@ -101,6 +103,7 @@
     "file_structure": {
       "src/": "Source files",
       "src/components/": "React components",
+      "src/components/app/": "Admin app composition (StructCMSAdminApp)",
       "src/components/dashboard/": "Dashboard components (DashboardPage, KpiCards, RecentPages, QuickActions)",
       "src/components/inputs/": "Field input components (StringInput, TextInput, etc.)",
       "src/components/editors/": "Editor components (SectionEditor, PageEditor)",
@@ -115,9 +118,10 @@
     },
     "integration_in_host": {
       "next_js_app_router": "Host creates admin route group (e.g., app/(admin)/)",
+      "quickstart_example": "import { StructCMSAdminApp } from '@structcms/admin'; export default function AdminPage() { return <StructCMSAdminApp registry={registry} apiBaseUrl='/api/cms' />; }",
       "example_dashboard_page": "import { DashboardPage } from '@structcms/admin'; export default function AdminDashboard() { return <DashboardPage />; }",
       "example_page": "import { PageEditor } from '@structcms/admin'; export default function EditPage({ params }) { return <PageEditor slug={params.slug} />; }",
-      "provider_setup": "Wrap admin routes with AdminProvider passing registry and API base URL"
+      "provider_setup": "StructCMSAdminApp wraps AdminProvider internally for one-component integration; AdminProvider remains available for advanced composition"
     },
     "ui_decisions": {
       "richtext_editor": "TipTap with StarterKit + Link extension",
@@ -487,6 +491,44 @@
         "Existing Toast tests still pass"
       ],
       "passes": true
+    },
+    {
+      "group": "App Shell",
+      "feature": "StructCMSAdminApp Export",
+      "description": "Provide StructCMSAdminApp as a one-component admin integration that composes provider, layout, navigation, and default views",
+      "acceptance_criteria": [
+        "StructCMSAdminApp exported from package entry point",
+        "Component accepts registry and apiBaseUrl props",
+        "Dashboard is default entry route in app shell",
+        "Includes pages list, page editor, media browser, and navigation editor views",
+        "Unit test: component mounts with minimal host configuration"
+      ],
+      "passes": true
+    },
+    {
+      "group": "App Shell",
+      "feature": "Admin Shell Navigation and Route Overrides",
+      "description": "Keep admin shell flexible with opt-in escape hatches while preserving default quickstart behavior",
+      "acceptance_criteria": [
+        "Supports custom sidebar items via props",
+        "Supports route override for built-in admin views",
+        "Default behavior works without any overrides",
+        "Unit test: override route replaces default view",
+        "Unit test: custom sidebar items render and navigate"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Documentation",
+      "feature": "Quickstart Documentation (Admin)",
+      "description": "Document one-component admin integration using StructCMSAdminApp and align host setup instructions with examples/test-app",
+      "acceptance_criteria": [
+        "packages/admin/README documents StructCMSAdminApp quickstart usage",
+        "Shows required props (registry, apiBaseUrl)",
+        "Explains advanced fallback path with AdminProvider + individual components",
+        "References test-app as canonical integration example"
+      ],
+      "passes": false
     }
   ]
 }

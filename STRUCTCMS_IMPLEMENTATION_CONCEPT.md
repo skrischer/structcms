@@ -65,20 +65,12 @@ Das erschwert:
 - Dokumentation basiert auf “Quickstart (P1)” Pfad
 
 ### 3.2 P2 (verschieben)
-**(E) CLI `structcms init` Scaffolding**  
-- Framework detection + prompt/flags
-- Vorteilhaft, aber nicht notwendig, wenn Presets+Factories existieren
+P2 ist **explizit von diesem Dokument abgegrenzt** und wird nicht im P1-Umfang umgesetzt.
 
-**(F) Weitere Framework Presets**
-- Next Pages Router
-- Express/Hono/Fastify
+Alle P2-Themen wurden in ein separates Dokument ausgelagert:
+- `STRUCTCMS_P2_THEMENKATALOG.md`
 
-**(G) Registry Auto-Discovery / Codegen**
-- `import.meta.glob` / CLI codegen
-- Nice-to-have, aber zusätzliche Komplexität
-
-**(H) “Export/Backup” Convenience / Ops Extras**
-- Export endpoints, backup tooling
+Dieses Dokument bleibt damit ein **P1-Umsetzungskonzept** mit 1.0-DX-Fokus.
 
 ---
 
@@ -100,13 +92,8 @@ Das erschwert:
 Host kann Route Files auf 1 Zeile reduzieren.
 
 #### 4.2.2 API-Optionen
-**Option 1: Statische Preset-Exports** (max DX, weniger flexibel)
-```ts
-// app/api/cms/pages/route.ts
-export { GET, POST } from '@structcms/api/next/pages';
-```
 
-**Option 2: Factory Preset** (flexibler)
+**Factory Preset** (flexibler)
 ```ts
 import { createNextPagesRoute } from '@structcms/api/next';
 import { adapters } from '@/lib/structcms';
@@ -114,22 +101,27 @@ import { adapters } from '@/lib/structcms';
 export const { GET, POST } = createNextPagesRoute(adapters);
 ```
 
-**Empfehlung P1:** Option 2 als Basis; Option 1 ggf. nur, wenn Konfiguration komplett über ENV/Convention lösbar ist.
-
-#### 4.2.3 Preset-Routen (P1)
+#### 4.2.3 Preset-Routen
 - Pages collection:
   - `GET /api/cms/pages`
   - `POST /api/cms/pages`
-- Page by slug:
+- Page read by slug:
   - `GET /api/cms/pages/[slug]`
-  - `PUT /api/cms/pages/[slug]` (oder id-basiert, je nach API)
-  - `DELETE ...` (optional P1, falls Admin schon delete braucht)
+- Page write/delete by id (kanonischer Write-Contract):
+  - `PUT /api/cms/pages/[id]`
+  - `DELETE /api/cms/pages/[id]`
 - Media:
   - `GET /api/cms/media`
   - `POST /api/cms/media` (upload)
-  - `DELETE /api/cms/media/[id]` (optional P1)
+  - `DELETE /api/cms/media/[id]`
 - Navigation:
-  - optional P1 nur wenn UI es already uses; sonst P2
+  - `GET /api/cms/navigation`
+  - `POST /api/cms/navigation`
+  - `DELETE /api/cms/navigation/[id]`
+
+Kanonische Router-Strategie:
+- Delivery/Public Read: slug-basiert
+- Admin/Write/Delete: id-basiert
 
 #### 4.2.4 Middleware / Auth Handling
 Preset liefert nur Handler.
@@ -154,16 +146,16 @@ import { createSupabaseAdapters } from '@structcms/api/supabase';
 
 export const adapters = createSupabaseAdapters({
   url: process.env.SUPABASE_URL!,
-  key: process.env.SUPABASE_SERVICE_ROLE_KEY!, // oder anon + RLS
-  storage: { bucket: 'cms' },
+  key: process.env.SUPABASE_SECRET_KEY!,
+  storage: { bucket: process.env.SUPABASE_STORAGE_BUCKET! },
 });
 ```
 
-#### 4.3.3 Konventionen (P1)
+#### 4.3.3 Konventionen
 - Unterstütze ENV Defaults:
-  - `STRUCTCMS_SUPABASE_URL`
-  - `STRUCTCMS_SUPABASE_KEY`
-  - optional `STRUCTCMS_STORAGE_BUCKET`
+  - `SUPABASE_URL`
+  - `SUPABASE_SECRET_KEY`
+  - `SUPABASE_STORAGE_BUCKET`
 
 Factory darf ENV lesen, aber **muss** auch explizite Werte akzeptieren.
 
@@ -188,15 +180,12 @@ export default function AdminPage() {
 }
 ```
 
-#### 4.4.3 Enthaltene Routes (P1)
+#### 4.4.3 Enthaltene Routes
 - Dashboard (Default)
 - Pages list
 - Page editor
 - Media
-- Navigation (nur falls wirklich genutzt; sonst P2)
-
-#### 4.4.4 Dashboard
-Siehe PRD: KPI cards + recent pages + quick actions. (Minimal)
+- Navigation
 
 ---
 
@@ -207,8 +196,7 @@ Siehe PRD: KPI cards + recent pages + quick actions. (Minimal)
 - **Referenzimplementierung** für Doku
 
 ### 5.2 Doku-Pfade
-- **Quickstart (P1):** Presets + factory + admin app shell
-- **Advanced:** Handler direct wiring (für enterprise/edge/custom)
+- **Quickstart:** Presets + factory + admin app shell
 
 ### 5.3 Keep Documentation Honest
 Wenn Quickstart existiert, muss test-app ihn auch nutzen, sonst driftet es auseinander.
@@ -217,18 +205,13 @@ Wenn Quickstart existiert, muss test-app ihn auch nutzen, sonst driftet es ausei
 
 ## 6. Umsetzungsschritte (Roadmap)
 
-### 6.1 Phase P1 — Reihenfolge (empfohlen)
+### 6.1 Phase — Reihenfolge (empfohlen)
 1. Supabase Adapter Factory
 2. Next Preset Factory (Pages + Media minimal)
 3. Admin App Shell Export + Dashboard
 4. test-app refactor to Quickstart integration
 5. Docs update (root README + package READMEs)
 
-### 6.2 Phase P2
-6. CLI `structcms init` (detection + presets)
-7. Next Pages Router preset
-8. Express/Hono presets
-9. Registry auto-discovery / codegen
 
 ---
 
@@ -248,13 +231,68 @@ Wenn Quickstart existiert, muss test-app ihn auch nutzen, sonst driftet es ausei
 
 ---
 
-## 8. Definition of Done (P1)
+## 8. Definition of Done
 
 - `createSupabaseAdapters()` verfügbar und dokumentiert
-- `@structcms/api/next` Preset Factory verfügbar (Pages + Media)
+- `@structcms/api/next` Preset Factory verfügbar
 - `StructCMSAdminApp` mountbar als 1-Komponenten-Integration
 - Dashboard vorhanden (KPI + recent pages + quick actions)
 - examples/test-app nutzt den Quickstart-Pfad
-- Doku beschreibt beide Integrationswege (Quickstart + Advanced)
+- Doku beschreibt Integrationsweg (Quickstart)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+API-Basis zuerst
+Supabase Adapter Factory
+@packages/api/prd.json#544-555
+danach Next.js Preset Factories (App Router)
+@packages/api/prd.json#556-568
+Warum: test-app und Admin-Quickstart hängen von diesen APIs ab.
+__________________________________________
+
+test-app auf Quickstart umstellen (API-Seite)
+Adopt Supabase Adapter Factory in test-app
+@examples/test-app/prd.json#598-608
+Migrate CMS API Routes to Next Preset Factories
+@examples/test-app/prd.json#610-621
+Warum: Damit wird die Referenz-App früh „ehrlich“ zum neuen Integrationspfad.
+
+
+Admin-Shell produktisieren
+StructCMSAdminApp Export
+@packages/admin/prd.json#496-507
+Admin Shell Navigation and Route Overrides
+@packages/admin/prd.json#509-520
+Warum: Erst wenn API + test-app-Basis stabil ist, lohnt sich die Shell-Finalisierung inkl. Escape-Hatches.
+
+
+test-app Admin-Integration nachziehen
+Mount StructCMSAdminApp as Default Admin Integration
+@examples/test-app/prd.json#623-633
+Warum: Validiert die 1-Komponenten-Integration direkt im E2E-Referenzprojekt.
+
+
+Dokumentation zum Schluss, aber gebündelt
+API-Doku: Quickstart Documentation (API)
+@packages/api/prd.json#581-592
+
+Admin-Doku: Quickstart Documentation (Admin)
+@packages/admin/prd.json#522-532
+
+test-app Doku-Alignment
+@examples/test-app/prd.json#635-645
+Warum: Doku erst finalisieren, wenn Implementierung wirklich steht (kein Drift).

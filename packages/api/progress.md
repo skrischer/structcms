@@ -1039,3 +1039,115 @@ pnpm --filter @structcms/api typecheck
 - Test: nested arrays/objects in section data recursively sanitized
 - Test: delivery flow returns sanitized content (write-time sanitization)
 - Typecheck clean
+
+---
+
+## Working on: Supabase Adapter Factory
+
+**Selected because:** First `passes: false` DX task and foundation for the Next.js preset factories and quickstart integration.
+
+### Plan
+
+**Files to create:**
+- `src/supabase/factory.ts` - `createSupabaseAdapters()` bootstrap factory with env fallback
+- `src/supabase/factory.test.ts` - Unit tests for explicit config and env defaults
+- `src/supabase/index.ts` - Barrel export for factory
+
+**Files to modify:**
+- `src/index.ts` - Export new factory from package entry point
+
+**Approach:**
+1. Add a small factory API `createSupabaseAdapters({ url, key, storage? })`
+2. Resolve config from explicit args first, then env defaults:
+   - `SUPABASE_URL`
+   - `SUPABASE_SECRET_KEY`
+   - `SUPABASE_STORAGE_BUCKET`
+3. Build one shared Supabase client and create both adapters from it
+4. Keep existing adapter and handler interfaces unchanged
+5. Add unit tests for explicit config path and env default path
+
+**Potential challenges:**
+- Keep the API minimal and typed while not coupling callers to Supabase internals
+- Ensure deterministic env handling in unit tests
+
+**Acceptance Criteria:**
+- [x] createSupabaseAdapters({ url, key, storage? }) returns { storageAdapter, mediaAdapter }
+- [x] Supports explicit config values and env defaults (SUPABASE_URL, SUPABASE_SECRET_KEY, SUPABASE_STORAGE_BUCKET)
+- [x] Factory does not change existing adapter interfaces or handler signatures
+- [x] Unit test: explicit config path works
+- [x] Unit test: env default path works
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/supabase/factory.test.ts
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Added `createSupabaseAdapters()` in `src/supabase/factory.ts`
+- Added env fallback logic for `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `SUPABASE_STORAGE_BUCKET`
+- Added `src/supabase/factory.test.ts` with explicit config and env default coverage
+- Added `src/supabase/index.ts` barrel export and package-level exports in `src/index.ts`
+- Verification passed:
+  - `pnpm test --filter @structcms/api -- --run src/supabase/factory.test.ts`
+  - `pnpm --filter @structcms/api typecheck`
+
+---
+
+## Working on: Next.js Preset Factories (App Router)
+
+**Selected because:** Next `passes: false` task and direct dependency for test-app/admin quickstart integrations.
+
+### Plan
+
+**Files to create:**
+- `src/next/factories.ts` - Next App Router preset factory implementations
+- `src/next/factories.test.ts` - Unit tests for success/error mapping per factory
+- `src/next/index.ts` - Barrel exports for `@structcms/api/next`
+
+**Files to modify:**
+- `src/index.ts` - Optional root re-exports for convenience
+- `package.json` - Add `./next` subpath export
+- `tsup.config.ts` - Build `src/next/index.ts` as subpath output
+
+**Approach:**
+1. Add opt-in factories returning route handler objects for App Router:
+   - pages: `createNextPagesRoute`, `createNextPageBySlugRoute`, `createNextPageByIdRoute`
+   - media: `createNextMediaRoute`, `createNextMediaByIdRoute`
+   - navigation: `createNextNavigationRoute`, `createNextNavigationByIdRoute`
+2. Route logic delegates to existing core handlers/adapters without changing handler signatures
+3. Keep implementation framework-light: return standard `Response` objects compatible with Next route handlers
+4. Add tests covering success and error responses per preset factory
+5. Expose as `@structcms/api/next` via package subpath exports
+
+**Potential challenges:**
+- Keep typings strict for route context params (`params` can be plain object or Promise)
+- Ensure output files for subpath exports are emitted correctly
+
+**Acceptance Criteria:**
+- [x] Exports include createNextPagesRoute, createNextPageBySlugRoute, createNextPageByIdRoute
+- [x] Exports include createNextMediaRoute, createNextMediaByIdRoute
+- [x] Exports include createNextNavigationRoute, createNextNavigationByIdRoute
+- [x] Preset route handlers map to existing API contracts without changing core handler signatures
+- [x] Unit tests cover success and error responses for each preset factory
+
+**Verification:**
+```bash
+pnpm test --filter @structcms/api -- --run src/next/factories.test.ts
+pnpm --filter @structcms/api typecheck
+```
+
+**Result:** ✅ Success
+
+- Added Next App Router preset factories in `src/next/factories.ts`:
+  - `createNextPagesRoute`, `createNextPageBySlugRoute`, `createNextPageByIdRoute`
+  - `createNextMediaRoute`, `createNextMediaByIdRoute`
+  - `createNextNavigationRoute`, `createNextNavigationByIdRoute`
+- Added `src/next/index.ts` barrel exports for `@structcms/api/next`
+- Added `src/next/factories.test.ts` with success/error coverage for all preset factories (7 tests)
+- Added package subpath export `./next` in `package.json`
+- Updated `tsup.config.ts` to build `src/next/index.ts` entry
+- Verification passed:
+  - `pnpm test --filter @structcms/api -- --run src/next/factories.test.ts`
+  - `pnpm --filter @structcms/api typecheck`

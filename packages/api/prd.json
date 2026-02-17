@@ -7,11 +7,13 @@
   "context": {
     "dependencies": {
       "runtime": ["@supabase/supabase-js", "sanitize-html"],
+      "peer": ["next >=15.0.0"],
       "dev": ["vitest", "typescript", "@types/sanitize-html"]
     },
     "environment_variables": {
       "SUPABASE_URL": "https://your-project.supabase.co",
-      "SUPABASE_SECRET_KEY": "Service role key for server-side operations"
+      "SUPABASE_SECRET_KEY": "Service role key for server-side operations",
+      "SUPABASE_STORAGE_BUCKET": "Storage bucket for media uploads (default: media)"
     },
     "supabase_setup": {
       "storage_bucket": "media (public access enabled)",
@@ -21,6 +23,14 @@
     "package_exports": [
       "createStorageAdapter",
       "createMediaAdapter",
+      "createSupabaseAdapters",
+      "createNextPagesRoute",
+      "createNextPageBySlugRoute",
+      "createNextPageByIdRoute",
+      "createNextMediaRoute",
+      "createNextMediaByIdRoute",
+      "createNextNavigationRoute",
+      "createNextNavigationByIdRoute",
       "SupabaseStorageAdapter",
       "SupabaseMediaAdapter",
       "StorageError",
@@ -82,6 +92,19 @@
         "GET /api/cms/navigation/:name",
         "GET /api/cms/media"
       ],
+      "preset_quickstart": [
+        "GET /api/cms/pages",
+        "POST /api/cms/pages",
+        "GET /api/cms/pages/[slug]",
+        "PUT /api/cms/pages/[id]",
+        "DELETE /api/cms/pages/[id]",
+        "GET /api/cms/media",
+        "POST /api/cms/media",
+        "DELETE /api/cms/media/[id]",
+        "GET /api/cms/navigation",
+        "POST /api/cms/navigation",
+        "DELETE /api/cms/navigation/[id]"
+      ],
       "admin_protected": [
         "POST /api/cms/pages",
         "PUT /api/cms/pages/:id",
@@ -118,20 +141,27 @@
       "src/export/": "Export handler functions",
       "src/export/types.ts": "Export response types",
       "src/export/handlers.ts": "Page, navigation, and site export handlers",
+      "src/next/": "Next.js App Router preset factories",
+      "src/next/*.ts": "Factory helpers returning route handlers (GET/POST/PUT/DELETE)",
+      "src/supabase/": "Supabase bootstrap and adapter factory",
+      "src/supabase/factory.ts": "createSupabaseAdapters() factory",
       "src/utils/slug.ts": "Slug generation and uniqueness utilities",
       "src/utils/sanitize.ts": "HTML sanitization for XSS protection",
       "src/types/database.types.ts": "Generated Supabase types"
     },
     "integration_in_host": {
-      "next_js_route_handlers": "Host project creates route handlers in app/api/cms/ that use exported handler functions with injected adapters",
-      "example": "import { createStorageAdapter, handleListPages } from '@structcms/api'; const storage = createStorageAdapter({ client });"
+      "next_js_route_handlers": "Host project can use preset factories in app/api/cms/* route files to reduce boilerplate to one export line",
+      "quickstart_example": "import { createSupabaseAdapters } from '@structcms/api/supabase'; import { createNextPagesRoute } from '@structcms/api/next'; const adapters = createSupabaseAdapters({ url: process.env.SUPABASE_URL, key: process.env.SUPABASE_SECRET_KEY }); export const { GET, POST } = createNextPagesRoute(adapters);",
+      "advanced_example": "import { createStorageAdapter, handleListPages } from '@structcms/api'; const storage = createStorageAdapter({ client });"
     },
     "notes": [
       "All interfaces are Supabase-agnostic for future portability",
       "Delivery endpoints are public (no auth)",
       "Admin endpoints require Supabase Auth (Phase 2: proper RLS)",
       "Media accepts only: jpg, jpeg, png, gif, webp, svg",
-      "Export includes resolved media URLs for backup/migration"
+      "Export includes resolved media URLs for backup/migration",
+      "Presets are opt-in convenience APIs; core handlers remain first-class",
+      "Supabase adapter factory supports env defaults and explicit values"
     ]
   },
   "backlog": [
@@ -508,6 +538,56 @@
         "Integration test: nested string values in array/object section data are sanitized"
       ],
       "passes": true
+    },
+    {
+      "group": "DX",
+      "feature": "Supabase Adapter Factory",
+      "description": "Implement createSupabaseAdapters() to centralize Supabase client bootstrap and return storage/media adapters for quickstart integrations",
+      "acceptance_criteria": [
+        "createSupabaseAdapters({ url, key, storage? }) returns { storageAdapter, mediaAdapter }",
+        "Supports explicit config values and env defaults (SUPABASE_URL, SUPABASE_SECRET_KEY, SUPABASE_STORAGE_BUCKET)",
+        "Factory does not change existing adapter interfaces or handler signatures",
+        "Unit test: explicit config path works",
+        "Unit test: env default path works"
+      ],
+      "passes": true
+    },
+    {
+      "group": "DX",
+      "feature": "Next.js Preset Factories (App Router)",
+      "description": "Add opt-in preset factories under @structcms/api/next that expose Next route handlers while keeping core handlers framework-agnostic",
+      "acceptance_criteria": [
+        "Exports include createNextPagesRoute, createNextPageBySlugRoute, createNextPageByIdRoute",
+        "Exports include createNextMediaRoute, createNextMediaByIdRoute",
+        "Exports include createNextNavigationRoute, createNextNavigationByIdRoute",
+        "Preset route handlers map to existing API contracts without changing core handler signatures",
+        "Unit tests cover success and error responses for each preset factory"
+      ],
+      "passes": true
+    },
+    {
+      "group": "DX",
+      "feature": "Quickstart Example Alignment (API Integration)",
+      "description": "Refactor examples/test-app API routes to use createSupabaseAdapters() and @structcms/api/next presets as canonical quickstart integration",
+      "acceptance_criteria": [
+        "test-app routes use preset factory exports instead of manual route boilerplate",
+        "test-app adapter bootstrap uses createSupabaseAdapters()",
+        "E2E tests still pass with the quickstart path",
+        "README examples match the test-app integration"
+      ],
+      "passes": false
+    },
+    {
+      "group": "Documentation",
+      "feature": "Quickstart Documentation (API)",
+      "description": "Document the P1 quickstart path for API setup using Supabase adapter factory and Next preset factories",
+      "acceptance_criteria": [
+        "packages/api/README contains a quickstart section with minimal setup",
+        "Documents required env vars and optional overrides",
+        "Shows one-line route file examples for pages/media/navigation",
+        "Explains that presets are opt-in and core handlers remain available"
+      ],
+      "passes": false
     }
   ]
 }

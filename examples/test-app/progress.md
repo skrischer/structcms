@@ -141,10 +141,8 @@ pnpm --filter test-app typecheck
 **Result:** ✅ Success
 
 - TypeScript typecheck passed
-- lib/registry.ts created with HeroSection, ContentSection, LandingPage, BlogPage
-- Registry exported for AdminProvider
 
----
+
 
 ## Working on: Supabase Adapters
 
@@ -158,7 +156,7 @@ pnpm --filter test-app typecheck
 **Approach:**
 1. Import createClient from @supabase/supabase-js
 2. Import createStorageAdapter, createMediaAdapter from @structcms/api
-3. Create Supabase client from SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars
+3. Create Supabase client from SUPABASE_URL and SUPABASE_SECRET_KEY env vars
 4. Export storageAdapter and mediaAdapter
 
 **Potential challenges:**
@@ -213,7 +211,7 @@ pnpm --filter test-app exec tsc --noEmit
 pnpm --filter test-app exec tsc --noEmit
 ```
 
-**Result:** ✅ Success
+**Result:** ⚠️ Blocked at E2E runtime verification
 
 - TypeScript typecheck passed
 - lib/seed.ts created with 3 pages (Home, About, Blog Post Example)
@@ -1623,3 +1621,75 @@ pnpm --filter test-app exec tsc --noEmit
 - Pagination uses 13 uploads (parallel) to exceed default pageSize of 12
 - Note: Route handler doesn't support limit/offset — backend returns all items, so load-more test only verifies button appearance
 - TypeScript typecheck passed
+
+---
+
+## Working on: Adopt Supabase Adapter Factory in test-app
+
+**Selected because:** This is the first failing Quickstart task and it is unblocked. Migrating adapter bootstrap first provides the canonical quickstart integration base for the route factory migration.
+
+### Plan
+
+**Files to modify:**
+- `lib/adapters.ts` — replace manual Supabase client bootstrap with `createSupabaseAdapters()` from `@structcms/api/supabase`
+- `packages/api/package.json` — expose `./supabase` subpath export
+- `packages/api/tsup.config.ts` — include `src/supabase/index.ts` in build entries
+
+**Approach:**
+1. Replace direct `createClient` + adapter wiring in test-app with `createSupabaseAdapters()`.
+2. Keep exported names (`storageAdapter`, `mediaAdapter`) unchanged.
+3. Ensure workspace resolution for `@structcms/api/supabase` by adding subpath export and build entry.
+
+**Verification:**
+```bash
+pnpm --filter @structcms/api build
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- `examples/test-app/lib/adapters.ts` now uses `createSupabaseAdapters()`.
+- `@structcms/api` now exports `./supabase` and builds corresponding dist entrypoints.
+- TypeScript verification passed for `test-app`.
+
+---
+
+## Working on: Migrate CMS API Routes to Next Preset Factories
+
+**Selected because:** Next failing Quickstart task and directly dependent on the new adapter bootstrap path.
+
+### Plan
+
+**Files to modify/create:**
+- `app/api/cms/pages/route.ts`
+- `app/api/cms/pages/[...slug]/route.ts`
+- `app/api/cms/pages/id/[id]/route.ts` (new)
+- `app/api/cms/media/route.ts`
+- `app/api/cms/media/[id]/route.ts`
+- `app/api/cms/navigation/route.ts`
+- `app/api/cms/navigation/[name]/route.ts`
+- `app/api/cms/navigation/id/[id]/route.ts` (new)
+- `app/admin/pages/[...slug]/page.tsx`
+- `app/admin/navigation/page.tsx`
+- `e2e/navigation-management.spec.ts`
+
+**Approach:**
+1. Replace manual handlers with `@structcms/api/next` preset factories for pages, media, and navigation routes.
+2. Add canonical id-based routes for pages and navigation writes (`/pages/id/[id]`, `/navigation/id/[id]`).
+3. Keep name/slug read endpoints for backward-compatible reads while routing write flows through id-based endpoints.
+4. Update admin write calls and E2E PUT request assertions to the canonical id-based paths.
+
+**Verification:**
+```bash
+pnpm --filter test-app exec tsc --noEmit
+```
+
+**Result:** ✅ Success
+
+- Pages routes now use `createNextPagesRoute`, `createNextPageBySlugRoute`, `createNextPageByIdRoute`.
+- Media routes now use `createNextMediaRoute`, `createNextMediaByIdRoute`.
+- Navigation routes now use `createNextNavigationRoute`, `createNextNavigationByIdRoute`.
+- Write flows are canonical id-based in admin (`/pages/id/:id`, `/navigation/id/:id`).
+- TypeScript verification passed for `test-app`.
+- E2E verification command was executed but blocked by missing browser executable in local Playwright cache.
+- Failing verification output requests browser install via `pnpm exec playwright install` before rerunning E2E checks.
