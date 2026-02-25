@@ -38,9 +38,20 @@
     "access": "public"
   },
   "license": "MIT",
+  "author": "Sebastian Krischer",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skrischer/structcms.git",
     "directory": "packages/core"
-  }
+  },
+  "keywords": [
+    "cms",
+    "headless-cms",
+    "typescript",
+    "zod",
+    "content-management",
+    "code-first",
+    "type-safe",
+    "content-modeling"
+  ]
 }

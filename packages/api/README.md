@@ -4,6 +4,40 @@ Storage, domain API, delivery API, and content export for StructCMS. Provides Su
 
 For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 3: Storage, Layer 4: Domain API, Layer 5: Delivery API).
 
+**[← Back to main README](../../README.md)**
+
+## Installation
+
+```bash
+npm install @structcms/api
+```
+
+## Quick Start
+
+```typescript
+import { createStorageAdapter, createMediaAdapter } from '@structcms/api';
+import { createClient } from '@supabase/supabase-js';
+import { createNextPagesRoute } from '@structcms/api/next';
+
+// 1. Create Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SECRET_KEY!
+);
+
+// 2. Create adapters
+const storageAdapter = createStorageAdapter({ client: supabase });
+const mediaAdapter = createMediaAdapter({ client: supabase });
+
+// 3. Create Next.js API route handlers
+export const { GET, POST } = createNextPagesRoute({ 
+  storageAdapter, 
+  mediaAdapter 
+});
+```
+
+See [examples/test-app/app/api/cms/](../../examples/test-app/app/api/cms/) for complete route handler implementations.
+
 ## File Structure
 
 ```
@@ -43,43 +77,25 @@ packages/api/
 
 ### Handler Functions
 
-This package exports **handler functions**, not complete route handlers. This keeps the package framework-agnostic and allows adapter injection. Host projects create thin route handlers that inject their adapters. See `examples/test-app/app/api/cms/` for a reference implementation.
+This package exports **handler functions**, not complete route handlers. This keeps the package framework-agnostic and allows adapter injection. Host projects create thin route handlers that inject their adapters.
 
 ### Adapter Interfaces
 
-- **`StorageAdapter`** — Interface for page and navigation persistence. See `src/storage/types.ts`.
-- **`MediaAdapter`** — Interface for media file operations. See `src/media/types.ts`.
+- **`StorageAdapter`** — Interface for page and navigation persistence
+- **`MediaAdapter`** — Interface for media file operations
 
-Both have Supabase implementations (`SupabaseStorageAdapter`, `SupabaseMediaAdapter`) but the interfaces are Supabase-agnostic for future portability.
+Both have Supabase implementations but the interfaces are Supabase-agnostic for future portability.
 
 ### HTML Sanitization
 
-Rich text content is sanitized on write using `sanitize-html` to prevent XSS. See `src/utils/sanitize.ts`.
+Rich text content is sanitized on write using `sanitize-html` to prevent XSS attacks.
 
-## Quickstart
+## API Reference
 
-This package provides storage adapters, handler functions, and Next.js preset factories for building a CMS API. For a complete working integration example, see `examples/test-app`.
+### Adapter Factories
 
-### Integration Steps
-
-1. **Environment Variables** — Set `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and optionally `SUPABASE_STORAGE_BUCKET` in `.env.local`
-
-2. **Adapter Setup** — Use `createSupabaseAdapters()` from `@structcms/api/supabase` to bootstrap storage and media adapters. See `examples/test-app/lib/adapters.ts` for the implementation.
-
-3. **Route Handlers** — Use the Next.js preset factories from `@structcms/api/next` to create route handlers with minimal boilerplate:
-   - `createNextPagesRoute` — List and create pages
-   - `createNextPageBySlugRoute` — Get page by slug
-   - `createNextPageByIdRoute` — Update/delete page by ID
-   - `createNextMediaRoute` — List and upload media
-   - `createNextMediaByIdRoute` — Delete media by ID
-   - `createNextNavigationRoute` — List and create navigation
-   - `createNextNavigationByIdRoute` — Update/delete navigation by ID
-
-   See `examples/test-app/app/api/cms/` for complete route handler implementations.
-
-4. **Advanced Usage** — For full control, use the core handler functions directly (`handleListPages`, `handleCreatePage`, etc.) instead of preset factories. This gives you complete control over request parsing, validation, error handling, and response formatting.
-
-## Public API
+- **`createStorageAdapter({ client })`** — Create a Supabase storage adapter
+- **`createMediaAdapter({ client, bucketName? })`** — Create a Supabase media adapter
 
 ### Storage Handlers
 
@@ -90,15 +106,11 @@ This package provides storage adapters, handler functions, and Next.js preset fa
 - **`handleUpdateNavigation(adapter, input)`** — Update a navigation
 - **`handleDeleteNavigation(adapter, id)`** — Delete a navigation
 
-See `src/storage/handlers.ts` for implementation.
-
 ### Delivery Handlers
 
 - **`handleListPages(adapter, options?)`** — List pages with optional filtering
 - **`handleGetPageBySlug(adapter, slug)`** — Get a single page by slug
 - **`handleGetNavigation(adapter, name)`** — Get a navigation by name
-
-See `src/delivery/handlers.ts` for implementation.
 
 ### Media Handlers
 
@@ -108,37 +120,35 @@ See `src/delivery/handlers.ts` for implementation.
 - **`handleDeleteMedia(adapter, id)`** — Delete a media file
 - **`resolveMediaReferences(adapter, sections)`** — Resolve media IDs to URLs in section data
 
-Allowed MIME types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`. See `src/media/types.ts`.
+**Allowed MIME types:** `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`
 
 ### Export Handlers
 
 - **`handleExportPage(adapter, mediaAdapter, slug)`** — Export a single page with resolved media
 - **`handleExportAllPages(adapter, mediaAdapter)`** — Export all pages
 - **`handleExportNavigations(adapter)`** — Export all navigations
-- **`handleExportSite(adapter, mediaAdapter)`** — Full site export (pages + navigations + media metadata)
+- **`handleExportSite(adapter, mediaAdapter)`** — Full site export (pages + navigations + media)
 
-See `src/export/handlers.ts` for implementation and `src/export/types.ts` for the export format.
+### Next.js Preset Factories
 
-### Adapter Factories
-
-- **`createStorageAdapter({ client })`** — Create a Supabase storage adapter. Returns `SupabaseStorageAdapter`.
-- **`createMediaAdapter({ client, bucketName? })`** — Create a Supabase media adapter. Returns `SupabaseMediaAdapter`.
-
-### Adapter Classes
-
-- **`SupabaseStorageAdapter`** — Supabase implementation of `StorageAdapter`. See `src/storage/supabase-adapter.ts`.
-- **`SupabaseMediaAdapter`** — Supabase implementation of `MediaAdapter`. See `src/media/supabase-adapter.ts`.
+- **`createNextPagesRoute({ storageAdapter, mediaAdapter })`** — List and create pages
+- **`createNextPageBySlugRoute({ storageAdapter, mediaAdapter })`** — Get page by slug
+- **`createNextPageByIdRoute({ storageAdapter })`** — Update/delete page by ID
+- **`createNextMediaRoute({ mediaAdapter })`** — List and upload media
+- **`createNextMediaByIdRoute({ mediaAdapter })`** — Delete media by ID
+- **`createNextNavigationRoute({ storageAdapter })`** — List and create navigation
+- **`createNextNavigationByIdRoute({ storageAdapter })`** — Update/delete navigation by ID
 
 ### Error Classes
 
-- **`StorageError`** — Thrown by `SupabaseStorageAdapter` on database errors.
-- **`StorageValidationError`** — Thrown by storage handlers on validation failures (empty title, duplicate slug). Has `code` property.
-- **`MediaError`** — Thrown by `SupabaseMediaAdapter` on storage/database errors.
-- **`MediaValidationError`** — Thrown by media handlers on validation failures (invalid MIME type). Has `code` property.
+- **`StorageError`** — Thrown by storage adapter on database errors
+- **`StorageValidationError`** — Thrown on validation failures (empty title, duplicate slug). Has `code` property.
+- **`MediaError`** — Thrown by media adapter on storage/database errors
+- **`MediaValidationError`** — Thrown on validation failures (invalid MIME type). Has `code` property.
 
 ### Constants
 
-- **`ALLOWED_MIME_TYPES`** — Readonly array of allowed MIME types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`. See `src/media/types.ts`.
+- **`ALLOWED_MIME_TYPES`** — Readonly array of allowed MIME types
 
 ### Utilities
 
@@ -174,3 +184,5 @@ pnpm typecheck
 # Regenerate Supabase types
 pnpm gen:types
 ```
+
+**[← Back to main README](../../README.md)**

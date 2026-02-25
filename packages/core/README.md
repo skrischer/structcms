@@ -4,6 +4,38 @@ Core modeling, validation, and types for StructCMS. Provides code-first content 
 
 For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 1: Modeling, Layer 2: Registry, Layer 7: Rendering).
 
+**[← Back to main README](../../README.md)**
+
+## Installation
+
+```bash
+npm install @structcms/core
+```
+
+## Quick Start
+
+```typescript
+import { defineSection, fields, createRegistry } from '@structcms/core';
+
+// Define a section
+const HeroSection = defineSection({
+  name: 'hero',
+  fields: {
+    title: fields.string(),
+    subtitle: fields.text(),
+    image: fields.image(),
+  },
+});
+
+// Create a registry
+const registry = createRegistry({
+  sections: [HeroSection],
+});
+
+// Get a section at runtime
+const hero = registry.getSection('hero');
+```
+
 ## File Structure
 
 ```
@@ -37,38 +69,44 @@ The registry collects all section, page type, and navigation definitions at star
 
 `InferSectionData<T>` extracts the TypeScript data type from a `SectionDefinition`, enabling fully typed frontend components without manual type definitions. See `src/types.ts`.
 
-## Public API
+## API Reference
 
 ### Modeling
 
-- **`defineSection({ name, fields })`** — Define a section with Zod schema fields. Returns a typed `SectionDefinition`. See `src/define-section.ts`.
-- **`definePageType({ name, allowedSections })`** — Define which sections a page type allows. See `src/define-page-type.ts`.
-- **`defineNavigation({ name, schema? })`** — Define a navigation structure with optional custom item schema. See `src/define-navigation.ts`.
+- **`defineSection({ name, fields })`** — Define a section with Zod schema fields. Returns a typed `SectionDefinition`.
+- **`definePageType({ name, allowedSections })`** — Define which sections a page type allows.
+- **`defineNavigation({ name, schema? })`** — Define a navigation structure with optional custom item schema.
 
-### Fields
+### Field Helpers
 
 - **`fields.string()`** — Short text (single line input)
 - **`fields.text()`** — Long text (textarea)
-- **`fields.richtext()`** — Rich text (WYSIWYG, outputs HTML)
+- **`fields.richtext()`** — Rich text (WYSIWYG editor, outputs HTML)
 - **`fields.image()`** — Image reference (media ID or URL)
 - **`fields.reference()`** — Page reference (slug or ID)
-- **`fields.array(itemSchema)`** — Array field
-- **`fields.object(shape)`** — Object field
+- **`fields.array(itemSchema)`** — Array field with add/remove/reorder
+- **`fields.object(shape)`** — Nested object field
 
-Each field helper wraps a Zod schema with metadata used by `@structcms/admin` for dynamic form generation. See `src/fields.ts`.
+Each field helper wraps a Zod schema with metadata used by `@structcms/admin` for dynamic form generation.
 
 ### Field Utilities
 
-- **`getFieldMeta(schema)`** — Extract `FieldMeta` (including `fieldType`) from a Zod schema. Returns `null` if no metadata is present. See `src/fields.ts`.
-- **`isFieldType(schema, fieldType)`** — Check whether a Zod schema has a specific field type (e.g. `'richtext'`). See `src/fields.ts`.
+- **`getFieldMeta(schema)`** — Extract `FieldMeta` (including `fieldType`) from a Zod schema. Returns `null` if no metadata is present.
+- **`isFieldType(schema, fieldType)`** — Check whether a Zod schema has a specific field type (e.g. `'richtext'`).
 
 ### Registry
 
-- **`createRegistry({ sections, pageTypes?, navigations? })`** — Creates a registry instance that provides `getSection()`, `getAllSections()`, `getPageType()`, `getAllPageTypes()`, `getNavigation()`, `getAllNavigations()`. See `src/registry.ts`.
+- **`createRegistry({ sections, pageTypes?, navigations? })`** — Creates a registry instance with methods:
+  - `getSection(name)` — Get a section definition by name
+  - `getAllSections()` — Get all registered sections
+  - `getPageType(name)` — Get a page type definition by name
+  - `getAllPageTypes()` — Get all registered page types
+  - `getNavigation(name)` — Get a navigation definition by name
+  - `getAllNavigations()` — Get all registered navigations
 
 ### Rendering
 
-- **`createSectionRenderer({ components, fallback? })`** — Maps section types to components. Framework-agnostic (React, Preact, Vue, or plain functions). See `src/section-renderer.ts`.
+- **`createSectionRenderer({ components, fallback? })`** — Maps section types to components. Framework-agnostic (React, Preact, Vue, or plain functions).
 
 ### Type Utilities
 
@@ -79,7 +117,7 @@ Each field helper wraps a Zod schema with metadata used by `@structcms/admin` fo
 
 | Package | Purpose |
 |---------|----------|
-| `zod` | Schema definition and validation (dependency + peer dependency, `^3.23.0`) |
+| `zod` | Schema definition and validation (peer dependency `^3.23.0`) |
 
 ## Development
 
@@ -96,3 +134,5 @@ pnpm build
 # Type check
 pnpm typecheck
 ```
+
+**[← Back to main README](../../README.md)**

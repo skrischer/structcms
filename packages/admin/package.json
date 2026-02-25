@@ -59,9 +59,20 @@
     "access": "public"
   },
   "license": "MIT",
+  "author": "Sebastian Krischer",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skrischer/structcms.git",
     "directory": "packages/admin"
-  }
+  },
+  "keywords": [
+    "cms",
+    "headless-cms",
+    "admin-ui",
+    "react",
+    "typescript",
+    "forms",
+    "content-editor",
+    "tailwindcss"
+  ]
 }

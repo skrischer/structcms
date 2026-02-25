@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import type { Registry } from '@structcms/core';
+import React, { useState, useEffect } from 'react';
+import type { Registry, NavigationItem, SectionData } from '@structcms/core';
 import { AdminProvider } from '../../context/admin-context';
 import { AdminLayout, type SidebarNavItem } from '../layout/admin-layout';
 import { DashboardPage } from '../dashboard/dashboard-page';
@@ -7,6 +7,8 @@ import { PageList, type PageSummary } from '../content/page-list';
 import { PageEditor } from '../editors/page-editor';
 import { MediaBrowser } from '../media/media-browser';
 import { NavigationEditor } from '../content/navigation-editor';
+import { useApiClient } from '../../hooks/use-api-client';
+import { Skeleton } from '../ui/skeleton';
 
 export interface StructCMSAdminAppProps {
   registry: Registry;
@@ -19,10 +21,248 @@ export interface StructCMSAdminAppProps {
 export type View = 
   | { type: 'dashboard' }
   | { type: 'pages' }
-  | { type: 'page-editor' }
+  | { type: 'page-editor'; pageId?: string }
   | { type: 'media' }
   | { type: 'navigation' }
   | { type: 'custom'; path: string };
+
+interface NavigationData {
+  id: string;
+  name: string;
+  items: NavigationItem[];
+}
+
+interface PageData {
+  id: string;
+  slug: string;
+  title: string;
+  pageType: string;
+  sections: SectionData[];
+}
+
+function ViewRenderer({
+  currentView,
+  registry,
+  customRenderView,
+  onNavigate,
+  onSelectPage,
+  onCreatePage,
+  onUploadMedia,
+}: {
+  currentView: View;
+  registry: Registry;
+  customRenderView?: (view: View) => React.ReactNode | null;
+  onNavigate: (view: View) => void;
+  onSelectPage: (page: PageSummary) => void;
+  onCreatePage: () => void;
+  onUploadMedia: () => void;
+}) {
+  const apiClient = useApiClient();
+  const [navigationData, setNavigationData] = useState<NavigationData | null>(null);
+  const [navigationLoading, setNavigationLoading] = useState(false);
+  const [navigationError, setNavigationError] = useState<string | null>(null);
+
+  const [pageData, setPageData] = useState<PageData | null>(null);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
+
+  // Fetch navigation data when navigation view is active
+  useEffect(() => {
+    if (currentView.type !== 'navigation') {
+      return;
+    }
+
+    const fetchNavigation = async () => {
+      setNavigationLoading(true);
+      setNavigationError(null);
+      try {
+        const response = await apiClient.get<NavigationData>('/navigation/main');
+        if (response.error) {
+          setNavigationError(response.error.message);
+        } else if (response.data) {
+          setNavigationData(response.data);
+        }
+      } catch (err) {
+        setNavigationError('Failed to load navigation');
+        console.error(err);
+      } finally {
+        setNavigationLoading(false);
+      }
+    };
+
+    fetchNavigation();
+  }, [currentView.type, apiClient]);
+
+  // Fetch page data when page-editor view is active with a pageId
+  useEffect(() => {
+    if (currentView.type !== 'page-editor' || !currentView.pageId) {
+      return;
+    }
+
+    const fetchPage = async () => {
+      setPageLoading(true);
+      setPageError(null);
+      try {
+        const response = await apiClient.get<PageData>(`/pages/id/${currentView.pageId}`);
+        if (response.error) {
+          setPageError(response.error.message);
+        } else if (response.data) {
+          setPageData(response.data);
+        }
+      } catch (err) {
+        setPageError('Failed to load page');
+        console.error(err);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    fetchPage();
+  }, [currentView.type, currentView.type === 'page-editor' ? currentView.pageId : null, apiClient]);
+
+  const handleSaveNavigation = async (items: NavigationItem[]) => {
+    if (!navigationData) return;
+
+    try {
+      const response = await apiClient.put(`/navigation/id/${navigationData.id}`, {
+        items,
+      });
+      
+      if (response.error) {
+        console.error('Failed to update navigation:', response.error.message);
+      } else if (response.data) {
+        setNavigationData(response.data as NavigationData);
+      }
+    } catch (err) {
+      console.error('Failed to update navigation:', err);
+    }
+  };
+
+  const handleSavePage = async (updatedSections: SectionData[]) => {
+    if (!pageData) return;
+
+    try {
+      const response = await apiClient.put(`/pages/id/${pageData.id}`, {
+        title: pageData.title,
+        sections: updatedSections,
+      });
+
+      if (response.error) {
+        console.error('Failed to update page:', response.error.message);
+      } else {
+        onNavigate({ type: 'pages' });
+      }
+    } catch (err) {
+      console.error('Failed to update page:', err);
+    }
+  };
+
+  if (customRenderView) {
+    const customView = customRenderView(currentView);
+    if (customView !== null) {
+      return customView;
+    }
+  }
+
+  switch (currentView.type) {
+    case 'dashboard':
+      return (
+        <DashboardPage
+          onSelectPage={onSelectPage}
+          onCreatePage={onCreatePage}
+          onUploadMedia={onUploadMedia}
+        />
+      );
+    case 'pages':
+      return (
+        <PageList
+          onSelectPage={onSelectPage}
+          onCreatePage={onCreatePage}
+        />
+      );
+    case 'page-editor':
+      if (currentView.pageId && pageLoading) {
+        return (
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+        );
+      }
+
+      if (currentView.pageId && pageError) {
+        return (
+          <div className="text-red-600">
+            Error: {pageError}
+          </div>
+        );
+      }
+
+      if (currentView.pageId && !pageData) {
+        return (
+          <div className="text-gray-600">
+            Page not found
+          </div>
+        );
+      }
+
+      // For new pages (no pageId) or when data is loaded
+      const sections = pageData?.sections ?? [];
+      const allowedSections = pageData
+        ? registry.getPageType(pageData.pageType)?.allowedSections ?? []
+        : registry.getAllSections().map(s => s.name);
+
+      return (
+        <PageEditor
+          sections={sections}
+          allowedSections={allowedSections}
+          onSave={handleSavePage}
+        />
+      );
+    case 'media':
+      return <MediaBrowser onSelect={() => {}} />;
+    case 'navigation':
+      if (navigationLoading) {
+        return (
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+        );
+      }
+
+      if (navigationError) {
+        return (
+          <div className="text-red-600">
+            Error: {navigationError}
+          </div>
+        );
+      }
+
+      if (!navigationData) {
+        return (
+          <div className="text-gray-600">
+            No navigation found. Create one via the seed endpoint.
+          </div>
+        );
+      }
+
+      return (
+        <NavigationEditor
+          items={navigationData.items}
+          onSave={handleSaveNavigation}
+        />
+      );
+    case 'custom':
+      return (
+        <div data-testid="custom-view">
+          Custom view for path: {currentView.path}
+        </div>
+      );
+    default:
+      return null;
+  }
+}
 
 export function StructCMSAdminApp({ 
   registry, 
@@ -47,8 +287,12 @@ export function StructCMSAdminApp({
     }
   };
 
-  const handleSelectPage = (_page: PageSummary) => {
-    setCurrentView({ type: 'page-editor' });
+  const handleNavigateToView = (view: View) => {
+    setCurrentView(view);
+  };
+
+  const handleSelectPage = (page: PageSummary) => {
+    setCurrentView({ type: 'page-editor', pageId: page.id });
   };
 
   const handleCreatePage = () => {
@@ -57,62 +301,6 @@ export function StructCMSAdminApp({
 
   const handleUploadMedia = () => {
     setCurrentView({ type: 'media' });
-  };
-
-  const renderView = () => {
-    if (customRenderView) {
-      const customView = customRenderView(currentView);
-      if (customView !== null) {
-        return customView;
-      }
-    }
-
-    switch (currentView.type) {
-      case 'dashboard':
-        return (
-          <DashboardPage
-            onSelectPage={handleSelectPage}
-            onCreatePage={handleCreatePage}
-            onUploadMedia={handleUploadMedia}
-          />
-        );
-      case 'pages':
-        return (
-          <PageList
-            onSelectPage={handleSelectPage}
-            onCreatePage={handleCreatePage}
-          />
-        );
-      case 'page-editor':
-        return (
-          <PageEditor
-            sections={[]}
-            allowedSections={registry.getAllSections().map(s => s.name)}
-            onSave={() => {
-              setCurrentView({ type: 'pages' });
-            }}
-          />
-        );
-      case 'media':
-        return <MediaBrowser onSelect={() => {}} />;
-      case 'navigation':
-        return (
-          <NavigationEditor
-            items={[]}
-            onSave={async () => {
-              setCurrentView({ type: 'navigation' });
-            }}
-          />
-        );
-      case 'custom':
-        return (
-          <div data-testid="custom-view">
-            Custom view for path: {currentView.path}
-          </div>
-        );
-      default:
-        return null;
-    }
   };
 
   const defaultNavItems = [
@@ -131,7 +319,15 @@ export function StructCMSAdminApp({
         navItems={navItems}
         onNavigate={handleNavigate}
       >
-        {renderView()}
+        <ViewRenderer
+          currentView={currentView}
+          registry={registry}
+          customRenderView={customRenderView}
+          onNavigate={handleNavigateToView}
+          onSelectPage={handleSelectPage}
+          onCreatePage={handleCreatePage}
+          onUploadMedia={handleUploadMedia}
+        />
       </AdminLayout>
     </AdminProvider>
   );

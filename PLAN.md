@@ -25,23 +25,21 @@ Ship StructCMS as a real, usable product:
 
 ## Phases
 
-### Phase 1: Stabilize (CURRENT)
+### Phase 1: Stabilize ✅ (completed 20:51 UTC)
 - [x] P1.1: Fix API factory test (add authAdapter to expected result)
-- [x] P1.2: Fix admin typecheck (project references or build order)
-- [x] P1.3: Fix test-app build (lazy adapter initialization)
-- [x] P1.4: Get all unit tests green
+- [x] P1.2: Fix admin typecheck (build order: build before typecheck)
+- [x] P1.3: Fix test-app build (lazy Proxy adapters + force-dynamic pages)
+- [x] P1.4: All 497 unit tests green, 56 skipped (Supabase integration — expected)
+- [x] Committed & pushed to develop
 
-### Phase 2: Product Completion
-- [ ] P2.1: StructCMSAdminApp — real data fetching (useApiClient in each view)
+### Phase 2: Product Completion (CURRENT — agents running)
+- [ ] P2.1: StructCMSAdminApp — real data fetching → agent:structcms-admin-app
 - [ ] P2.2: Auth flow verification (login, protected routes, session)
 - [ ] P2.3: Content Export verification & test
 - [ ] P2.4: Media resolve verification (image URLs in delivery API)
 
-### Phase 3: Polish & Publish
-- [ ] P3.1: README per package (install, quickstart, API reference)
-- [ ] P3.2: Root README with badges, quickstart, architecture diagram
-- [ ] P3.3: package.json cleanup (license, repository, keywords, files)
-- [ ] P3.4: CHANGELOG.md
+### Phase 3: Polish & Publish (agent running)
+- [ ] P3.1-P3.4: Docs + package.json + CHANGELOG → agent:structcms-docs
 - [ ] P3.5: npm publish dry-run
 
 ### Phase 4: Quality

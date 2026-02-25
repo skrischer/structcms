@@ -60,9 +60,20 @@
     "access": "public"
   },
   "license": "MIT",
+  "author": "Sebastian Krischer",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skrischer/structcms.git",
     "directory": "packages/api"
-  }
+  },
+  "keywords": [
+    "cms",
+    "headless-cms",
+    "api",
+    "supabase",
+    "storage",
+    "media",
+    "content-api",
+    "nextjs"
+  ]
 }

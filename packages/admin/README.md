@@ -4,6 +4,33 @@ Admin UI components for StructCMS. Provides dynamic form generation from Zod sch
 
 For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 6: Admin UI).
 
+**[← Back to main README](../../README.md)**
+
+## Installation
+
+```bash
+npm install @structcms/admin
+```
+
+## Quick Start
+
+```typescript
+import { AdminProvider, AdminLayout } from '@structcms/admin';
+import { registry } from './lib/registry'; // Your section registry
+
+export default function AdminLayoutRoot({ children }) {
+  return (
+    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
+      <AdminLayout>{children}</AdminLayout>
+    </AdminProvider>
+  );
+}
+```
+
+**Tailwind Configuration:** Add `./node_modules/@structcms/admin/dist/**/*.{js,mjs}` to your `tailwind.config.ts` content array.
+
+See [examples/test-app/app/admin/](../../examples/test-app/app/admin/) for complete admin view implementations.
+
 ## File Structure
 
 ```
@@ -13,9 +40,9 @@ packages/admin/
 │   ├── components/
 │   │   ├── dashboard/
 │   │   │   ├── dashboard-page.tsx             # Main dashboard with KPIs, recent pages, quick actions
-│   │   │   ├── kpi-cards.tsx                  # KPI overview cards (pages, media, navigation, sections)
+│   │   │   ├── kpi-cards.tsx                  # KPI overview cards
 │   │   │   ├── recent-pages.tsx               # Recently updated pages list
-│   │   │   └── quick-actions.tsx              # Quick action buttons (create page, upload media)
+│   │   │   └── quick-actions.tsx              # Quick action buttons
 │   │   ├── editors/
 │   │   │   ├── page-editor.tsx               # Page editor with section management
 │   │   │   └── section-editor.tsx            # Section form from Zod schema
@@ -32,8 +59,8 @@ packages/admin/
 │   │   ├── media/
 │   │   │   └── media-browser.tsx             # Browse, upload, select media
 │   │   ├── layout/
-│   │   │   └── admin-layout.tsx              # Admin shell with sidebar (includes Dashboard)
-│   │   └── ui/                               # Base UI primitives (button, input, label, etc.)
+│   │   │   └── admin-layout.tsx              # Admin shell with sidebar
+│   │   └── ui/                               # Base UI primitives
 │   ├── context/
 │   │   └── admin-context.tsx                 # AdminProvider (registry, API base URL)
 │   ├── hooks/
@@ -53,81 +80,68 @@ packages/admin/
 
 ### Form Generation
 
-The `FormGenerator` component reads a Zod schema and renders the appropriate input component for each field based on its `FieldType` metadata (set by `fields.*` helpers from `@structcms/core`). See `src/lib/form-generator.tsx`.
+The `FormGenerator` component reads a Zod schema and renders the appropriate input component for each field based on its `FieldType` metadata (set by `fields.*` helpers from `@structcms/core`).
 
 ### AdminProvider
 
-Wraps the admin UI with context providing the `registry` (from `@structcms/core`) and `apiBaseUrl`. All admin components access this via the `useAdmin()` hook. See `src/context/admin-context.tsx`.
+Wraps the admin UI with context providing the `registry` (from `@structcms/core`) and `apiBaseUrl`. All admin components access this via the `useAdmin()` hook.
 
 ### API Client
 
-The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `del`) for communicating with the CMS API routes in the host project. See `src/hooks/use-api-client.ts`.
+The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `del`) for communicating with the CMS API routes in the host project.
 
-## Quickstart
+## API Reference
 
-This package provides React components for building a CMS admin interface. For a complete working integration example, see `examples/test-app`.
+### Context & Providers
 
-### Integration Steps
+- **`AdminProvider`** — Context provider with `registry` and `apiBaseUrl` props. Wraps all admin components.
 
-1. **Create Registry** — Define your sections and page types using `@structcms/core` (`defineSection`, `definePageType`, `createRegistry`). See `examples/test-app/lib/registry.ts` for the implementation.
+### Hooks
 
-2. **Admin Layout** — Create an admin route group with `AdminProvider` and `AdminLayout`. The provider requires two props:
-   - `registry` — Your section and page type registry from `@structcms/core`
-   - `apiBaseUrl` — Base URL for CMS API routes (e.g., `/api/cms`)
-   
-   See `examples/test-app/app/admin/layout.tsx` for the complete setup.
-
-3. **Admin Views** — Create routes for each admin view using the provided components:
-   - `DashboardPage` — Main dashboard with KPIs, recent pages, and quick actions
-   - `PageList` — Page listing with search and filter
-   - `PageEditor` — Page editor with section management
-   - `NavigationEditor` — Navigation item editor
-   - `MediaBrowser` — Media browser with upload
-   
-   See `examples/test-app/app/admin/` for complete view implementations.
-
-4. **Styling** — The admin components use Tailwind CSS. Include `./node_modules/@structcms/admin/dist/**/*.{js,mjs}` in your `tailwind.config.ts` content array.
-
-5. **Advanced Usage** — For more control, use `AdminProvider` with individual components instead of the full layout. This gives you complete control over layout, routing, and composition.
-
-## Components
-
-### Dashboard
-- **`DashboardPage`** — Main dashboard with KPI cards, recent pages, and quick actions. See `src/components/dashboard/dashboard-page.tsx`.
-- **`KpiCards`** — KPI overview showing total pages, media files, navigation sets, and sections. See `src/components/dashboard/kpi-cards.tsx`.
-- **`RecentPages`** — List of recently updated pages with links to page editor. See `src/components/dashboard/recent-pages.tsx`.
-- **`QuickActions`** — Quick action buttons for creating pages and uploading media. See `src/components/dashboard/quick-actions.tsx`.
-
-### Editors
-- **`PageEditor`** — Edit page title and sections (add, remove, reorder). See `src/components/editors/page-editor.tsx`.
-- **`SectionEditor`** — Renders a form for a single section based on its Zod schema. See `src/components/editors/section-editor.tsx`.
-
-### Field Inputs
-- **`StringInput`** — Single-line text (`fields.string()`)
-- **`TextInput`** — Textarea (`fields.text()`)
-- **`RichTextEditor`** — WYSIWYG editor using Tiptap (`fields.richtext()`)
-- **`ImagePicker`** — Media browser integration (`fields.image()`)
-- **`ArrayField`** — Dynamic list with add/remove (`fields.array()`)
-- **`ObjectField`** — Nested form (`fields.object()`)
-
-### Content
-- **`PageList`** — List pages with search and filter. See `src/components/content/page-list.tsx`.
-- **`NavigationEditor`** — Edit navigation items with nested children. See `src/components/content/navigation-editor.tsx`.
-
-### Media
-- **`MediaBrowser`** — Browse, upload, and select media files. See `src/components/media/media-browser.tsx`.
-
-### Layout
-- **`AdminLayout`** — Admin shell with sidebar navigation (includes Dashboard as default). See `src/components/layout/admin-layout.tsx`.
+- **`useAdmin()`** — Access admin context (registry, apiBaseUrl)
+- **`useApiClient()`** — HTTP client for CMS API with methods: `get`, `post`, `put`, `del`
 
 ### Dashboard Components
-- **`DashboardPage`** — Main dashboard container with error boundaries and loading states
-- **`KpiCards`** — Metrics display with skeleton loaders and error handling
-- **`RecentPages`** — Paginated recent pages list with error fallbacks
-- **`QuickActions`** — Action buttons that don't require API calls
+
+- **`DashboardPage`** — Main dashboard container with KPIs, recent pages, and quick actions
+- **`KpiCards`** — Metrics display (total pages, media files, navigation sets, sections)
+- **`RecentPages`** — Paginated list of recently updated pages
+- **`QuickActions`** — Action buttons for creating pages and uploading media
+
+### Editor Components
+
+- **`PageEditor`** — Edit page title and sections (add, remove, reorder)
+- **`SectionEditor`** — Renders a form for a single section based on its Zod schema
+
+### Field Input Components
+
+- **`StringInput`** — Single-line text input for `fields.string()`
+- **`TextInput`** — Textarea for `fields.text()`
+- **`RichTextEditor`** — WYSIWYG editor using Tiptap for `fields.richtext()`
+- **`ImagePicker`** — Media browser integration for `fields.image()`
+- **`ArrayField`** — Dynamic list with add/remove/reorder for `fields.array()`
+- **`ObjectField`** — Nested form for `fields.object()`
+
+### Content Components
+
+- **`PageList`** — List pages with search and filter
+- **`NavigationEditor`** — Edit navigation items with nested children
+
+### Media Components
+
+- **`MediaBrowser`** — Browse, upload, and select media files
+
+### Layout Components
+
+- **`AdminLayout`** — Admin shell with sidebar navigation and dashboard
 
 ### UI Primitives
-`Button`, `Input`, `Textarea`, `Label`, `Skeleton`, `Toast`, `ErrorBoundary` — base components in `src/components/ui/`.
+
+Base components in `src/components/ui/`: `Button`, `Input`, `Textarea`, `Label`, `Skeleton`, `Toast`, `ErrorBoundary`
+
+### Utilities
+
+- **`FormGenerator`** — Maps Zod schemas to React Hook Form inputs with field type detection
 
 ## Dependencies
 
@@ -139,12 +153,11 @@ This package provides React components for building a CMS admin interface. For a
 | `@tiptap/react` | Rich text editor |
 | `@tiptap/starter-kit` | TipTap base extensions (bold, italic, lists, headings) |
 | `@tiptap/extension-link` | TipTap link extension |
-| `@tiptap/pm` | TipTap ProseMirror bindings |
 | `class-variance-authority` | Component variant styling |
 | `tailwind-merge` + `clsx` | Conditional class merging |
 | `zod` | Schema validation |
 
-Peer dependencies: `react ^19.0.0`, `react-dom ^19.0.0`
+**Peer dependencies:** `react ^19.0.0`, `react-dom ^19.0.0`
 
 ## Development
 
@@ -162,4 +175,6 @@ pnpm build
 pnpm typecheck
 ```
 
-Tests use `@testing-library/react` with `jsdom`. See `src/test/setup.ts` for configuration.
+Tests use `@testing-library/react` with `jsdom`.
+
+**[← Back to main README](../../README.md)**
