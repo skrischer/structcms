@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@structcms/api": "workspace:*",
     "@structcms/core": "workspace:*",
     "@tiptap/extension-link": "^3.19.0",
     "@tiptap/pm": "^3.19.0",

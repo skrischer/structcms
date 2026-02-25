@@ -4,7 +4,15 @@ export { useAdmin } from './hooks/use-admin';
 export { useApiClient, type ApiClient, type ApiResponse, type ApiError } from './hooks/use-api-client';
 export { StringInput, type StringInputProps } from './components/inputs/string-input';
 export { TextInput, type TextInputProps } from './components/inputs/text-input';
-export { RichTextEditor, type RichTextEditorProps } from './components/inputs/rich-text-editor';
+export { RichTextEditor } from './components/inputs/rich-text-editor';
+export type { RichTextEditorProps } from './components/inputs/rich-text-editor';
+
+export { AuthProvider, useAuth } from './context/auth-context';
+export type { AuthContextValue, AuthProviderProps } from './context/auth-context';
+
+export { LoginForm, ProtectedRoute, OAuthButton } from './components/auth';
+export type { LoginFormProps, ProtectedRouteProps, OAuthButtonProps } from './components/auth';
+
 export { ImagePicker, type ImagePickerProps } from './components/inputs/image-picker';
 export { ArrayField, type ArrayFieldProps } from './components/inputs/array-field';
 export { ObjectField, type ObjectFieldProps } from './components/inputs/object-field';
