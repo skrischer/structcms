@@ -1,16 +1,20 @@
+import { resolveMediaReferences } from '../media/resolve';
+import type { MediaAdapter } from '../media/types';
 import type { Navigation, Page, StorageAdapter } from '../storage/types';
 import type { ListPagesOptions, NavigationResponse, PageResponse } from './types';
 
 /**
- * Maps internal Page type to PageResponse for delivery API
+ * Maps internal Page type to PageResponse for delivery API with resolved media references
  */
-function toPageResponse(page: Page): PageResponse {
+async function toPageResponse(page: Page, mediaAdapter: MediaAdapter): Promise<PageResponse> {
+  const resolvedSections = await resolveMediaReferences(page.sections, mediaAdapter);
+  
   return {
     id: page.id,
     slug: page.slug,
     pageType: page.pageType,
     title: page.title,
-    sections: page.sections,
+    sections: resolvedSections,
     meta: {
       createdAt: page.createdAt.toISOString(),
       updatedAt: page.updatedAt.toISOString(),
@@ -34,10 +38,11 @@ function toNavigationResponse(navigation: Navigation): NavigationResponse {
 
 /**
  * Handler for GET /api/cms/pages
- * Returns all pages, optionally filtered by pageType
+ * Returns all pages with resolved media references, optionally filtered by pageType
  */
 export async function handleListPages(
   adapter: StorageAdapter,
+  mediaAdapter: MediaAdapter,
   options?: ListPagesOptions
 ): Promise<PageResponse[]> {
   const pages = await adapter.listPages({
@@ -46,15 +51,21 @@ export async function handleListPages(
     offset: options?.offset,
   });
 
-  return pages.map(toPageResponse);
+  const results: PageResponse[] = [];
+  for (const page of pages) {
+    results.push(await toPageResponse(page, mediaAdapter));
+  }
+  
+  return results;
 }
 
 /**
  * Handler for GET /api/cms/pages/:slug
- * Returns a single page by slug, or null if not found
+ * Returns a single page by slug with resolved media references, or null if not found
  */
 export async function handleGetPageBySlug(
   adapter: StorageAdapter,
+  mediaAdapter: MediaAdapter,
   slug: string
 ): Promise<PageResponse | null> {
   const page = await adapter.getPage(slug);
@@ -63,7 +74,7 @@ export async function handleGetPageBySlug(
     return null;
   }
 
-  return toPageResponse(page);
+  return toPageResponse(page, mediaAdapter);
 }
 
 /**

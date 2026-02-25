@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { storageAdapter } from '@/lib/adapters';
+import { mediaAdapter, storageAdapter } from '@/lib/adapters';
 import { getComponent, isSectionType } from '@/lib/components';
 import { Navigation } from '@/lib/components/navigation';
 import { handleGetNavigation, handleGetPageBySlug } from '@structcms/api';
@@ -12,7 +12,7 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
-  const page = await handleGetPageBySlug(storageAdapter, slug.join('/'));
+  const page = await handleGetPageBySlug(storageAdapter, mediaAdapter, slug.join('/'));
   const nav = await handleGetNavigation(storageAdapter, 'main');
 
   if (!page) {

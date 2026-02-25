@@ -72,10 +72,12 @@ interface RouteContext<TParams extends Record<string, string | string[]>> {
 
 export interface NextPagesRouteConfig {
   storageAdapter: StorageAdapter;
+  mediaAdapter: MediaAdapter;
 }
 
 export interface NextPageBySlugRouteConfig {
   storageAdapter: StorageAdapter;
+  mediaAdapter: MediaAdapter;
 }
 
 export interface NextPageByIdRouteConfig {
@@ -389,7 +391,7 @@ export function createNextPagesRoute(config: NextPagesRouteConfig) {
   return {
     GET: async (_request: RequestLike): Promise<ResponseLike> => {
       try {
-        const pages = await handleListPages(config.storageAdapter);
+        const pages = await handleListPages(config.storageAdapter, config.mediaAdapter);
         return jsonResponse(pages);
       } catch (error) {
         return errorResponse(error);
@@ -424,7 +426,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
     ): Promise<ResponseLike> => {
       try {
         const { slug } = await resolveParams(context);
-        const page = await handleGetPageBySlug(config.storageAdapter, normalizeSlug(slug));
+        const page = await handleGetPageBySlug(config.storageAdapter, config.mediaAdapter, normalizeSlug(slug));
 
         if (!page) {
           return jsonResponse({ error: 'Page not found' }, 404);
@@ -442,7 +444,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
       try {
         const { slug } = await resolveParams(context);
         const normalizedSlug = normalizeSlug(slug);
-        const existingPage = await handleGetPageBySlug(config.storageAdapter, normalizedSlug);
+        const existingPage = await handleGetPageBySlug(config.storageAdapter, config.mediaAdapter, normalizedSlug);
 
         if (!existingPage) {
           return jsonResponse({ error: 'Page not found' }, 404);
@@ -477,7 +479,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
     ): Promise<ResponseLike> => {
       try {
         const { slug } = await resolveParams(context);
-        const existingPage = await handleGetPageBySlug(config.storageAdapter, normalizeSlug(slug));
+        const existingPage = await handleGetPageBySlug(config.storageAdapter, config.mediaAdapter, normalizeSlug(slug));
 
         if (!existingPage) {
           return jsonResponse({ error: 'Page not found' }, 404);

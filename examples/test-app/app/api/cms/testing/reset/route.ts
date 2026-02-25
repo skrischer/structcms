@@ -9,7 +9,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
-    const pages = await handleListPages(storageAdapter);
+    const pages = await handleListPages(storageAdapter, mediaAdapter);
     for (const page of pages) {
       await handleDeletePage(storageAdapter, page.id);
     }

@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic';
 
-import { storageAdapter } from '@/lib/adapters';
+import { mediaAdapter, storageAdapter } from '@/lib/adapters';
 import { getComponent, isSectionType } from '@/lib/components';
 import { Navigation } from '@/lib/components/navigation';
 import { handleGetNavigation, handleGetPageBySlug } from '@structcms/api';
 
 export default async function Home() {
-  const page = await handleGetPageBySlug(storageAdapter, 'home');
+  const page = await handleGetPageBySlug(storageAdapter, mediaAdapter, 'home');
   const nav = await handleGetNavigation(storageAdapter, 'main');
 
   if (!page) {
