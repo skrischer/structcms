@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { handleGetPageBySlug, handleGetNavigation } from '@structcms/api';
 import { storageAdapter } from '@/lib/adapters';
 import { isSectionType, getComponent } from '@/lib/components';

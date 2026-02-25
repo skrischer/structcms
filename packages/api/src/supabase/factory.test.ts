@@ -5,10 +5,12 @@ const {
   createClientMock,
   createStorageAdapterMock,
   createMediaAdapterMock,
+  createAuthAdapterMock,
 } = vi.hoisted(() => ({
   createClientMock: vi.fn(),
   createStorageAdapterMock: vi.fn(),
   createMediaAdapterMock: vi.fn(),
+  createAuthAdapterMock: vi.fn(),
 }));
 
 vi.mock('@supabase/supabase-js', () => ({
@@ -23,11 +25,16 @@ vi.mock('../media', () => ({
   createMediaAdapter: createMediaAdapterMock,
 }));
 
+vi.mock('../auth', () => ({
+  createAuthAdapter: createAuthAdapterMock,
+}));
+
 describe('createSupabaseAdapters', () => {
   beforeEach(() => {
     createClientMock.mockReset();
     createStorageAdapterMock.mockReset();
     createMediaAdapterMock.mockReset();
+    createAuthAdapterMock.mockReset();
 
     delete process.env.SUPABASE_URL;
     delete process.env.SUPABASE_SECRET_KEY;
@@ -38,10 +45,12 @@ describe('createSupabaseAdapters', () => {
     const client = { name: 'supabase-client' };
     const storageAdapter = { kind: 'storage-adapter' };
     const mediaAdapter = { kind: 'media-adapter' };
+    const authAdapter = { kind: 'auth-adapter' };
 
     createClientMock.mockReturnValue(client);
     createStorageAdapterMock.mockReturnValue(storageAdapter);
     createMediaAdapterMock.mockReturnValue(mediaAdapter);
+    createAuthAdapterMock.mockReturnValue(authAdapter);
 
     const result = createSupabaseAdapters({
       url: 'https://explicit.supabase.co',
@@ -58,7 +67,8 @@ describe('createSupabaseAdapters', () => {
       client,
       bucketName: 'explicit-bucket',
     });
-    expect(result).toEqual({ storageAdapter, mediaAdapter });
+    expect(createAuthAdapterMock).toHaveBeenCalledWith({ client });
+    expect(result).toEqual({ storageAdapter, mediaAdapter, authAdapter });
   });
 
   it('uses environment defaults when explicit config is not provided', () => {
@@ -69,10 +79,12 @@ describe('createSupabaseAdapters', () => {
     const client = { name: 'supabase-client-from-env' };
     const storageAdapter = { kind: 'storage-adapter-from-env' };
     const mediaAdapter = { kind: 'media-adapter-from-env' };
+    const authAdapter = { kind: 'auth-adapter-from-env' };
 
     createClientMock.mockReturnValue(client);
     createStorageAdapterMock.mockReturnValue(storageAdapter);
     createMediaAdapterMock.mockReturnValue(mediaAdapter);
+    createAuthAdapterMock.mockReturnValue(authAdapter);
 
     const result = createSupabaseAdapters();
 
@@ -85,6 +97,7 @@ describe('createSupabaseAdapters', () => {
       client,
       bucketName: 'env-bucket',
     });
-    expect(result).toEqual({ storageAdapter, mediaAdapter });
+    expect(createAuthAdapterMock).toHaveBeenCalledWith({ client });
+    expect(result).toEqual({ storageAdapter, mediaAdapter, authAdapter });
   });
 });
