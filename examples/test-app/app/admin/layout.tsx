@@ -1,8 +1,8 @@
 'use client';
 
 import { registry } from '@/lib/registry';
-import { AdminLayout, AdminProvider } from '@structcms/admin';
-import { useRouter } from 'next/navigation';
+import { AdminLayout, AdminProvider, AuthProvider, ProtectedRoute } from '@structcms/admin';
+import { usePathname, useRouter } from 'next/navigation';
 
 const navItems = [
   { label: 'Dashboard', path: '/admin' },
@@ -17,16 +17,47 @@ export default function AdminRootLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleNavigate = (path: string) => {
     router.push(path);
   };
 
+  // Don't protect the login page
+  const isLoginPage = pathname === '/admin/login';
+
   return (
-    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
-      <AdminLayout navItems={navItems} onNavigate={handleNavigate}>
-        {children}
-      </AdminLayout>
-    </AdminProvider>
+    <AuthProvider apiBaseUrl="/api/cms">
+      {isLoginPage ? (
+        children
+      ) : (
+        <ProtectedRoute
+          fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+              <div className="text-center">
+                <p className="text-gray-600">Please sign in to access this page.</p>
+                <button
+                  onClick={() => router.push('/admin/login')}
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Go to Sign In
+                </button>
+              </div>
+            </div>
+          }
+          loadingFallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <p>Loading...</p>
+            </div>
+          }
+        >
+          <AdminProvider registry={registry} apiBaseUrl="/api/cms">
+            <AdminLayout navItems={navItems} onNavigate={handleNavigate}>
+              {children}
+            </AdminLayout>
+          </AdminProvider>
+        </ProtectedRoute>
+      )}
+    </AuthProvider>
   );
 }

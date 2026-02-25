@@ -2,6 +2,7 @@ import type { NavigationItem, Registry, SectionData } from '@structcms/core';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { AdminProvider } from '../../context/admin-context';
+import { AuthProvider } from '../../context/auth-context';
 import { useApiClient } from '../../hooks/use-api-client';
 import { NavigationEditor } from '../content/navigation-editor';
 import { PageList, type PageSummary } from '../content/page-list';
@@ -17,6 +18,15 @@ export interface StructCMSAdminAppProps {
   className?: string;
   customNavItems?: SidebarNavItem[];
   renderView?: (view: View) => React.ReactNode | null;
+  /**
+   * If true, wraps the app in AuthProvider. When enabled, you should provide login/auth handling.
+   * @default false
+   */
+  enableAuth?: boolean;
+  /**
+   * Callback when user authentication state changes
+   */
+  onAuthStateChange?: (user: import('../../context/auth-context').AuthContextValue['user']) => void;
 }
 
 export type View =
@@ -242,6 +252,8 @@ export function StructCMSAdminApp({
   className,
   customNavItems = [],
   renderView: customRenderView,
+  enableAuth = false,
+  onAuthStateChange,
 }: StructCMSAdminAppProps) {
   const [currentView, setCurrentView] = useState<View>({ type: 'dashboard' });
 
@@ -284,7 +296,7 @@ export function StructCMSAdminApp({
 
   const navItems = [...defaultNavItems, ...customNavItems];
 
-  return (
+  const appContent = (
     <AdminProvider registry={registry} apiBaseUrl={apiBaseUrl}>
       <AdminLayout className={className} navItems={navItems} onNavigate={handleNavigate}>
         <ViewRenderer
@@ -299,4 +311,14 @@ export function StructCMSAdminApp({
       </AdminLayout>
     </AdminProvider>
   );
+
+  if (enableAuth) {
+    return (
+      <AuthProvider apiBaseUrl={apiBaseUrl} onAuthStateChange={onAuthStateChange}>
+        {appContent}
+      </AuthProvider>
+    );
+  }
+
+  return appContent;
 }
