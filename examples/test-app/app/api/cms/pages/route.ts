@@ -1,5 +1,5 @@
-import { createNextPagesRoute } from '@structcms/api/next';
 import { storageAdapter } from '@/lib/adapters';
+import { createNextPagesRoute } from '@structcms/api/next';
 
 const pagesRoute = createNextPagesRoute({ storageAdapter });
 

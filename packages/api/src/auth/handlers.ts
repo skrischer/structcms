@@ -12,19 +12,14 @@ export class AuthValidationError extends Error {
   }
 }
 
-export async function handleSignInWithOAuth(
-  adapter: AuthAdapter,
-  input: SignInWithOAuthInput
-) {
+export async function handleSignInWithOAuth(adapter: AuthAdapter, input: SignInWithOAuthInput) {
   if (!input.provider) {
     throw new AuthValidationError('Provider is required');
   }
 
   const validProviders = ['google', 'github', 'gitlab', 'azure', 'bitbucket'];
   if (!validProviders.includes(input.provider)) {
-    throw new AuthValidationError(
-      `Invalid provider. Must be one of: ${validProviders.join(', ')}`
-    );
+    throw new AuthValidationError(`Invalid provider. Must be one of: ${validProviders.join(', ')}`);
   }
 
   return await adapter.signInWithOAuth(input);
@@ -57,10 +52,7 @@ export async function handleSignOut(adapter: AuthAdapter, accessToken: string) {
   return await adapter.signOut(accessToken);
 }
 
-export async function handleVerifySession(
-  adapter: AuthAdapter,
-  input: VerifySessionInput
-) {
+export async function handleVerifySession(adapter: AuthAdapter, input: VerifySessionInput) {
   if (!input.accessToken) {
     throw new AuthValidationError('Access token is required');
   }
@@ -68,10 +60,7 @@ export async function handleVerifySession(
   return await adapter.verifySession(input);
 }
 
-export async function handleRefreshSession(
-  adapter: AuthAdapter,
-  refreshToken: string
-) {
+export async function handleRefreshSession(adapter: AuthAdapter, refreshToken: string) {
   if (!refreshToken) {
     throw new AuthValidationError('Refresh token is required');
   }
@@ -79,10 +68,7 @@ export async function handleRefreshSession(
   return await adapter.refreshSession(refreshToken);
 }
 
-export async function handleGetCurrentUser(
-  adapter: AuthAdapter,
-  accessToken: string
-) {
+export async function handleGetCurrentUser(adapter: AuthAdapter, accessToken: string) {
   if (!accessToken) {
     throw new AuthValidationError('Access token is required');
   }

@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { defineSection } from './define-section';
 import { definePageType } from './define-page-type';
+import { defineSection } from './define-section';
 import { createRegistry } from './registry';
 
 const HeroSection = defineSection({

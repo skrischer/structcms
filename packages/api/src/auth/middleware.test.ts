@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createAuthMiddleware } from './middleware';
 import type { AuthAdapter, AuthUser } from './types';
 
@@ -57,9 +57,7 @@ describe('createAuthMiddleware', () => {
 
     const headers = {};
 
-    await expect(authenticate(headers)).rejects.toThrow(
-      'No authentication token provided'
-    );
+    await expect(authenticate(headers)).rejects.toThrow('No authentication token provided');
   });
 
   it('should throw error when token format is invalid', async () => {
@@ -70,9 +68,7 @@ describe('createAuthMiddleware', () => {
       authorization: 'InvalidFormat token',
     };
 
-    await expect(authenticate(headers)).rejects.toThrow(
-      'No authentication token provided'
-    );
+    await expect(authenticate(headers)).rejects.toThrow('No authentication token provided');
   });
 
   it('should throw error when token is invalid', async () => {
@@ -83,9 +79,7 @@ describe('createAuthMiddleware', () => {
       authorization: 'Bearer invalid-token',
     };
 
-    await expect(authenticate(headers)).rejects.toThrow(
-      'Invalid or expired token'
-    );
+    await expect(authenticate(headers)).rejects.toThrow('Invalid or expired token');
   });
 
   it('should support custom token extraction', async () => {
@@ -113,9 +107,7 @@ describe('createAuthMiddleware', () => {
       authorization: 'just-a-token',
     };
 
-    await expect(authenticate(headers)).rejects.toThrow(
-      'No authentication token provided'
-    );
+    await expect(authenticate(headers)).rejects.toThrow('No authentication token provided');
   });
 
   it('should handle empty Bearer token', async () => {
@@ -126,8 +118,6 @@ describe('createAuthMiddleware', () => {
       authorization: 'Bearer ',
     };
 
-    await expect(authenticate(headers)).rejects.toThrow(
-      'No authentication token provided'
-    );
+    await expect(authenticate(headers)).rejects.toThrow('No authentication token provided');
   });
 });

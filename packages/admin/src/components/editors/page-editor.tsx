@@ -1,11 +1,11 @@
 'use client';
 
+import type { SectionData } from '@structcms/core';
 import * as React from 'react';
-import { type SectionData } from '@structcms/core';
 import { useAdmin } from '../../hooks/use-admin';
-import { SectionEditor } from './section-editor';
-import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { SectionEditor } from './section-editor';
 
 export interface PageEditorProps {
   sections: SectionData[];
@@ -105,9 +105,7 @@ function PageEditor({
                 data-testid={`page-section-${index}`}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold capitalize">
-                    {sectionLabel}
-                  </h3>
+                  <h3 className="text-sm font-semibold capitalize">{sectionLabel}</h3>
                   <div className="flex gap-1">
                     <Button
                       type="button"
@@ -182,11 +180,7 @@ function PageEditor({
       </div>
 
       <div className="border-t border-input pt-4">
-        <Button
-          type="button"
-          onClick={handleSave}
-          data-testid="save-page"
-        >
+        <Button type="button" onClick={handleSave} data-testid="save-page">
           Save Page
         </Button>
       </div>

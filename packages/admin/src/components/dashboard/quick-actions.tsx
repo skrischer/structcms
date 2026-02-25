@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
 
 export interface QuickActionsProps {
   onCreatePage: () => void;
@@ -8,11 +7,7 @@ export interface QuickActionsProps {
   className?: string;
 }
 
-export function QuickActions({
-  onCreatePage,
-  onUploadMedia,
-  className,
-}: QuickActionsProps) {
+export function QuickActions({ onCreatePage, onUploadMedia, className }: QuickActionsProps) {
   return (
     <div className={cn('space-y-3', className)} data-testid="quick-actions">
       <h2 className="text-lg font-semibold">Quick Actions</h2>

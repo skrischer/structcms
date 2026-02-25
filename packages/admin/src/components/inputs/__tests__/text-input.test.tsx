@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
 import { TextInput } from '../text-input';
 
 describe('TextInput', () => {
@@ -12,17 +12,9 @@ describe('TextInput', () => {
   });
 
   it('displays placeholder text', () => {
-    render(
-      <TextInput
-        label="Description"
-        name="description"
-        placeholder="Enter description..."
-      />
-    );
+    render(<TextInput label="Description" name="description" placeholder="Enter description..." />);
 
-    expect(
-      screen.getByPlaceholderText('Enter description...')
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter description...')).toBeInTheDocument();
   });
 
   it('shows required indicator when required', () => {
@@ -38,25 +30,13 @@ describe('TextInput', () => {
   });
 
   it('displays validation error below textarea', () => {
-    render(
-      <TextInput
-        label="Description"
-        name="description"
-        error="Description is required"
-      />
-    );
+    render(<TextInput label="Description" name="description" error="Description is required" />);
 
     expect(screen.getByText('Description is required')).toBeInTheDocument();
   });
 
   it('sets aria-invalid when error is present', () => {
-    render(
-      <TextInput
-        label="Description"
-        name="description"
-        error="Description is required"
-      />
-    );
+    render(<TextInput label="Description" name="description" error="Description is required" />);
 
     expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true');
   });
@@ -85,11 +65,7 @@ describe('TextInput', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <TextInput
-        label="Description"
-        name="description"
-        className="custom-class"
-      />
+      <TextInput label="Description" name="description" className="custom-class" />
     );
 
     expect(container.firstChild).toHaveClass('custom-class');

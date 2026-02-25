@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { resetAndSeed, resetOnly } from './helpers';
 
 test.describe('Page List', () => {
@@ -64,7 +64,9 @@ test.describe('Page List', () => {
       await expect(page).toHaveURL('/admin/pages/about/contact');
 
       // Verify the edit page loaded correctly
-      await expect(page.locator('h1', { hasText: 'Edit Page: Contact' })).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('h1', { hasText: 'Edit Page: Contact' })).toBeVisible({
+        timeout: 10000,
+      });
     });
 
     test('should filter pages by type', async ({ page }) => {

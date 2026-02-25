@@ -1,4 +1,4 @@
-import type { CreatePageInput, CreateNavigationInput, NavigationItem } from '@structcms/api';
+import type { CreateNavigationInput, CreatePageInput, NavigationItem } from '@structcms/api';
 
 export const seedPages: CreatePageInput[] = [
   {

@@ -1,5 +1,5 @@
-import { createNextMediaByIdRoute } from '@structcms/api/next';
 import { mediaAdapter } from '@/lib/adapters';
+import { createNextMediaByIdRoute } from '@structcms/api/next';
 
 interface RouteParams {
   params: Promise<{ id: string }>;

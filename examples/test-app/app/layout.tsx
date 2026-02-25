@@ -7,9 +7,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen text-foreground">
-        {children}
-      </body>
+      <body className="min-h-screen text-foreground">{children}</body>
     </html>
   );
 }

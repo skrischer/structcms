@@ -19,12 +19,20 @@
         "tailwind-merge",
         "zod"
       ],
-      "peer": [
-        "react ^19.0.0",
-        "react-dom ^19.0.0"
-      ],
+      "peer": ["react ^19.0.0", "react-dom ^19.0.0"],
       "dev": ["vitest", "@testing-library/react", "typescript"],
-      "shadcn_components": ["button", "input", "textarea", "card", "dialog", "select", "label", "separator", "toast", "skeleton"]
+      "shadcn_components": [
+        "button",
+        "input",
+        "textarea",
+        "card",
+        "dialog",
+        "select",
+        "label",
+        "separator",
+        "toast",
+        "skeleton"
+      ]
     },
     "package_exports": [
       "StructCMSAdminApp",

@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
-import { cn } from '../../lib/utils';
 
 export interface ArrayFieldProps<T> {
   label: string;
@@ -99,9 +99,7 @@ function ArrayFieldInner<T>(
         )}
       >
         {value.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            No items yet
-          </p>
+          <p className="text-sm text-muted-foreground text-center py-4">No items yet</p>
         ) : (
           <div className="space-y-3">
             {value.map((item, index) => (
@@ -111,9 +109,7 @@ function ArrayFieldInner<T>(
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
-                  {renderItem(item, index, (newItem) =>
-                    handleItemChange(index, newItem)
-                  )}
+                  {renderItem(item, index, (newItem) => handleItemChange(index, newItem))}
                 </div>
                 <div className="flex flex-col gap-1">
                   <Button

@@ -1,18 +1,18 @@
 'use client';
 
-import * as React from 'react';
-import { useForm, Controller, type FieldErrors, type DefaultValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type z } from 'zod';
-import { getFieldMeta, type FieldType } from '@structcms/core';
+import { type FieldType, getFieldMeta } from '@structcms/core';
+import * as React from 'react';
+import { Controller, type DefaultValues, type FieldErrors, useForm } from 'react-hook-form';
+import type { z } from 'zod';
+import { ArrayField } from '../components/inputs/array-field';
+import { ImagePicker } from '../components/inputs/image-picker';
+import { ObjectField } from '../components/inputs/object-field';
+import { RichTextEditor } from '../components/inputs/rich-text-editor';
 import { StringInput } from '../components/inputs/string-input';
 import { TextInput } from '../components/inputs/text-input';
-import { RichTextEditor } from '../components/inputs/rich-text-editor';
-import { ImagePicker } from '../components/inputs/image-picker';
-import { ArrayField } from '../components/inputs/array-field';
-import { ObjectField } from '../components/inputs/object-field';
-import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { cn } from './utils';
 
 /**
@@ -207,19 +207,15 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
       case 'object': {
         const innerSchema = unwrapSchema(fieldSchema);
-        const innerShape = 'shape' in innerSchema
-          ? (innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<string, z.ZodTypeAny>
-          : null;
+        const innerShape =
+          'shape' in innerSchema
+            ? ((innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<string, z.ZodTypeAny>)
+            : null;
 
         return (
-          <ObjectField
-            key={fieldName}
-            label={label}
-            required={isRequired}
-            error={errorMessage}
-          >
+          <ObjectField key={fieldName} label={label} required={isRequired} error={errorMessage}>
             {innerShape
-              ? Object.entries(innerShape).map(([subName, subSchema]) => {
+              ? Object.entries(innerShape).map(([subName, _subSchema]) => {
                   const subFieldName = `${fieldName}.${subName}`;
                   const subLabel = fieldNameToLabel(subName);
                   const subError = (errors as FieldErrors<Record<string, unknown>>)[fieldName] as
@@ -260,9 +256,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       className={cn('space-y-4', className)}
       data-testid="form-generator"
     >
-      {Object.entries(shape).map(([fieldName, fieldSchema]) =>
-        renderField(fieldName, fieldSchema)
-      )}
+      {Object.entries(shape).map(([fieldName, fieldSchema]) => renderField(fieldName, fieldSchema))}
       {!onChange && (
         <Button type="submit" data-testid="form-submit">
           {submitLabel}

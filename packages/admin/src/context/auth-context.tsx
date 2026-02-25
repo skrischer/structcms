@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { AuthUser, AuthSession } from '@structcms/api';
+import type { AuthSession, AuthUser } from '@structcms/api';
+import type React from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export interface AuthContextValue {
   user: AuthUser | null;
@@ -38,7 +39,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${storedToken}`,
+          Authorization: `Bearer ${storedToken}`,
         },
       });
 
@@ -99,34 +100,37 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
     loadSession();
   }, [loadSession]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${apiBaseUrl}/auth/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${apiBaseUrl}/auth/signin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Sign in failed');
-      }
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Sign in failed');
+        }
 
-      const newSession: AuthSession = await response.json();
-      localStorage.setItem('structcms_access_token', newSession.accessToken);
-      if (newSession.refreshToken) {
-        localStorage.setItem('structcms_refresh_token', newSession.refreshToken);
+        const newSession: AuthSession = await response.json();
+        localStorage.setItem('structcms_access_token', newSession.accessToken);
+        if (newSession.refreshToken) {
+          localStorage.setItem('structcms_refresh_token', newSession.refreshToken);
+        }
+        setSession(newSession);
+        setUser(newSession.user);
+        onAuthStateChange?.(newSession.user);
+      } finally {
+        setIsLoading(false);
       }
-      setSession(newSession);
-      setUser(newSession.user);
-      onAuthStateChange?.(newSession.user);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [apiBaseUrl, onAuthStateChange]);
+    },
+    [apiBaseUrl, onAuthStateChange]
+  );
 
   const signOut = useCallback(async () => {
     setIsLoading(true);
@@ -135,7 +139,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
         await fetch(`${apiBaseUrl}/auth/signout`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${session.accessToken}`,
+            Authorization: `Bearer ${session.accessToken}`,
           },
         });
       }

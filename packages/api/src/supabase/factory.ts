@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
-import { createStorageAdapter } from '../storage';
-import { createMediaAdapter } from '../media';
 import { createAuthAdapter } from '../auth';
-import type { StorageAdapter } from '../storage';
-import type { MediaAdapter } from '../media';
 import type { AuthAdapter } from '../auth';
+import { createMediaAdapter } from '../media';
+import type { MediaAdapter } from '../media';
+import { createStorageAdapter } from '../storage';
+import type { StorageAdapter } from '../storage';
 
 export interface SupabaseAdapterFactoryStorageConfig {
   bucket?: string;

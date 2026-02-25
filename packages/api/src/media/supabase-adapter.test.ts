@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { SupabaseMediaAdapter, createMediaAdapter, MediaError } from './supabase-adapter';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { MediaError, SupabaseMediaAdapter, createMediaAdapter } from './supabase-adapter';
 import type { MediaFile } from './types';
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -34,17 +34,14 @@ describe('SupabaseMediaAdapter', () => {
   });
 
   describe('createMediaAdapter', () => {
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should create a media adapter',
-      () => {
-        const media = createMediaAdapter({ client: supabase });
-        expect(media).toBeDefined();
-        expect(media.upload).toBeDefined();
-        expect(media.getMedia).toBeDefined();
-        expect(media.listMedia).toBeDefined();
-        expect(media.deleteMedia).toBeDefined();
-      }
-    );
+    it.skipIf(!supabaseUrl || !supabaseKey)('should create a media adapter', () => {
+      const media = createMediaAdapter({ client: supabase });
+      expect(media).toBeDefined();
+      expect(media.upload).toBeDefined();
+      expect(media.getMedia).toBeDefined();
+      expect(media.listMedia).toBeDefined();
+      expect(media.deleteMedia).toBeDefined();
+    });
   });
 
   describe('upload', () => {
@@ -52,7 +49,7 @@ describe('SupabaseMediaAdapter', () => {
       'should upload a file and return MediaFile',
       async () => {
         const testData = new TextEncoder().encode('test image content');
-        
+
         const result = await adapter.upload({
           filename: `${testPrefix}-test.jpg`,
           mimeType: 'image/jpeg',
@@ -101,94 +98,85 @@ describe('SupabaseMediaAdapter', () => {
   });
 
   describe('getMedia', () => {
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should retrieve uploaded media by id',
-      async () => {
-        const testData = new TextEncoder().encode('get test content');
-        
-        const uploaded = await adapter.upload({
-          filename: `${testPrefix}-get-test.gif`,
-          mimeType: 'image/gif',
-          size: testData.length,
-          data: testData,
-        });
-        uploadedMediaIds.push(uploaded.id);
+    it.skipIf(!supabaseUrl || !supabaseKey)('should retrieve uploaded media by id', async () => {
+      const testData = new TextEncoder().encode('get test content');
 
-        const retrieved = await adapter.getMedia(uploaded.id);
+      const uploaded = await adapter.upload({
+        filename: `${testPrefix}-get-test.gif`,
+        mimeType: 'image/gif',
+        size: testData.length,
+        data: testData,
+      });
+      uploadedMediaIds.push(uploaded.id);
 
-        expect(retrieved).not.toBeNull();
-        const media = retrieved as MediaFile;
-        expect(media.id).toBe(uploaded.id);
-        expect(media.filename).toBe(`${testPrefix}-get-test.gif`);
-        expect(media.url).toBe(uploaded.url);
-        expect(media.mimeType).toBe('image/gif');
-      }
-    );
+      const retrieved = await adapter.getMedia(uploaded.id);
 
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should return null for non-existent id',
-      async () => {
-        const result = await adapter.getMedia('00000000-0000-0000-0000-000000000000');
-        expect(result).toBeNull();
-      }
-    );
+      expect(retrieved).not.toBeNull();
+      const media = retrieved as MediaFile;
+      expect(media.id).toBe(uploaded.id);
+      expect(media.filename).toBe(`${testPrefix}-get-test.gif`);
+      expect(media.url).toBe(uploaded.url);
+      expect(media.mimeType).toBe('image/gif');
+    });
+
+    it.skipIf(!supabaseUrl || !supabaseKey)('should return null for non-existent id', async () => {
+      const result = await adapter.getMedia('00000000-0000-0000-0000-000000000000');
+      expect(result).toBeNull();
+    });
   });
 
   describe('listMedia', () => {
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should list media files',
-      async () => {
-        const testData = new TextEncoder().encode('list test');
-        
-        await adapter.upload({
+    it.skipIf(!supabaseUrl || !supabaseKey)('should list media files', async () => {
+      const testData = new TextEncoder().encode('list test');
+
+      await adapter
+        .upload({
           filename: `${testPrefix}-list-1.webp`,
           mimeType: 'image/webp',
           size: testData.length,
           data: testData,
-        }).then(r => uploadedMediaIds.push(r.id));
+        })
+        .then((r) => uploadedMediaIds.push(r.id));
 
-        await adapter.upload({
+      await adapter
+        .upload({
           filename: `${testPrefix}-list-2.webp`,
           mimeType: 'image/webp',
           size: testData.length,
           data: testData,
-        }).then(r => uploadedMediaIds.push(r.id));
+        })
+        .then((r) => uploadedMediaIds.push(r.id));
 
-        const list = await adapter.listMedia();
+      const list = await adapter.listMedia();
 
-        expect(Array.isArray(list)).toBe(true);
-        expect(list.length).toBeGreaterThanOrEqual(2);
-        
-        const testFiles = list.filter(m => m.filename.startsWith(testPrefix));
-        expect(testFiles.length).toBeGreaterThanOrEqual(2);
-      }
-    );
+      expect(Array.isArray(list)).toBe(true);
+      expect(list.length).toBeGreaterThanOrEqual(2);
 
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should support pagination',
-      async () => {
-        const list = await adapter.listMedia({ limit: 1 });
-        expect(list.length).toBe(1);
-      }
-    );
+      const testFiles = list.filter((m) => m.filename.startsWith(testPrefix));
+      expect(testFiles.length).toBeGreaterThanOrEqual(2);
+    });
 
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should filter by mimeType',
-      async () => {
-        const testData = new TextEncoder().encode('filter test');
-        
-        await adapter.upload({
+    it.skipIf(!supabaseUrl || !supabaseKey)('should support pagination', async () => {
+      const list = await adapter.listMedia({ limit: 1 });
+      expect(list.length).toBe(1);
+    });
+
+    it.skipIf(!supabaseUrl || !supabaseKey)('should filter by mimeType', async () => {
+      const testData = new TextEncoder().encode('filter test');
+
+      await adapter
+        .upload({
           filename: `${testPrefix}-filter.svg`,
           mimeType: 'image/svg+xml',
           size: testData.length,
           data: testData,
-        }).then(r => uploadedMediaIds.push(r.id));
+        })
+        .then((r) => uploadedMediaIds.push(r.id));
 
-        const svgList = await adapter.listMedia({ mimeType: 'image/svg+xml' });
-        
-        expect(svgList.every(m => m.mimeType === 'image/svg+xml')).toBe(true);
-      }
-    );
+      const svgList = await adapter.listMedia({ mimeType: 'image/svg+xml' });
+
+      expect(svgList.every((m) => m.mimeType === 'image/svg+xml')).toBe(true);
+    });
   });
 
   describe('deleteMedia', () => {
@@ -196,7 +184,7 @@ describe('SupabaseMediaAdapter', () => {
       'should delete media from storage and database',
       async () => {
         const testData = new TextEncoder().encode('delete test');
-        
+
         const uploaded = await adapter.upload({
           filename: `${testPrefix}-delete.png`,
           mimeType: 'image/png',
@@ -217,13 +205,10 @@ describe('SupabaseMediaAdapter', () => {
       }
     );
 
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should throw error for non-existent id',
-      async () => {
-        await expect(
-          adapter.deleteMedia('00000000-0000-0000-0000-000000000000')
-        ).rejects.toThrow(MediaError);
-      }
-    );
+    it.skipIf(!supabaseUrl || !supabaseKey)('should throw error for non-existent id', async () => {
+      await expect(adapter.deleteMedia('00000000-0000-0000-0000-000000000000')).rejects.toThrow(
+        MediaError
+      );
+    });
   });
 });

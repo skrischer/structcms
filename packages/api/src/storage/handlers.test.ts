@@ -1,16 +1,29 @@
-import { describe, it, expect } from 'vitest';
-import { handleCreatePage, handleUpdatePage, handleDeletePage, handleCreateNavigation, handleUpdateNavigation, handleDeleteNavigation, StorageValidationError } from './handlers';
-import type { StorageAdapter, Page, Navigation, CreatePageInput, UpdatePageInput, CreateNavigationInput, UpdateNavigationInput } from './types';
+import { describe, expect, it } from 'vitest';
+import {
+  StorageValidationError,
+  handleCreateNavigation,
+  handleCreatePage,
+  handleDeleteNavigation,
+  handleDeletePage,
+  handleUpdateNavigation,
+  handleUpdatePage,
+} from './handlers';
+import type {
+  CreateNavigationInput,
+  CreatePageInput,
+  Navigation,
+  Page,
+  StorageAdapter,
+  UpdateNavigationInput,
+  UpdatePageInput,
+} from './types';
 
 const testDate = new Date('2025-01-15T10:00:00Z');
 
-function createMockStorageAdapter(
-  pages: Record<string, Page>
-): StorageAdapter {
+function createMockStorageAdapter(pages: Record<string, Page>): StorageAdapter {
   return {
     getPage: async (slug: string) => pages[slug] ?? null,
-    getPageById: async (id: string) =>
-      Object.values(pages).find((p) => p.id === id) ?? null,
+    getPageById: async (id: string) => Object.values(pages).find((p) => p.id === id) ?? null,
     createPage: async (input: CreatePageInput) => ({
       id: 'new-page-id',
       slug: input.slug ?? 'generated-slug',
@@ -115,13 +128,13 @@ describe('handleCreatePage', () => {
   it('should throw on empty title', async () => {
     const adapter = createMockStorageAdapter({});
 
-    await expect(
-      handleCreatePage(adapter, { title: '', pageType: 'landing' })
-    ).rejects.toThrow(StorageValidationError);
+    await expect(handleCreatePage(adapter, { title: '', pageType: 'landing' })).rejects.toThrow(
+      StorageValidationError
+    );
 
-    await expect(
-      handleCreatePage(adapter, { title: '   ', pageType: 'landing' })
-    ).rejects.toThrow('Page title must not be empty');
+    await expect(handleCreatePage(adapter, { title: '   ', pageType: 'landing' })).rejects.toThrow(
+      'Page title must not be empty'
+    );
   });
 
   it('should throw StorageValidationError with correct code', async () => {
@@ -161,7 +174,7 @@ describe('handleUpdatePage', () => {
   it('should validate slug uniqueness on update', async () => {
     const adapter = createMockStorageAdapter({
       'hello-world': existingPage,
-      'about': {
+      about: {
         id: 'page-2',
         slug: 'about',
         pageType: 'page',
@@ -172,9 +185,9 @@ describe('handleUpdatePage', () => {
       },
     });
 
-    await expect(
-      handleUpdatePage(adapter, { id: 'page-1', slug: 'about' })
-    ).rejects.toThrow('Slug "about" is already in use');
+    await expect(handleUpdatePage(adapter, { id: 'page-1', slug: 'about' })).rejects.toThrow(
+      'Slug "about" is already in use'
+    );
   });
 
   it('should allow keeping the same slug', async () => {
@@ -192,25 +205,25 @@ describe('handleUpdatePage', () => {
   it('should throw on empty ID', async () => {
     const adapter = createMockStorageAdapter({});
 
-    await expect(
-      handleUpdatePage(adapter, { id: '', title: 'Test' })
-    ).rejects.toThrow('Page ID must not be empty');
+    await expect(handleUpdatePage(adapter, { id: '', title: 'Test' })).rejects.toThrow(
+      'Page ID must not be empty'
+    );
   });
 
   it('should throw on empty title', async () => {
     const adapter = createMockStorageAdapter({ 'hello-world': existingPage });
 
-    await expect(
-      handleUpdatePage(adapter, { id: 'page-1', title: '' })
-    ).rejects.toThrow('Page title must not be empty');
+    await expect(handleUpdatePage(adapter, { id: 'page-1', title: '' })).rejects.toThrow(
+      'Page title must not be empty'
+    );
   });
 
   it('should throw on empty slug', async () => {
     const adapter = createMockStorageAdapter({ 'hello-world': existingPage });
 
-    await expect(
-      handleUpdatePage(adapter, { id: 'page-1', slug: '' })
-    ).rejects.toThrow('Page slug must not be empty');
+    await expect(handleUpdatePage(adapter, { id: 'page-1', slug: '' })).rejects.toThrow(
+      'Page slug must not be empty'
+    );
   });
 });
 
@@ -224,9 +237,7 @@ describe('handleDeletePage', () => {
   it('should throw on empty ID', async () => {
     const adapter = createMockStorageAdapter({});
 
-    await expect(handleDeletePage(adapter, '')).rejects.toThrow(
-      'Page ID must not be empty'
-    );
+    await expect(handleDeletePage(adapter, '')).rejects.toThrow('Page ID must not be empty');
   });
 
   it('should throw StorageValidationError with correct code', async () => {
@@ -243,9 +254,7 @@ describe('handleDeletePage', () => {
 
 const navDate = new Date('2025-02-01T12:00:00Z');
 
-function createMockNavigationAdapter(
-  navigations: Navigation[]
-): StorageAdapter {
+function createMockNavigationAdapter(navigations: Navigation[]): StorageAdapter {
   const base = createMockStorageAdapter({});
   return {
     ...base,
@@ -285,13 +294,13 @@ describe('handleCreateNavigation', () => {
   it('should throw on empty name', async () => {
     const adapter = createMockNavigationAdapter([]);
 
-    await expect(
-      handleCreateNavigation(adapter, { name: '', items: [] })
-    ).rejects.toThrow('Navigation name must not be empty');
+    await expect(handleCreateNavigation(adapter, { name: '', items: [] })).rejects.toThrow(
+      'Navigation name must not be empty'
+    );
 
-    await expect(
-      handleCreateNavigation(adapter, { name: '   ', items: [] })
-    ).rejects.toThrow('Navigation name must not be empty');
+    await expect(handleCreateNavigation(adapter, { name: '   ', items: [] })).rejects.toThrow(
+      'Navigation name must not be empty'
+    );
   });
 
   it('should throw on duplicate name', async () => {
@@ -299,9 +308,9 @@ describe('handleCreateNavigation', () => {
       { id: 'nav-1', name: 'main', items: [], updatedAt: navDate },
     ]);
 
-    await expect(
-      handleCreateNavigation(adapter, { name: 'main', items: [] })
-    ).rejects.toThrow('Navigation name "main" is already in use');
+    await expect(handleCreateNavigation(adapter, { name: 'main', items: [] })).rejects.toThrow(
+      'Navigation name "main" is already in use'
+    );
   });
 
   it('should throw StorageValidationError with correct code', async () => {
@@ -328,7 +337,10 @@ describe('handleUpdateNavigation', () => {
     const adapter = createMockNavigationAdapter([existingNav]);
     const result = await handleUpdateNavigation(adapter, {
       id: 'nav-1',
-      items: [{ label: 'Home', href: '/' }, { label: 'About', href: '/about' }],
+      items: [
+        { label: 'Home', href: '/' },
+        { label: 'About', href: '/about' },
+      ],
     });
 
     expect(result.items).toHaveLength(2);
@@ -340,9 +352,9 @@ describe('handleUpdateNavigation', () => {
       { id: 'nav-2', name: 'footer', items: [], updatedAt: navDate },
     ]);
 
-    await expect(
-      handleUpdateNavigation(adapter, { id: 'nav-1', name: 'footer' })
-    ).rejects.toThrow('Navigation name "footer" is already in use');
+    await expect(handleUpdateNavigation(adapter, { id: 'nav-1', name: 'footer' })).rejects.toThrow(
+      'Navigation name "footer" is already in use'
+    );
   });
 
   it('should allow keeping the same name', async () => {
@@ -359,17 +371,17 @@ describe('handleUpdateNavigation', () => {
   it('should throw on empty ID', async () => {
     const adapter = createMockNavigationAdapter([]);
 
-    await expect(
-      handleUpdateNavigation(adapter, { id: '', name: 'test' })
-    ).rejects.toThrow('Navigation ID must not be empty');
+    await expect(handleUpdateNavigation(adapter, { id: '', name: 'test' })).rejects.toThrow(
+      'Navigation ID must not be empty'
+    );
   });
 
   it('should throw on empty name', async () => {
     const adapter = createMockNavigationAdapter([existingNav]);
 
-    await expect(
-      handleUpdateNavigation(adapter, { id: 'nav-1', name: '' })
-    ).rejects.toThrow('Navigation name must not be empty');
+    await expect(handleUpdateNavigation(adapter, { id: 'nav-1', name: '' })).rejects.toThrow(
+      'Navigation name must not be empty'
+    );
   });
 });
 
@@ -405,7 +417,10 @@ describe('handleDeleteNavigation', () => {
  * Creates a mock adapter that captures the input passed to createPage/updatePage
  * and returns it as the result, so we can verify sanitization happened
  */
-function createCapturingAdapter(): StorageAdapter & { lastCreatedInput: CreatePageInput | null; lastUpdatedInput: UpdatePageInput | null } {
+function createCapturingAdapter(): StorageAdapter & {
+  lastCreatedInput: CreatePageInput | null;
+  lastUpdatedInput: UpdatePageInput | null;
+} {
   const state = {
     lastCreatedInput: null as CreatePageInput | null,
     lastUpdatedInput: null as UpdatePageInput | null,
@@ -440,8 +455,12 @@ function createCapturingAdapter(): StorageAdapter & { lastCreatedInput: CreatePa
         updatedAt: testDate,
       };
     },
-    get lastCreatedInput() { return state.lastCreatedInput; },
-    get lastUpdatedInput() { return state.lastUpdatedInput; },
+    get lastCreatedInput() {
+      return state.lastCreatedInput;
+    },
+    get lastUpdatedInput() {
+      return state.lastUpdatedInput;
+    },
   };
 }
 
@@ -464,12 +483,12 @@ describe('sanitization integration', () => {
     });
 
     // Verify the result contains sanitized content
-    expect(result.sections[0].data['title']).toBe('Welcome');
-    expect(result.sections[0].data['body']).toBe('<p>Hello</p>');
+    expect(result.sections[0].data.title).toBe('Welcome');
+    expect(result.sections[0].data.body).toBe('<p>Hello</p>');
 
     // Verify the adapter received sanitized input
-    expect(adapter.lastCreatedInput?.sections?.[0].data['title']).toBe('Welcome');
-    expect(adapter.lastCreatedInput?.sections?.[0].data['body']).toBe('<p>Hello</p>');
+    expect(adapter.lastCreatedInput?.sections?.[0].data.title).toBe('Welcome');
+    expect(adapter.lastCreatedInput?.sections?.[0].data.body).toBe('<p>Hello</p>');
   });
 
   it('should sanitize malicious HTML in sections on update', async () => {
@@ -481,16 +500,17 @@ describe('sanitization integration', () => {
           id: 's1',
           type: 'content',
           data: {
-            content: '<p>Safe</p><img src="x" onerror="alert(1)"><a href="link" onclick="steal()">Click</a>',
+            content:
+              '<p>Safe</p><img src="x" onerror="alert(1)"><a href="link" onclick="steal()">Click</a>',
           },
         },
       ],
     });
 
-    expect(result.sections[0].data['content']).toBe(
+    expect(result.sections[0].data.content).toBe(
       '<p>Safe</p><img src="x" /><a href="link">Click</a>'
     );
-    expect(adapter.lastUpdatedInput?.sections?.[0].data['content']).toBe(
+    expect(adapter.lastUpdatedInput?.sections?.[0].data.content).toBe(
       '<p>Safe</p><img src="x" /><a href="link">Click</a>'
     );
   });
@@ -519,13 +539,13 @@ describe('sanitization integration', () => {
       ],
     });
 
-    const items = result.sections[0].data['items'] as Array<Record<string, unknown>>;
-    expect(items[0]['caption']).toBe('Photo 1');
-    expect(items[0]['url']).toBe('img1.jpg');
-    expect(items[1]['caption']).toBe('<p>Photo 2</p>');
+    const items = result.sections[0].data.items as Array<Record<string, unknown>>;
+    expect(items[0].caption).toBe('Photo 1');
+    expect(items[0].url).toBe('img1.jpg');
+    expect(items[1].caption).toBe('<p>Photo 2</p>');
 
-    const nested = result.sections[0].data['nested'] as Record<string, Record<string, unknown>>;
-    expect(nested['deep']['value']).toBe('<strong>Bold</strong>');
+    const nested = result.sections[0].data.nested as Record<string, Record<string, unknown>>;
+    expect(nested.deep.value).toBe('<strong>Bold</strong>');
   });
 
   it('should deliver sanitized content via delivery handler', async () => {
@@ -546,10 +566,10 @@ describe('sanitization integration', () => {
     });
 
     // The created page already has sanitized content
-    expect(created.sections[0].data['title']).toBe('Clean Title');
+    expect(created.sections[0].data.title).toBe('Clean Title');
 
     // Delivery handler reads from adapter which stores sanitized data
     // Verify the data that was passed to the adapter is sanitized
-    expect(adapter.lastCreatedInput?.sections?.[0].data['title']).toBe('Clean Title');
+    expect(adapter.lastCreatedInput?.sections?.[0].data.title).toBe('Clean Title');
   });
 });

@@ -29,10 +29,7 @@ export function getFieldMeta(schema: z.ZodTypeAny): FieldMeta | null {
 /**
  * Checks if a schema has a specific field type
  */
-export function isFieldType(
-  schema: z.ZodTypeAny,
-  fieldType: FieldType
-): boolean {
+export function isFieldType(schema: z.ZodTypeAny, fieldType: FieldType): boolean {
   const meta = getFieldMeta(schema);
   return meta?.fieldType === fieldType;
 }

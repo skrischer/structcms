@@ -1,5 +1,5 @@
-import { createNextMediaRoute } from '@structcms/api/next';
 import { mediaAdapter } from '@/lib/adapters';
+import { createNextMediaRoute } from '@structcms/api/next';
 
 const mediaRoute = createNextMediaRoute({ mediaAdapter });
 

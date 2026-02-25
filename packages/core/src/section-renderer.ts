@@ -1,8 +1,4 @@
-import type {
-  CreateSectionRendererConfig,
-  SectionData,
-  SectionRenderer,
-} from './types';
+import type { CreateSectionRendererConfig, SectionData, SectionRenderer } from './types';
 
 /**
  * Creates a section renderer that maps section types to components.

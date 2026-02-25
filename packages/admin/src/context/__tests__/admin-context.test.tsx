@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Registry } from '@structcms/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AdminProvider } from '../admin-context';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useToast } from '../../components/ui/toast';
 import { useAdmin } from '../../hooks/use-admin';
 import { useApiClient } from '../../hooks/use-api-client';
-import { useToast } from '../../components/ui/toast';
-import type { Registry } from '@structcms/core';
+import { AdminProvider } from '../admin-context';
 
 function createMockRegistry(): Registry {
   return {
@@ -86,9 +86,7 @@ describe('useAdmin', () => {
   it('throws error when used outside AdminProvider', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    expect(() => render(<TestConsumer />)).toThrow(
-      'useAdmin must be used within an AdminProvider'
-    );
+    expect(() => render(<TestConsumer />)).toThrow('useAdmin must be used within an AdminProvider');
 
     consoleError.mockRestore();
   });

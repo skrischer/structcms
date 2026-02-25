@@ -1,11 +1,11 @@
 'use client';
 
-import * as React from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
-import { Label } from '../ui/label';
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import * as React from 'react';
 import { cn } from '../../lib/utils';
+import { Label } from '../ui/label';
 
 export interface RichTextEditorProps {
   label: string;
@@ -27,13 +27,7 @@ interface ToolbarButtonProps {
   title: string;
 }
 
-function ToolbarButton({
-  onClick,
-  isActive,
-  disabled,
-  children,
-  title,
-}: ToolbarButtonProps) {
+function ToolbarButton({ onClick, isActive, disabled, children, title }: ToolbarButtonProps) {
   return (
     <button
       type="button"
@@ -95,8 +89,7 @@ function RichTextEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class:
-          'prose prose-sm max-w-none min-h-[150px] p-3 focus:outline-none',
+        class: 'prose prose-sm max-w-none min-h-[150px] p-3 focus:outline-none',
         'aria-invalid': error ? 'true' : 'false',
         ...(error ? { 'aria-describedby': `${inputId}-error` } : {}),
       },
@@ -157,36 +150,26 @@ function RichTextEditor({
           >
             <em>I</em>
           </ToolbarButton>
-          <ToolbarButton
-            onClick={setLink}
-            isActive={editor.isActive('link')}
-            title="Link"
-          >
+          <ToolbarButton onClick={setLink} isActive={editor.isActive('link')} title="Link">
             🔗
           </ToolbarButton>
           <div className="w-px bg-border mx-1" />
           <ToolbarButton
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 1 }).run()
-            }
+            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
             isActive={editor.isActive('heading', { level: 1 })}
             title="Heading 1"
           >
             H1
           </ToolbarButton>
           <ToolbarButton
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 2 }).run()
-            }
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
             isActive={editor.isActive('heading', { level: 2 })}
             title="Heading 2"
           >
             H2
           </ToolbarButton>
           <ToolbarButton
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 3 }).run()
-            }
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
             isActive={editor.isActive('heading', { level: 3 })}
             title="Heading 3"
           >
@@ -208,11 +191,7 @@ function RichTextEditor({
             1.
           </ToolbarButton>
         </div>
-        <EditorContent
-          editor={editor}
-          id={inputId}
-          data-placeholder={placeholder}
-        />
+        <EditorContent editor={editor} id={inputId} data-placeholder={placeholder} />
       </div>
       {error && (
         <p id={`${inputId}-error`} className="text-sm text-destructive">

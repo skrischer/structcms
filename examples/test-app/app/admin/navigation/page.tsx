@@ -1,8 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import { NavigationEditor, useApiClient, Button, Skeleton } from '@structcms/admin';
+import { Button, NavigationEditor, Skeleton, useApiClient } from '@structcms/admin';
 import type { NavigationItem } from '@structcms/core';
+import * as React from 'react';
 
 interface NavigationData {
   id: string;
@@ -12,7 +12,7 @@ interface NavigationData {
 
 export default function NavigationPage() {
   const apiClient = useApiClient();
-  
+
   const [navigation, setNavigation] = React.useState<NavigationData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
@@ -37,7 +37,7 @@ export default function NavigationPage() {
 
   const handleSave = async (items: NavigationItem[]) => {
     if (!navigation) return;
-    
+
     setSaving(true);
     try {
       await apiClient.put(`/navigation/id/${navigation.id}`, {
@@ -61,16 +61,12 @@ export default function NavigationPage() {
   }
 
   if (error) {
-    return (
-      <div className="text-red-600">{error}</div>
-    );
+    return <div className="text-red-600">{error}</div>;
   }
 
   if (!navigation) {
     return (
-      <div className="text-gray-600">
-        No navigation found. Create one via the seed endpoint.
-      </div>
+      <div className="text-gray-600">No navigation found. Create one via the seed endpoint.</div>
     );
   }
 
@@ -78,18 +74,12 @@ export default function NavigationPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Navigation: {navigation.name}</h1>
-        <Button
-          onClick={() => handleSave(navigation.items)}
-          disabled={saving}
-        >
+        <Button onClick={() => handleSave(navigation.items)} disabled={saving}>
           {saving ? 'Saving...' : 'Save Navigation'}
         </Button>
       </div>
 
-      <NavigationEditor
-        items={navigation.items}
-        onSave={handleSave}
-      />
+      <NavigationEditor items={navigation.items} onSave={handleSave} />
     </div>
   );
 }

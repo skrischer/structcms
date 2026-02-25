@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { fields } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { fields } from '@structcms/core';
-import { FormGenerator, resolveFieldType, fieldNameToLabel } from '../form-generator';
+import { FormGenerator, fieldNameToLabel, resolveFieldType } from '../form-generator';
 
 describe('resolveFieldType', () => {
   it('resolves string field type', () => {
@@ -52,9 +52,7 @@ describe('FormGenerator', () => {
   });
 
   it('renders form with fields from schema', () => {
-    render(
-      <FormGenerator schema={simpleSchema} onSubmit={() => {}} />
-    );
+    render(<FormGenerator schema={simpleSchema} onSubmit={() => {}} />);
 
     expect(screen.getByTestId('form-generator')).toBeInTheDocument();
     expect(screen.getByLabelText(/Title/)).toBeInTheDocument();
@@ -62,22 +60,14 @@ describe('FormGenerator', () => {
   });
 
   it('renders submit button with default label', () => {
-    render(
-      <FormGenerator schema={simpleSchema} onSubmit={() => {}} />
-    );
+    render(<FormGenerator schema={simpleSchema} onSubmit={() => {}} />);
 
     expect(screen.getByTestId('form-submit')).toBeInTheDocument();
     expect(screen.getByText('Submit')).toBeInTheDocument();
   });
 
   it('renders submit button with custom label', () => {
-    render(
-      <FormGenerator
-        schema={simpleSchema}
-        onSubmit={() => {}}
-        submitLabel="Save"
-      />
-    );
+    render(<FormGenerator schema={simpleSchema} onSubmit={() => {}} submitLabel="Save" />);
 
     expect(screen.getByText('Save')).toBeInTheDocument();
   });
@@ -115,22 +105,13 @@ describe('FormGenerator', () => {
       title: fields.string(),
     });
 
-    render(
-      <FormGenerator
-        schema={schema}
-        onSubmit={handleSubmit}
-        defaultValues={{ title: '' }}
-      />
-    );
+    render(<FormGenerator schema={schema} onSubmit={handleSubmit} defaultValues={{ title: '' }} />);
 
     await user.type(screen.getByLabelText(/Title/), 'Hello');
     await user.click(screen.getByTestId('form-submit'));
 
     await waitFor(() => {
-      expect(handleSubmit).toHaveBeenCalledWith(
-        { title: 'Hello' },
-        expect.anything()
-      );
+      expect(handleSubmit).toHaveBeenCalledWith({ title: 'Hello' }, expect.anything());
     });
   });
 
@@ -141,13 +122,7 @@ describe('FormGenerator', () => {
       title: fields.string().min(1, 'Title is required'),
     });
 
-    render(
-      <FormGenerator
-        schema={schema}
-        onSubmit={() => {}}
-        defaultValues={{ title: '' }}
-      />
-    );
+    render(<FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ title: '' }} />);
 
     await user.click(screen.getByTestId('form-submit'));
 
@@ -157,13 +132,7 @@ describe('FormGenerator', () => {
   });
 
   it('applies custom className', () => {
-    render(
-      <FormGenerator
-        schema={simpleSchema}
-        onSubmit={() => {}}
-        className="custom-class"
-      />
-    );
+    render(<FormGenerator schema={simpleSchema} onSubmit={() => {}} className="custom-class" />);
 
     expect(screen.getByTestId('form-generator')).toHaveClass('custom-class');
   });

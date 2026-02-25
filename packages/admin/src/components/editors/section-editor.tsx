@@ -1,7 +1,5 @@
 'use client';
-
-import * as React from 'react';
-import { type z } from 'zod';
+import type { z } from 'zod';
 import { useAdmin } from '../../hooks/use-admin';
 import { FormGenerator } from '../../lib/form-generator';
 import { cn } from '../../lib/utils';

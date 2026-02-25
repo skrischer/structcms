@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Button } from './button';
 import { cn } from '../../lib/utils';
+import { Button } from './button';
 
 export interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -24,10 +24,7 @@ interface ErrorBoundaryState {
  * </ErrorBoundary>
  * ```
  */
-class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -57,9 +54,7 @@ class ErrorBoundary extends React.Component<
           role="alert"
           data-testid="error-boundary"
         >
-          <h3 className="text-sm font-semibold text-destructive mb-1">
-            Something went wrong
-          </h3>
+          <h3 className="text-sm font-semibold text-destructive mb-1">Something went wrong</h3>
           <p className="text-sm text-muted-foreground">
             {this.state.error?.message ?? 'An unexpected error occurred'}
           </p>

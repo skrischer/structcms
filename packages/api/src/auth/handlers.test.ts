@@ -1,17 +1,17 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+  AuthValidationError,
+  handleGetCurrentUser,
+  handleRefreshSession,
   handleSignInWithOAuth,
   handleSignInWithPassword,
   handleSignOut,
   handleVerifySession,
-  handleRefreshSession,
-  handleGetCurrentUser,
-  AuthValidationError,
 } from './handlers';
 import type {
   AuthAdapter,
-  AuthUser,
   AuthSession,
+  AuthUser,
   SignInWithOAuthInput,
   SignInWithPasswordInput,
   VerifySessionInput,
@@ -78,9 +78,9 @@ describe('handleSignInWithOAuth', () => {
   });
 
   it('should throw validation error when provider is missing', async () => {
-    await expect(
-      handleSignInWithOAuth(adapter, {} as SignInWithOAuthInput)
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleSignInWithOAuth(adapter, {} as SignInWithOAuthInput)).rejects.toThrow(
+      AuthValidationError
+    );
   });
 
   it('should throw validation error for invalid provider', async () => {
@@ -155,15 +155,11 @@ describe('handleSignOut', () => {
   const adapter = createMockAuthAdapter();
 
   it('should sign out with valid token', async () => {
-    await expect(
-      handleSignOut(adapter, 'valid-token')
-    ).resolves.toBeUndefined();
+    await expect(handleSignOut(adapter, 'valid-token')).resolves.toBeUndefined();
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleSignOut(adapter, '')
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleSignOut(adapter, '')).rejects.toThrow(AuthValidationError);
   });
 });
 
@@ -187,9 +183,9 @@ describe('handleVerifySession', () => {
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleVerifySession(adapter, { accessToken: '' })
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleVerifySession(adapter, { accessToken: '' })).rejects.toThrow(
+      AuthValidationError
+    );
   });
 });
 
@@ -204,9 +200,7 @@ describe('handleRefreshSession', () => {
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleRefreshSession(adapter, '')
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleRefreshSession(adapter, '')).rejects.toThrow(AuthValidationError);
   });
 });
 
@@ -226,8 +220,6 @@ describe('handleGetCurrentUser', () => {
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleGetCurrentUser(adapter, '')
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleGetCurrentUser(adapter, '')).rejects.toThrow(AuthValidationError);
   });
 });

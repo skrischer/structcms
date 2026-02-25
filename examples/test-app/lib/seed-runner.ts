@@ -1,6 +1,6 @@
-import { handleCreatePage, handleCreateNavigation } from '@structcms/api';
+import { handleCreateNavigation, handleCreatePage } from '@structcms/api';
 import { storageAdapter } from './adapters';
-import { seedPages, seedNavigations } from './seed';
+import { seedNavigations, seedPages } from './seed';
 
 export interface SeedResult {
   pagesCreated: number;

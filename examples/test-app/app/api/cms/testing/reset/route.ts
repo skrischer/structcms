@@ -1,6 +1,11 @@
+import { mediaAdapter, storageAdapter } from '@/lib/adapters';
+import {
+  handleDeleteMedia,
+  handleDeletePage,
+  handleListMedia,
+  handleListPages,
+} from '@structcms/api';
 import { NextResponse } from 'next/server';
-import { handleListPages, handleDeletePage, handleListMedia, handleDeleteMedia } from '@structcms/api';
-import { storageAdapter, mediaAdapter } from '@/lib/adapters';
 
 export async function POST() {
   try {

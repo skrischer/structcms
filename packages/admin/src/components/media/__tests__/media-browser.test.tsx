@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createRegistry } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRegistry } from '@structcms/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminProvider } from '../../../context/admin-context';
 import { MediaBrowser, type MediaItem } from '../media-browser';
 
@@ -235,7 +235,11 @@ describe('MediaBrowser', () => {
     });
 
     // Mock upload response, then refresh response
-    const uploadedItem: MediaItem = { id: '4', url: 'https://example.com/img4.jpg', filename: 'img4.jpg' };
+    const uploadedItem: MediaItem = {
+      id: '4',
+      url: 'https://example.com/img4.jpg',
+      filename: 'img4.jpg',
+    };
     vi.spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(
         new Response(JSON.stringify(uploadedItem), {
@@ -261,7 +265,7 @@ describe('MediaBrowser', () => {
         (call) => call[1] && (call[1] as RequestInit).method === 'POST'
       );
       expect(uploadCall).toBeDefined();
-      expect(uploadCall![0]).toBe('/api/cms/media');
+      expect(uploadCall?.[0]).toBe('/api/cms/media');
     });
   });
 });

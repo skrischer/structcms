@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { AdminProvider, AdminLayout } from '@structcms/admin';
 import { registry } from '@/lib/registry';
+import { AdminLayout, AdminProvider } from '@structcms/admin';
+import { useRouter } from 'next/navigation';
 
 const navItems = [
   { label: 'Dashboard', path: '/admin' },

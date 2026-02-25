@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { resetAndSeed, BASE_URL } from './helpers';
+import { expect, test } from '@playwright/test';
+import { BASE_URL, resetAndSeed } from './helpers';
 
 test.describe('NavigationEditor Item Management', () => {
   test.describe.configure({ mode: 'serial' });
@@ -40,7 +40,10 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
+      page.waitForResponse(
+        (resp) =>
+          resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'
+      ),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -68,18 +71,25 @@ test.describe('NavigationEditor Item Management', () => {
     const initialCount = initialNavData.items.length;
 
     // Find Blog item index (it might not be at index 2 if previous tests modified it)
-    const blogIndex = initialNavData.items.findIndex((item: { label: string }) => item.label === 'Blog');
+    const blogIndex = initialNavData.items.findIndex(
+      (item: { label: string }) => item.label === 'Blog'
+    );
     expect(blogIndex).toBeGreaterThanOrEqual(0);
 
     // Remove Blog
     await page.locator(`[data-testid="nav-item-remove-${blogIndex}"]`).click();
 
     // Last item index should be gone (items shifted up)
-    await expect(page.locator(`[data-testid="nav-item-label-${initialCount - 1}"]`)).not.toBeVisible();
+    await expect(
+      page.locator(`[data-testid="nav-item-label-${initialCount - 1}"]`)
+    ).not.toBeVisible();
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
+      page.waitForResponse(
+        (resp) =>
+          resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'
+      ),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -111,7 +121,10 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
+      page.waitForResponse(
+        (resp) =>
+          resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'
+      ),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -132,7 +145,9 @@ test.describe('NavigationEditor Item Management', () => {
     const initialResponse = await fetch(`${BASE_URL}/api/cms/navigation/main`);
     expect(initialResponse.ok).toBe(true);
     const initialNavData = await initialResponse.json();
-    const targetIndex = initialNavData.items.findIndex((item: { children?: unknown[] }) => !item.children || item.children.length === 0);
+    const targetIndex = initialNavData.items.findIndex(
+      (item: { children?: unknown[] }) => !item.children || item.children.length === 0
+    );
     expect(targetIndex).toBeGreaterThanOrEqual(0);
 
     // Wait for items to load
@@ -153,7 +168,10 @@ test.describe('NavigationEditor Item Management', () => {
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
+      page.waitForResponse(
+        (resp) =>
+          resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'
+      ),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);
@@ -175,26 +193,39 @@ test.describe('NavigationEditor Item Management', () => {
     const initialResponse = await fetch(`${BASE_URL}/api/cms/navigation/main`);
     expect(initialResponse.ok).toBe(true);
     const initialNavData = await initialResponse.json();
-    const parentIndex = initialNavData.items.findIndex((item: { children?: unknown[] }) => item.children && item.children.length >= 2);
+    const parentIndex = initialNavData.items.findIndex(
+      (item: { children?: unknown[] }) => item.children && item.children.length >= 2
+    );
     expect(parentIndex).toBeGreaterThanOrEqual(0);
     const initialChildCount = initialNavData.items[parentIndex].children.length;
     const firstChildLabel = initialNavData.items[parentIndex].children[0].label;
     const secondChildLabel = initialNavData.items[parentIndex].children[1].label;
 
     // Wait for children to load
-    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-0"]`)).toHaveValue(firstChildLabel);
-    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-1"]`)).toHaveValue(secondChildLabel);
+    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-0"]`)).toHaveValue(
+      firstChildLabel
+    );
+    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-1"]`)).toHaveValue(
+      secondChildLabel
+    );
 
     // Remove first child
     await page.locator(`[data-testid="nav-child-remove-${parentIndex}-0"]`).click();
 
     // Second child should now be at index 0
-    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-0"]`)).toHaveValue(secondChildLabel);
-    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-${initialChildCount - 1}"]`)).not.toBeVisible();
+    await expect(page.locator(`[data-testid="nav-child-label-${parentIndex}-0"]`)).toHaveValue(
+      secondChildLabel
+    );
+    await expect(
+      page.locator(`[data-testid="nav-child-label-${parentIndex}-${initialChildCount - 1}"]`)
+    ).not.toBeVisible();
 
     // Save and wait for PUT request to complete
     const [saveResponse] = await Promise.all([
-      page.waitForResponse((resp) => resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'),
+      page.waitForResponse(
+        (resp) =>
+          resp.url().includes('/api/cms/navigation/id/') && resp.request().method() === 'PUT'
+      ),
       page.locator('[data-testid="nav-save"]').click(),
     ]);
     expect(saveResponse.ok()).toBe(true);

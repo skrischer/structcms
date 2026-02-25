@@ -18,9 +18,8 @@
       }
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -29,8 +28,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@structcms/api": "workspace:*",
-    "@structcms/core": "workspace:*",
+    "@structcms/api": "^0.1.0",
+    "@structcms/core": "^0.1.0",
     "@tiptap/extension-link": "^3.19.0",
     "@tiptap/pm": "^3.19.0",
     "@tiptap/react": "^3.19.0",

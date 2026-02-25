@@ -36,9 +36,9 @@ describe('createSupabaseAdapters', () => {
     createMediaAdapterMock.mockReset();
     createAuthAdapterMock.mockReset();
 
-    delete process.env.SUPABASE_URL;
-    delete process.env.SUPABASE_SECRET_KEY;
-    delete process.env.SUPABASE_STORAGE_BUCKET;
+    process.env.SUPABASE_URL = undefined;
+    process.env.SUPABASE_SECRET_KEY = undefined;
+    process.env.SUPABASE_STORAGE_BUCKET = undefined;
   });
 
   it('uses explicit config values when provided', () => {
@@ -58,10 +58,7 @@ describe('createSupabaseAdapters', () => {
       storage: { bucket: 'explicit-bucket' },
     });
 
-    expect(createClientMock).toHaveBeenCalledWith(
-      'https://explicit.supabase.co',
-      'explicit-key'
-    );
+    expect(createClientMock).toHaveBeenCalledWith('https://explicit.supabase.co', 'explicit-key');
     expect(createStorageAdapterMock).toHaveBeenCalledWith({ client });
     expect(createMediaAdapterMock).toHaveBeenCalledWith({
       client,
@@ -88,10 +85,7 @@ describe('createSupabaseAdapters', () => {
 
     const result = createSupabaseAdapters();
 
-    expect(createClientMock).toHaveBeenCalledWith(
-      'https://env.supabase.co',
-      'env-secret-key'
-    );
+    expect(createClientMock).toHaveBeenCalledWith('https://env.supabase.co', 'env-secret-key');
     expect(createStorageAdapterMock).toHaveBeenCalledWith({ client });
     expect(createMediaAdapterMock).toHaveBeenCalledWith({
       client,

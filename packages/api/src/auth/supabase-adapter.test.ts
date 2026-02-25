@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SupabaseAuthAdapter, AuthError } from './supabase-adapter';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthError, SupabaseAuthAdapter } from './supabase-adapter';
 
 interface MockSupabaseClient {
   auth: {
@@ -58,9 +58,7 @@ describe('SupabaseAuthAdapter', () => {
         error: { message: 'OAuth failed' } as any,
       });
 
-      await expect(
-        adapter.signInWithOAuth({ provider: 'google' })
-      ).rejects.toThrow(AuthError);
+      await expect(adapter.signInWithOAuth({ provider: 'google' })).rejects.toThrow(AuthError);
     });
 
     it('should throw AuthError when URL is missing', async () => {
@@ -69,9 +67,9 @@ describe('SupabaseAuthAdapter', () => {
         error: null,
       });
 
-      await expect(
-        adapter.signInWithOAuth({ provider: 'google' })
-      ).rejects.toThrow('OAuth URL not provided');
+      await expect(adapter.signInWithOAuth({ provider: 'google' })).rejects.toThrow(
+        'OAuth URL not provided'
+      );
     });
   });
 
@@ -125,9 +123,7 @@ describe('SupabaseAuthAdapter', () => {
         error: null,
       });
 
-      await expect(
-        adapter.signOut('access-token')
-      ).resolves.toBeUndefined();
+      await expect(adapter.signOut('access-token')).resolves.toBeUndefined();
     });
 
     it('should throw AuthError on signout failure', async () => {
@@ -135,9 +131,7 @@ describe('SupabaseAuthAdapter', () => {
         error: { message: 'Signout failed' } as any,
       });
 
-      await expect(
-        adapter.signOut('access-token')
-      ).rejects.toThrow(AuthError);
+      await expect(adapter.signOut('access-token')).rejects.toThrow(AuthError);
     });
   });
 
@@ -206,9 +200,7 @@ describe('SupabaseAuthAdapter', () => {
         error: { message: 'Refresh failed' } as any,
       });
 
-      await expect(
-        adapter.refreshSession('invalid-refresh')
-      ).rejects.toThrow(AuthError);
+      await expect(adapter.refreshSession('invalid-refresh')).rejects.toThrow(AuthError);
     });
   });
 

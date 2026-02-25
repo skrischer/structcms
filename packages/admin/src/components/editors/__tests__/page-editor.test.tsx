@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { createRegistry, defineSection, fields } from '@structcms/core';
+import type { SectionData } from '@structcms/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { defineSection, fields, createRegistry } from '@structcms/core';
-import { type SectionData } from '@structcms/core';
+import { describe, expect, it, vi } from 'vitest';
 import { AdminProvider } from '../../../context/admin-context';
 import { PageEditor } from '../page-editor';
 
@@ -36,11 +36,7 @@ function renderWithProvider(ui: React.ReactElement) {
 describe('PageEditor', () => {
   it('renders page editor', () => {
     renderWithProvider(
-      <PageEditor
-        sections={[]}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={[]} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     expect(screen.getByTestId('page-editor')).toBeInTheDocument();
@@ -48,11 +44,7 @@ describe('PageEditor', () => {
 
   it('shows empty state when no sections', () => {
     renderWithProvider(
-      <PageEditor
-        sections={[]}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={[]} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     expect(screen.getByText(/No sections yet/)).toBeInTheDocument();
@@ -60,11 +52,7 @@ describe('PageEditor', () => {
 
   it('renders section type selector', () => {
     renderWithProvider(
-      <PageEditor
-        sections={[]}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={[]} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     const select = screen.getByTestId('section-type-select');
@@ -74,11 +62,7 @@ describe('PageEditor', () => {
 
   it('renders Add Section button', () => {
     renderWithProvider(
-      <PageEditor
-        sections={[]}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={[]} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     expect(screen.getByTestId('add-section')).toBeInTheDocument();
@@ -89,11 +73,7 @@ describe('PageEditor', () => {
     const user = userEvent.setup();
 
     renderWithProvider(
-      <PageEditor
-        sections={[]}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={[]} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     await user.click(screen.getByTestId('add-section'));
@@ -102,16 +82,10 @@ describe('PageEditor', () => {
   });
 
   it('renders existing sections', () => {
-    const sections: SectionData[] = [
-      { type: 'hero', data: { title: 'Hello', subtitle: 'World' } },
-    ];
+    const sections: SectionData[] = [{ type: 'hero', data: { title: 'Hello', subtitle: 'World' } }];
 
     renderWithProvider(
-      <PageEditor
-        sections={sections}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={sections} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     expect(screen.getByTestId('page-section-0')).toBeInTheDocument();
@@ -124,11 +98,7 @@ describe('PageEditor', () => {
     ];
 
     renderWithProvider(
-      <PageEditor
-        sections={sections}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={sections} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     expect(screen.getByTestId('section-remove-0')).toBeInTheDocument();
@@ -143,11 +113,7 @@ describe('PageEditor', () => {
     ];
 
     renderWithProvider(
-      <PageEditor
-        sections={sections}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={sections} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     await user.click(screen.getByTestId('section-remove-0'));
@@ -163,11 +129,7 @@ describe('PageEditor', () => {
     ];
 
     renderWithProvider(
-      <PageEditor
-        sections={sections}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={sections} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     expect(screen.getByTestId('section-move-up-0')).toBeDisabled();
@@ -178,11 +140,7 @@ describe('PageEditor', () => {
 
   it('renders Save Page button', () => {
     renderWithProvider(
-      <PageEditor
-        sections={[]}
-        allowedSections={['hero', 'content']}
-        onSave={() => {}}
-      />
+      <PageEditor sections={[]} allowedSections={['hero', 'content']} onSave={() => {}} />
     );
 
     expect(screen.getByTestId('save-page')).toBeInTheDocument();
@@ -192,23 +150,15 @@ describe('PageEditor', () => {
   it('calls onSave with sections when Save is clicked', async () => {
     const handleSave = vi.fn();
     const user = userEvent.setup();
-    const sections: SectionData[] = [
-      { type: 'hero', data: { title: 'Hello' } },
-    ];
+    const sections: SectionData[] = [{ type: 'hero', data: { title: 'Hello' } }];
 
     renderWithProvider(
-      <PageEditor
-        sections={sections}
-        allowedSections={['hero', 'content']}
-        onSave={handleSave}
-      />
+      <PageEditor sections={sections} allowedSections={['hero', 'content']} onSave={handleSave} />
     );
 
     await user.click(screen.getByTestId('save-page'));
 
-    expect(handleSave).toHaveBeenCalledWith([
-      { type: 'hero', data: { title: 'Hello' } },
-    ]);
+    expect(handleSave).toHaveBeenCalledWith([{ type: 'hero', data: { title: 'Hello' } }]);
   });
 
   it('applies custom className', () => {
@@ -227,16 +177,10 @@ describe('PageEditor', () => {
   it('captures unsaved section data when Save Page is clicked', async () => {
     const handleSave = vi.fn();
     const user = userEvent.setup();
-    const sections: SectionData[] = [
-      { type: 'hero', data: { title: '', subtitle: '' } },
-    ];
+    const sections: SectionData[] = [{ type: 'hero', data: { title: '', subtitle: '' } }];
 
     renderWithProvider(
-      <PageEditor
-        sections={sections}
-        allowedSections={['hero', 'content']}
-        onSave={handleSave}
-      />
+      <PageEditor sections={sections} allowedSections={['hero', 'content']} onSave={handleSave} />
     );
 
     await user.type(screen.getByLabelText(/Title/), 'Auto-synced');

@@ -1,10 +1,10 @@
-import { describe, it, expect, expectTypeOf } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import type {
-  MediaFile,
-  MediaAdapter,
-  UploadMediaInput,
-  MediaFilter,
   AllowedMimeType,
+  MediaAdapter,
+  MediaFile,
+  MediaFilter,
+  UploadMediaInput,
 } from './types';
 import { ALLOWED_MIME_TYPES } from './types';
 
@@ -140,18 +140,10 @@ describe('Media Types', () => {
     });
 
     it('should return correct types from methods', () => {
-      expectTypeOf<MediaAdapter['upload']>().returns.toMatchTypeOf<
-        Promise<MediaFile>
-      >();
-      expectTypeOf<MediaAdapter['getMedia']>().returns.toMatchTypeOf<
-        Promise<MediaFile | null>
-      >();
-      expectTypeOf<MediaAdapter['listMedia']>().returns.toMatchTypeOf<
-        Promise<MediaFile[]>
-      >();
-      expectTypeOf<MediaAdapter['deleteMedia']>().returns.toMatchTypeOf<
-        Promise<void>
-      >();
+      expectTypeOf<MediaAdapter['upload']>().returns.toMatchTypeOf<Promise<MediaFile>>();
+      expectTypeOf<MediaAdapter['getMedia']>().returns.toMatchTypeOf<Promise<MediaFile | null>>();
+      expectTypeOf<MediaAdapter['listMedia']>().returns.toMatchTypeOf<Promise<MediaFile[]>>();
+      expectTypeOf<MediaAdapter['deleteMedia']>().returns.toMatchTypeOf<Promise<void>>();
     });
   });
 });

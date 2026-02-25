@@ -57,10 +57,7 @@ export function generateSlug(title: string): string {
  * ensureUniqueSlug('hello', ['hello', 'hello-1']) // 'hello-2'
  * ensureUniqueSlug('new', ['hello', 'world']) // 'new'
  */
-export function ensureUniqueSlug(
-  slug: string,
-  existingSlugs: string[]
-): string {
+export function ensureUniqueSlug(slug: string, existingSlugs: string[]): string {
   if (!existingSlugs.includes(slug)) {
     return slug;
   }

@@ -1,35 +1,31 @@
+import { handleGetPageBySlug, handleListPages } from '../delivery';
 import {
-  handleListPages,
-  handleGetPageBySlug,
-} from '../delivery';
-import {
-  handleCreatePage,
-  handleUpdatePage,
-  handleDeletePage,
-  handleCreateNavigation,
-  handleUpdateNavigation,
-  handleDeleteNavigation,
-  StorageValidationError,
-} from '../storage';
-import {
+  MediaValidationError,
+  handleDeleteMedia,
+  handleGetMedia,
   handleListMedia,
   handleUploadMedia,
-  handleGetMedia,
-  handleDeleteMedia,
-  MediaValidationError,
 } from '../media';
-import type {
-  StorageAdapter,
-  CreatePageInput,
-  UpdatePageInput,
-  CreateNavigationInput,
-  UpdateNavigationInput,
-  Page,
-  Navigation,
-  PageSection,
-  NavigationItem,
-} from '../storage';
 import type { MediaAdapter, UploadMediaInput } from '../media';
+import {
+  StorageValidationError,
+  handleCreateNavigation,
+  handleCreatePage,
+  handleDeleteNavigation,
+  handleDeletePage,
+  handleUpdateNavigation,
+  handleUpdatePage,
+} from '../storage';
+import type {
+  CreateNavigationInput,
+  CreatePageInput,
+  Navigation,
+  NavigationItem,
+  Page,
+  PageSection,
+  StorageAdapter,
+  UpdateNavigationInput,
+} from '../storage';
 
 type JsonRecord = Record<string, unknown>;
 type ParsedPageSection = {
@@ -103,7 +99,8 @@ export interface NextNavigationByIdRouteConfig {
 }
 
 function getResponseConstructor(): ResponseConstructorLike {
-  const responseCtor = (globalThis as typeof globalThis & { Response?: ResponseConstructorLike }).Response;
+  const responseCtor = (globalThis as typeof globalThis & { Response?: ResponseConstructorLike })
+    .Response;
 
   if (!responseCtor) {
     throw new Error('Response constructor is not available in this runtime');
@@ -260,10 +257,7 @@ function parseNavigationItems(value: unknown): NavigationItem[] | undefined {
       children?: unknown;
     };
 
-    if (
-      typeof itemCandidate.label !== 'string' ||
-      typeof itemCandidate.href !== 'string'
-    ) {
+    if (typeof itemCandidate.label !== 'string' || typeof itemCandidate.href !== 'string') {
       return undefined;
     }
 
@@ -335,9 +329,7 @@ function parseUpdatePagePatch(payload: JsonRecord): ParsedUpdatePagePatch | null
   };
 }
 
-function parseCreateNavigationInput(
-  payload: JsonRecord
-): CreateNavigationInput | null {
+function parseCreateNavigationInput(payload: JsonRecord): CreateNavigationInput | null {
   const name = parseStringField(payload.name);
   const items = parseNavigationItems(payload.items);
 
@@ -351,12 +343,9 @@ function parseCreateNavigationInput(
   };
 }
 
-function parseUpdateNavigationPatch(
-  payload: JsonRecord
-): Omit<UpdateNavigationInput, 'id'> | null {
+function parseUpdateNavigationPatch(payload: JsonRecord): Omit<UpdateNavigationInput, 'id'> | null {
   const name = parseStringField(payload.name);
-  const items =
-    payload.items === undefined ? undefined : parseNavigationItems(payload.items);
+  const items = payload.items === undefined ? undefined : parseNavigationItems(payload.items);
 
   if (payload.name !== undefined && !name) {
     return null;
@@ -453,10 +442,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
       try {
         const { slug } = await resolveParams(context);
         const normalizedSlug = normalizeSlug(slug);
-        const existingPage = await handleGetPageBySlug(
-          config.storageAdapter,
-          normalizedSlug
-        );
+        const existingPage = await handleGetPageBySlug(config.storageAdapter, normalizedSlug);
 
         if (!existingPage) {
           return jsonResponse({ error: 'Page not found' }, 404);
@@ -472,10 +458,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
           return jsonResponse({ error: 'Invalid page payload' }, 400);
         }
 
-        const normalizedSections = normalizePageSections(
-          pagePatch.sections,
-          existingPage.sections
-        );
+        const normalizedSections = normalizePageSections(pagePatch.sections, existingPage.sections);
 
         const page = await handleUpdatePage(config.storageAdapter, {
           ...pagePatch,
@@ -494,10 +477,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
     ): Promise<ResponseLike> => {
       try {
         const { slug } = await resolveParams(context);
-        const existingPage = await handleGetPageBySlug(
-          config.storageAdapter,
-          normalizeSlug(slug)
-        );
+        const existingPage = await handleGetPageBySlug(config.storageAdapter, normalizeSlug(slug));
 
         if (!existingPage) {
           return jsonResponse({ error: 'Page not found' }, 404);
@@ -553,10 +533,7 @@ export function createNextPageByIdRoute(config: NextPageByIdRouteConfig) {
           return jsonResponse({ error: 'Invalid page payload' }, 400);
         }
 
-        const normalizedSections = normalizePageSections(
-          pagePatch.sections,
-          existingPage.sections
-        );
+        const normalizedSections = normalizePageSections(pagePatch.sections, existingPage.sections);
 
         const page = await handleUpdatePage(config.storageAdapter, {
           ...pagePatch,
@@ -691,9 +668,7 @@ export function createNextNavigationRoute(config: NextNavigationRouteConfig) {
   };
 }
 
-export function createNextNavigationByIdRoute(
-  config: NextNavigationByIdRouteConfig
-) {
+export function createNextNavigationByIdRoute(config: NextNavigationByIdRouteConfig) {
   return {
     GET: async (
       _request: RequestLike,

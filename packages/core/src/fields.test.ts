@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { fields, getFieldMeta, isFieldType } from './fields';
 
@@ -38,9 +38,7 @@ describe('fields', () => {
     it('should create an image schema with metadata', () => {
       const schema = fields.image();
       expect(schema.safeParse('media-id-123').success).toBe(true);
-      expect(schema.safeParse('https://example.com/image.jpg').success).toBe(
-        true
-      );
+      expect(schema.safeParse('https://example.com/image.jpg').success).toBe(true);
       expect(getFieldMeta(schema)?.fieldType).toBe('image');
     });
   });
@@ -68,9 +66,7 @@ describe('fields', () => {
           url: z.string().url(),
         })
       );
-      const result = schema.safeParse([
-        { title: 'Link 1', url: 'https://example.com' },
-      ]);
+      const result = schema.safeParse([{ title: 'Link 1', url: 'https://example.com' }]);
       expect(result.success).toBe(true);
     });
   });
@@ -81,9 +77,7 @@ describe('fields', () => {
         label: z.string(),
         href: z.string(),
       });
-      expect(schema.safeParse({ label: 'Click', href: '/page' }).success).toBe(
-        true
-      );
+      expect(schema.safeParse({ label: 'Click', href: '/page' }).success).toBe(true);
       expect(getFieldMeta(schema)?.fieldType).toBe('object');
     });
   });

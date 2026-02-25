@@ -22,14 +22,23 @@ export function getAuthAdapter() {
 }
 
 // Re-export for backward compat (lazy via getter)
-export const storageAdapter = new Proxy({} as ReturnType<typeof createSupabaseAdapters>['storageAdapter'], {
-  get: (_target, prop, receiver) => Reflect.get(getAdapters().storageAdapter, prop, receiver),
-});
+export const storageAdapter = new Proxy(
+  {} as ReturnType<typeof createSupabaseAdapters>['storageAdapter'],
+  {
+    get: (_target, prop, receiver) => Reflect.get(getAdapters().storageAdapter, prop, receiver),
+  }
+);
 
-export const mediaAdapter = new Proxy({} as ReturnType<typeof createSupabaseAdapters>['mediaAdapter'], {
-  get: (_target, prop, receiver) => Reflect.get(getAdapters().mediaAdapter, prop, receiver),
-});
+export const mediaAdapter = new Proxy(
+  {} as ReturnType<typeof createSupabaseAdapters>['mediaAdapter'],
+  {
+    get: (_target, prop, receiver) => Reflect.get(getAdapters().mediaAdapter, prop, receiver),
+  }
+);
 
-export const authAdapter = new Proxy({} as ReturnType<typeof createSupabaseAdapters>['authAdapter'], {
-  get: (_target, prop, receiver) => Reflect.get(getAdapters().authAdapter, prop, receiver),
-});
+export const authAdapter = new Proxy(
+  {} as ReturnType<typeof createSupabaseAdapters>['authAdapter'],
+  {
+    get: (_target, prop, receiver) => Reflect.get(getAdapters().authAdapter, prop, receiver),
+  }
+);

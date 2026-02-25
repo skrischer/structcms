@@ -1,15 +1,15 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
-  StorageAdapter,
-  Page,
-  PageSection,
-  PageFilter,
+  CreateNavigationInput,
   CreatePageInput,
-  UpdatePageInput,
   Navigation,
   NavigationItem,
-  CreateNavigationInput,
+  Page,
+  PageFilter,
+  PageSection,
+  StorageAdapter,
   UpdateNavigationInput,
+  UpdatePageInput,
 } from './types';
 
 /**
@@ -92,11 +92,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async getPage(slug: string): Promise<Page | null> {
-    const { data, error } = await this.client
-      .from('pages')
-      .select('*')
-      .eq('slug', slug)
-      .single();
+    const { data, error } = await this.client.from('pages').select('*').eq('slug', slug).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -109,11 +105,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async getPageById(id: string): Promise<Page | null> {
-    const { data, error } = await this.client
-      .from('pages')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await this.client.from('pages').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -199,10 +191,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     }
 
     if (filter?.offset) {
-      query = query.range(
-        filter.offset,
-        filter.offset + (filter.limit ?? 100) - 1
-      );
+      query = query.range(filter.offset, filter.offset + (filter.limit ?? 100) - 1);
     }
 
     const { data, error } = await query;
@@ -232,11 +221,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async getNavigationById(id: string): Promise<Navigation | null> {
-    const { data, error } = await this.client
-      .from('navigation')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await this.client.from('navigation').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -290,10 +275,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
     if (error) {
       if (error.code === 'PGRST116') {
-        throw new StorageError(
-          `Navigation not found: ${input.id}`,
-          'NOT_FOUND'
-        );
+        throw new StorageError(`Navigation not found: ${input.id}`, 'NOT_FOUND');
       }
       throw new StorageError(error.message, error.code, error.details);
     }
@@ -302,10 +284,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async deleteNavigation(id: string): Promise<void> {
-    const { error } = await this.client
-      .from('navigation')
-      .delete()
-      .eq('id', id);
+    const { error } = await this.client.from('navigation').delete().eq('id', id);
 
     if (error) {
       throw new StorageError(error.message, error.code, error.details);
@@ -329,8 +308,6 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 /**
  * Creates a storage adapter using Supabase
  */
-export function createStorageAdapter(
-  config: SupabaseStorageAdapterConfig
-): StorageAdapter {
+export function createStorageAdapter(config: SupabaseStorageAdapterConfig): StorageAdapter {
   return new SupabaseStorageAdapter(config);
 }

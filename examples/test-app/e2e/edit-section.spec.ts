@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { resetAndSeed, BASE_URL } from './helpers';
-import path from 'path';
+import path from 'node:path';
+import { expect, test } from '@playwright/test';
+import { BASE_URL, resetAndSeed } from './helpers';
 
 test.describe('Edit Section', () => {
   test.describe.configure({ mode: 'serial' });

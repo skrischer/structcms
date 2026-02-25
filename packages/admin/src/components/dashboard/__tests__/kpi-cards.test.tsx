@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createRegistry, defineSection } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { defineSection, createRegistry } from '@structcms/core';
 import { AdminProvider } from '../../../context/admin-context';
 import { KpiCards } from '../kpi-cards';
 
@@ -29,7 +29,9 @@ function renderWithProvider(ui: React.ReactElement) {
   );
 }
 
-function mockFetchResponses(responses: Array<{ data: unknown[]; status?: number } | { error: string; status: number }>) {
+function mockFetchResponses(
+  responses: Array<{ data: unknown[]; status?: number } | { error: string; status: number }>
+) {
   const fetchMock = vi.spyOn(globalThis, 'fetch');
   for (const resp of responses) {
     if ('error' in resp) {
@@ -57,11 +59,7 @@ beforeEach(() => {
 
 describe('KpiCards', () => {
   it('renders the kpi-cards container', () => {
-    mockFetchResponses([
-      { data: [] },
-      { data: [] },
-      { data: [] },
-    ]);
+    mockFetchResponses([{ data: [] }, { data: [] }, { data: [] }]);
 
     renderWithProvider(<KpiCards />);
     expect(screen.getByTestId('kpi-cards')).toBeInTheDocument();
@@ -69,9 +67,7 @@ describe('KpiCards', () => {
 
   it('shows skeleton loaders during data fetching', () => {
     // Never resolving fetch to keep loading state
-    vi.spyOn(globalThis, 'fetch').mockImplementation(
-      () => new Promise(() => {})
-    );
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {}));
 
     renderWithProvider(<KpiCards />);
 
@@ -84,9 +80,9 @@ describe('KpiCards', () => {
 
   it('displays counts after successful fetch', async () => {
     mockFetchResponses([
-      { data: [{ id: '1' }, { id: '2' }, { id: '3' }] },  // pages
-      { data: [{ id: '1' }, { id: '2' }] },                // media
-      { data: [{ id: '1' }] },                             // navigation
+      { data: [{ id: '1' }, { id: '2' }, { id: '3' }] }, // pages
+      { data: [{ id: '1' }, { id: '2' }] }, // media
+      { data: [{ id: '1' }] }, // navigation
     ]);
 
     renderWithProvider(<KpiCards />);
@@ -100,11 +96,7 @@ describe('KpiCards', () => {
   });
 
   it('shows sections count from registry', () => {
-    mockFetchResponses([
-      { data: [] },
-      { data: [] },
-      { data: [] },
-    ]);
+    mockFetchResponses([{ data: [] }, { data: [] }, { data: [] }]);
 
     renderWithProvider(<KpiCards />);
 
@@ -114,9 +106,9 @@ describe('KpiCards', () => {
 
   it('shows error state when API call fails', async () => {
     mockFetchResponses([
-      { error: 'Server error', status: 500 },  // pages fails
-      { data: [{ id: '1' }] },                 // media ok
-      { data: [] },                             // navigation ok
+      { error: 'Server error', status: 500 }, // pages fails
+      { data: [{ id: '1' }] }, // media ok
+      { data: [] }, // navigation ok
     ]);
 
     renderWithProvider(<KpiCards />);
@@ -134,7 +126,7 @@ describe('KpiCards', () => {
     mockFetchResponses([
       { error: 'Pages error', status: 500 },
       { error: 'Media error', status: 500 },
-      { data: [{ id: '1' }, { id: '2' }] },  // navigation ok
+      { data: [{ id: '1' }, { id: '2' }] }, // navigation ok
     ]);
 
     renderWithProvider(<KpiCards />);
@@ -179,25 +171,28 @@ describe('KpiCards', () => {
   });
 
   it('uses parallel fetching with Promise.allSettled', () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(
-      () => new Promise(() => {})
-    );
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {}));
 
     renderWithProvider(<KpiCards />);
 
     // All 3 fetch calls should be made immediately (in parallel)
     expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(fetchMock).toHaveBeenCalledWith('/api/cms/pages', expect.objectContaining({ method: 'GET' }));
-    expect(fetchMock).toHaveBeenCalledWith('/api/cms/media', expect.objectContaining({ method: 'GET' }));
-    expect(fetchMock).toHaveBeenCalledWith('/api/cms/navigation', expect.objectContaining({ method: 'GET' }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/cms/pages',
+      expect.objectContaining({ method: 'GET' })
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/cms/media',
+      expect.objectContaining({ method: 'GET' })
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/cms/navigation',
+      expect.objectContaining({ method: 'GET' })
+    );
   });
 
   it('renders all four KPI cards', () => {
-    mockFetchResponses([
-      { data: [] },
-      { data: [] },
-      { data: [] },
-    ]);
+    mockFetchResponses([{ data: [] }, { data: [] }, { data: [] }]);
 
     renderWithProvider(<KpiCards />);
 
@@ -208,11 +203,7 @@ describe('KpiCards', () => {
   });
 
   it('displays correct labels', () => {
-    mockFetchResponses([
-      { data: [] },
-      { data: [] },
-      { data: [] },
-    ]);
+    mockFetchResponses([{ data: [] }, { data: [] }, { data: [] }]);
 
     renderWithProvider(<KpiCards />);
 
@@ -223,11 +214,7 @@ describe('KpiCards', () => {
   });
 
   it('applies custom className', () => {
-    mockFetchResponses([
-      { data: [] },
-      { data: [] },
-      { data: [] },
-    ]);
+    mockFetchResponses([{ data: [] }, { data: [] }, { data: [] }]);
 
     renderWithProvider(<KpiCards className="my-custom-class" />);
     expect(screen.getByTestId('kpi-cards')).toHaveClass('my-custom-class');

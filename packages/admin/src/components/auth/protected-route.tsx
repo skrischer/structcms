@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { useAuth } from '../../context/auth-context';
 
 export interface ProtectedRouteProps {
@@ -7,11 +7,7 @@ export interface ProtectedRouteProps {
   loadingFallback?: React.ReactNode;
 }
 
-export function ProtectedRoute({ 
-  children, 
-  fallback,
-  loadingFallback 
-}: ProtectedRouteProps) {
+export function ProtectedRoute({ children, fallback, loadingFallback }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {

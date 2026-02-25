@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import type { Registry, NavigationItem, SectionData } from '@structcms/core';
+import type { NavigationItem, Registry, SectionData } from '@structcms/core';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { AdminProvider } from '../../context/admin-context';
-import { AdminLayout, type SidebarNavItem } from '../layout/admin-layout';
-import { DashboardPage } from '../dashboard/dashboard-page';
-import { PageList, type PageSummary } from '../content/page-list';
-import { PageEditor } from '../editors/page-editor';
-import { MediaBrowser } from '../media/media-browser';
-import { NavigationEditor } from '../content/navigation-editor';
 import { useApiClient } from '../../hooks/use-api-client';
+import { NavigationEditor } from '../content/navigation-editor';
+import { PageList, type PageSummary } from '../content/page-list';
+import { DashboardPage } from '../dashboard/dashboard-page';
+import { PageEditor } from '../editors/page-editor';
+import { AdminLayout, type SidebarNavItem } from '../layout/admin-layout';
+import { MediaBrowser } from '../media/media-browser';
 import { Skeleton } from '../ui/skeleton';
 
 export interface StructCMSAdminAppProps {
@@ -18,7 +19,7 @@ export interface StructCMSAdminAppProps {
   renderView?: (view: View) => React.ReactNode | null;
 }
 
-export type View = 
+export type View =
   | { type: 'dashboard' }
   | { type: 'pages' }
   | { type: 'page-editor'; pageId?: string }
@@ -127,7 +128,7 @@ function ViewRenderer({
       const response = await apiClient.put(`/navigation/id/${navigationData.id}`, {
         items,
       });
-      
+
       if (response.error) {
         console.error('Failed to update navigation:', response.error.message);
       } else if (response.data) {
@@ -174,13 +175,8 @@ function ViewRenderer({
         />
       );
     case 'pages':
-      return (
-        <PageList
-          onSelectPage={onSelectPage}
-          onCreatePage={onCreatePage}
-        />
-      );
-    case 'page-editor':
+      return <PageList onSelectPage={onSelectPage} onCreatePage={onCreatePage} />;
+    case 'page-editor': {
       if (currentView.pageId && pageLoading) {
         return (
           <div className="space-y-4">
@@ -191,34 +187,23 @@ function ViewRenderer({
       }
 
       if (currentView.pageId && pageError) {
-        return (
-          <div className="text-red-600">
-            Error: {pageError}
-          </div>
-        );
+        return <div className="text-red-600">Error: {pageError}</div>;
       }
 
       if (currentView.pageId && !pageData) {
-        return (
-          <div className="text-gray-600">
-            Page not found
-          </div>
-        );
+        return <div className="text-gray-600">Page not found</div>;
       }
 
       // For new pages (no pageId) or when data is loaded
       const sections = pageData?.sections ?? [];
       const allowedSections = pageData
-        ? registry.getPageType(pageData.pageType)?.allowedSections ?? []
-        : registry.getAllSections().map(s => s.name);
+        ? (registry.getPageType(pageData.pageType)?.allowedSections ?? [])
+        : registry.getAllSections().map((s) => s.name);
 
       return (
-        <PageEditor
-          sections={sections}
-          allowedSections={allowedSections}
-          onSave={handleSavePage}
-        />
+        <PageEditor sections={sections} allowedSections={allowedSections} onSave={handleSavePage} />
       );
+    }
     case 'media':
       return <MediaBrowser onSelect={() => {}} />;
     case 'navigation':
@@ -232,11 +217,7 @@ function ViewRenderer({
       }
 
       if (navigationError) {
-        return (
-          <div className="text-red-600">
-            Error: {navigationError}
-          </div>
-        );
+        return <div className="text-red-600">Error: {navigationError}</div>;
       }
 
       if (!navigationData) {
@@ -247,25 +228,16 @@ function ViewRenderer({
         );
       }
 
-      return (
-        <NavigationEditor
-          items={navigationData.items}
-          onSave={handleSaveNavigation}
-        />
-      );
+      return <NavigationEditor items={navigationData.items} onSave={handleSaveNavigation} />;
     case 'custom':
-      return (
-        <div data-testid="custom-view">
-          Custom view for path: {currentView.path}
-        </div>
-      );
+      return <div data-testid="custom-view">Custom view for path: {currentView.path}</div>;
     default:
       return null;
   }
 }
 
-export function StructCMSAdminApp({ 
-  registry, 
+export function StructCMSAdminApp({
+  registry,
   apiBaseUrl = '/api/cms',
   className,
   customNavItems = [],
@@ -314,11 +286,7 @@ export function StructCMSAdminApp({
 
   return (
     <AdminProvider registry={registry} apiBaseUrl={apiBaseUrl}>
-      <AdminLayout 
-        className={className}
-        navItems={navItems}
-        onNavigate={handleNavigate}
-      >
+      <AdminLayout className={className} navItems={navItems} onNavigate={handleNavigate}>
         <ViewRenderer
           currentView={currentView}
           registry={registry}

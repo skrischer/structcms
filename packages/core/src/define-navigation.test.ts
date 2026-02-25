@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import {
-  defineNavigation,
-  defaultNavigationItemSchema,
   type NavigationItem,
+  defaultNavigationItemSchema,
+  defineNavigation,
 } from './define-navigation';
-import { createRegistry } from './registry';
 import { defineSection } from './define-section';
+import { createRegistry } from './registry';
 
 describe('defineNavigation', () => {
   it('should create a navigation definition with default schema', () => {

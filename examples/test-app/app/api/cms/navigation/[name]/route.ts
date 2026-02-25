@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { storageAdapter } from '@/lib/adapters';
 import { handleGetNavigation } from '@structcms/api';
 import { createNextNavigationByIdRoute } from '@structcms/api/next';
-import { storageAdapter } from '@/lib/adapters';
+import { NextResponse } from 'next/server';
 
 interface RouteParams {
   params: Promise<{ name: string }>;

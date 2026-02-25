@@ -1,11 +1,11 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   AuthAdapter,
-  AuthUser,
   AuthSession,
+  AuthUser,
+  OAuthResponse,
   SignInWithOAuthInput,
   SignInWithPasswordInput,
-  OAuthResponse,
   VerifySessionInput,
 } from './types';
 
@@ -69,9 +69,7 @@ export class SupabaseAuthAdapter implements AuthAdapter {
     };
   }
 
-  async signInWithPassword(
-    input: SignInWithPasswordInput
-  ): Promise<AuthSession> {
+  async signInWithPassword(input: SignInWithPasswordInput): Promise<AuthSession> {
     const { data, error } = await this.client.auth.signInWithPassword({
       email: input.email,
       password: input.password,
@@ -88,14 +86,12 @@ export class SupabaseAuthAdapter implements AuthAdapter {
     return {
       accessToken: data.session.access_token,
       refreshToken: data.session.refresh_token,
-      expiresAt: data.session.expires_at
-        ? new Date(data.session.expires_at * 1000)
-        : undefined,
+      expiresAt: data.session.expires_at ? new Date(data.session.expires_at * 1000) : undefined,
       user: this.mapSupabaseUser(data.user),
     };
   }
 
-  async signOut(accessToken: string): Promise<void> {
+  async signOut(_accessToken: string): Promise<void> {
     const { error } = await this.client.auth.signOut();
 
     if (error) {
@@ -133,9 +129,7 @@ export class SupabaseAuthAdapter implements AuthAdapter {
     return {
       accessToken: data.session.access_token,
       refreshToken: data.session.refresh_token,
-      expiresAt: data.session.expires_at
-        ? new Date(data.session.expires_at * 1000)
-        : undefined,
+      expiresAt: data.session.expires_at ? new Date(data.session.expires_at * 1000) : undefined,
       user: this.mapSupabaseUser(data.user),
     };
   }
@@ -155,8 +149,6 @@ export class SupabaseAuthAdapter implements AuthAdapter {
   }
 }
 
-export function createAuthAdapter(
-  config: SupabaseAuthAdapterConfig
-): AuthAdapter {
+export function createAuthAdapter(config: SupabaseAuthAdapterConfig): AuthAdapter {
   return new SupabaseAuthAdapter(config);
 }

@@ -1,10 +1,10 @@
 'use client';
 
+import type { NavigationItem } from '@structcms/core';
 import * as React from 'react';
-import { type NavigationItem } from '@structcms/core';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 export interface NavigationEditorProps {
   items: NavigationItem[];
@@ -23,11 +23,7 @@ export interface NavigationEditorProps {
  * />
  * ```
  */
-function NavigationEditor({
-  items: initialItems,
-  onSave,
-  className,
-}: NavigationEditorProps) {
+function NavigationEditor({ items: initialItems, onSave, className }: NavigationEditorProps) {
   const [items, setItems] = React.useState<NavigationItem[]>(initialItems);
 
   const handleAddItem = () => {
@@ -40,11 +36,7 @@ function NavigationEditor({
     setItems(newItems);
   };
 
-  const handleItemChange = (
-    index: number,
-    field: 'label' | 'href',
-    value: string
-  ) => {
+  const handleItemChange = (index: number, field: 'label' | 'href', value: string) => {
     const newItems = [...items];
     const item = newItems[index];
     if (item) {
@@ -106,10 +98,7 @@ function NavigationEditor({
       </div>
 
       {items.length === 0 ? (
-        <p
-          className="text-sm text-muted-foreground text-center py-8"
-          data-testid="empty-state"
-        >
+        <p className="text-sm text-muted-foreground text-center py-8" data-testid="empty-state">
           No navigation items yet.
         </p>
       ) : (
@@ -125,17 +114,13 @@ function NavigationEditor({
                   <Input
                     placeholder="Label"
                     value={item.label}
-                    onChange={(e) =>
-                      handleItemChange(index, 'label', e.target.value)
-                    }
+                    onChange={(e) => handleItemChange(index, 'label', e.target.value)}
                     data-testid={`nav-item-label-${index}`}
                   />
                   <Input
                     placeholder="URL (e.g. /about)"
                     value={item.href}
-                    onChange={(e) =>
-                      handleItemChange(index, 'href', e.target.value)
-                    }
+                    onChange={(e) => handleItemChange(index, 'href', e.target.value)}
                     data-testid={`nav-item-href-${index}`}
                   />
                 </div>
@@ -165,12 +150,7 @@ function NavigationEditor({
                           placeholder="Label"
                           value={child.label}
                           onChange={(e) =>
-                            handleChildChange(
-                              index,
-                              childIndex,
-                              'label',
-                              e.target.value
-                            )
+                            handleChildChange(index, childIndex, 'label', e.target.value)
                           }
                           data-testid={`nav-child-label-${index}-${childIndex}`}
                         />
@@ -178,12 +158,7 @@ function NavigationEditor({
                           placeholder="URL"
                           value={child.href}
                           onChange={(e) =>
-                            handleChildChange(
-                              index,
-                              childIndex,
-                              'href',
-                              e.target.value
-                            )
+                            handleChildChange(index, childIndex, 'href', e.target.value)
                           }
                           data-testid={`nav-child-href-${index}-${childIndex}`}
                         />
@@ -218,19 +193,10 @@ function NavigationEditor({
       )}
 
       <div className="flex gap-2 border-t border-input pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleAddItem}
-          data-testid="nav-add-item"
-        >
+        <Button type="button" variant="outline" onClick={handleAddItem} data-testid="nav-add-item">
           Add Item
         </Button>
-        <Button
-          type="button"
-          onClick={handleSave}
-          data-testid="nav-save"
-        >
+        <Button type="button" onClick={handleSave} data-testid="nav-save">
           Save Navigation
         </Button>
       </div>

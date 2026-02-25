@@ -1,9 +1,5 @@
-import type { StorageAdapter, Page, Navigation } from '../storage/types';
-import type {
-  PageResponse,
-  NavigationResponse,
-  ListPagesOptions,
-} from './types';
+import type { Navigation, Page, StorageAdapter } from '../storage/types';
+import type { ListPagesOptions, NavigationResponse, PageResponse } from './types';
 
 /**
  * Maps internal Page type to PageResponse for delivery API

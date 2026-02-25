@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createRegistry } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRegistry } from '@structcms/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminProvider } from '../../../context/admin-context';
 import { ImagePicker } from '../image-picker';
 
@@ -32,13 +32,7 @@ describe('ImagePicker', () => {
   });
 
   it('shows image preview when value is set', () => {
-    render(
-      <ImagePicker
-        label="Hero Image"
-        name="hero"
-        value="https://example.com/image.jpg"
-      />
-    );
+    render(<ImagePicker label="Hero Image" name="hero" value="https://example.com/image.jpg" />);
 
     const preview = screen.getByTestId('image-preview');
     expect(preview).toBeInTheDocument();
@@ -46,13 +40,7 @@ describe('ImagePicker', () => {
   });
 
   it('shows Change and Clear buttons when value is set', () => {
-    render(
-      <ImagePicker
-        label="Hero Image"
-        name="hero"
-        value="https://example.com/image.jpg"
-      />
-    );
+    render(<ImagePicker label="Hero Image" name="hero" value="https://example.com/image.jpg" />);
 
     expect(screen.getByText('Change')).toBeInTheDocument();
     expect(screen.getByTestId('clear-button')).toBeInTheDocument();
@@ -62,9 +50,7 @@ describe('ImagePicker', () => {
     const handleBrowse = vi.fn();
     const user = userEvent.setup();
 
-    render(
-      <ImagePicker label="Hero Image" name="hero" onBrowse={handleBrowse} />
-    );
+    render(<ImagePicker label="Hero Image" name="hero" onBrowse={handleBrowse} />);
 
     await user.click(screen.getByTestId('browse-button'));
 
@@ -108,21 +94,13 @@ describe('ImagePicker', () => {
   });
 
   it('displays validation error below picker', () => {
-    render(
-      <ImagePicker
-        label="Hero Image"
-        name="hero"
-        error="Image is required"
-      />
-    );
+    render(<ImagePicker label="Hero Image" name="hero" error="Image is required" />);
 
     expect(screen.getByText('Image is required')).toBeInTheDocument();
   });
 
   it('applies error styling when error is present', () => {
-    render(
-      <ImagePicker label="Hero Image" name="hero" error="Error message" />
-    );
+    render(<ImagePicker label="Hero Image" name="hero" error="Error message" />);
 
     const container = document.querySelector('.border-destructive');
     expect(container).toBeInTheDocument();
@@ -196,16 +174,12 @@ describe('ImagePicker built-in MediaBrowser dialog', () => {
   });
 
   it('selects media item and closes dialog', async () => {
-    const mockMedia = [
-      { id: '1', url: 'https://example.com/img1.jpg', filename: 'img1.jpg' },
-    ];
+    const mockMedia = [{ id: '1', url: 'https://example.com/img1.jpg', filename: 'img1.jpg' }];
     mockFetchSuccess(mockMedia);
     const handleChange = vi.fn();
     const user = userEvent.setup();
 
-    renderWithProvider(
-      <ImagePicker label="Hero Image" name="hero" onChange={handleChange} />
-    );
+    renderWithProvider(<ImagePicker label="Hero Image" name="hero" onChange={handleChange} />);
 
     await user.click(screen.getByTestId('browse-button'));
 
@@ -224,9 +198,7 @@ describe('ImagePicker built-in MediaBrowser dialog', () => {
   it('does not render dialog when onBrowse is provided', () => {
     const handleBrowse = vi.fn();
 
-    render(
-      <ImagePicker label="Hero Image" name="hero" onBrowse={handleBrowse} />
-    );
+    render(<ImagePicker label="Hero Image" name="hero" onBrowse={handleBrowse} />);
 
     expect(screen.queryByTestId('dialog-overlay')).not.toBeInTheDocument();
   });

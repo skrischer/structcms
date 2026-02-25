@@ -1,17 +1,13 @@
 import {
+  AuthValidationError,
+  handleGetCurrentUser,
+  handleRefreshSession,
   handleSignInWithOAuth,
   handleSignInWithPassword,
   handleSignOut,
   handleVerifySession,
-  handleRefreshSession,
-  handleGetCurrentUser,
-  AuthValidationError,
 } from '../auth';
-import type {
-  AuthAdapter,
-  SignInWithOAuthInput,
-  SignInWithPasswordInput,
-} from '../auth';
+import type { AuthAdapter, SignInWithOAuthInput, SignInWithPasswordInput } from '../auth';
 
 interface RequestLike {
   json(): Promise<unknown>;
@@ -57,10 +53,10 @@ export interface NextAuthCurrentUserRouteConfig {
 function extractBearerToken(request: RequestLike): string | null {
   const authHeader = request.headers.get('authorization') ?? request.headers.get('Authorization');
   if (!authHeader) return null;
-  
+
   const parts = authHeader.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') return null;
-  
+
   return parts[1] ?? null;
 }
 
@@ -85,10 +81,7 @@ export function createNextAuthOAuthRoute(
       }
 
       const message = err instanceof Error ? err.message : 'OAuth initialization failed';
-      return Response.json(
-        { error: { message, code: 'OAUTH_ERROR' } },
-        { status: 500 }
-      );
+      return Response.json({ error: { message, code: 'OAUTH_ERROR' } }, { status: 500 });
     }
   };
 }
@@ -114,10 +107,7 @@ export function createNextAuthSignInRoute(
       }
 
       const message = err instanceof Error ? err.message : 'Sign in failed';
-      return Response.json(
-        { error: { message, code: 'AUTH_ERROR' } },
-        { status: 401 }
-      );
+      return Response.json({ error: { message, code: 'AUTH_ERROR' } }, { status: 401 });
     }
   };
 }
@@ -141,10 +131,7 @@ export function createNextAuthSignOutRoute(
       return Response.json({ message: 'Signed out successfully' }, { status: 200 });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sign out failed';
-      return Response.json(
-        { error: { message, code: 'SIGNOUT_ERROR' } },
-        { status: 500 }
-      );
+      return Response.json({ error: { message, code: 'SIGNOUT_ERROR' } }, { status: 500 });
     }
   };
 }
@@ -175,10 +162,7 @@ export function createNextAuthVerifyRoute(
       return Response.json(user, { status: 200 });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Verification failed';
-      return Response.json(
-        { error: { message, code: 'VERIFY_ERROR' } },
-        { status: 401 }
-      );
+      return Response.json({ error: { message, code: 'VERIFY_ERROR' } }, { status: 401 });
     }
   };
 }
@@ -204,10 +188,7 @@ export function createNextAuthRefreshRoute(
       return Response.json(session, { status: 200 });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Refresh failed';
-      return Response.json(
-        { error: { message, code: 'REFRESH_ERROR' } },
-        { status: 401 }
-      );
+      return Response.json({ error: { message, code: 'REFRESH_ERROR' } }, { status: 401 });
     }
   };
 }
@@ -238,10 +219,7 @@ export function createNextAuthCurrentUserRoute(
       return Response.json(user, { status: 200 });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to get user';
-      return Response.json(
-        { error: { message, code: 'GET_USER_ERROR' } },
-        { status: 500 }
-      );
+      return Response.json({ error: { message, code: 'GET_USER_ERROR' } }, { status: 500 });
     }
   };
 }
@@ -251,7 +229,7 @@ export function createAuthenticatedRoute<T>(
   Response: ResponseConstructorLike,
   handler: (request: RequestLike, user: { id: string; email: string }) => Promise<T>
 ) {
-  return async function (request: RequestLike): Promise<T | ResponseLike> {
+  return async (request: RequestLike): Promise<T | ResponseLike> => {
     const token = extractBearerToken(request);
     if (!token) {
       return Response.json(

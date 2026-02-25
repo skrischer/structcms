@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Label } from '../ui/label';
 import { cn } from '../../lib/utils';
+import { Label } from '../ui/label';
 
 export interface ObjectFieldProps {
   label: string;
@@ -24,15 +24,7 @@ export interface ObjectFieldProps {
  * </ObjectField>
  * ```
  */
-function ObjectField({
-  label,
-  children,
-  error,
-  required,
-  className,
-  id,
-  name,
-}: ObjectFieldProps) {
+function ObjectField({ label, children, error, required, className, id, name }: ObjectFieldProps) {
   const fieldId = id || name || React.useId();
 
   return (

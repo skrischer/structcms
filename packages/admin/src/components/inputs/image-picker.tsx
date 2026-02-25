@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Button } from '../ui/button';
-import { Label } from '../ui/label';
-import { Dialog } from '../ui/dialog';
-import { MediaBrowser, type MediaItem } from '../media/media-browser';
 import { cn } from '../../lib/utils';
+import { MediaBrowser, type MediaItem } from '../media/media-browser';
+import { Button } from '../ui/button';
+import { Dialog } from '../ui/dialog';
+import { Label } from '../ui/label';
 
 export interface ImagePickerProps {
   label: string;
@@ -80,12 +80,7 @@ function ImagePicker({
               />
             </div>
             <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleBrowse}
-              >
+              <Button type="button" variant="outline" size="sm" onClick={handleBrowse}>
                 Change
               </Button>
               <Button
@@ -102,9 +97,7 @@ function ImagePicker({
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="mb-4 text-4xl text-muted-foreground">🖼️</div>
-            <p className="mb-4 text-sm text-muted-foreground">
-              No image selected
-            </p>
+            <p className="mb-4 text-sm text-muted-foreground">No image selected</p>
             <Button
               type="button"
               variant="outline"

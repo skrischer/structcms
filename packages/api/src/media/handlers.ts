@@ -1,9 +1,4 @@
-import type {
-  MediaAdapter,
-  MediaFile,
-  UploadMediaInput,
-  MediaFilter,
-} from './types';
+import type { MediaAdapter, MediaFile, MediaFilter, UploadMediaInput } from './types';
 import { ALLOWED_MIME_TYPES } from './types';
 
 /**
@@ -47,10 +42,7 @@ export async function handleUploadMedia(
 /**
  * Handler for retrieving a media file by ID
  */
-export async function handleGetMedia(
-  adapter: MediaAdapter,
-  id: string
-): Promise<MediaFile | null> {
+export async function handleGetMedia(adapter: MediaAdapter, id: string): Promise<MediaFile | null> {
   return adapter.getMedia(id);
 }
 
@@ -67,9 +59,6 @@ export async function handleListMedia(
 /**
  * Handler for deleting a media file
  */
-export async function handleDeleteMedia(
-  adapter: MediaAdapter,
-  id: string
-): Promise<void> {
+export async function handleDeleteMedia(adapter: MediaAdapter, id: string): Promise<void> {
   return adapter.deleteMedia(id);
 }

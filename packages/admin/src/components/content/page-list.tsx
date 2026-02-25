@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { useApiClient } from '../../hooks/use-api-client';
 import { useAdmin } from '../../hooks/use-admin';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
+import { useApiClient } from '../../hooks/use-api-client';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 export interface PageSummary {
   id: string;
@@ -96,11 +96,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
     <div className={cn('space-y-4', className)} data-testid="page-list">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Pages</h2>
-        <Button
-          type="button"
-          onClick={onCreatePage}
-          data-testid="create-page"
-        >
+        <Button type="button" onClick={onCreatePage} data-testid="create-page">
           Create New Page
         </Button>
       </div>
@@ -143,10 +139,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
       )}
 
       {!loading && !error && filteredPages.length === 0 && (
-        <p
-          className="text-sm text-muted-foreground text-center py-8"
-          data-testid="empty-state"
-        >
+        <p className="text-sm text-muted-foreground text-center py-8" data-testid="empty-state">
           {pages.length === 0
             ? 'No pages yet. Create your first page.'
             : 'No pages match your search.'}
@@ -173,9 +166,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                 >
                   <td className="p-3">{page.title}</td>
                   <td className="p-3 text-muted-foreground">{page.slug}</td>
-                  <td className="p-3 text-muted-foreground capitalize">
-                    {page.pageType}
-                  </td>
+                  <td className="p-3 text-muted-foreground capitalize">{page.pageType}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,7 +1,10 @@
+import type {
+  ContentSection as ContentSectionDef,
+  HeroSection as HeroSectionDef,
+} from '@/lib/registry';
 import type { InferSectionData } from '@structcms/core';
-import type { HeroSection as HeroSectionDef, ContentSection as ContentSectionDef } from '@/lib/registry';
-import { HeroSection } from './hero';
 import { ContentSection } from './content';
+import { HeroSection } from './hero';
 
 export type HeroData = InferSectionData<typeof HeroSectionDef>;
 export type ContentData = InferSectionData<typeof ContentSectionDef>;

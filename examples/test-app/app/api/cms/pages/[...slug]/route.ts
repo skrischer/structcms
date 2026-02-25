@@ -1,5 +1,5 @@
-import { createNextPageBySlugRoute } from '@structcms/api/next';
 import { storageAdapter } from '@/lib/adapters';
+import { createNextPageBySlugRoute } from '@structcms/api/next';
 
 interface RouteParams {
   params: Promise<{ slug: string | string[] }>;

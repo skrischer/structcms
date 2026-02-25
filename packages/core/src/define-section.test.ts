@@ -1,4 +1,4 @@
-import { describe, it, expect, expectTypeOf } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import { defineSection } from './define-section';
 import type { InferSectionData } from './types';
@@ -134,9 +134,7 @@ describe('Type Inference', () => {
     expectTypeOf<Data['required']>().toEqualTypeOf<string>();
     expectTypeOf<Data['optional']>().toEqualTypeOf<string | undefined>();
     expectTypeOf<Data['nullable']>().toEqualTypeOf<string | null>();
-    expectTypeOf<Data['optionalNullable']>().toEqualTypeOf<
-      string | null | undefined
-    >();
+    expectTypeOf<Data['optionalNullable']>().toEqualTypeOf<string | null | undefined>();
   });
 
   it('should preserve nested object type structure', () => {
@@ -165,9 +163,7 @@ describe('Type Inference', () => {
       external?: boolean | undefined;
     }>();
 
-    expectTypeOf<Data['items']>().toEqualTypeOf<
-      Array<{ id: number; name: string }>
-    >();
+    expectTypeOf<Data['items']>().toEqualTypeOf<Array<{ id: number; name: string }>>();
   });
 
   it('should work with InferSectionData utility type', () => {

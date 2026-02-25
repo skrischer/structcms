@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createRegistry, definePageType } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { definePageType, createRegistry } from '@structcms/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminProvider } from '../../../context/admin-context';
 import { PageList, type PageSummary } from '../page-list';
 
@@ -60,9 +60,7 @@ describe('PageList', () => {
   it('renders page list container', async () => {
     mockFetchSuccess([]);
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     expect(screen.getByTestId('page-list')).toBeInTheDocument();
   });
@@ -70,9 +68,7 @@ describe('PageList', () => {
   it('shows loading state initially', () => {
     mockFetchSuccess([]);
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
@@ -80,9 +76,7 @@ describe('PageList', () => {
   it('renders pages after loading', async () => {
     mockFetchSuccess(mockPages);
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('page-table')).toBeInTheDocument();
@@ -96,9 +90,7 @@ describe('PageList', () => {
   it('shows empty state when no pages', async () => {
     mockFetchSuccess([]);
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('empty-state')).toBeInTheDocument();
@@ -110,9 +102,7 @@ describe('PageList', () => {
   it('shows error state on API failure', async () => {
     mockFetchError('Server error');
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('error')).toBeInTheDocument();
@@ -124,9 +114,7 @@ describe('PageList', () => {
   it('renders Create New Page button', async () => {
     mockFetchSuccess([]);
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     expect(screen.getByTestId('create-page')).toBeInTheDocument();
     expect(screen.getByText('Create New Page')).toBeInTheDocument();
@@ -137,9 +125,7 @@ describe('PageList', () => {
     const handleCreate = vi.fn();
     const user = userEvent.setup();
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={handleCreate} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={handleCreate} />);
 
     await user.click(screen.getByTestId('create-page'));
 
@@ -151,9 +137,7 @@ describe('PageList', () => {
     const handleSelect = vi.fn();
     const user = userEvent.setup();
 
-    renderWithProvider(
-      <PageList onSelectPage={handleSelect} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={handleSelect} onCreatePage={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('page-row-1')).toBeInTheDocument();
@@ -168,9 +152,7 @@ describe('PageList', () => {
     mockFetchSuccess(mockPages);
     const user = userEvent.setup();
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('page-table')).toBeInTheDocument();
@@ -187,9 +169,7 @@ describe('PageList', () => {
     mockFetchSuccess(mockPages);
     const user = userEvent.setup();
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('page-table')).toBeInTheDocument();
@@ -204,9 +184,7 @@ describe('PageList', () => {
   it('renders search input', async () => {
     mockFetchSuccess([]);
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     expect(screen.getByTestId('search-input')).toBeInTheDocument();
   });
@@ -214,9 +192,7 @@ describe('PageList', () => {
   it('renders page type filter', async () => {
     mockFetchSuccess([]);
 
-    renderWithProvider(
-      <PageList onSelectPage={() => {}} onCreatePage={() => {}} />
-    );
+    renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     expect(screen.getByTestId('page-type-filter')).toBeInTheDocument();
   });
@@ -225,11 +201,7 @@ describe('PageList', () => {
     mockFetchSuccess([]);
 
     renderWithProvider(
-      <PageList
-        onSelectPage={() => {}}
-        onCreatePage={() => {}}
-        className="custom-class"
-      />
+      <PageList onSelectPage={() => {}} onCreatePage={() => {}} className="custom-class" />
     );
 
     expect(screen.getByTestId('page-list')).toHaveClass('custom-class');

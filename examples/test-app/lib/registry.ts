@@ -1,9 +1,4 @@
-import {
-  defineSection,
-  definePageType,
-  createRegistry,
-  fields,
-} from '@structcms/core';
+import { createRegistry, definePageType, defineSection, fields } from '@structcms/core';
 
 export const HeroSection = defineSection({
   name: 'hero',

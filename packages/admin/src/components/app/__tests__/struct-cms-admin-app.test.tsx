@@ -1,12 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createRegistry, defineSection } from '@structcms/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRegistry, defineSection } from '@structcms/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { StructCMSAdminApp } from '../struct-cms-admin-app';
 
 vi.mock('../../dashboard/dashboard-page', () => ({
-  DashboardPage: ({ onSelectPage, onCreatePage, onUploadMedia }: {
+  DashboardPage: ({
+    onSelectPage,
+    onCreatePage,
+    onUploadMedia,
+  }: {
     onSelectPage: (page: { slug: string; title: string; pageType: string }) => void;
     onCreatePage: () => void;
     onUploadMedia: () => void;
@@ -22,7 +26,10 @@ vi.mock('../../dashboard/dashboard-page', () => ({
 }));
 
 vi.mock('../../content/page-list', () => ({
-  PageList: ({ onSelectPage, onCreatePage }: {
+  PageList: ({
+    onSelectPage,
+    onCreatePage,
+  }: {
     onSelectPage: (page: { slug: string; title: string; pageType: string }) => void;
     onCreatePage: () => void;
   }) => (
@@ -65,105 +72,95 @@ describe('StructCMSAdminApp', () => {
 
   it('renders with minimal configuration', () => {
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     expect(screen.getByTestId('admin-layout')).toBeInTheDocument();
   });
 
   it('accepts registry and apiBaseUrl props', () => {
-    render(
-      <StructCMSAdminApp 
-        registry={mockRegistry} 
-        apiBaseUrl="/custom/api" 
-      />
-    );
-    
+    render(<StructCMSAdminApp registry={mockRegistry} apiBaseUrl="/custom/api" />);
+
     expect(screen.getByTestId('admin-layout')).toBeInTheDocument();
   });
 
   it('shows dashboard as default view', () => {
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
   });
 
   it('navigates to pages list when Pages nav item is clicked', async () => {
     const user = userEvent.setup();
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     const pagesLink = screen.getByText('Pages');
     await user.click(pagesLink);
-    
+
     expect(screen.getByTestId('page-list')).toBeInTheDocument();
   });
 
   it('navigates to media browser when Media nav item is clicked', async () => {
     const user = userEvent.setup();
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     const mediaLink = screen.getByText('Media');
     await user.click(mediaLink);
-    
+
     expect(screen.getByTestId('media-browser')).toBeInTheDocument();
   });
 
   it('navigates to navigation editor when Navigation nav item is clicked', async () => {
     const user = userEvent.setup();
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     const navLink = screen.getByText('Navigation');
     await user.click(navLink);
-    
+
     expect(screen.getByTestId('navigation-editor')).toBeInTheDocument();
   });
 
   it('navigates to page editor when Create New Page is clicked', async () => {
     const user = userEvent.setup();
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     const createButton = screen.getByText('Create New Page');
     await user.click(createButton);
-    
+
     expect(screen.getByTestId('page-editor')).toBeInTheDocument();
   });
 
   it('navigates back to dashboard when Dashboard nav item is clicked', async () => {
     const user = userEvent.setup();
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     const pagesLink = screen.getByText('Pages');
     await user.click(pagesLink);
     expect(screen.getByTestId('page-list')).toBeInTheDocument();
-    
+
     const dashboardLink = screen.getByText('Dashboard');
     await user.click(dashboardLink);
-    
+
     expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
   });
 
   it('includes all default admin views', async () => {
     const user = userEvent.setup();
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
-    
+
     await user.click(screen.getByText('Pages'));
     expect(screen.getByTestId('page-list')).toBeInTheDocument();
-    
+
     await user.click(screen.getByText('Media'));
     expect(screen.getByTestId('media-browser')).toBeInTheDocument();
-    
+
     await user.click(screen.getByText('Navigation'));
     expect(screen.getByTestId('navigation-editor')).toBeInTheDocument();
   });
 
   it('wraps content in AdminProvider with correct props', () => {
-    render(
-      <StructCMSAdminApp 
-        registry={mockRegistry} 
-        apiBaseUrl="/test/api" 
-      />
-    );
-    
+    render(<StructCMSAdminApp registry={mockRegistry} apiBaseUrl="/test/api" />);
+
     expect(screen.getByTestId('admin-layout')).toBeInTheDocument();
   });
 
@@ -174,16 +171,11 @@ describe('StructCMSAdminApp', () => {
       { label: 'Another View', path: '/another' },
     ];
 
-    render(
-      <StructCMSAdminApp 
-        registry={mockRegistry} 
-        customNavItems={customNavItems}
-      />
-    );
-    
+    render(<StructCMSAdminApp registry={mockRegistry} customNavItems={customNavItems} />);
+
     expect(screen.getByText('Custom View')).toBeInTheDocument();
     expect(screen.getByText('Another View')).toBeInTheDocument();
-    
+
     await user.click(screen.getByText('Custom View'));
     expect(screen.getByTestId('custom-view')).toBeInTheDocument();
     expect(screen.getByText(/Custom view for path: \/custom/)).toBeInTheDocument();
@@ -192,13 +184,8 @@ describe('StructCMSAdminApp', () => {
   it('custom nav items are appended to default nav items', () => {
     const customNavItems = [{ label: 'Settings', path: '/settings' }];
 
-    render(
-      <StructCMSAdminApp 
-        registry={mockRegistry} 
-        customNavItems={customNavItems}
-      />
-    );
-    
+    render(<StructCMSAdminApp registry={mockRegistry} customNavItems={customNavItems} />);
+
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Pages')).toBeInTheDocument();
     expect(screen.getByText('Media')).toBeInTheDocument();
@@ -215,15 +202,10 @@ describe('StructCMSAdminApp', () => {
       return null;
     });
 
-    render(
-      <StructCMSAdminApp 
-        registry={mockRegistry} 
-        renderView={customRenderView}
-      />
-    );
-    
+    render(<StructCMSAdminApp registry={mockRegistry} renderView={customRenderView} />);
+
     await user.click(screen.getByText('Pages'));
-    
+
     expect(customRenderView).toHaveBeenCalled();
     expect(screen.getByTestId('custom-pages-view')).toBeInTheDocument();
     expect(screen.getByText('Custom Pages View')).toBeInTheDocument();
@@ -233,22 +215,17 @@ describe('StructCMSAdminApp', () => {
     const user = userEvent.setup();
     const customRenderView = vi.fn(() => null);
 
-    render(
-      <StructCMSAdminApp 
-        registry={mockRegistry} 
-        renderView={customRenderView}
-      />
-    );
-    
+    render(<StructCMSAdminApp registry={mockRegistry} renderView={customRenderView} />);
+
     expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
-    
+
     await user.click(screen.getByText('Pages'));
     expect(screen.getByTestId('page-list')).toBeInTheDocument();
   });
 
   it('default behavior works without any overrides', () => {
     render(<StructCMSAdminApp registry={mockRegistry} />);
-    
+
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Pages')).toBeInTheDocument();
     expect(screen.getByText('Media')).toBeInTheDocument();

@@ -1,28 +1,19 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { ToastProvider, useToast } from '../toast';
 
 function TestConsumer() {
   const { toast, toasts } = useToast();
   return (
     <div>
-      <button
-        data-testid="trigger-default"
-        onClick={() => toast('Default message')}
-      >
+      <button data-testid="trigger-default" onClick={() => toast('Default message')}>
         Default
       </button>
-      <button
-        data-testid="trigger-success"
-        onClick={() => toast('Success message', 'success')}
-      >
+      <button data-testid="trigger-success" onClick={() => toast('Success message', 'success')}>
         Success
       </button>
-      <button
-        data-testid="trigger-error"
-        onClick={() => toast('Error message', 'error')}
-      >
+      <button data-testid="trigger-error" onClick={() => toast('Error message', 'error')}>
         Error
       </button>
       <span data-testid="toast-count">{toasts.length}</span>
@@ -170,7 +161,9 @@ describe('Toast', () => {
       const { toast, toasts } = useToast();
       return (
         <div>
-          <button data-testid="trigger-a" onClick={() => toast('Toast A')}>A</button>
+          <button data-testid="trigger-a" onClick={() => toast('Toast A')}>
+            A
+          </button>
           <span data-testid="ids-a">{toasts.map((t) => t.id).join(',')}</span>
         </div>
       );
@@ -180,7 +173,9 @@ describe('Toast', () => {
       const { toast, toasts } = useToast();
       return (
         <div>
-          <button data-testid="trigger-b" onClick={() => toast('Toast B')}>B</button>
+          <button data-testid="trigger-b" onClick={() => toast('Toast B')}>
+            B
+          </button>
           <span data-testid="ids-b">{toasts.map((t) => t.id).join(',')}</span>
         </div>
       );

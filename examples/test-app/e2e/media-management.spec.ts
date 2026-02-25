@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { resetOnly, resetAndSeed, BASE_URL } from './helpers';
-import path from 'path';
+import path from 'node:path';
+import { expect, test } from '@playwright/test';
+import { BASE_URL, resetAndSeed, resetOnly } from './helpers';
 
 interface MediaItem {
   id: string;
@@ -58,13 +58,13 @@ test.describe('MediaBrowser Grid and Delete', () => {
     expect(response.ok).toBe(true);
     const mediaList: MediaItem[] = await response.json();
     expect(mediaList.length).toBe(1);
-    expect(mediaList[0]!.filename).toContain('test-image');
+    expect(mediaList[0]?.filename).toContain('test-image');
   });
 
   test('should delete media item', async ({ page }) => {
     // First upload an image via API for faster setup
     const testImagePath = path.join(__dirname, 'fixtures', 'test-image.png');
-    const fs = await import('fs');
+    const fs = await import('node:fs');
     const fileBuffer = fs.readFileSync(testImagePath);
     const blob = new Blob([fileBuffer], { type: 'image/png' });
     const formData = new FormData();
@@ -88,7 +88,10 @@ test.describe('MediaBrowser Grid and Delete', () => {
     expect(itemCount).toBeGreaterThan(0);
 
     // Find the delete test image item
-    const deleteTestItem = grid.locator('[data-testid^="media-item-"]').filter({ hasText: 'delete-test-image' }).first();
+    const deleteTestItem = grid
+      .locator('[data-testid^="media-item-"]')
+      .filter({ hasText: 'delete-test-image' })
+      .first();
     await expect(deleteTestItem).toBeVisible();
 
     // Get the delete button for our specific item
@@ -102,13 +105,15 @@ test.describe('MediaBrowser Grid and Delete', () => {
     const response = await fetch(`${BASE_URL}/api/cms/media`);
     expect(response.ok).toBe(true);
     const mediaList: MediaItem[] = await response.json();
-    expect(mediaList.find((item: MediaItem) => item.filename.includes('delete-test-image'))).toBeUndefined();
+    expect(
+      mediaList.find((item: MediaItem) => item.filename.includes('delete-test-image'))
+    ).toBeUndefined();
   });
 
   test('should display select button for each media item', async ({ page }) => {
     // Upload an image via API
     const testImagePath = path.join(__dirname, 'fixtures', 'test-image.png');
-    const fs = await import('fs');
+    const fs = await import('node:fs');
     const fileBuffer = fs.readFileSync(testImagePath);
     const blob = new Blob([fileBuffer], { type: 'image/png' });
     const formData = new FormData();
@@ -136,7 +141,7 @@ test.describe('MediaBrowser Grid and Delete', () => {
   test('should show load more button when many items exist', async ({ page }) => {
     // Upload 13 images via API to exceed default pageSize of 12
     const testImagePath = path.join(__dirname, 'fixtures', 'test-image.png');
-    const fs = await import('fs');
+    const fs = await import('node:fs');
     const fileBuffer = fs.readFileSync(testImagePath);
 
     const uploadPromises = [];

@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { sanitizeString, sanitizeValue, sanitizeSectionData } from './sanitize';
+import { describe, expect, it } from 'vitest';
 import type { PageSection } from '../storage/types';
+import { sanitizeSectionData, sanitizeString, sanitizeValue } from './sanitize';
 
 describe('sanitizeString', () => {
   it('should strip script tags', () => {
@@ -49,7 +49,8 @@ describe('sanitizeString', () => {
   });
 
   it('should preserve em, br, blockquote, code, pre', () => {
-    const input = '<em>italic</em><br /><blockquote>quote</blockquote><code>code</code><pre>pre</pre>';
+    const input =
+      '<em>italic</em><br /><blockquote>quote</blockquote><code>code</code><pre>pre</pre>';
     expect(sanitizeString(input)).toBe(input);
   });
 
@@ -117,36 +118,26 @@ describe('sanitizeValue', () => {
   });
 
   it('should recursively sanitize arrays', () => {
-    const input = [
-      '<script>xss</script>text',
-      42,
-      { content: '<p>ok</p><script>bad</script>' },
-    ];
+    const input = ['<script>xss</script>text', 42, { content: '<p>ok</p><script>bad</script>' }];
 
     const result = sanitizeValue(input);
-    expect(result).toEqual([
-      'text',
-      42,
-      { content: '<p>ok</p>' },
-    ]);
+    expect(result).toEqual(['text', 42, { content: '<p>ok</p>' }]);
   });
 
   it('should handle deeply nested structures', () => {
     const input = {
       level1: {
         level2: {
-          level3: [
-            { value: '<img onerror="alert(1)" src="x.jpg" alt="test">' },
-          ],
+          level3: [{ value: '<img onerror="alert(1)" src="x.jpg" alt="test">' }],
         },
       },
     };
 
     const result = sanitizeValue(input) as Record<string, unknown>;
-    const level1 = result['level1'] as Record<string, unknown>;
-    const level2 = level1['level2'] as Record<string, unknown>;
-    const level3 = level2['level3'] as Array<Record<string, unknown>>;
-    expect(level3[0]['value']).toBe('<img src="x.jpg" alt="test" />');
+    const level1 = result.level1 as Record<string, unknown>;
+    const level2 = level1.level2 as Record<string, unknown>;
+    const level3 = level2.level3 as Array<Record<string, unknown>>;
+    expect(level3[0].value).toBe('<img src="x.jpg" alt="test" />');
   });
 });
 
@@ -164,8 +155,8 @@ describe('sanitizeSectionData', () => {
     ];
 
     const result = sanitizeSectionData(sections);
-    expect(result[0].data['title']).toBe('Welcome');
-    expect(result[0].data['subtitle']).toBe('<p>Hello <strong>world</strong></p>');
+    expect(result[0].data.title).toBe('Welcome');
+    expect(result[0].data.subtitle).toBe('<p>Hello <strong>world</strong></p>');
   });
 
   it('should not mutate the original sections', () => {
@@ -178,14 +169,12 @@ describe('sanitizeSectionData', () => {
     ];
 
     const result = sanitizeSectionData(sections);
-    expect(result[0].data['title']).toBe('Hello');
-    expect(sections[0].data['title']).toBe('<script>xss</script>Hello');
+    expect(result[0].data.title).toBe('Hello');
+    expect(sections[0].data.title).toBe('<script>xss</script>Hello');
   });
 
   it('should preserve section id and type', () => {
-    const sections: PageSection[] = [
-      { id: 's1', type: 'hero', data: { title: 'Hello' } },
-    ];
+    const sections: PageSection[] = [{ id: 's1', type: 'hero', data: { title: 'Hello' } }];
 
     const result = sanitizeSectionData(sections);
     expect(result[0].id).toBe('s1');
@@ -214,11 +203,11 @@ describe('sanitizeSectionData', () => {
     ];
 
     const result = sanitizeSectionData(sections);
-    const items = result[0].data['items'] as Array<Record<string, unknown>>;
-    expect(items[0]['caption']).toBe('Photo 1');
-    expect(items[0]['url']).toBe('img1.jpg');
-    expect(items[1]['caption']).toBe('<p>Photo 2</p>');
-    const metadata = result[0].data['metadata'] as Record<string, unknown>;
-    expect(metadata['description']).toBe('<p>Gallery</p>');
+    const items = result[0].data.items as Array<Record<string, unknown>>;
+    expect(items[0].caption).toBe('Photo 1');
+    expect(items[0].url).toBe('img1.jpg');
+    expect(items[1].caption).toBe('<p>Photo 2</p>');
+    const metadata = result[0].data.metadata as Record<string, unknown>;
+    expect(metadata.description).toBe('<p>Gallery</p>');
   });
 });

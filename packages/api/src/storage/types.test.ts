@@ -1,15 +1,13 @@
-import { describe, it, expect, expectTypeOf } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import type {
-  Page,
-  PageSection,
-  PageFilter,
   CreatePageInput,
-  UpdatePageInput,
   Navigation,
   NavigationItem,
-  CreateNavigationInput,
-  UpdateNavigationInput,
+  Page,
+  PageFilter,
+  PageSection,
   StorageAdapter,
+  UpdatePageInput,
 } from './types';
 
 describe('Storage Types', () => {

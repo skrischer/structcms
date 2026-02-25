@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { useApiClient } from '../../hooks/use-api-client';
-import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
 
 export interface MediaItem {
   id: string;
@@ -29,11 +29,7 @@ export interface MediaBrowserProps {
  * </AdminProvider>
  * ```
  */
-function MediaBrowser({
-  onSelect,
-  className,
-  pageSize = 12,
-}: MediaBrowserProps) {
+function MediaBrowser({ onSelect, className, pageSize = 12 }: MediaBrowserProps) {
   const api = useApiClient();
   const [items, setItems] = React.useState<MediaItem[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -141,10 +137,7 @@ function MediaBrowser({
       )}
 
       {!loading && items.length === 0 && !error && (
-        <p
-          className="text-sm text-muted-foreground text-center py-8"
-          data-testid="empty-state"
-        >
+        <p className="text-sm text-muted-foreground text-center py-8" data-testid="empty-state">
           No media files yet. Upload your first file.
         </p>
       )}
@@ -166,16 +159,10 @@ function MediaBrowser({
                 onClick={() => onSelect?.(item)}
                 data-testid={`media-select-${item.id}`}
               >
-                <img
-                  src={item.url}
-                  alt={item.filename}
-                  className="h-full w-full object-cover"
-                />
+                <img src={item.url} alt={item.filename} className="h-full w-full object-cover" />
               </button>
               <div className="p-2 flex items-center justify-between">
-                <p className="text-xs text-muted-foreground truncate flex-1">
-                  {item.filename}
-                </p>
+                <p className="text-xs text-muted-foreground truncate flex-1">{item.filename}</p>
                 <Button
                   type="button"
                   variant="ghost"
@@ -201,12 +188,7 @@ function MediaBrowser({
 
       {hasMore && !loading && (
         <div className="text-center">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleLoadMore}
-            data-testid="load-more"
-          >
+          <Button type="button" variant="outline" onClick={handleLoadMore} data-testid="load-more">
             Load More
           </Button>
         </div>

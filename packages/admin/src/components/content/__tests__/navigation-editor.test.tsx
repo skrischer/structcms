@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import type { NavigationItem } from '@structcms/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { type NavigationItem } from '@structcms/core';
+import { describe, expect, it, vi } from 'vitest';
 import { NavigationEditor } from '../navigation-editor';
 
 describe('NavigationEditor', () => {
@@ -112,9 +112,7 @@ describe('NavigationEditor', () => {
       {
         label: 'Products',
         href: '/products',
-        children: [
-          { label: 'Widget', href: '/products/widget' },
-        ],
+        children: [{ label: 'Widget', href: '/products/widget' }],
       },
     ];
 
@@ -149,27 +147,17 @@ describe('NavigationEditor', () => {
   it('calls onSave with updated items when Save is clicked', async () => {
     const handleSave = vi.fn();
     const user = userEvent.setup();
-    const items: NavigationItem[] = [
-      { label: 'Home', href: '/', children: [] },
-    ];
+    const items: NavigationItem[] = [{ label: 'Home', href: '/', children: [] }];
 
     render(<NavigationEditor items={items} onSave={handleSave} />);
 
     await user.click(screen.getByTestId('nav-save'));
 
-    expect(handleSave).toHaveBeenCalledWith([
-      { label: 'Home', href: '/', children: [] },
-    ]);
+    expect(handleSave).toHaveBeenCalledWith([{ label: 'Home', href: '/', children: [] }]);
   });
 
   it('applies custom className', () => {
-    render(
-      <NavigationEditor
-        items={[]}
-        onSave={() => {}}
-        className="custom-class"
-      />
-    );
+    render(<NavigationEditor items={[]} onSave={() => {}} className="custom-class" />);
 
     expect(screen.getByTestId('navigation-editor')).toHaveClass('custom-class');
   });
