@@ -79,6 +79,11 @@ Ship StructCMS as a real, usable product:
 - structcms-docs: READMEs, package.json, CHANGELOG ✅ done 20:56
 
 ### 2026-02-25 21:00 UTC — Phase 3.5+4.3 Agents Spawned
-- structcms-publish: npm pack dry-run (running)
-- structcms-quality: lint, format, any cleanup (running)
-- Usage: 45% left (59m to reset)
+- structcms-publish: npm pack dry-run ✅ done 21:06 (all packages ready)
+- structcms-quality: lint, format, any cleanup ✅ done 21:06 (157 files fixed)
+- Fixed workspace:* regression from quality agent (commit 8bf5c28)
+
+### 2026-02-25 21:09 UTC — Worktree Agents Spawned
+- agent/auth worktree: auth flow verification + tests (running)
+- agent/e2e worktree: Playwright install + E2E test run (running)
+- Usage: 41% left
