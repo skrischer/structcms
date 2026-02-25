@@ -10,6 +10,12 @@ export interface ProtectedRouteProps {
 export function ProtectedRoute({ children, fallback, loadingFallback }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // Bypass auth in test/dev mode
+  const disableAuth = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+  if (disableAuth) {
+    return <>{children}</>;
+  }
+
   if (isLoading) {
     return <>{loadingFallback || <div>Loading...</div>}</>;
   }
