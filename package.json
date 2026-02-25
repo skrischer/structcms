@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
+    "@vitest/coverage-v8": "2.1.9",
     "dotenv": "^17.3.1",
     "tsup": "^8.3.0",
     "typescript": "~5.7.0",
