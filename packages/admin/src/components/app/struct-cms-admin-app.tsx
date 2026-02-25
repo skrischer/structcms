@@ -198,7 +198,7 @@ function ViewRenderer({
       const sections = pageData?.sections ?? [];
       const allowedSections = pageData
         ? (registry.getPageType(pageData.pageType)?.allowedSections ?? [])
-        : registry.getAllSections().map((s) => s.name);
+        : registry.getAllSections().map((s: { name: string }) => s.name);
 
       return (
         <PageEditor sections={sections} allowedSections={allowedSections} onSave={handleSavePage} />
