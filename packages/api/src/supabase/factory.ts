@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { createStorageAdapter } from '../storage';
 import { createMediaAdapter } from '../media';
+import { createAuthAdapter } from '../auth';
 import type { StorageAdapter } from '../storage';
 import type { MediaAdapter } from '../media';
+import type { AuthAdapter } from '../auth';
 
 export interface SupabaseAdapterFactoryStorageConfig {
   bucket?: string;
@@ -17,6 +19,7 @@ export interface SupabaseAdapterFactoryConfig {
 export interface SupabaseAdapters {
   storageAdapter: StorageAdapter;
   mediaAdapter: MediaAdapter;
+  authAdapter: AuthAdapter;
 }
 
 interface ProcessLike {
@@ -73,5 +76,6 @@ export function createSupabaseAdapters(
   return {
     storageAdapter: createStorageAdapter({ client }),
     mediaAdapter: createMediaAdapter({ client, bucketName }),
+    authAdapter: createAuthAdapter({ client }),
   };
 }

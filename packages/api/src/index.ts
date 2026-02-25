@@ -79,3 +79,30 @@ export type {
 } from './export';
 
 export { handleExportPage, handleExportAllPages, handleExportNavigations, handleExportSite } from './export';
+
+export type {
+  AuthUser,
+  AuthSession,
+  SignInWithOAuthInput,
+  SignInWithPasswordInput,
+  OAuthResponse,
+  VerifySessionInput,
+  AuthAdapter,
+  SupabaseAuthAdapterConfig,
+  AuthMiddlewareConfig,
+  AuthenticatedRequest,
+} from './auth';
+
+export {
+  SupabaseAuthAdapter,
+  createAuthAdapter,
+  AuthError,
+  handleSignInWithOAuth,
+  handleSignInWithPassword,
+  handleSignOut,
+  handleVerifySession,
+  handleRefreshSession,
+  handleGetCurrentUser,
+  AuthValidationError,
+  createAuthMiddleware,
+} from './auth';
