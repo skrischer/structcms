@@ -13,15 +13,20 @@ import {
 } from '../../../../../lib/auth-utils';
 
 // Use server-side secret key (NOT public anon key)
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY!;
-
-if (!supabaseUrl || !supabaseSecretKey) {
-  throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY environment variables');
-}
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 export async function POST(request: NextRequest) {
   try {
+    // Validate environment variables at runtime
+    if (!supabaseUrl || !supabaseSecretKey) {
+      return createErrorResponse(
+        'Server configuration error',
+        'SERVER_CONFIG_ERROR',
+        500
+      );
+    }
+
     // 1. CSRF Protection
     const csrfError = requireCsrfToken(request);
     if (csrfError) {

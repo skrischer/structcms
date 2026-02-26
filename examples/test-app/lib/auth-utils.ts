@@ -267,7 +267,8 @@ export function getClientIp(request: NextRequest): string {
   // Try various headers in order of preference
   const forwardedFor = request.headers.get('x-forwarded-for');
   if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim();
+    const ip = forwardedFor.split(',')[0]?.trim();
+    if (ip) return ip;
   }
   
   const realIp = request.headers.get('x-real-ip');
