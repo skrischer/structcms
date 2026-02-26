@@ -1,0 +1,5 @@
+{
+  "installCommand": "pnpm install --recursive",
+  "buildCommand": "pnpm --filter test-app... build",
+  "outputDirectory": ".next"
+}
