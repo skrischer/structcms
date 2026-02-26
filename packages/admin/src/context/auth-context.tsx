@@ -20,52 +20,89 @@ export interface AuthProviderProps {
   onAuthStateChange?: (user: AuthUser | null) => void;
 }
 
+/**
+ * Get CSRF token from cookie
+ */
+function getCsrfToken(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/structcms_csrf_token=([^;]+)/);
+  return match ? match[1] : null;
+}
+
+/**
+ * Create fetch options with CSRF token and credentials
+ */
+function createFetchOptions(method: string, body?: object): RequestInit {
+  const options: RequestInit = {
+    method,
+    credentials: 'include', // Always send cookies
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  // Add CSRF token for non-GET requests
+  if (method !== 'GET' && method !== 'HEAD') {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      (options.headers as Record<string, string>)['X-CSRF-Token'] = csrfToken;
+    }
+  }
+
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+
+  return options;
+}
+
 export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthProviderProps) {
+  // Auth bypass only in development
   const isAuthDisabled =
+    process.env.NODE_ENV === 'development' &&
     typeof window !== 'undefined' &&
     (process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true' ||
       // biome-ignore lint/suspicious/noExplicitAny: Next.js internal data structure
       (window as any).__NEXT_DATA__?.props?.pageProps?.disableAuth === true);
+
+  if (isAuthDisabled) {
+    console.warn('⚠️  WARNING: Authentication is DISABLED. This should only be used in development!');
+  }
 
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(!isAuthDisabled);
 
   const clearSession = useCallback(() => {
-    localStorage.removeItem('structcms_access_token');
-    localStorage.removeItem('structcms_refresh_token');
     setUser(null);
     setSession(null);
     onAuthStateChange?.(null);
   }, [onAuthStateChange]);
 
-  const tryRefreshSession = useCallback(
-    async (refreshToken: string): Promise<boolean> => {
-      try {
-        const refreshResponse = await fetch(`${apiBaseUrl}/auth/refresh`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refreshToken }),
-        });
+  const tryRefreshSession = useCallback(async (): Promise<boolean> => {
+    try {
+      const refreshResponse = await fetch(
+        `${apiBaseUrl}/auth/refresh`,
+        createFetchOptions('POST')
+      );
 
-        if (refreshResponse.ok) {
-          const newSession = await refreshResponse.json();
-          localStorage.setItem('structcms_access_token', newSession.accessToken);
-          if (newSession.refreshToken) {
-            localStorage.setItem('structcms_refresh_token', newSession.refreshToken);
-          }
-          setSession(newSession);
-          setUser(newSession.user);
-          onAuthStateChange?.(newSession.user);
-          return true;
-        }
-      } catch (error) {
-        console.error('Failed to refresh session:', error);
+      if (refreshResponse.ok) {
+        const data = await refreshResponse.json();
+        // Session tokens are now in httpOnly cookies, we only get user data
+        setSession({
+          accessToken: '', // Not accessible from client
+          user: data.user,
+          expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined,
+        });
+        setUser(data.user);
+        onAuthStateChange?.(data.user);
+        return true;
       }
-      return false;
-    },
-    [apiBaseUrl, onAuthStateChange]
-  );
+    } catch (error) {
+      console.error('Failed to refresh session:', error);
+    }
+    return false;
+  }, [apiBaseUrl, onAuthStateChange]);
 
   const loadSession = useCallback(async () => {
     if (isAuthDisabled) {
@@ -73,25 +110,16 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
       return;
     }
 
-    const storedToken = localStorage.getItem('structcms_access_token');
-    const storedRefreshToken = localStorage.getItem('structcms_refresh_token');
-
-    if (!storedToken) {
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/verify`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${storedToken}`,
-        },
-      });
+      // Verify session using httpOnly cookie
+      const response = await fetch(
+        `${apiBaseUrl}/auth/verify`,
+        createFetchOptions('POST')
+      );
 
       if (!response.ok) {
-        const refreshed = storedRefreshToken && (await tryRefreshSession(storedRefreshToken));
+        // Try to refresh session
+        const refreshed = await tryRefreshSession();
         if (!refreshed) {
           clearSession();
         }
@@ -102,8 +130,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
       const userData = await response.json();
       setUser(userData);
       setSession({
-        accessToken: storedToken,
-        refreshToken: storedRefreshToken || undefined,
+        accessToken: '', // Not accessible from client
         user: userData,
       });
       onAuthStateChange?.(userData);
@@ -115,6 +142,21 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
     }
   }, [apiBaseUrl, onAuthStateChange, isAuthDisabled, tryRefreshSession, clearSession]);
 
+  // Fetch CSRF token on mount
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        await fetch(`${apiBaseUrl}/auth/csrf`, {
+          credentials: 'include',
+        });
+      } catch (error) {
+        console.error('Failed to fetch CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, [apiBaseUrl]);
+
   useEffect(() => {
     loadSession();
   }, [loadSession]);
@@ -123,27 +165,25 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
     async (email: string, password: string) => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${apiBaseUrl}/auth/signin`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
+        const response = await fetch(
+          `${apiBaseUrl}/auth/signin`,
+          createFetchOptions('POST', { email, password })
+        );
 
         if (!response.ok) {
           const error = await response.json();
-          throw new Error(error.message || 'Sign in failed');
+          throw new Error(error.error?.message || error.message || 'Sign in failed');
         }
 
-        const newSession: AuthSession = await response.json();
-        localStorage.setItem('structcms_access_token', newSession.accessToken);
-        if (newSession.refreshToken) {
-          localStorage.setItem('structcms_refresh_token', newSession.refreshToken);
-        }
-        setSession(newSession);
-        setUser(newSession.user);
-        onAuthStateChange?.(newSession.user);
+        const data = await response.json();
+        // Tokens are now in httpOnly cookies
+        setSession({
+          accessToken: '', // Not accessible from client
+          user: data.user,
+          expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined,
+        });
+        setUser(data.user);
+        onAuthStateChange?.(data.user);
       } finally {
         setIsLoading(false);
       }
@@ -154,52 +194,36 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
   const signOut = useCallback(async () => {
     setIsLoading(true);
     try {
-      if (session?.accessToken) {
-        await fetch(`${apiBaseUrl}/auth/signout`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
-        });
-      }
+      await fetch(
+        `${apiBaseUrl}/auth/signout`,
+        createFetchOptions('POST')
+      );
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
-      localStorage.removeItem('structcms_access_token');
-      localStorage.removeItem('structcms_refresh_token');
-      setUser(null);
-      setSession(null);
-      onAuthStateChange?.(null);
+      clearSession();
       setIsLoading(false);
     }
-  }, [apiBaseUrl, session, onAuthStateChange]);
+  }, [apiBaseUrl, clearSession]);
 
   const refreshSession = useCallback(async () => {
-    const storedRefreshToken = localStorage.getItem('structcms_refresh_token');
-    if (!storedRefreshToken) {
-      throw new Error('No refresh token available');
-    }
-
-    const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refreshToken: storedRefreshToken }),
-    });
+    const response = await fetch(
+      `${apiBaseUrl}/auth/refresh`,
+      createFetchOptions('POST')
+    );
 
     if (!response.ok) {
       throw new Error('Failed to refresh session');
     }
 
-    const newSession: AuthSession = await response.json();
-    localStorage.setItem('structcms_access_token', newSession.accessToken);
-    if (newSession.refreshToken) {
-      localStorage.setItem('structcms_refresh_token', newSession.refreshToken);
-    }
-    setSession(newSession);
-    setUser(newSession.user);
-    onAuthStateChange?.(newSession.user);
+    const data = await response.json();
+    setSession({
+      accessToken: '', // Not accessible from client
+      user: data.user,
+      expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined,
+    });
+    setUser(data.user);
+    onAuthStateChange?.(data.user);
   }, [apiBaseUrl, onAuthStateChange]);
 
   const value: AuthContextValue = {
