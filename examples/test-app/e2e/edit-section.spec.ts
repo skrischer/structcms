@@ -53,6 +53,7 @@ test.describe('Edit Section', () => {
     // Get the uploaded media URL for later verification
     const mediaResponse = await fetch(`${BASE_URL}/api/cms/media`);
     const mediaItems: Array<{ id: string; url: string }> = await mediaResponse.json();
+    // biome-ignore lint/style/noNonNullAssertion: Test ensures media was uploaded
     const uploadedItem = mediaItems[0]!;
 
     // Navigate to edit page with hero section

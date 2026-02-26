@@ -16,9 +16,16 @@ vi.mock('../../dashboard/dashboard-page', () => ({
     onUploadMedia: () => void;
   }) => (
     <div data-testid="dashboard-page">
-      <button onClick={onCreatePage}>Create New Page</button>
-      <button onClick={onUploadMedia}>Upload Media</button>
-      <button onClick={() => onSelectPage({ slug: 'test', title: 'Test', pageType: 'default' })}>
+      <button type="button" onClick={onCreatePage}>
+        Create New Page
+      </button>
+      <button type="button" onClick={onUploadMedia}>
+        Upload Media
+      </button>
+      <button
+        type="button"
+        onClick={() => onSelectPage({ slug: 'test', title: 'Test', pageType: 'default' })}
+      >
         Select Page
       </button>
     </div>
@@ -34,8 +41,13 @@ vi.mock('../../content/page-list', () => ({
     onCreatePage: () => void;
   }) => (
     <div data-testid="page-list">
-      <button onClick={onCreatePage}>Create Page</button>
-      <button onClick={() => onSelectPage({ slug: 'test', title: 'Test', pageType: 'default' })}>
+      <button type="button" onClick={onCreatePage}>
+        Create Page
+      </button>
+      <button
+        type="button"
+        onClick={() => onSelectPage({ slug: 'test', title: 'Test', pageType: 'default' })}
+      >
         Select
       </button>
     </div>

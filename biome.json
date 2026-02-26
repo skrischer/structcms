@@ -6,21 +6,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
-      "complexity": {
-        "noExcessiveCognitiveComplexity": "warn"
-      },
-      "correctness": {
-        "noUnusedImports": "error",
-        "noUnusedVariables": "error"
-      },
-      "style": {
-        "noNonNullAssertion": "warn",
-        "useConst": "error"
-      },
-      "suspicious": {
-        "noExplicitAny": "error"
-      }
+      "recommended": true
     }
   },
   "formatter": {

@@ -57,6 +57,7 @@ export default function AdminRootLayout({
               <div className="text-center">
                 <p className="text-gray-600">Please sign in to access this page.</p>
                 <button
+                  type="button"
                   onClick={() => router.push('/admin/login')}
                   className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >

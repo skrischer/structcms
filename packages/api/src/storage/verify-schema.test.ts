@@ -14,6 +14,7 @@ describe('Database Schema Verification', () => {
 
   describe('pages table', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)('should exist and have correct columns', async () => {
+      // biome-ignore lint/style/noNonNullAssertion: skipIf guard ensures these are defined
       const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
 
       // Try to select from pages table - will fail if table doesn't exist
@@ -23,6 +24,7 @@ describe('Database Schema Verification', () => {
     });
 
     it.skipIf(!supabaseUrl || !supabaseKey)('should enforce unique slug constraint', async () => {
+      // biome-ignore lint/style/noNonNullAssertion: skipIf guard ensures these are defined
       const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
       const testSlug = `test-unique-${Date.now()}`;
 
@@ -54,6 +56,7 @@ describe('Database Schema Verification', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should auto-generate UUID and timestamps',
       async () => {
+        // biome-ignore lint/style/noNonNullAssertion: skipIf guard ensures these are defined
         const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
         const testSlug = `test-auto-${Date.now()}`;
 
@@ -81,6 +84,7 @@ describe('Database Schema Verification', () => {
     );
 
     it.skipIf(!supabaseUrl || !supabaseKey)('should store sections as JSONB', async () => {
+      // biome-ignore lint/style/noNonNullAssertion: skipIf guard ensures these are defined
       const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
       const testSlug = `test-jsonb-${Date.now()}`;
       const testSections = [
@@ -109,6 +113,7 @@ describe('Database Schema Verification', () => {
 
   describe('navigation table', () => {
     it.skipIf(!supabaseUrl || !supabaseKey)('should exist and have correct columns', async () => {
+      // biome-ignore lint/style/noNonNullAssertion: skipIf guard ensures these are defined
       const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
 
       const { error } = await supabase.from('navigation').select('*').limit(0);
@@ -117,6 +122,7 @@ describe('Database Schema Verification', () => {
     });
 
     it.skipIf(!supabaseUrl || !supabaseKey)('should enforce unique name constraint', async () => {
+      // biome-ignore lint/style/noNonNullAssertion: skipIf guard ensures these are defined
       const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
       const testName = `test-nav-${Date.now()}`;
 
@@ -142,6 +148,7 @@ describe('Database Schema Verification', () => {
     });
 
     it.skipIf(!supabaseUrl || !supabaseKey)('should store items as JSONB', async () => {
+      // biome-ignore lint/style/noNonNullAssertion: skipIf guard ensures these are defined
       const supabase = createClient<Database>(supabaseUrl!, supabaseKey!);
       const testName = `test-nav-jsonb-${Date.now()}`;
       const testItems = [

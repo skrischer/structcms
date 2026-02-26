@@ -125,21 +125,18 @@ describe('Delivery Handlers', () => {
       expect(pages.length).toBe(1);
     });
 
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should resolve media references to URLs',
-      async () => {
-        const pages = await handleListPages(adapter, mediaAdapter);
+    it.skipIf(!supabaseUrl || !supabaseKey)('should resolve media references to URLs', async () => {
+      const pages = await handleListPages(adapter, mediaAdapter);
 
-        const mediaPage = pages.find((p) => p.slug === `${testPrefix}-media-page`);
-        expect(mediaPage).toBeDefined();
+      const mediaPage = pages.find((p) => p.slug === `${testPrefix}-media-page`);
+      expect(mediaPage).toBeDefined();
 
-        const imageUrl = mediaPage!.sections[0].data.image;
-        expect(typeof imageUrl).toBe('string');
-        expect(imageUrl).toContain('supabase');
-        // Should not be a UUID anymore
-        expect(imageUrl).not.toBe(testMediaId);
-      }
-    );
+      const imageUrl = mediaPage?.sections[0].data.image;
+      expect(typeof imageUrl).toBe('string');
+      expect(imageUrl).toContain('supabase');
+      // Should not be a UUID anymore
+      expect(imageUrl).not.toBe(testMediaId);
+    });
   });
 
   describe('handleGetPageBySlug', () => {
@@ -171,9 +168,9 @@ describe('Delivery Handlers', () => {
         const page = await handleGetPageBySlug(adapter, mediaAdapter, `${testPrefix}-media-page`);
 
         expect(page).not.toBeNull();
-        expect(page!.sections).toHaveLength(1);
+        expect(page?.sections).toHaveLength(1);
 
-        const imageUrl = page!.sections[0].data.image;
+        const imageUrl = page?.sections[0].data.image;
         expect(typeof imageUrl).toBe('string');
         expect(imageUrl).toContain('supabase');
         // Should be a full URL, not the UUID

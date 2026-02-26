@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createAuthAdapter } from './supabase-adapter';
 import {
   handleGetCurrentUser,
   handleRefreshSession,
@@ -8,6 +7,7 @@ import {
   handleSignOut,
   handleVerifySession,
 } from './handlers';
+import { createAuthAdapter } from './supabase-adapter';
 import type { AuthSession } from './types';
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -52,8 +52,10 @@ describe('Auth Integration Tests', () => {
             email: testEmail,
             password: testPassword,
           });
-        } catch (error) {
-          console.warn('Skipping auth integration test: Test user not found or invalid credentials');
+        } catch (_error) {
+          console.warn(
+            'Skipping auth integration test: Test user not found or invalid credentials'
+          );
           return;
         }
 
@@ -83,10 +85,7 @@ describe('Auth Integration Tests', () => {
         expect(currentUser?.id).toBe(signInResult.user.id);
 
         // Step 4: Refresh session
-        const refreshedSession = await handleRefreshSession(
-          authAdapter,
-          signInResult.refreshToken
-        );
+        const refreshedSession = await handleRefreshSession(authAdapter, signInResult.refreshToken);
 
         expect(refreshedSession).toBeDefined();
         expect(refreshedSession.accessToken).toBeDefined();
@@ -108,17 +107,14 @@ describe('Auth Integration Tests', () => {
       }
     );
 
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should reject invalid credentials',
-      async () => {
-        await expect(
-          handleSignInWithPassword(authAdapter, {
-            email: 'invalid@example.com',
-            password: 'wrongpassword',
-          })
-        ).rejects.toThrow();
-      }
-    );
+    it.skipIf(!supabaseUrl || !supabaseKey)('should reject invalid credentials', async () => {
+      await expect(
+        handleSignInWithPassword(authAdapter, {
+          email: 'invalid@example.com',
+          password: 'wrongpassword',
+        })
+      ).rejects.toThrow();
+    });
 
     it.skipIf(!supabaseUrl || !supabaseKey)(
       'should return null for invalid access token',
@@ -131,12 +127,9 @@ describe('Auth Integration Tests', () => {
       }
     );
 
-    it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should reject invalid refresh token',
-      async () => {
-        await expect(handleRefreshSession(authAdapter, 'invalid-refresh-token')).rejects.toThrow();
-      }
-    );
+    it.skipIf(!supabaseUrl || !supabaseKey)('should reject invalid refresh token', async () => {
+      await expect(handleRefreshSession(authAdapter, 'invalid-refresh-token')).rejects.toThrow();
+    });
   });
 
   describe('Session Token Validation', () => {
@@ -150,7 +143,7 @@ describe('Auth Integration Tests', () => {
             email: testEmail,
             password: testPassword,
           });
-        } catch (error) {
+        } catch (_error) {
           console.warn('Skipping auth integration test: Test user not found');
           return;
         }
@@ -178,7 +171,7 @@ describe('Auth Integration Tests', () => {
             email: testEmail,
             password: testPassword,
           });
-        } catch (error) {
+        } catch (_error) {
           console.warn('Skipping auth integration test: Test user not found');
           return;
         }

@@ -8,7 +8,7 @@ import type { ListPagesOptions, NavigationResponse, PageResponse } from './types
  */
 async function toPageResponse(page: Page, mediaAdapter: MediaAdapter): Promise<PageResponse> {
   const resolvedSections = await resolveMediaReferences(page.sections, mediaAdapter);
-  
+
   return {
     id: page.id,
     slug: page.slug,
@@ -55,7 +55,7 @@ export async function handleListPages(
   for (const page of pages) {
     results.push(await toPageResponse(page, mediaAdapter));
   }
-  
+
   return results;
 }
 

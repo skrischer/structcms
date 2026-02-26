@@ -426,7 +426,11 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
     ): Promise<ResponseLike> => {
       try {
         const { slug } = await resolveParams(context);
-        const page = await handleGetPageBySlug(config.storageAdapter, config.mediaAdapter, normalizeSlug(slug));
+        const page = await handleGetPageBySlug(
+          config.storageAdapter,
+          config.mediaAdapter,
+          normalizeSlug(slug)
+        );
 
         if (!page) {
           return jsonResponse({ error: 'Page not found' }, 404);
@@ -444,7 +448,11 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
       try {
         const { slug } = await resolveParams(context);
         const normalizedSlug = normalizeSlug(slug);
-        const existingPage = await handleGetPageBySlug(config.storageAdapter, config.mediaAdapter, normalizedSlug);
+        const existingPage = await handleGetPageBySlug(
+          config.storageAdapter,
+          config.mediaAdapter,
+          normalizedSlug
+        );
 
         if (!existingPage) {
           return jsonResponse({ error: 'Page not found' }, 404);
@@ -479,7 +487,11 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
     ): Promise<ResponseLike> => {
       try {
         const { slug } = await resolveParams(context);
-        const existingPage = await handleGetPageBySlug(config.storageAdapter, config.mediaAdapter, normalizeSlug(slug));
+        const existingPage = await handleGetPageBySlug(
+          config.storageAdapter,
+          config.mediaAdapter,
+          normalizeSlug(slug)
+        );
 
         if (!existingPage) {
           return jsonResponse({ error: 'Page not found' }, 404);
