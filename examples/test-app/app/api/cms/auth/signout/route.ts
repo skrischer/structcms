@@ -1,32 +1,72 @@
 import { createAuthAdapter, handleSignOut } from '@structcms/api';
 import { createClient } from '@supabase/supabase-js';
 import { type NextRequest, NextResponse } from 'next/server';
+import {
+  clearAuthCookies,
+  createErrorResponse,
+  getAccessToken,
+  getClientIp,
+  logSecurityEvent,
+  requireCsrfToken,
+} from '../../../../../lib/auth-utils';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Use server-side secret key
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
-      return NextResponse.json({ message: 'No token provided' }, { status: 401 });
+    // Validate environment variables at runtime
+    if (!supabaseUrl || !supabaseSecretKey) {
+      return createErrorResponse(
+        'Server configuration error',
+        'SERVER_CONFIG_ERROR',
+        500
+      );
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    // 1. CSRF Protection
+    const csrfError = requireCsrfToken(request);
+    if (csrfError) {
+      logSecurityEvent('csrf_validation_failed', {
+        endpoint: '/api/cms/auth/signout',
+        ip: getClientIp(request),
+      });
+      return csrfError;
+    }
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-    const authAdapter = createAuthAdapter({ client: supabaseClient });
+    // 2. Get access token
+    const token = getAccessToken(request);
 
-    await handleSignOut(authAdapter, token);
+    if (token) {
+      // 3. Sign out with Supabase
+      const supabaseClient = createClient(supabaseUrl, supabaseSecretKey);
+      const authAdapter = createAuthAdapter({ client: supabaseClient });
 
-    return NextResponse.json({ message: 'Signed out successfully' });
+      await handleSignOut(authAdapter, token);
+
+      logSecurityEvent('signout_success', {
+        ip: getClientIp(request),
+      });
+    }
+
+    // 4. Clear cookies
+    const response = NextResponse.json({
+      message: 'Signed out successfully',
+    });
+
+    clearAuthCookies(response);
+
+    return response;
   } catch (error) {
-    console.error('Sign out error:', error);
-    return NextResponse.json(
-      {
-        message: error instanceof Error ? error.message : 'Sign out failed',
-      },
-      { status: 500 }
-    );
+    logSecurityEvent('signout_failed', {
+      ip: getClientIp(request),
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+
+    // Still clear cookies even on error
+    const response = createErrorResponse('Sign out failed', 'SIGNOUT_ERROR', 500);
+    clearAuthCookies(response);
+    return response;
   }
 }

@@ -117,13 +117,13 @@ describe('Auth Integration Tests', () => {
     });
 
     it.skipIf(!supabaseUrl || !supabaseKey)(
-      'should return null for invalid access token',
+      'should throw error for invalid access token',
       async () => {
-        const result = await handleVerifySession(authAdapter, {
-          accessToken: 'invalid-token-12345',
-        });
-
-        expect(result).toBeNull();
+        await expect(
+          handleVerifySession(authAdapter, {
+            accessToken: 'invalid-token-12345',
+          })
+        ).rejects.toThrow('Invalid or expired token');
       }
     );
 

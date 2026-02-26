@@ -1,20 +1,37 @@
 import { createAuthAdapter, handleVerifySession } from '@structcms/api';
 import { createClient } from '@supabase/supabase-js';
 import { type NextRequest, NextResponse } from 'next/server';
+import {
+  createErrorResponse,
+  getAccessToken,
+  getClientIp,
+  logSecurityEvent,
+} from '../../../../../lib/auth-utils';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Use server-side secret key
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
-      return NextResponse.json({ message: 'No token provided' }, { status: 401 });
+    // Validate environment variables at runtime
+    if (!supabaseUrl || !supabaseSecretKey) {
+      return createErrorResponse(
+        'Server configuration error',
+        'SERVER_CONFIG_ERROR',
+        500
+      );
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    // 1. Get access token from cookie (preferred) or Authorization header (backward compatibility)
+    const token = getAccessToken(request);
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    if (!token) {
+      return createErrorResponse('No token provided', 'NO_TOKEN', 401);
+    }
+
+    // 2. Verify session with Supabase
+    const supabaseClient = createClient(supabaseUrl, supabaseSecretKey);
     const authAdapter = createAuthAdapter({ client: supabaseClient });
 
     const user = await handleVerifySession(authAdapter, {
@@ -22,17 +39,16 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ message: 'Invalid or expired token' }, { status: 401 });
+      return createErrorResponse('Invalid or expired token', 'INVALID_TOKEN', 401);
     }
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error('Verify session error:', error);
-    return NextResponse.json(
-      {
-        message: error instanceof Error ? error.message : 'Verification failed',
-      },
-      { status: 401 }
-    );
+    logSecurityEvent('verify_failed', {
+      ip: getClientIp(request),
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+
+    return createErrorResponse('Verification failed', 'VERIFY_ERROR');
   }
 }
