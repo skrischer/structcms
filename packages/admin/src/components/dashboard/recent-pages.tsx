@@ -83,6 +83,7 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
       {loading && (
         <div className="space-y-2" data-testid="recent-pages-loading">
           {Array.from({ length: 5 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: Temporary loading skeletons with no stable data
             <Skeleton key={i} className="h-10 w-full" />
           ))}
         </div>
@@ -113,18 +114,11 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
       {!loading && !error && pages.length > 0 && (
         <div className="rounded-md border border-input" data-testid="recent-pages-list">
           {pages.map((page) => (
-            <div
+            <button
+              type="button"
               key={page.id}
-              className="flex items-center justify-between border-b border-input last:border-0 px-3 py-2 hover:bg-muted/30 cursor-pointer"
+              className="flex items-center justify-between border-b border-input last:border-0 px-3 py-2 hover:bg-muted/30 cursor-pointer w-full text-left"
               onClick={() => onSelectPage(page)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectPage(page);
-                }
-              }}
               data-testid={`recent-page-${page.id}`}
             >
               <div className="min-w-0 flex-1">
@@ -136,7 +130,7 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
                   {formatTimestamp(page.updatedAt)}
                 </span>
               )}
-            </div>
+            </button>
           ))}
         </div>
       )}

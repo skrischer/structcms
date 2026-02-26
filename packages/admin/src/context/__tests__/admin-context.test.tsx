@@ -116,7 +116,7 @@ describe('useApiClient', () => {
 function ToastConsumer() {
   const { toast } = useToast();
   return (
-    <button data-testid="trigger-toast" onClick={() => toast('Hello', 'success')}>
+    <button type="button" data-testid="trigger-toast" onClick={() => toast('Hello', 'success')}>
       Toast
     </button>
   );

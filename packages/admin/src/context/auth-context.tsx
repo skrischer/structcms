@@ -24,11 +24,48 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
   const isAuthDisabled =
     typeof window !== 'undefined' &&
     (process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true' ||
+      // biome-ignore lint/suspicious/noExplicitAny: Next.js internal data structure
       (window as any).__NEXT_DATA__?.props?.pageProps?.disableAuth === true);
 
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(!isAuthDisabled);
+
+  const clearSession = useCallback(() => {
+    localStorage.removeItem('structcms_access_token');
+    localStorage.removeItem('structcms_refresh_token');
+    setUser(null);
+    setSession(null);
+    onAuthStateChange?.(null);
+  }, [onAuthStateChange]);
+
+  const tryRefreshSession = useCallback(
+    async (refreshToken: string): Promise<boolean> => {
+      try {
+        const refreshResponse = await fetch(`${apiBaseUrl}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        if (refreshResponse.ok) {
+          const newSession = await refreshResponse.json();
+          localStorage.setItem('structcms_access_token', newSession.accessToken);
+          if (newSession.refreshToken) {
+            localStorage.setItem('structcms_refresh_token', newSession.refreshToken);
+          }
+          setSession(newSession);
+          setUser(newSession.user);
+          onAuthStateChange?.(newSession.user);
+          return true;
+        }
+      } catch (error) {
+        console.error('Failed to refresh session:', error);
+      }
+      return false;
+    },
+    [apiBaseUrl, onAuthStateChange]
+  );
 
   const loadSession = useCallback(async () => {
     if (isAuthDisabled) {
@@ -54,34 +91,10 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
       });
 
       if (!response.ok) {
-        if (storedRefreshToken) {
-          const refreshResponse = await fetch(`${apiBaseUrl}/auth/refresh`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ refreshToken: storedRefreshToken }),
-          });
-
-          if (refreshResponse.ok) {
-            const newSession = await refreshResponse.json();
-            localStorage.setItem('structcms_access_token', newSession.accessToken);
-            if (newSession.refreshToken) {
-              localStorage.setItem('structcms_refresh_token', newSession.refreshToken);
-            }
-            setSession(newSession);
-            setUser(newSession.user);
-            onAuthStateChange?.(newSession.user);
-            setIsLoading(false);
-            return;
-          }
+        const refreshed = storedRefreshToken && (await tryRefreshSession(storedRefreshToken));
+        if (!refreshed) {
+          clearSession();
         }
-
-        localStorage.removeItem('structcms_access_token');
-        localStorage.removeItem('structcms_refresh_token');
-        setUser(null);
-        setSession(null);
-        onAuthStateChange?.(null);
         setIsLoading(false);
         return;
       }
@@ -96,15 +109,11 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
       onAuthStateChange?.(userData);
     } catch (error) {
       console.error('Failed to load session:', error);
-      localStorage.removeItem('structcms_access_token');
-      localStorage.removeItem('structcms_refresh_token');
-      setUser(null);
-      setSession(null);
-      onAuthStateChange?.(null);
+      clearSession();
     } finally {
       setIsLoading(false);
     }
-  }, [apiBaseUrl, onAuthStateChange, isAuthDisabled]);
+  }, [apiBaseUrl, onAuthStateChange, isAuthDisabled, tryRefreshSession, clearSession]);
 
   useEffect(() => {
     loadSession();

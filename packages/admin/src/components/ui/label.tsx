@@ -11,6 +11,7 @@ export interface LabelProps
     VariantProps<typeof labelVariants> {}
 
 const Label = React.forwardRef<HTMLLabelElement, LabelProps>(({ className, ...props }, ref) => (
+  // biome-ignore lint/a11y/noLabelWithoutControl: Generic label component, control association handled by consumers
   <label ref={ref} className={cn(labelVariants(), className)} {...props} />
 ));
 Label.displayName = 'Label';

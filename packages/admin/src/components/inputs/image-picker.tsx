@@ -74,7 +74,7 @@ function ImagePicker({
             <div className="relative aspect-video w-full max-w-xs overflow-hidden rounded-md bg-muted">
               <img
                 src={value}
-                alt="Selected image"
+                alt="Preview"
                 className="h-full w-full object-cover"
                 data-testid="image-preview"
               />

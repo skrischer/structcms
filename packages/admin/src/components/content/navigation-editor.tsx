@@ -105,6 +105,7 @@ function NavigationEditor({ items: initialItems, onSave, className }: Navigation
         <div className="space-y-3">
           {items.map((item, index) => (
             <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: Navigation items have no stable IDs, order is user-controlled
               key={index}
               className="rounded-md border border-input bg-background p-4 space-y-3"
               data-testid={`nav-item-${index}`}
@@ -141,6 +142,7 @@ function NavigationEditor({ items: initialItems, onSave, className }: Navigation
                 <div className="ml-6 space-y-2">
                   {(item.children ?? []).map((child, childIndex) => (
                     <div
+                      // biome-ignore lint/suspicious/noArrayIndexKey: Child items have no stable IDs, order is user-controlled
                       key={childIndex}
                       className="flex gap-2 items-start rounded-md border border-input bg-muted/30 p-3"
                       data-testid={`nav-child-${index}-${childIndex}`}

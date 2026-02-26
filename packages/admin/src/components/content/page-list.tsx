@@ -162,6 +162,13 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                   key={page.id}
                   className="border-b border-input last:border-0 hover:bg-muted/30 cursor-pointer"
                   onClick={() => onSelectPage(page)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelectPage(page);
+                    }
+                  }}
+                  tabIndex={0}
                   data-testid={`page-row-${page.id}`}
                 >
                   <td className="p-3">{page.title}</td>

@@ -114,9 +114,9 @@ describe('Delivery Handlers', () => {
 
       const testPages = pages.filter((p) => p.slug.startsWith(testPrefix));
       expect(testPages.length).toBeGreaterThanOrEqual(2);
-      testPages.forEach((page) => {
+      for (const page of testPages) {
         expect(page.pageType).toBe('landing');
-      });
+      }
     });
 
     it.skipIf(!supabaseUrl || !supabaseKey)('should support pagination', async () => {

@@ -57,6 +57,15 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
       ref={overlayRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={handleOverlayClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === 'Escape') {
+          e.preventDefault();
+          onClose();
+        }
+      }}
+      // biome-ignore lint/a11y/useSemanticElements: Dialog overlay backdrop, not a semantic button
+      role="button"
+      tabIndex={-1}
       data-testid="dialog-overlay"
     >
       <div
@@ -64,6 +73,7 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
           'relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-lg border border-input bg-background p-6 shadow-lg',
           className
         )}
+        // biome-ignore lint/a11y/useSemanticElements: Using div with role for flexibility, native <dialog> has styling limitations
         role="dialog"
         aria-modal="true"
         aria-label={title}

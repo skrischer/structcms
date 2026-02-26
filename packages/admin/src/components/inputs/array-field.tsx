@@ -104,6 +104,7 @@ function ArrayFieldInner<T>(
           <div className="space-y-3">
             {value.map((item, index) => (
               <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: Dynamic array items with no stable IDs
                 key={index}
                 className="flex gap-2 items-start p-3 rounded-md border border-input bg-muted/50"
                 data-testid={`array-item-${index}`}

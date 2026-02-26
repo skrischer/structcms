@@ -55,6 +55,13 @@ function AdminLayout({
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === 'Escape') {
+              setSidebarOpen(false);
+            }
+          }}
+          role="button"
+          tabIndex={0}
           data-testid="sidebar-overlay"
         />
       )}

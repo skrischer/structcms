@@ -7,13 +7,21 @@ function TestConsumer() {
   const { toast, toasts } = useToast();
   return (
     <div>
-      <button data-testid="trigger-default" onClick={() => toast('Default message')}>
+      <button type="button" data-testid="trigger-default" onClick={() => toast('Default message')}>
         Default
       </button>
-      <button data-testid="trigger-success" onClick={() => toast('Success message', 'success')}>
+      <button
+        type="button"
+        data-testid="trigger-success"
+        onClick={() => toast('Success message', 'success')}
+      >
         Success
       </button>
-      <button data-testid="trigger-error" onClick={() => toast('Error message', 'error')}>
+      <button
+        type="button"
+        data-testid="trigger-error"
+        onClick={() => toast('Error message', 'error')}
+      >
         Error
       </button>
       <span data-testid="toast-count">{toasts.length}</span>
@@ -161,7 +169,7 @@ describe('Toast', () => {
       const { toast, toasts } = useToast();
       return (
         <div>
-          <button data-testid="trigger-a" onClick={() => toast('Toast A')}>
+          <button type="button" data-testid="trigger-a" onClick={() => toast('Toast A')}>
             A
           </button>
           <span data-testid="ids-a">{toasts.map((t) => t.id).join(',')}</span>
@@ -173,7 +181,7 @@ describe('Toast', () => {
       const { toast, toasts } = useToast();
       return (
         <div>
-          <button data-testid="trigger-b" onClick={() => toast('Toast B')}>
+          <button type="button" data-testid="trigger-b" onClick={() => toast('Toast B')}>
             B
           </button>
           <span data-testid="ids-b">{toasts.map((t) => t.id).join(',')}</span>

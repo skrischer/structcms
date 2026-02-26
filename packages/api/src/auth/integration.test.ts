@@ -45,7 +45,7 @@ describe('Auth Integration Tests', () => {
       async () => {
         // Note: This test requires a valid test user to exist in Supabase
         // Skip if user credentials are not configured or user doesn't exist
-        let signInResult;
+        let signInResult: Awaited<ReturnType<typeof handleSignInWithPassword>> | undefined;
         try {
           // Step 1: Sign in with password
           signInResult = await handleSignInWithPassword(authAdapter, {
@@ -137,7 +137,7 @@ describe('Auth Integration Tests', () => {
       'should verify valid session returns user data',
       async () => {
         // Sign in first to get a valid token
-        let signInResult;
+        let signInResult: Awaited<ReturnType<typeof handleSignInWithPassword>> | undefined;
         try {
           signInResult = await handleSignInWithPassword(authAdapter, {
             email: testEmail,
@@ -165,7 +165,7 @@ describe('Auth Integration Tests', () => {
       'should handle getCurrentUser with valid token',
       async () => {
         // Sign in first to get a valid token
-        let signInResult;
+        let signInResult: Awaited<ReturnType<typeof handleSignInWithPassword>> | undefined;
         try {
           signInResult = await handleSignInWithPassword(authAdapter, {
             email: testEmail,

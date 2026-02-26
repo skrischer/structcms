@@ -51,33 +51,13 @@ interface PageData {
   sections: SectionData[];
 }
 
-function ViewRenderer({
-  currentView,
-  registry,
-  customRenderView,
-  onNavigate,
-  onSelectPage,
-  onCreatePage,
-  onUploadMedia,
-}: {
-  currentView: View;
-  registry: Registry;
-  customRenderView?: (view: View) => React.ReactNode | null;
-  onNavigate: (view: View) => void;
-  onSelectPage: (page: PageSummary) => void;
-  onCreatePage: () => void;
-  onUploadMedia: () => void;
-}) {
+// Custom hook for navigation data fetching
+function useNavigationData(currentView: View) {
   const apiClient = useApiClient();
   const [navigationData, setNavigationData] = useState<NavigationData | null>(null);
   const [navigationLoading, setNavigationLoading] = useState(false);
   const [navigationError, setNavigationError] = useState<string | null>(null);
 
-  const [pageData, setPageData] = useState<PageData | null>(null);
-  const [pageLoading, setPageLoading] = useState(false);
-  const [pageError, setPageError] = useState<string | null>(null);
-
-  // Fetch navigation data when navigation view is active
   useEffect(() => {
     if (currentView.type !== 'navigation') {
       return;
@@ -104,9 +84,23 @@ function ViewRenderer({
     fetchNavigation();
   }, [currentView.type, apiClient]);
 
-  // Fetch page data when page-editor view is active with a pageId
+  return { navigationData, navigationLoading, navigationError, setNavigationData };
+}
+
+// Custom hook for page data fetching
+function usePageData(currentView: View) {
+  const apiClient = useApiClient();
+  const [pageData, setPageData] = useState<PageData | null>(null);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
+
   useEffect(() => {
-    if (currentView.type !== 'page-editor' || !currentView.pageId) {
+    if (currentView.type !== 'page-editor') {
+      return;
+    }
+
+    const pageId = currentView.pageId;
+    if (!pageId) {
       return;
     }
 
@@ -114,7 +108,7 @@ function ViewRenderer({
       setPageLoading(true);
       setPageError(null);
       try {
-        const response = await apiClient.get<PageData>(`/pages/id/${currentView.pageId}`);
+        const response = await apiClient.get<PageData>(`/pages/id/${pageId}`);
         if (response.error) {
           setPageError(response.error.message);
         } else if (response.data) {
@@ -129,7 +123,97 @@ function ViewRenderer({
     };
 
     fetchPage();
-  }, [currentView.type, currentView.type === 'page-editor' ? currentView.pageId : null, apiClient]);
+  }, [currentView, apiClient]);
+
+  return { pageData, pageLoading, pageError };
+}
+
+// Render page editor view with loading/error states
+function renderPageEditorView(
+  currentView: View,
+  pageData: PageData | null,
+  pageLoading: boolean,
+  pageError: string | null,
+  registry: Registry,
+  onSave: (sections: SectionData[]) => void
+): React.ReactNode {
+  if (currentView.type !== 'page-editor') return null;
+
+  if (currentView.pageId && pageLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (currentView.pageId && pageError) {
+    return <div className="text-red-600">Error: {pageError}</div>;
+  }
+
+  if (currentView.pageId && !pageData) {
+    return <div className="text-gray-600">Page not found</div>;
+  }
+
+  const sections = pageData?.sections ?? [];
+  const allowedSections = pageData
+    ? (registry.getPageType(pageData.pageType)?.allowedSections ?? [])
+    : registry.getAllSections().map((s: { name: string }) => s.name);
+
+  return <PageEditor sections={sections} allowedSections={allowedSections} onSave={onSave} />;
+}
+
+// Render navigation view with loading/error states
+function renderNavigationView(
+  navigationData: NavigationData | null,
+  navigationLoading: boolean,
+  navigationError: string | null,
+  onSave: (items: NavigationItem[]) => void
+): React.ReactNode {
+  if (navigationLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (navigationError) {
+    return <div className="text-red-600">Error: {navigationError}</div>;
+  }
+
+  if (!navigationData) {
+    return (
+      <div className="text-gray-600">No navigation found. Create one via the seed endpoint.</div>
+    );
+  }
+
+  return <NavigationEditor items={navigationData.items} onSave={onSave} />;
+}
+
+function ViewRenderer({
+  currentView,
+  registry,
+  customRenderView,
+  onNavigate,
+  onSelectPage,
+  onCreatePage,
+  onUploadMedia,
+}: {
+  currentView: View;
+  registry: Registry;
+  customRenderView?: (view: View) => React.ReactNode | null;
+  onNavigate: (view: View) => void;
+  onSelectPage: (page: PageSummary) => void;
+  onCreatePage: () => void;
+  onUploadMedia: () => void;
+}) {
+  const apiClient = useApiClient();
+  const { navigationData, navigationLoading, navigationError, setNavigationData } =
+    useNavigationData(currentView);
+  const { pageData, pageLoading, pageError } = usePageData(currentView);
 
   const handleSaveNavigation = async (items: NavigationItem[]) => {
     if (!navigationData) return;
@@ -186,59 +270,24 @@ function ViewRenderer({
       );
     case 'pages':
       return <PageList onSelectPage={onSelectPage} onCreatePage={onCreatePage} />;
-    case 'page-editor': {
-      if (currentView.pageId && pageLoading) {
-        return (
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-64 w-full" />
-          </div>
-        );
-      }
-
-      if (currentView.pageId && pageError) {
-        return <div className="text-red-600">Error: {pageError}</div>;
-      }
-
-      if (currentView.pageId && !pageData) {
-        return <div className="text-gray-600">Page not found</div>;
-      }
-
-      // For new pages (no pageId) or when data is loaded
-      const sections = pageData?.sections ?? [];
-      const allowedSections = pageData
-        ? (registry.getPageType(pageData.pageType)?.allowedSections ?? [])
-        : registry.getAllSections().map((s: { name: string }) => s.name);
-
-      return (
-        <PageEditor sections={sections} allowedSections={allowedSections} onSave={handleSavePage} />
+    case 'page-editor':
+      return renderPageEditorView(
+        currentView,
+        pageData,
+        pageLoading,
+        pageError,
+        registry,
+        handleSavePage
       );
-    }
     case 'media':
       return <MediaBrowser onSelect={() => {}} />;
     case 'navigation':
-      if (navigationLoading) {
-        return (
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-64 w-full" />
-          </div>
-        );
-      }
-
-      if (navigationError) {
-        return <div className="text-red-600">Error: {navigationError}</div>;
-      }
-
-      if (!navigationData) {
-        return (
-          <div className="text-gray-600">
-            No navigation found. Create one via the seed endpoint.
-          </div>
-        );
-      }
-
-      return <NavigationEditor items={navigationData.items} onSave={handleSaveNavigation} />;
+      return renderNavigationView(
+        navigationData,
+        navigationLoading,
+        navigationError,
+        handleSaveNavigation
+      );
     case 'custom':
       return <div data-testid="custom-view">Custom view for path: {currentView.path}</div>;
     default:
