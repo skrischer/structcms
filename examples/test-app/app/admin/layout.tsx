@@ -11,6 +11,8 @@ const navItems = [
   { label: 'Media', path: '/admin/media' },
 ];
 
+const isAuthDisabled = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+
 export default function AdminRootLayout({
   children,
 }: {
@@ -26,6 +28,24 @@ export default function AdminRootLayout({
   // Don't protect the login page
   const isLoginPage = pathname === '/admin/login';
 
+  // If auth is disabled and user tries to access login, redirect to dashboard
+  if (isAuthDisabled && isLoginPage) {
+    router.push('/admin');
+    return <div>Redirecting...</div>;
+  }
+
+  // Always render content without auth when disabled
+  if (isAuthDisabled) {
+    return (
+      <AdminProvider registry={registry} apiBaseUrl="/api/cms">
+        <AdminLayout navItems={navItems} onNavigate={handleNavigate}>
+          {children}
+        </AdminLayout>
+      </AdminProvider>
+    );
+  }
+
+  // With auth enabled, wrap everything in AuthProvider
   return (
     <AuthProvider apiBaseUrl="/api/cms">
       {isLoginPage ? (

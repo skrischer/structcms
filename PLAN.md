@@ -87,3 +87,11 @@ Ship StructCMS as a real, usable product:
 - agent/auth worktree: auth flow verification + tests (running)
 - agent/e2e worktree: Playwright install + E2E test run (running)
 - Usage: 41% left
+
+### 2026-02-25 22:15 UTC — Cron Resume Session
+- Build: ✅ all packages build clean
+- Tests: ✅ 553 pass (0 fail), up from 497 — previous agents added tests
+- Fix: added missing `dotenv` dependency (commit 795d8c7)
+- Usage: 100% (5h window), 79% weekly
+- Spawned: structcms-verify (P2.2-P2.4 auth/export/media verification)
+- Spawned: structcms-coverage (P4.4 coverage report + P4.1 E2E prep)

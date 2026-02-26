@@ -21,11 +21,21 @@ export interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthProviderProps) {
+  const isAuthDisabled =
+    typeof window !== 'undefined' &&
+    (process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true' ||
+      (window as any).__NEXT_DATA__?.props?.pageProps?.disableAuth === true);
+
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<AuthSession | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!isAuthDisabled);
 
   const loadSession = useCallback(async () => {
+    if (isAuthDisabled) {
+      setIsLoading(false);
+      return;
+    }
+
     const storedToken = localStorage.getItem('structcms_access_token');
     const storedRefreshToken = localStorage.getItem('structcms_refresh_token');
 
@@ -94,7 +104,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
     } finally {
       setIsLoading(false);
     }
-  }, [apiBaseUrl, onAuthStateChange]);
+  }, [apiBaseUrl, onAuthStateChange, isAuthDisabled]);
 
   useEffect(() => {
     loadSession();
@@ -187,7 +197,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
     user,
     session,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: isAuthDisabled || !!user,
     signIn,
     signOut,
     refreshSession,
