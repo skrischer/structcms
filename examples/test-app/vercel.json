@@ -1,5 +1,0 @@
-{
-  "installCommand": "cd ../.. && pnpm install",
-  "buildCommand": "cd ../.. && pnpm --filter test-app build",
-  "outputDirectory": ".next"
-}
