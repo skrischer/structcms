@@ -99,6 +99,24 @@ describe('getFieldMeta', () => {
     const meta = getFieldMeta(schema);
     expect(meta).not.toBeNull();
     expect(meta?.fieldType).toBe('richtext');
+    expect(meta?.version).toBe(1);
+  });
+
+  it('should include version 1 in new field metadata', () => {
+    const schema = fields.string();
+    const meta = getFieldMeta(schema);
+    expect(meta).not.toBeNull();
+    expect(meta?.version).toBe(1);
+  });
+
+  it('should assume version 1 for legacy metadata without version (backward compatibility)', () => {
+    // Simulate old metadata format without version
+    const legacyMeta = '__structcms_field__{"fieldType":"text"}';
+    const schema = z.string().describe(legacyMeta);
+    const meta = getFieldMeta(schema);
+    expect(meta).not.toBeNull();
+    expect(meta?.version).toBe(1);
+    expect(meta?.fieldType).toBe('text');
   });
 });
 

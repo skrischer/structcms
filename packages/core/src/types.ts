@@ -9,6 +9,7 @@ export type FieldType = 'string' | 'text' | 'richtext' | 'image' | 'reference' |
  * Metadata stored in Zod schema description for field type identification
  */
 export interface FieldMeta {
+  version: 1;
   fieldType: FieldType;
 }
 

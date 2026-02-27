@@ -7,12 +7,13 @@ const FIELD_META_PREFIX = '__structcms_field__';
  * Encodes field metadata into a Zod description string
  */
 function encodeFieldMeta(fieldType: FieldType): string {
-  const meta: FieldMeta = { fieldType };
+  const meta: FieldMeta = { version: 1, fieldType };
   return `${FIELD_META_PREFIX}${JSON.stringify(meta)}`;
 }
 
 /**
  * Extracts field metadata from a Zod schema's description
+ * Assumes version 1 if no version is present (backward compatibility)
  */
 export function getFieldMeta(schema: z.ZodTypeAny): FieldMeta | null {
   const description = schema.description;
@@ -20,7 +21,12 @@ export function getFieldMeta(schema: z.ZodTypeAny): FieldMeta | null {
     return null;
   }
   try {
-    return JSON.parse(description.slice(FIELD_META_PREFIX.length)) as FieldMeta;
+    const parsed = JSON.parse(description.slice(FIELD_META_PREFIX.length)) as Partial<FieldMeta>;
+    // Backward compatibility: assume version 1 if not present
+    return {
+      version: parsed.version ?? 1,
+      fieldType: parsed.fieldType as FieldType,
+    };
   } catch {
     return null;
   }
