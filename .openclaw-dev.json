@@ -1,0 +1,18 @@
+{
+  "name": "structcms",
+  "gh_repo": "skrischer/structcms",
+  "base_branch": "develop",
+  "worktree_base": "/tmp/structcms-worktrees",
+  "pre_dod": ["pnpm install --frozen-lockfile"],
+  "dod": ["pnpm run typecheck", "pnpm run lint", "pnpm run test:run"],
+  "coder_context": "Du arbeitest in StructCMS — ein developer-first headless CMS Framework.\n\nTech-Stack:\n- pnpm Monorepo (packages/core, packages/api, packages/admin)\n- TypeScript strict\n- Vitest für Tests\n- Biome für Linting/Formatting\n\nRegeln:\n- TypeScript strict (kein any, keine ts-ignore)\n- Biome-kompatiblen Code schreiben (kein Prettier/ESLint-Style)\n- Tests für neue Funktionalität schreiben (Vitest)\n- Commit NICHT selbst — das macht das Pipeline-Script",
+  "reviewer_focus": [
+    "TypeScript Korrektheit",
+    "Monorepo-Boundaries (keine zirkulären Deps zwischen packages)",
+    "Security (Input-Validierung, kein eval, keine Injection-Vektoren)",
+    "Test-Coverage für neue Logik",
+    "Logik-Fehler"
+  ],
+  "release": null,
+  "urls": {}
+}

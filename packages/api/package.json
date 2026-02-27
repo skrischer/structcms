@@ -1,6 +1,6 @@
 {
   "name": "@structcms/api",
-  "version": "0.1.0",
+  "version": "0.1.1-rc.0",
   "description": "Storage, domain API, and delivery API for StructCMS",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -38,7 +38,11 @@
       }
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
