@@ -6,7 +6,7 @@ export type {
   AllowedMimeType,
 } from './types';
 
-export { ALLOWED_MIME_TYPES } from './types';
+export { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from './types';
 
 export type { SupabaseMediaAdapterConfig } from './supabase-adapter';
 

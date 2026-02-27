@@ -50,6 +50,16 @@ export function sanitizeString(value: string): string {
 }
 
 /**
+ * Strip all HTML tags from a string (for plain text fields like titles, names)
+ */
+export function stripTags(value: string): string {
+  return sanitizeHtml(value, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+}
+
+/**
  * Recursively sanitize all string values in an unknown data structure
  */
 export function sanitizeValue(value: unknown): unknown {

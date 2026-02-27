@@ -131,6 +131,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 function errorResponse(error: unknown, fallbackStatus = 500): ResponseLike {
+  // Only expose error messages for known error types
   if (
     error instanceof StorageValidationError ||
     error instanceof MediaValidationError ||
@@ -139,7 +140,8 @@ function errorResponse(error: unknown, fallbackStatus = 500): ResponseLike {
     return jsonResponse({ error: getErrorMessage(error) }, 400);
   }
 
-  return jsonResponse({ error: getErrorMessage(error) }, fallbackStatus);
+  // For unknown errors, return a generic message to avoid leaking internal details
+  return jsonResponse({ error: 'Internal Server Error' }, fallbackStatus);
 }
 
 async function resolveParams<TParams extends Record<string, string | string[]>>(

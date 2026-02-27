@@ -1,4 +1,4 @@
-import { sanitizeSectionData } from '../utils/sanitize';
+import { sanitizeSectionData, stripTags } from '../utils/sanitize';
 import { ensureUniqueSlug, generateSlug } from '../utils/slug';
 import type {
   CreateNavigationInput,
@@ -31,11 +31,14 @@ export async function handleCreatePage(
   adapter: StorageAdapter,
   input: CreatePageInput
 ): Promise<Page> {
-  if (!input.title.trim()) {
+  // Sanitize title to remove any HTML tags
+  const sanitizedTitle = stripTags(input.title).trim();
+
+  if (!sanitizedTitle) {
     throw new StorageValidationError('Page title must not be empty', 'EMPTY_TITLE');
   }
 
-  const slug = input.slug?.trim() || generateSlug(input.title);
+  const slug = input.slug?.trim() || generateSlug(sanitizedTitle);
 
   if (!slug) {
     throw new StorageValidationError(
@@ -53,6 +56,7 @@ export async function handleCreatePage(
 
   return adapter.createPage({
     ...input,
+    title: sanitizedTitle,
     slug: uniqueSlug,
     sections: sanitizedSections,
   });
@@ -69,8 +73,13 @@ export async function handleUpdatePage(
     throw new StorageValidationError('Page ID must not be empty', 'EMPTY_ID');
   }
 
-  if (input.title !== undefined && !input.title.trim()) {
-    throw new StorageValidationError('Page title must not be empty', 'EMPTY_TITLE');
+  // Sanitize title if provided
+  let sanitizedTitle: string | undefined;
+  if (input.title !== undefined) {
+    sanitizedTitle = stripTags(input.title).trim();
+    if (!sanitizedTitle) {
+      throw new StorageValidationError('Page title must not be empty', 'EMPTY_TITLE');
+    }
   }
 
   // If slug is being updated, ensure uniqueness
@@ -88,9 +97,11 @@ export async function handleUpdatePage(
     }
   }
 
-  const sanitizedInput = input.sections
-    ? { ...input, sections: sanitizeSectionData(input.sections) }
-    : input;
+  const sanitizedInput = {
+    ...input,
+    ...(sanitizedTitle !== undefined && { title: sanitizedTitle }),
+    ...(input.sections && { sections: sanitizeSectionData(input.sections) }),
+  };
 
   return adapter.updatePage(sanitizedInput);
 }
@@ -114,7 +125,10 @@ export async function handleCreateNavigation(
   adapter: StorageAdapter,
   input: CreateNavigationInput
 ): Promise<Navigation> {
-  if (!input.name.trim()) {
+  // Sanitize name to remove any HTML tags
+  const sanitizedName = stripTags(input.name).trim();
+
+  if (!sanitizedName) {
     throw new StorageValidationError('Navigation name must not be empty', 'EMPTY_NAME');
   }
 
@@ -122,14 +136,17 @@ export async function handleCreateNavigation(
   const existingNavigations = await adapter.listNavigations();
   const existingNames = existingNavigations.map((n) => n.name);
 
-  if (existingNames.includes(input.name.trim())) {
+  if (existingNames.includes(sanitizedName)) {
     throw new StorageValidationError(
-      `Navigation name "${input.name.trim()}" is already in use`,
+      `Navigation name "${sanitizedName}" is already in use`,
       'DUPLICATE_NAME'
     );
   }
 
-  return adapter.createNavigation(input);
+  return adapter.createNavigation({
+    ...input,
+    name: sanitizedName,
+  });
 }
 
 /**
@@ -144,24 +161,28 @@ export async function handleUpdateNavigation(
   }
 
   // If name is being updated, ensure uniqueness
+  let sanitizedName: string | undefined;
   if (input.name !== undefined) {
-    const name = input.name.trim();
-    if (!name) {
+    sanitizedName = stripTags(input.name).trim();
+    if (!sanitizedName) {
       throw new StorageValidationError('Navigation name must not be empty', 'EMPTY_NAME');
     }
 
     const existingNavigations = await adapter.listNavigations();
     const existingNames = existingNavigations.filter((n) => n.id !== input.id).map((n) => n.name);
 
-    if (existingNames.includes(name)) {
+    if (existingNames.includes(sanitizedName)) {
       throw new StorageValidationError(
-        `Navigation name "${name}" is already in use`,
+        `Navigation name "${sanitizedName}" is already in use`,
         'DUPLICATE_NAME'
       );
     }
   }
 
-  return adapter.updateNavigation(input);
+  return adapter.updateNavigation({
+    ...input,
+    ...(sanitizedName !== undefined && { name: sanitizedName }),
+  });
 }
 
 /**

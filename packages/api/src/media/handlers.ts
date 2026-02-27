@@ -1,5 +1,5 @@
 import type { MediaAdapter, MediaFile, MediaFilter, UploadMediaInput } from './types';
-import { ALLOWED_MIME_TYPES } from './types';
+import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from './types';
 
 /**
  * Error thrown when media validation fails
@@ -28,14 +28,27 @@ function validateMimeType(mimeType: string): void {
 }
 
 /**
+ * Validates that the file size is within the allowed limit
+ */
+function validateFileSize(size: number): void {
+  if (size > MAX_FILE_SIZE) {
+    throw new MediaValidationError(
+      `File size exceeds maximum allowed size of ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+      'FILE_TOO_LARGE'
+    );
+  }
+}
+
+/**
  * Handler for uploading a media file
- * Validates the file type and delegates to the adapter
+ * Validates the file type, size, and delegates to the adapter
  */
 export async function handleUploadMedia(
   adapter: MediaAdapter,
   input: UploadMediaInput
 ): Promise<MediaFile> {
   validateMimeType(input.mimeType);
+  validateFileSize(input.size);
   return adapter.upload(input);
 }
 
