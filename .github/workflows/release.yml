@@ -55,16 +55,16 @@ jobs:
         run: pnpm test
 
       - name: Publish @structcms/core
-        run: pnpm --filter @structcms/core publish --no-git-checks --provenance
+        run: cd packages/core && npm publish --provenance --access public
         env:
-          NPM_CONFIG_PROVENANCE: 'true'
+          NODE_AUTH_TOKEN: ''
 
       - name: Publish @structcms/api
-        run: pnpm --filter @structcms/api publish --no-git-checks --provenance
+        run: cd packages/api && npm publish --provenance --access public
         env:
-          NPM_CONFIG_PROVENANCE: 'true'
+          NODE_AUTH_TOKEN: ''
 
       - name: Publish @structcms/admin
-        run: pnpm --filter @structcms/admin publish --no-git-checks --provenance
+        run: cd packages/admin && npm publish --provenance --access public
         env:
-          NPM_CONFIG_PROVENANCE: 'true'
+          NODE_AUTH_TOKEN: ''
