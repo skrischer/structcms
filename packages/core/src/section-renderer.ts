@@ -34,7 +34,17 @@ export function createSectionRenderer<R = unknown>(
     const component = components[section.type];
 
     if (component) {
-      return component({ data: section.data, sectionKey: key });
+      try {
+        return component({ data: section.data, sectionKey: key });
+      } catch (error) {
+        console.error(`Error rendering section type "${section.type}" at index ${key}:`, error);
+
+        if (fallback) {
+          return fallback({ data: section.data, sectionKey: key });
+        }
+
+        return null;
+      }
     }
 
     if (fallback) {
