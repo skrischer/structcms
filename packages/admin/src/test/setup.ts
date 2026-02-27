@@ -1,6 +1,15 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// Mock HTMLDialogElement for native <dialog> element support in jsdom
+HTMLDialogElement.prototype.showModal = vi.fn(function mock(this: HTMLDialogElement) {
+  this.open = true;
+});
+
+HTMLDialogElement.prototype.close = vi.fn(function mock(this: HTMLDialogElement) {
+  this.open = false;
+});
+
 // Mock global fetch for tests
 global.fetch = vi.fn((input: string | URL | Request) => {
   const url =
