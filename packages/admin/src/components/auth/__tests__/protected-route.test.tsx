@@ -20,6 +20,7 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.unstubAllEnvs();
+  process.env.NEXT_PUBLIC_DISABLE_AUTH = undefined;
   if (typeof document !== 'undefined') {
     Object.defineProperty(document, 'cookie', {
       writable: true,

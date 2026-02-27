@@ -2,7 +2,7 @@
 
 Core modeling, validation, and types for StructCMS. Provides code-first content schema definitions, a registry for section/page type registration, type inference, and a framework-agnostic section renderer.
 
-For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 1: Modeling, Layer 2: Registry, Layer 7: Rendering).
+For architectural context, see [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) (Layer 1: Modeling, Layer 2: Registry, Layer 7: Rendering).
 
 **[← Back to main README](../../README.md)**
 

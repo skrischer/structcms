@@ -6,7 +6,7 @@
 
 A code-first, installable headless CMS framework that lives inside your website codebase. Content models are defined in TypeScript, validated with Zod, and rendered with full type safety.
 
-For product vision, scope, and positioning, see [CONCEPT.md](./CONCEPT.md).
+For product vision, scope, and positioning, see [docs/CONCEPT.md](./docs/CONCEPT.md).
 
 ## Quick Start
 
@@ -82,8 +82,7 @@ structcms/
 ├── examples/
 │   └── test-app/              # E2E test app (Next.js + Playwright)
 ├── supabase/                  # Database migrations
-├── ARCHITECTURE.md            # Technical layer documentation
-├── CONCEPT.md                 # Product vision, scope, risks
+├── docs/                      # Documentation (architecture, concept, setup guides)
 ├── biome.json                 # Linter/formatter config
 ├── tsconfig.base.json         # Shared TypeScript config
 ├── vitest.workspace.ts        # Test workspace config
@@ -153,7 +152,7 @@ pnpm --filter test-app test:e2e     # Terminal 2
 
 ## Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical layer documentation.
+See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for detailed technical layer documentation.
 
 ```
 Website Project
