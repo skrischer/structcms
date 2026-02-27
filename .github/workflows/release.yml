@@ -55,16 +55,13 @@ jobs:
         run: pnpm test
 
       - name: Publish @structcms/core
-        run: pnpm --filter @structcms/core publish --no-git-checks --provenance
-        env:
-          NPM_CONFIG_PROVENANCE: 'true'
+        run: npm publish --provenance --access public
+        working-directory: packages/core
 
       - name: Publish @structcms/api
-        run: pnpm --filter @structcms/api publish --no-git-checks --provenance
-        env:
-          NPM_CONFIG_PROVENANCE: 'true'
+        run: npm publish --provenance --access public
+        working-directory: packages/api
 
       - name: Publish @structcms/admin
-        run: pnpm --filter @structcms/admin publish --no-git-checks --provenance
-        env:
-          NPM_CONFIG_PROVENANCE: 'true'
+        run: npm publish --provenance --access public
+        working-directory: packages/admin
