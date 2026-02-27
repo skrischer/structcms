@@ -90,7 +90,10 @@ export function getAccessToken(request: NextRequest): string | null {
 /**
  * Get refresh token from cookie or body
  */
-export function getRefreshToken(request: NextRequest, body?: { refreshToken?: string }): string | null {
+export function getRefreshToken(
+  request: NextRequest,
+  body?: { refreshToken?: string }
+): string | null {
   // Try cookie first (preferred)
   const cookieToken = request.cookies.get('structcms_refresh_token')?.value;
   if (cookieToken) return cookieToken;
@@ -109,7 +112,7 @@ export function getRefreshToken(request: NextRequest, body?: { refreshToken?: st
 export function generateCsrfToken(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -172,14 +175,17 @@ interface RateLimitEntry {
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 // Clean up expired entries every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (entry.resetAt < now) {
-      rateLimitStore.delete(key);
+setInterval(
+  () => {
+    const now = Date.now();
+    for (const [key, entry] of rateLimitStore.entries()) {
+      if (entry.resetAt < now) {
+        rateLimitStore.delete(key);
+      }
     }
-  }
-}, 5 * 60 * 1000);
+  },
+  5 * 60 * 1000
+);
 
 export interface RateLimitConfig {
   maxAttempts: number;
@@ -201,9 +207,9 @@ export function checkRateLimit(
 ): RateLimitResult {
   const now = Date.now();
   const key = `ratelimit:${identifier}`;
-  
+
   let entry = rateLimitStore.get(key);
-  
+
   // Create new entry or reset if expired
   if (!entry || entry.resetAt < now) {
     entry = {
@@ -212,13 +218,13 @@ export function checkRateLimit(
     };
     rateLimitStore.set(key, entry);
   }
-  
+
   // Increment count
   entry.count++;
-  
+
   const allowed = entry.count <= config.maxAttempts;
   const remaining = Math.max(0, config.maxAttempts - entry.count);
-  
+
   return {
     allowed,
     remaining,
@@ -235,7 +241,7 @@ export function requireRateLimit(
   config?: RateLimitConfig
 ): NextResponse | null {
   const result = checkRateLimit(identifier, config);
-  
+
   if (!result.allowed) {
     const resetDate = new Date(result.resetAt);
     return NextResponse.json(
@@ -256,7 +262,7 @@ export function requireRateLimit(
       }
     );
   }
-  
+
   return null;
 }
 
@@ -270,12 +276,12 @@ export function getClientIp(request: NextRequest): string {
     const ip = forwardedFor.split(',')[0]?.trim();
     if (ip) return ip;
   }
-  
+
   const realIp = request.headers.get('x-real-ip');
   if (realIp) {
     return realIp;
   }
-  
+
   // Fallback to a placeholder for development
   return 'unknown';
 }
@@ -288,9 +294,9 @@ export function getClientIp(request: NextRequest): string {
  * Create generic error response (don't leak internal details)
  */
 export function createErrorResponse(
-  message: string = 'Authentication failed',
-  code: string = 'AUTH_ERROR',
-  status: number = 401
+  message = 'Authentication failed',
+  code = 'AUTH_ERROR',
+  status = 401
 ): NextResponse {
   return NextResponse.json(
     {
@@ -306,10 +312,7 @@ export function createErrorResponse(
 /**
  * Log security event (for monitoring)
  */
-export function logSecurityEvent(
-  event: string,
-  details: Record<string, unknown>
-): void {
+export function logSecurityEvent(event: string, details: Record<string, unknown>): void {
   // In production, this would send to a proper logging service
   console.log('[SECURITY]', event, {
     ...details,

@@ -18,11 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     // Validate environment variables at runtime
     if (!supabaseUrl || !supabaseSecretKey) {
-      return createErrorResponse(
-        'Server configuration error',
-        'SERVER_CONFIG_ERROR',
-        500
-      );
+      return createErrorResponse('Server configuration error', 'SERVER_CONFIG_ERROR', 500);
     }
 
     // 1. CSRF Protection

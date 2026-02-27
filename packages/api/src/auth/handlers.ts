@@ -116,7 +116,7 @@ export async function handleVerifySession(adapter: AuthAdapter, input: VerifySes
   if (input.expiresAt) {
     const now = new Date();
     const expiresAt = input.expiresAt instanceof Date ? input.expiresAt : new Date(input.expiresAt);
-    
+
     if (now > expiresAt) {
       throw new AuthValidationError('Token has expired');
     }

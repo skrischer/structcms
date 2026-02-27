@@ -66,7 +66,9 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
       (window as any).__NEXT_DATA__?.props?.pageProps?.disableAuth === true);
 
   if (isAuthDisabled) {
-    console.warn('⚠️  WARNING: Authentication is DISABLED. This should only be used in development!');
+    console.warn(
+      '⚠️  WARNING: Authentication is DISABLED. This should only be used in development!'
+    );
   }
 
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -81,10 +83,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
 
   const tryRefreshSession = useCallback(async (): Promise<boolean> => {
     try {
-      const refreshResponse = await fetch(
-        `${apiBaseUrl}/auth/refresh`,
-        createFetchOptions('POST')
-      );
+      const refreshResponse = await fetch(`${apiBaseUrl}/auth/refresh`, createFetchOptions('POST'));
 
       if (refreshResponse.ok) {
         const data = await refreshResponse.json();
@@ -112,10 +111,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
 
     try {
       // Verify session using httpOnly cookie
-      const response = await fetch(
-        `${apiBaseUrl}/auth/verify`,
-        createFetchOptions('POST')
-      );
+      const response = await fetch(`${apiBaseUrl}/auth/verify`, createFetchOptions('POST'));
 
       if (!response.ok) {
         // Try to refresh session
@@ -194,10 +190,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
   const signOut = useCallback(async () => {
     setIsLoading(true);
     try {
-      await fetch(
-        `${apiBaseUrl}/auth/signout`,
-        createFetchOptions('POST')
-      );
+      await fetch(`${apiBaseUrl}/auth/signout`, createFetchOptions('POST'));
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
@@ -207,10 +200,7 @@ export function AuthProvider({ children, apiBaseUrl, onAuthStateChange }: AuthPr
   }, [apiBaseUrl, clearSession]);
 
   const refreshSession = useCallback(async () => {
-    const response = await fetch(
-      `${apiBaseUrl}/auth/refresh`,
-      createFetchOptions('POST')
-    );
+    const response = await fetch(`${apiBaseUrl}/auth/refresh`, createFetchOptions('POST'));
 
     if (!response.ok) {
       throw new Error('Failed to refresh session');
