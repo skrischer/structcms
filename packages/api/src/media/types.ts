@@ -1,4 +1,9 @@
 /**
+ * Maximum file size: 50MB
+ */
+export const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+/**
  * Allowed MIME types for media uploads
  */
 export const ALLOWED_MIME_TYPES = [

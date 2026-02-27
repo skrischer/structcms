@@ -28,3 +28,8 @@ export {
 
 export { createAuthMiddleware } from './middleware';
 export type { AuthMiddlewareConfig, AuthenticatedRequest } from './middleware';
+
+export { generateCsrfToken, validateCsrfToken } from './csrf';
+
+export { createRateLimiter } from './rate-limiter';
+export type { RateLimiter, RateLimiterConfig, RateLimitResult } from './rate-limiter';

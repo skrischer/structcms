@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PageSection } from '../storage/types';
-import { sanitizeSectionData, sanitizeString, sanitizeValue } from './sanitize';
+import { sanitizeSectionData, sanitizeString, sanitizeValue, stripTags } from './sanitize';
 
 describe('sanitizeString', () => {
   it('should strip script tags', () => {
@@ -209,5 +209,51 @@ describe('sanitizeSectionData', () => {
     expect(items[1].caption).toBe('<p>Photo 2</p>');
     const metadata = result[0].data.metadata as Record<string, unknown>;
     expect(metadata.description).toBe('<p>Gallery</p>');
+  });
+});
+
+describe('stripTags', () => {
+  it('should remove all HTML tags', () => {
+    const input = '<p>Hello <strong>world</strong></p>';
+    expect(stripTags(input)).toBe('Hello world');
+  });
+
+  it('should remove script tags and content', () => {
+    const input = '<script>alert("xss")</script>Hello';
+    expect(stripTags(input)).toBe('Hello');
+  });
+
+  it('should remove all tags from complex HTML', () => {
+    const input = '<div><h1>Title</h1><p>Text</p><a href="link">Link</a></div>';
+    expect(stripTags(input)).toBe('TitleTextLink');
+  });
+
+  it('should preserve plain text', () => {
+    const input = 'Plain text without tags';
+    expect(stripTags(input)).toBe('Plain text without tags');
+  });
+
+  it('should handle empty string', () => {
+    expect(stripTags('')).toBe('');
+  });
+
+  it('should remove img tags', () => {
+    const input = 'Before <img src="photo.jpg" alt="test" /> After';
+    expect(stripTags(input)).toBe('Before  After');
+  });
+
+  it('should remove event handlers', () => {
+    const input = '<div onclick="alert(1)">Click me</div>';
+    expect(stripTags(input)).toBe('Click me');
+  });
+
+  it('should handle self-closing tags', () => {
+    const input = 'Line 1<br />Line 2';
+    expect(stripTags(input)).toBe('Line 1Line 2');
+  });
+
+  it('should remove nested tags', () => {
+    const input = '<div><p><span>Nested</span> text</p></div>';
+    expect(stripTags(input)).toBe('Nested text');
   });
 });
