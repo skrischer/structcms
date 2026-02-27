@@ -16,9 +16,11 @@ out/
 .env.test.local
 .env.production.local
 
-# IDE
+# IDE / AI
 .idea/
 .vscode/
+.windsurf/
+.claude/
 *.swp
 *.swo
 
@@ -37,6 +39,11 @@ coverage/
 test-results/
 playwright-report/
 
+# Vercel
+.vercel/
+
+# Audit reports (generated)
+AUDIT_*.md
+
 # Misc
 *.tsbuildinfo
-.vercel
