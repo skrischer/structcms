@@ -174,6 +174,34 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SECRET_KEY=your-service-role-key
 ```
 
+## Deployment
+
+The test-app is deployed on Vercel as a staging environment:
+
+**Staging:** https://structcms-staging.vercel.app
+
+### Deploy via CLI
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production (from repo root)
+vercel --prod
+```
+
+### Vercel Configuration
+
+The project uses the following build settings (see `examples/test-app/vercel.json`):
+
+- **Install:** `pnpm install --recursive`
+- **Build:** `pnpm --filter test-app... build` (builds all dependencies first)
+- **Root Directory:** Repository root (monorepo setup)
+
+Environment variables (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, etc.) must be configured in the Vercel project settings.
+
+
+
 ## Contributing
 
 Contributions are welcome! Please see our contributing guidelines (coming soon) for details on how to submit pull requests, report issues, and suggest improvements.
