@@ -136,3 +136,7 @@ export {
   validateCsrfToken,
   createRateLimiter,
 } from './auth';
+
+export type { AuditEntry } from './audit';
+
+export { createAuditLogger, withAuditLog } from './audit';
