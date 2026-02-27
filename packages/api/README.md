@@ -2,7 +2,7 @@
 
 Storage, domain API, delivery API, and content export for StructCMS. Provides Supabase-agnostic adapter interfaces, handler functions for content CRUD, media management, and JSON export.
 
-For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 3: Storage, Layer 4: Domain API, Layer 5: Delivery API).
+For architectural context, see [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) (Layer 3: Storage, Layer 4: Domain API, Layer 5: Delivery API).
 
 **[← Back to main README](../../README.md)**
 
@@ -164,7 +164,7 @@ Rich text content is sanitized on write using `sanitize-html` to prevent XSS att
 
 ## Database
 
-Migrations live in `supabase/migrations/` at the monorepo root. See [ARCHITECTURE.md](../../ARCHITECTURE.md) for the database schema.
+Migrations live in `supabase/migrations/` at the monorepo root. See [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) for the database schema.
 
 ## Development
 

@@ -2,7 +2,7 @@
 
 Admin UI components for StructCMS. Provides dynamic form generation from Zod schemas, section/page editors, media browser, navigation editor, and a layout shell for the admin interface.
 
-For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 6: Admin UI).
+For architectural context, see [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) (Layer 6: Admin UI).
 
 **[← Back to main README](../../README.md)**
 
