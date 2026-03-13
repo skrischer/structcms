@@ -3,7 +3,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { FormGenerator, fieldNameToLabel, resolveFieldMeta, resolveFieldType } from '../form-generator';
+import {
+  FormGenerator,
+  fieldNameToLabel,
+  resolveFieldMeta,
+  resolveFieldType,
+} from '../form-generator';
 
 describe('resolveFieldType', () => {
   it('resolves string field type', () => {
@@ -209,13 +214,7 @@ describe('FormGenerator', () => {
       active: fields.boolean(),
     });
 
-    render(
-      <FormGenerator
-        schema={schema}
-        onSubmit={() => {}}
-        defaultValues={{ active: false }}
-      />
-    );
+    render(<FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ active: false }} />);
 
     expect(screen.getByTestId('boolean-input')).toBeInTheDocument();
     expect(screen.getByRole('checkbox')).toBeInTheDocument();
@@ -228,11 +227,7 @@ describe('FormGenerator', () => {
     });
 
     render(
-      <FormGenerator
-        schema={schema}
-        onSubmit={() => {}}
-        defaultValues={{ mode: 'static' }}
-      />
+      <FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ mode: 'static' }} />
     );
 
     expect(screen.getByTestId('select-input')).toBeInTheDocument();
@@ -245,13 +240,7 @@ describe('FormGenerator', () => {
       color: fields.select({ options: ['red', 'green', 'blue', 'yellow'] as const }),
     });
 
-    render(
-      <FormGenerator
-        schema={schema}
-        onSubmit={() => {}}
-        defaultValues={{ color: 'red' }}
-      />
-    );
+    render(<FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ color: 'red' }} />);
 
     expect(screen.getByTestId('select-input')).toBeInTheDocument();
     expect(screen.getByTestId('select-dropdown')).toBeInTheDocument();
@@ -262,13 +251,7 @@ describe('FormGenerator', () => {
       document: fields.file(),
     });
 
-    render(
-      <FormGenerator
-        schema={schema}
-        onSubmit={() => {}}
-        defaultValues={{ document: '' }}
-      />
-    );
+    render(<FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ document: '' }} />);
 
     expect(screen.getByText('Document')).toBeInTheDocument();
     expect(screen.getByText('No file selected')).toBeInTheDocument();
@@ -301,9 +284,7 @@ describe('FormGenerator', () => {
     const schema = z.object({
       website: fields.url(),
     });
-    render(
-      <FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ website: '' }} />
-    );
+    render(<FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ website: '' }} />);
     const input = screen.getByLabelText(/Website/);
     expect(input).toHaveAttribute('type', 'url');
     expect(input).toHaveAttribute('placeholder', 'https://...');
@@ -314,11 +295,16 @@ describe('FormGenerator', () => {
       variant: fields.select({ options: ['static', 'overlay'] as const }),
       overlayColor: visibleWhen(
         fields.select({ options: ['teal', 'petrol', 'none'] as const }),
-        'variant', 'overlay'
+        'variant',
+        'overlay'
       ),
     });
     render(
-      <FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ variant: 'static', overlayColor: 'teal' }} />
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ variant: 'static', overlayColor: 'teal' }}
+      />
     );
     expect(screen.getByText('Variant')).toBeInTheDocument();
     expect(screen.queryByText('Overlay Color')).not.toBeInTheDocument();
@@ -329,11 +315,16 @@ describe('FormGenerator', () => {
       variant: fields.select({ options: ['static', 'overlay'] as const }),
       overlayColor: visibleWhen(
         fields.select({ options: ['teal', 'petrol', 'none'] as const }),
-        'variant', 'overlay'
+        'variant',
+        'overlay'
       ),
     });
     render(
-      <FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ variant: 'overlay', overlayColor: 'teal' }} />
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ variant: 'overlay', overlayColor: 'teal' }}
+      />
     );
     expect(screen.getByText('Variant')).toBeInTheDocument();
     expect(screen.getByText('Overlay Color')).toBeInTheDocument();

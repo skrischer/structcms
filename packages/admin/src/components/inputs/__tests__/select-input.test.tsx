@@ -96,11 +96,7 @@ describe('SelectInput', () => {
 
   it('shows correct option as selected in dropdown mode', () => {
     render(
-      <SelectInput
-        label="Color"
-        options={['Red', 'Blue', 'Green', 'Yellow']}
-        value="Green"
-      />
+      <SelectInput label="Color" options={['Red', 'Blue', 'Green', 'Yellow']} value="Green" />
     );
 
     const select = screen.getByTestId('select-dropdown') as HTMLSelectElement;

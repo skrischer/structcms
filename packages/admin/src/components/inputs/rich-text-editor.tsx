@@ -68,8 +68,10 @@ function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
   const showH1 = isBlockAllowed('heading1', allowedBlocks);
   const showH2 = isBlockAllowed('heading2', allowedBlocks);
   const showH3 = isBlockAllowed('heading3', allowedBlocks);
-  const showBulletList = isBlockAllowed('bulletList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
-  const showOrderedList = isBlockAllowed('orderedList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
+  const showBulletList =
+    isBlockAllowed('bulletList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
+  const showOrderedList =
+    isBlockAllowed('orderedList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
 
   const hasInlineButtons = showBold || showItalic || showLink;
   const hasHeadingButtons = showH1 || showH2 || showH3;
@@ -130,7 +132,9 @@ function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
           H3
         </ToolbarButton>
       )}
-      {(hasInlineButtons || hasHeadingButtons) && hasListButtons && <div className="w-px bg-border mx-1" />}
+      {(hasInlineButtons || hasHeadingButtons) && hasListButtons && (
+        <div className="w-px bg-border mx-1" />
+      )}
       {showBulletList && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}

@@ -6,7 +6,10 @@ const FIELD_META_PREFIX = '__structcms_field__';
 /**
  * Encodes field metadata into a Zod description string
  */
-function encodeFieldMeta(fieldType: FieldType, extra?: Omit<FieldMeta, 'version' | 'fieldType'>): string {
+function encodeFieldMeta(
+  fieldType: FieldType,
+  extra?: Omit<FieldMeta, 'version' | 'fieldType'>
+): string {
   const meta: FieldMeta = { version: 1, fieldType, ...extra };
   return `${FIELD_META_PREFIX}${JSON.stringify(meta)}`;
 }

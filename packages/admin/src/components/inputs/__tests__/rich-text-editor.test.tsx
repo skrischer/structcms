@@ -76,7 +76,13 @@ describe('RichTextEditor', () => {
   });
 
   it('renders only allowed toolbar buttons when allowedBlocks is set', () => {
-    render(<RichTextEditor label="Content" name="content" allowedBlocks={['paragraph', 'bold', 'italic']} />);
+    render(
+      <RichTextEditor
+        label="Content"
+        name="content"
+        allowedBlocks={['paragraph', 'bold', 'italic']}
+      />
+    );
     expect(screen.getByTitle('Bold')).toBeInTheDocument();
     expect(screen.getByTitle('Italic')).toBeInTheDocument();
     expect(screen.queryByTitle('Heading 1')).not.toBeInTheDocument();

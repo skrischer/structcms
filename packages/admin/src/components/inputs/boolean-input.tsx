@@ -11,7 +11,10 @@ export interface BooleanInputProps
 }
 
 const BooleanInput = React.forwardRef<HTMLInputElement, BooleanInputProps>(
-  ({ className, label, error, required, id, checked, onCheckedChange, onChange, ...props }, ref) => {
+  (
+    { className, label, error, required, id, checked, onCheckedChange, onChange, ...props },
+    ref
+  ) => {
     const inputId = id || props.name || React.useId();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

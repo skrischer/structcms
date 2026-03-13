@@ -32,7 +32,9 @@ describe('FilePicker', () => {
   });
 
   it('shows filename when value is set', () => {
-    render(<FilePicker label="Download File" name="file" value="https://example.com/docs/report.pdf" />);
+    render(
+      <FilePicker label="Download File" name="file" value="https://example.com/docs/report.pdf" />
+    );
 
     expect(screen.getByTestId('file-name')).toBeInTheDocument();
     expect(screen.getByText('report.pdf')).toBeInTheDocument();

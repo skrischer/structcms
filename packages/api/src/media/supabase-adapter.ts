@@ -1,5 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { MediaAdapter, MediaCategory, MediaFile, MediaFilter, UploadMediaInput } from './types';
+import type {
+  MediaAdapter,
+  MediaCategory,
+  MediaFile,
+  MediaFilter,
+  UploadMediaInput,
+} from './types';
 import { ALLOWED_MIME_TYPES } from './types';
 
 /**

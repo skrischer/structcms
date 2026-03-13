@@ -3,8 +3,7 @@ import { cn } from '../../lib/utils';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
-export interface UrlInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface UrlInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string;
   error?: string;
 }

@@ -1,4 +1,10 @@
-import { createRegistry, definePageType, defineSection, fields, visibleWhen } from '@structcms/core';
+import {
+  createRegistry,
+  definePageType,
+  defineSection,
+  fields,
+  visibleWhen,
+} from '@structcms/core';
 
 export const HeroSection = defineSection({
   name: 'hero',
@@ -31,11 +37,7 @@ export const CtaSection = defineSection({
       options: ['primary', 'secondary', 'outline', 'ghost'] as const,
     }),
     openInNewTab: fields.boolean(),
-    attachment: visibleWhen(
-      fields.file().optional(),
-      'buttonStyle',
-      ['primary', 'secondary'],
-    ),
+    attachment: visibleWhen(fields.file().optional(), 'buttonStyle', ['primary', 'secondary']),
   },
 });
 

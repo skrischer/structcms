@@ -200,10 +200,15 @@ function MediaBrowser({ onSelect, className, pageSize = 12, category }: MediaBro
                 onClick={() => onSelect?.(item)}
                 data-testid={`media-select-${item.id}`}
               >
-                {isImageMimeType(item.mimeType) || (!item.mimeType && !category) || (category === 'image') ? (
+                {isImageMimeType(item.mimeType) ||
+                (!item.mimeType && !category) ||
+                category === 'image' ? (
                   <img src={item.url} alt={item.filename} className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-2xl font-bold text-muted-foreground" data-testid={`media-icon-${item.id}`}>
+                  <span
+                    className="text-2xl font-bold text-muted-foreground"
+                    data-testid={`media-icon-${item.id}`}
+                  >
                     {getDocumentIcon(item.filename)}
                   </span>
                 )}

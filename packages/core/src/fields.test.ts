@@ -199,10 +199,7 @@ describe('visibleWhen', () => {
   });
 
   it('should preserve existing options metadata', () => {
-    const schema = visibleWhen(
-      fields.select({ options: ['a', 'b'] as const }),
-      'mode', 'advanced'
-    );
+    const schema = visibleWhen(fields.select({ options: ['a', 'b'] as const }), 'mode', 'advanced');
     const meta = getFieldMeta(schema);
     expect(meta?.fieldType).toBe('select');
     expect(meta?.options).toEqual(['a', 'b']);
