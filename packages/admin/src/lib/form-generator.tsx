@@ -135,8 +135,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
     // Conditional visibility
     if (fieldMeta?.visibleWhen) {
-      const allValues = watch() as Record<string, unknown>;
-      const watchedValue = allValues[fieldMeta.visibleWhen.field];
+      const watchedValue = watch(fieldMeta.visibleWhen.field as never) as unknown;
       if (!fieldMeta.visibleWhen.values.includes(watchedValue as string)) {
         return null;
       }

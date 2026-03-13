@@ -586,19 +586,12 @@ export function createNextPageByIdRoute(config: NextPageByIdRouteConfig) {
 
 function getQueryParam(url: string, name: string): string | null {
   const queryStart = url.indexOf('?');
-  if (queryStart === -1) {
-    return null;
-  }
-
-  const query = url.slice(queryStart + 1);
-  for (const pair of query.split('&')) {
+  if (queryStart === -1) return null;
+  for (const pair of url.slice(queryStart + 1).split('&')) {
     const eqIndex = pair.indexOf('=');
-    const key = eqIndex === -1 ? pair : pair.slice(0, eqIndex);
-    if (decodeURIComponent(key) === name) {
-      return eqIndex === -1 ? '' : decodeURIComponent(pair.slice(eqIndex + 1));
-    }
+    const key = decodeURIComponent(eqIndex === -1 ? pair : pair.slice(0, eqIndex));
+    if (key === name) return eqIndex === -1 ? '' : decodeURIComponent(pair.slice(eqIndex + 1));
   }
-
   return null;
 }
 
