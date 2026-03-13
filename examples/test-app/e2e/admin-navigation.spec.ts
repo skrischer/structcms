@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { resetAndSeed } from './helpers';
 
 test.describe('Admin Sidebar Navigation', () => {

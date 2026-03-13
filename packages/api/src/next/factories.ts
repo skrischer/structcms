@@ -1,35 +1,31 @@
+import { handleGetPageBySlug, handleListPages } from '../delivery';
 import {
-  handleListPages,
-  handleGetPageBySlug,
-} from '../delivery';
-import {
-  handleCreatePage,
-  handleUpdatePage,
-  handleDeletePage,
-  handleCreateNavigation,
-  handleUpdateNavigation,
-  handleDeleteNavigation,
-  StorageValidationError,
-} from '../storage';
-import {
+  MediaValidationError,
+  handleDeleteMedia,
+  handleGetMedia,
   handleListMedia,
   handleUploadMedia,
-  handleGetMedia,
-  handleDeleteMedia,
-  MediaValidationError,
 } from '../media';
-import type {
-  StorageAdapter,
-  CreatePageInput,
-  UpdatePageInput,
-  CreateNavigationInput,
-  UpdateNavigationInput,
-  Page,
-  Navigation,
-  PageSection,
-  NavigationItem,
+import type { MediaAdapter, MediaCategory, MediaFilter, UploadMediaInput } from '../media';
+import {
+  StorageValidationError,
+  handleCreateNavigation,
+  handleCreatePage,
+  handleDeleteNavigation,
+  handleDeletePage,
+  handleUpdateNavigation,
+  handleUpdatePage,
 } from '../storage';
-import type { MediaAdapter, UploadMediaInput } from '../media';
+import type {
+  CreateNavigationInput,
+  CreatePageInput,
+  Navigation,
+  NavigationItem,
+  Page,
+  PageSection,
+  StorageAdapter,
+  UpdateNavigationInput,
+} from '../storage';
 
 type JsonRecord = Record<string, unknown>;
 type ParsedPageSection = {
@@ -46,6 +42,7 @@ type ParsedUpdatePagePatch = {
 };
 
 interface RequestLike {
+  url?: string;
   json(): Promise<unknown>;
   formData(): Promise<FormDataLike>;
 }
@@ -76,10 +73,12 @@ interface RouteContext<TParams extends Record<string, string | string[]>> {
 
 export interface NextPagesRouteConfig {
   storageAdapter: StorageAdapter;
+  mediaAdapter: MediaAdapter;
 }
 
 export interface NextPageBySlugRouteConfig {
   storageAdapter: StorageAdapter;
+  mediaAdapter: MediaAdapter;
 }
 
 export interface NextPageByIdRouteConfig {
@@ -103,7 +102,8 @@ export interface NextNavigationByIdRouteConfig {
 }
 
 function getResponseConstructor(): ResponseConstructorLike {
-  const responseCtor = (globalThis as typeof globalThis & { Response?: ResponseConstructorLike }).Response;
+  const responseCtor = (globalThis as typeof globalThis & { Response?: ResponseConstructorLike })
+    .Response;
 
   if (!responseCtor) {
     throw new Error('Response constructor is not available in this runtime');
@@ -132,6 +132,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 function errorResponse(error: unknown, fallbackStatus = 500): ResponseLike {
+  // Only expose error messages for known error types
   if (
     error instanceof StorageValidationError ||
     error instanceof MediaValidationError ||
@@ -140,7 +141,8 @@ function errorResponse(error: unknown, fallbackStatus = 500): ResponseLike {
     return jsonResponse({ error: getErrorMessage(error) }, 400);
   }
 
-  return jsonResponse({ error: getErrorMessage(error) }, fallbackStatus);
+  // For unknown errors, return a generic message to avoid leaking internal details
+  return jsonResponse({ error: 'Internal Server Error' }, fallbackStatus);
 }
 
 async function resolveParams<TParams extends Record<string, string | string[]>>(
@@ -260,10 +262,7 @@ function parseNavigationItems(value: unknown): NavigationItem[] | undefined {
       children?: unknown;
     };
 
-    if (
-      typeof itemCandidate.label !== 'string' ||
-      typeof itemCandidate.href !== 'string'
-    ) {
+    if (typeof itemCandidate.label !== 'string' || typeof itemCandidate.href !== 'string') {
       return undefined;
     }
 
@@ -335,9 +334,7 @@ function parseUpdatePagePatch(payload: JsonRecord): ParsedUpdatePagePatch | null
   };
 }
 
-function parseCreateNavigationInput(
-  payload: JsonRecord
-): CreateNavigationInput | null {
+function parseCreateNavigationInput(payload: JsonRecord): CreateNavigationInput | null {
   const name = parseStringField(payload.name);
   const items = parseNavigationItems(payload.items);
 
@@ -351,12 +348,9 @@ function parseCreateNavigationInput(
   };
 }
 
-function parseUpdateNavigationPatch(
-  payload: JsonRecord
-): Omit<UpdateNavigationInput, 'id'> | null {
+function parseUpdateNavigationPatch(payload: JsonRecord): Omit<UpdateNavigationInput, 'id'> | null {
   const name = parseStringField(payload.name);
-  const items =
-    payload.items === undefined ? undefined : parseNavigationItems(payload.items);
+  const items = payload.items === undefined ? undefined : parseNavigationItems(payload.items);
 
   if (payload.name !== undefined && !name) {
     return null;
@@ -400,7 +394,7 @@ export function createNextPagesRoute(config: NextPagesRouteConfig) {
   return {
     GET: async (_request: RequestLike): Promise<ResponseLike> => {
       try {
-        const pages = await handleListPages(config.storageAdapter);
+        const pages = await handleListPages(config.storageAdapter, config.mediaAdapter);
         return jsonResponse(pages);
       } catch (error) {
         return errorResponse(error);
@@ -435,7 +429,11 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
     ): Promise<ResponseLike> => {
       try {
         const { slug } = await resolveParams(context);
-        const page = await handleGetPageBySlug(config.storageAdapter, normalizeSlug(slug));
+        const page = await handleGetPageBySlug(
+          config.storageAdapter,
+          config.mediaAdapter,
+          normalizeSlug(slug)
+        );
 
         if (!page) {
           return jsonResponse({ error: 'Page not found' }, 404);
@@ -455,6 +453,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
         const normalizedSlug = normalizeSlug(slug);
         const existingPage = await handleGetPageBySlug(
           config.storageAdapter,
+          config.mediaAdapter,
           normalizedSlug
         );
 
@@ -472,10 +471,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
           return jsonResponse({ error: 'Invalid page payload' }, 400);
         }
 
-        const normalizedSections = normalizePageSections(
-          pagePatch.sections,
-          existingPage.sections
-        );
+        const normalizedSections = normalizePageSections(pagePatch.sections, existingPage.sections);
 
         const page = await handleUpdatePage(config.storageAdapter, {
           ...pagePatch,
@@ -496,6 +492,7 @@ export function createNextPageBySlugRoute(config: NextPageBySlugRouteConfig) {
         const { slug } = await resolveParams(context);
         const existingPage = await handleGetPageBySlug(
           config.storageAdapter,
+          config.mediaAdapter,
           normalizeSlug(slug)
         );
 
@@ -553,10 +550,7 @@ export function createNextPageByIdRoute(config: NextPageByIdRouteConfig) {
           return jsonResponse({ error: 'Invalid page payload' }, 400);
         }
 
-        const normalizedSections = normalizePageSections(
-          pagePatch.sections,
-          existingPage.sections
-        );
+        const normalizedSections = normalizePageSections(pagePatch.sections, existingPage.sections);
 
         const page = await handleUpdatePage(config.storageAdapter, {
           ...pagePatch,
@@ -590,11 +584,59 @@ export function createNextPageByIdRoute(config: NextPageByIdRouteConfig) {
   };
 }
 
+function getQueryParam(url: string, name: string): string | null {
+  const queryStart = url.indexOf('?');
+  if (queryStart === -1) return null;
+  for (const pair of url.slice(queryStart + 1).split('&')) {
+    const eqIndex = pair.indexOf('=');
+    const key = decodeURIComponent(eqIndex === -1 ? pair : pair.slice(0, eqIndex));
+    if (key === name) return eqIndex === -1 ? '' : decodeURIComponent(pair.slice(eqIndex + 1));
+  }
+  return null;
+}
+
+function parseMediaFilter(request: RequestLike): MediaFilter | undefined {
+  if (!request.url) {
+    return undefined;
+  }
+
+  const category = getQueryParam(request.url, 'category');
+  const limit = getQueryParam(request.url, 'limit');
+  const offset = getQueryParam(request.url, 'offset');
+
+  const filter: MediaFilter = {};
+  let hasFilter = false;
+
+  if (category === 'image' || category === 'document') {
+    filter.category = category as MediaCategory;
+    hasFilter = true;
+  }
+
+  if (limit) {
+    const parsed = Number.parseInt(limit, 10);
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      filter.limit = parsed;
+      hasFilter = true;
+    }
+  }
+
+  if (offset) {
+    const parsed = Number.parseInt(offset, 10);
+    if (!Number.isNaN(parsed) && parsed >= 0) {
+      filter.offset = parsed;
+      hasFilter = true;
+    }
+  }
+
+  return hasFilter ? filter : undefined;
+}
+
 export function createNextMediaRoute(config: NextMediaRouteConfig) {
   return {
-    GET: async (_request: RequestLike): Promise<ResponseLike> => {
+    GET: async (request: RequestLike): Promise<ResponseLike> => {
       try {
-        const media = await handleListMedia(config.mediaAdapter);
+        const filter = parseMediaFilter(request);
+        const media = await handleListMedia(config.mediaAdapter, filter);
         return jsonResponse(media);
       } catch (error) {
         return errorResponse(error);
@@ -691,9 +733,7 @@ export function createNextNavigationRoute(config: NextNavigationRouteConfig) {
   };
 }
 
-export function createNextNavigationByIdRoute(
-  config: NextNavigationByIdRouteConfig
-) {
+export function createNextNavigationByIdRoute(config: NextNavigationByIdRouteConfig) {
   return {
     GET: async (
       _request: RequestLike,

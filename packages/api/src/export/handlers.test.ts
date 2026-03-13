@@ -1,14 +1,17 @@
-import { describe, it, expect } from 'vitest';
-import { handleExportPage, handleExportAllPages, handleExportNavigations, handleExportSite } from './handlers';
-import type { StorageAdapter, Page } from '../storage/types';
+import { describe, expect, it } from 'vitest';
 import type { MediaAdapter } from '../media/types';
+import type { Page, StorageAdapter } from '../storage/types';
+import {
+  handleExportAllPages,
+  handleExportNavigations,
+  handleExportPage,
+  handleExportSite,
+} from './handlers';
 
 const testDate = new Date('2025-01-15T10:00:00Z');
 const mediaId = '11111111-1111-1111-1111-111111111111';
 
-function createMockStorageAdapter(
-  pages: Record<string, Page>
-): StorageAdapter {
+function createMockStorageAdapter(pages: Record<string, Page>): StorageAdapter {
   return {
     getPage: async (slug: string) => pages[slug] ?? null,
     getPageById: async () => null,
@@ -33,9 +36,7 @@ function createMockStorageAdapter(
   };
 }
 
-function createMockMediaAdapter(
-  mediaMap: Record<string, string>
-): MediaAdapter {
+function createMockMediaAdapter(mediaMap: Record<string, string>): MediaAdapter {
   return {
     upload: async () => {
       throw new Error('Not implemented');
@@ -85,62 +86,38 @@ describe('handleExportPage', () => {
   });
 
   it('should return full page data as JSON', async () => {
-    const result = await handleExportPage(
-      storageAdapter,
-      mediaAdapter,
-      'home'
-    );
+    const result = await handleExportPage(storageAdapter, mediaAdapter, 'home');
 
     expect(result).not.toBeNull();
-    expect(result!.data.id).toBe('page-1');
-    expect(result!.data.slug).toBe('home');
-    expect(result!.data.pageType).toBe('landing');
-    expect(result!.data.title).toBe('Home Page');
-    expect(result!.data.sections).toHaveLength(2);
+    expect(result?.data.id).toBe('page-1');
+    expect(result?.data.slug).toBe('home');
+    expect(result?.data.pageType).toBe('landing');
+    expect(result?.data.title).toBe('Home Page');
+    expect(result?.data.sections).toHaveLength(2);
   });
 
   it('should resolve media references to URLs', async () => {
-    const result = await handleExportPage(
-      storageAdapter,
-      mediaAdapter,
-      'home'
-    );
+    const result = await handleExportPage(storageAdapter, mediaAdapter, 'home');
 
-    expect(result!.data.sections[0].data.image).toBe(
-      'https://cdn.example.com/hero.jpg'
-    );
-    expect(result!.data.sections[1].data.body).toBe('Hello world');
+    expect(result?.data.sections[0].data.image).toBe('https://cdn.example.com/hero.jpg');
+    expect(result?.data.sections[1].data.body).toBe('Hello world');
   });
 
   it('should serialize dates as ISO strings', async () => {
-    const result = await handleExportPage(
-      storageAdapter,
-      mediaAdapter,
-      'home'
-    );
+    const result = await handleExportPage(storageAdapter, mediaAdapter, 'home');
 
-    expect(result!.data.createdAt).toBe('2025-01-15T10:00:00.000Z');
-    expect(result!.data.updatedAt).toBe('2025-01-15T10:00:00.000Z');
+    expect(result?.data.createdAt).toBe('2025-01-15T10:00:00.000Z');
+    expect(result?.data.updatedAt).toBe('2025-01-15T10:00:00.000Z');
   });
 
   it('should include Content-Disposition header value', async () => {
-    const result = await handleExportPage(
-      storageAdapter,
-      mediaAdapter,
-      'home'
-    );
+    const result = await handleExportPage(storageAdapter, mediaAdapter, 'home');
 
-    expect(result!.contentDisposition).toBe(
-      'attachment; filename="home.json"'
-    );
+    expect(result?.contentDisposition).toBe('attachment; filename="home.json"');
   });
 
   it('should return null for non-existent page', async () => {
-    const result = await handleExportPage(
-      storageAdapter,
-      mediaAdapter,
-      'non-existent'
-    );
+    const result = await handleExportPage(storageAdapter, mediaAdapter, 'non-existent');
 
     expect(result).toBeNull();
   });
@@ -166,7 +143,7 @@ describe('handleExportPage', () => {
     const adapter = createMockStorageAdapter({ about: pageWithMissing });
     const result = await handleExportPage(adapter, mediaAdapter, 'about');
 
-    expect(result!.data.sections[0].data.image).toBeNull();
+    expect(result?.data.sections[0].data.image).toBeNull();
   });
 });
 
@@ -179,9 +156,7 @@ describe('handleExportAllPages', () => {
       slug: 'home',
       pageType: 'landing',
       title: 'Home Page',
-      sections: [
-        { id: 'hero-1', type: 'hero', data: { image: mediaId } },
-      ],
+      sections: [{ id: 'hero-1', type: 'hero', data: { image: mediaId } }],
       createdAt: testDate,
       updatedAt: testDate,
     },
@@ -190,9 +165,7 @@ describe('handleExportAllPages', () => {
       slug: 'about',
       pageType: 'content',
       title: 'About Page',
-      sections: [
-        { id: 'banner-1', type: 'banner', data: { thumbnail: mediaId2 } },
-      ],
+      sections: [{ id: 'banner-1', type: 'banner', data: { thumbnail: mediaId2 } }],
       createdAt: testDate,
       updatedAt: testDate,
     },
@@ -218,12 +191,8 @@ describe('handleExportAllPages', () => {
     const homePage = result.data.pages.find((p) => p.slug === 'home');
     const aboutPage = result.data.pages.find((p) => p.slug === 'about');
 
-    expect(homePage!.sections[0].data.image).toBe(
-      'https://cdn.example.com/hero.jpg'
-    );
-    expect(aboutPage!.sections[0].data.thumbnail).toBe(
-      'https://cdn.example.com/about.png'
-    );
+    expect(homePage?.sections[0].data.image).toBe('https://cdn.example.com/hero.jpg');
+    expect(aboutPage?.sections[0].data.thumbnail).toBe('https://cdn.example.com/about.png');
   });
 
   it('should include exportedAt timestamp', async () => {
@@ -238,9 +207,7 @@ describe('handleExportAllPages', () => {
   it('should include Content-Disposition header', async () => {
     const result = await handleExportAllPages(storageAdapter, mediaAdapter);
 
-    expect(result.contentDisposition).toBe(
-      'attachment; filename="pages-export.json"'
-    );
+    expect(result.contentDisposition).toBe('attachment; filename="pages-export.json"');
   });
 
   it('should handle empty pages list', async () => {
@@ -289,7 +256,7 @@ describe('handleExportNavigations', () => {
     const mainNav = result.data.navigations[0];
     expect(mainNav.items).toHaveLength(2);
     expect(mainNav.items[1].children).toHaveLength(1);
-    expect(mainNav.items[1].children![0].label).toBe('Team');
+    expect(mainNav.items[1].children?.[0].label).toBe('Team');
   });
 
   it('should serialize dates as ISO strings', async () => {
@@ -310,9 +277,7 @@ describe('handleExportNavigations', () => {
   it('should include Content-Disposition header', async () => {
     const result = await handleExportNavigations(storageAdapter);
 
-    expect(result.contentDisposition).toBe(
-      'attachment; filename="navigation-export.json"'
-    );
+    expect(result.contentDisposition).toBe('attachment; filename="navigation-export.json"');
   });
 
   it('should handle empty navigations list', async () => {
@@ -385,9 +350,7 @@ describe('handleExportSite', () => {
   it('should resolve media references in pages', async () => {
     const result = await handleExportSite(storageAdapter, mediaAdapter);
 
-    expect(result.data.pages[0].sections[0].data.image).toBe(
-      'https://cdn.example.com/hero.jpg'
-    );
+    expect(result.data.pages[0].sections[0].data.image).toBe('https://cdn.example.com/hero.jpg');
   });
 
   it('should include media URLs for external download', async () => {
@@ -420,9 +383,7 @@ describe('handleExportSite', () => {
   it('should include Content-Disposition header', async () => {
     const result = await handleExportSite(storageAdapter, mediaAdapter);
 
-    expect(result.contentDisposition).toBe(
-      'attachment; filename="site-export.json"'
-    );
+    expect(result.contentDisposition).toBe('attachment; filename="site-export.json"');
   });
 
   it('should handle empty site', async () => {

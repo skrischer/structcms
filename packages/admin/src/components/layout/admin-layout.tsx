@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
 
 export interface SidebarNavItem {
   label: string;
@@ -49,15 +49,19 @@ function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   return (
-    <div
-      className={cn('flex h-screen bg-background', className)}
-      data-testid="admin-layout"
-    >
+    <div className={cn('flex h-screen bg-background', className)} data-testid="admin-layout">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === 'Escape') {
+              setSidebarOpen(false);
+            }
+          }}
+          role="button"
+          tabIndex={0}
           data-testid="sidebar-overlay"
         />
       )}
@@ -82,9 +86,7 @@ function AdminLayout({
               type="button"
               className={cn(
                 'w-full text-left px-3 py-2 rounded-md text-sm transition-colors',
-                activePath === item.path
-                  ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-muted'
+                activePath === item.path ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
               )}
               onClick={() => {
                 onNavigate(item.path);
@@ -121,10 +123,7 @@ function AdminLayout({
         </header>
 
         {/* Content */}
-        <main
-          className="flex-1 overflow-auto p-6"
-          data-testid="main-content"
-        >
+        <main className="flex-1 overflow-auto p-6" data-testid="main-content">
           {children}
         </main>
       </div>

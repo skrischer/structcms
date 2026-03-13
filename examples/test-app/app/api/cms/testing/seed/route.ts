@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
 import { runSeed } from '@/lib/seed-runner';
+import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
     const result = await runSeed();
-    return NextResponse.json({ 
+    return NextResponse.json({
       status: 'seeded',
       ...result,
     });

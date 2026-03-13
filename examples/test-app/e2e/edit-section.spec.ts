@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { resetAndSeed, BASE_URL } from './helpers';
-import path from 'path';
+import path from 'node:path';
+import { expect, test } from '@playwright/test';
+import { BASE_URL, resetAndSeed } from './helpers';
 
 test.describe('Edit Section', () => {
   test.describe.configure({ mode: 'serial' });
@@ -53,6 +53,7 @@ test.describe('Edit Section', () => {
     // Get the uploaded media URL for later verification
     const mediaResponse = await fetch(`${BASE_URL}/api/cms/media`);
     const mediaItems: Array<{ id: string; url: string }> = await mediaResponse.json();
+    // biome-ignore lint/style/noNonNullAssertion: Test ensures media was uploaded
     const uploadedItem = mediaItems[0]!;
 
     // Navigate to edit page with hero section

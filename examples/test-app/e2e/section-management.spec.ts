@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { resetAndSeed, BASE_URL } from './helpers';
+import { expect, test } from '@playwright/test';
+import { BASE_URL, resetAndSeed } from './helpers';
 
 interface PageResponse {
   id: string;
@@ -46,7 +46,7 @@ test.describe('PageEditor Section Management', () => {
     const pageData: PageResponse = await response.json();
 
     expect(pageData.sections).toHaveLength(3);
-    expect(pageData.sections[2]!.type).toBe('content');
+    expect(pageData.sections[2]?.type).toBe('content');
   });
 
   test('should remove a section', async ({ page }) => {
@@ -92,8 +92,8 @@ test.describe('PageEditor Section Management', () => {
     expect(initialResponse.ok).toBe(true);
     const initialPageData: PageResponse = await initialResponse.json();
     const sectionCount = initialPageData.sections.length;
-    const firstType = initialPageData.sections[0]!.type;
-    const secondType = initialPageData.sections[1]!.type;
+    const firstType = initialPageData.sections[0]?.type;
+    const secondType = initialPageData.sections[1]?.type;
 
     // Move section at index 1 up — should swap with index 0
     await page.locator('[data-testid="section-move-up-1"]').click();
@@ -108,8 +108,8 @@ test.describe('PageEditor Section Management', () => {
     const finalPageData: PageResponse = await finalResponse.json();
 
     expect(finalPageData.sections).toHaveLength(sectionCount);
-    expect(finalPageData.sections[0]!.type).toBe(secondType);
-    expect(finalPageData.sections[1]!.type).toBe(firstType);
+    expect(finalPageData.sections[0]?.type).toBe(secondType);
+    expect(finalPageData.sections[1]?.type).toBe(firstType);
   });
 
   test('should move a section down', async ({ page }) => {
@@ -124,8 +124,8 @@ test.describe('PageEditor Section Management', () => {
     expect(initialResponse.ok).toBe(true);
     const initialPageData: PageResponse = await initialResponse.json();
     const sectionCount = initialPageData.sections.length;
-    const firstType = initialPageData.sections[0]!.type;
-    const secondType = initialPageData.sections[1]!.type;
+    const firstType = initialPageData.sections[0]?.type;
+    const secondType = initialPageData.sections[1]?.type;
 
     // Move section at index 0 down — should swap with index 1
     await page.locator('[data-testid="section-move-down-0"]').click();
@@ -140,8 +140,8 @@ test.describe('PageEditor Section Management', () => {
     const finalPageData: PageResponse = await finalResponse.json();
 
     expect(finalPageData.sections).toHaveLength(sectionCount);
-    expect(finalPageData.sections[0]!.type).toBe(secondType);
-    expect(finalPageData.sections[1]!.type).toBe(firstType);
+    expect(finalPageData.sections[0]?.type).toBe(secondType);
+    expect(finalPageData.sections[1]?.type).toBe(firstType);
   });
 
   test('should show appropriate form fields for section type', async ({ page }) => {

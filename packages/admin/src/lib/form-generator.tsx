@@ -1,18 +1,22 @@
 'use client';
 
-import * as React from 'react';
-import { useForm, Controller, type FieldErrors, type DefaultValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type z } from 'zod';
-import { getFieldMeta, type FieldType } from '@structcms/core';
+import { type FieldMeta, type FieldType, getFieldMeta } from '@structcms/core';
+import * as React from 'react';
+import { Controller, type DefaultValues, type FieldErrors, useForm } from 'react-hook-form';
+import type { z } from 'zod';
+import { ArrayField } from '../components/inputs/array-field';
+import { BooleanInput } from '../components/inputs/boolean-input';
+import { FilePicker } from '../components/inputs/file-picker';
+import { ImagePicker } from '../components/inputs/image-picker';
+import { ObjectField } from '../components/inputs/object-field';
+import { RichTextEditor } from '../components/inputs/rich-text-editor';
+import { SelectInput } from '../components/inputs/select-input';
 import { StringInput } from '../components/inputs/string-input';
 import { TextInput } from '../components/inputs/text-input';
-import { RichTextEditor } from '../components/inputs/rich-text-editor';
-import { ImagePicker } from '../components/inputs/image-picker';
-import { ArrayField } from '../components/inputs/array-field';
-import { ObjectField } from '../components/inputs/object-field';
-import { Input } from '../components/ui/input';
+import { UrlInput } from '../components/inputs/url-input';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { cn } from './utils';
 
 /**
@@ -41,6 +45,17 @@ function resolveFieldType(schema: z.ZodTypeAny): FieldType | null {
   const unwrapped = unwrapSchema(schema);
   const unwrappedMeta = getFieldMeta(unwrapped);
   return unwrappedMeta?.fieldType ?? null;
+}
+
+/**
+ * Resolves the full FieldMeta from a Zod schema by unwrapping wrappers first
+ */
+function resolveFieldMeta(schema: z.ZodTypeAny): FieldMeta | null {
+  const meta = getFieldMeta(schema);
+  if (meta) return meta;
+
+  const unwrapped = unwrapSchema(schema);
+  return getFieldMeta(unwrapped);
 }
 
 /**
@@ -112,10 +127,19 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
   const renderField = (fieldName: string, fieldSchema: z.ZodTypeAny) => {
     const fieldType = resolveFieldType(fieldSchema);
+    const fieldMeta = resolveFieldMeta(fieldSchema);
     const label = fieldNameToLabel(fieldName);
     const isRequired = !fieldSchema.isOptional();
     const fieldError = (errors as FieldErrors<Record<string, unknown>>)[fieldName];
     const errorMessage = fieldError?.message as string | undefined;
+
+    // Conditional visibility
+    if (fieldMeta?.visibleWhen) {
+      const watchedValue = watch(fieldMeta.visibleWhen.field as never) as unknown;
+      if (!fieldMeta.visibleWhen.values.includes(watchedValue as string)) {
+        return null;
+      }
+    }
 
     switch (fieldType) {
       case 'string':
@@ -140,7 +164,8 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
-      case 'richtext':
+      case 'richtext': {
+        const meta = resolveFieldMeta(fieldSchema);
         return (
           <Controller
             key={fieldName}
@@ -154,10 +179,12 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 value={field.value as string | undefined}
                 onChange={field.onChange}
                 name={field.name}
+                allowedBlocks={meta?.allowedBlocks}
               />
             )}
           />
         );
+      }
 
       case 'image':
         return (
@@ -175,6 +202,36 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 name={field.name}
               />
             )}
+          />
+        );
+
+      case 'file':
+        return (
+          <Controller
+            key={fieldName}
+            name={fieldName as Parameters<typeof register>[0]}
+            control={control}
+            render={({ field }) => (
+              <FilePicker
+                label={label}
+                required={isRequired}
+                error={errorMessage}
+                value={field.value as string | undefined}
+                onChange={field.onChange}
+                name={field.name}
+              />
+            )}
+          />
+        );
+
+      case 'url':
+        return (
+          <UrlInput
+            key={fieldName}
+            label={label}
+            required={isRequired}
+            error={errorMessage}
+            {...register(fieldName as Parameters<typeof register>[0])}
           />
         );
 
@@ -205,21 +262,59 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
+      case 'boolean':
+        return (
+          <Controller
+            key={fieldName}
+            name={fieldName as Parameters<typeof register>[0]}
+            control={control}
+            render={({ field }) => (
+              <BooleanInput
+                label={label}
+                required={isRequired}
+                error={errorMessage}
+                checked={!!field.value}
+                onCheckedChange={field.onChange}
+                name={field.name}
+              />
+            )}
+          />
+        );
+
+      case 'select': {
+        const meta = resolveFieldMeta(fieldSchema);
+        const options = meta?.options ?? [];
+        return (
+          <Controller
+            key={fieldName}
+            name={fieldName as Parameters<typeof register>[0]}
+            control={control}
+            render={({ field }) => (
+              <SelectInput
+                label={label}
+                required={isRequired}
+                error={errorMessage}
+                options={options}
+                value={field.value as string | undefined}
+                onChange={field.onChange}
+                name={field.name}
+              />
+            )}
+          />
+        );
+      }
+
       case 'object': {
         const innerSchema = unwrapSchema(fieldSchema);
-        const innerShape = 'shape' in innerSchema
-          ? (innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<string, z.ZodTypeAny>
-          : null;
+        const innerShape =
+          'shape' in innerSchema
+            ? ((innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<string, z.ZodTypeAny>)
+            : null;
 
         return (
-          <ObjectField
-            key={fieldName}
-            label={label}
-            required={isRequired}
-            error={errorMessage}
-          >
+          <ObjectField key={fieldName} label={label} required={isRequired} error={errorMessage}>
             {innerShape
-              ? Object.entries(innerShape).map(([subName, subSchema]) => {
+              ? Object.entries(innerShape).map(([subName, _subSchema]) => {
                   const subFieldName = `${fieldName}.${subName}`;
                   const subLabel = fieldNameToLabel(subName);
                   const subError = (errors as FieldErrors<Record<string, unknown>>)[fieldName] as
@@ -260,9 +355,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       className={cn('space-y-4', className)}
       data-testid="form-generator"
     >
-      {Object.entries(shape).map(([fieldName, fieldSchema]) =>
-        renderField(fieldName, fieldSchema)
-      )}
+      {Object.entries(shape).map(([fieldName, fieldSchema]) => renderField(fieldName, fieldSchema))}
       {!onChange && (
         <Button type="submit" data-testid="form-submit">
           {submitLabel}
@@ -274,4 +367,4 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
 FormGenerator.displayName = 'FormGenerator';
 
-export { FormGenerator, resolveFieldType, fieldNameToLabel };
+export { FormGenerator, resolveFieldType, resolveFieldMeta, fieldNameToLabel };

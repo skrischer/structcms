@@ -1,15 +1,21 @@
 'use client';
 
+import type { NavigationItem } from '@structcms/core';
 import * as React from 'react';
-import { type NavigationItem } from '@structcms/core';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 export interface NavigationEditorProps {
   items: NavigationItem[];
   onSave: (items: NavigationItem[]) => void;
   className?: string;
+}
+
+interface ItemWithKey {
+  key: string;
+  item: NavigationItem;
+  childrenKeys: string[];
 }
 
 /**
@@ -23,12 +29,33 @@ export interface NavigationEditorProps {
  * />
  * ```
  */
-function NavigationEditor({
-  items: initialItems,
-  onSave,
-  className,
-}: NavigationEditorProps) {
+function NavigationEditor({ items: initialItems, onSave, className }: NavigationEditorProps) {
   const [items, setItems] = React.useState<NavigationItem[]>(initialItems);
+  const keyCounterRef = React.useRef(0);
+
+  // Stable keys: assigned once per index position, grow as items are added
+  const keysRef = React.useRef<string[]>([]);
+  const childKeysRef = React.useRef<string[][]>([]);
+
+  // Ensure we have enough keys for current items
+  while (keysRef.current.length < items.length) {
+    keysRef.current.push(`nav-item-${keyCounterRef.current++}`);
+    childKeysRef.current.push([]);
+  }
+  for (let i = 0; i < items.length; i++) {
+    const childCount = items[i]?.children?.length ?? 0;
+    const existing = childKeysRef.current[i] ?? [];
+    while (existing.length < childCount) {
+      existing.push(`child-${keyCounterRef.current++}`);
+    }
+    childKeysRef.current[i] = existing;
+  }
+
+  const itemsWithKeys = items.map((item, idx) => ({
+    key: keysRef.current[idx] as string,
+    item,
+    childrenKeys: childKeysRef.current[idx] ?? [],
+  }));
 
   const handleAddItem = () => {
     setItems([...items, { label: '', href: '', children: [] }]);
@@ -37,14 +64,12 @@ function NavigationEditor({
   const handleRemoveItem = (index: number) => {
     const newItems = [...items];
     newItems.splice(index, 1);
+    keysRef.current.splice(index, 1);
+    childKeysRef.current.splice(index, 1);
     setItems(newItems);
   };
 
-  const handleItemChange = (
-    index: number,
-    field: 'label' | 'href',
-    value: string
-  ) => {
+  const handleItemChange = (index: number, field: 'label' | 'href', value: string) => {
     const newItems = [...items];
     const item = newItems[index];
     if (item) {
@@ -106,17 +131,14 @@ function NavigationEditor({
       </div>
 
       {items.length === 0 ? (
-        <p
-          className="text-sm text-muted-foreground text-center py-8"
-          data-testid="empty-state"
-        >
+        <p className="text-sm text-muted-foreground text-center py-8" data-testid="empty-state">
           No navigation items yet.
         </p>
       ) : (
         <div className="space-y-3">
-          {items.map((item, index) => (
+          {itemsWithKeys.map(({ key, item, childrenKeys }, index) => (
             <div
-              key={index}
+              key={key}
               className="rounded-md border border-input bg-background p-4 space-y-3"
               data-testid={`nav-item-${index}`}
             >
@@ -125,17 +147,13 @@ function NavigationEditor({
                   <Input
                     placeholder="Label"
                     value={item.label}
-                    onChange={(e) =>
-                      handleItemChange(index, 'label', e.target.value)
-                    }
+                    onChange={(e) => handleItemChange(index, 'label', e.target.value)}
                     data-testid={`nav-item-label-${index}`}
                   />
                   <Input
                     placeholder="URL (e.g. /about)"
                     value={item.href}
-                    onChange={(e) =>
-                      handleItemChange(index, 'href', e.target.value)
-                    }
+                    onChange={(e) => handleItemChange(index, 'href', e.target.value)}
                     data-testid={`nav-item-href-${index}`}
                   />
                 </div>
@@ -156,7 +174,7 @@ function NavigationEditor({
                 <div className="ml-6 space-y-2">
                   {(item.children ?? []).map((child, childIndex) => (
                     <div
-                      key={childIndex}
+                      key={childrenKeys[childIndex] ?? `child-${childIndex}`}
                       className="flex gap-2 items-start rounded-md border border-input bg-muted/30 p-3"
                       data-testid={`nav-child-${index}-${childIndex}`}
                     >
@@ -165,12 +183,7 @@ function NavigationEditor({
                           placeholder="Label"
                           value={child.label}
                           onChange={(e) =>
-                            handleChildChange(
-                              index,
-                              childIndex,
-                              'label',
-                              e.target.value
-                            )
+                            handleChildChange(index, childIndex, 'label', e.target.value)
                           }
                           data-testid={`nav-child-label-${index}-${childIndex}`}
                         />
@@ -178,12 +191,7 @@ function NavigationEditor({
                           placeholder="URL"
                           value={child.href}
                           onChange={(e) =>
-                            handleChildChange(
-                              index,
-                              childIndex,
-                              'href',
-                              e.target.value
-                            )
+                            handleChildChange(index, childIndex, 'href', e.target.value)
                           }
                           data-testid={`nav-child-href-${index}-${childIndex}`}
                         />
@@ -218,19 +226,10 @@ function NavigationEditor({
       )}
 
       <div className="flex gap-2 border-t border-input pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleAddItem}
-          data-testid="nav-add-item"
-        >
+        <Button type="button" variant="outline" onClick={handleAddItem} data-testid="nav-add-item">
           Add Item
         </Button>
-        <Button
-          type="button"
-          onClick={handleSave}
-          data-testid="nav-save"
-        >
+        <Button type="button" onClick={handleSave} data-testid="nav-save">
           Save Navigation
         </Button>
       </div>

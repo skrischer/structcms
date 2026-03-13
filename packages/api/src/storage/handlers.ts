@@ -1,6 +1,14 @@
-import type { StorageAdapter, Page, Navigation, CreatePageInput, UpdatePageInput, CreateNavigationInput, UpdateNavigationInput } from './types';
-import { generateSlug, ensureUniqueSlug } from '../utils/slug';
-import { sanitizeSectionData } from '../utils/sanitize';
+import { sanitizeSectionData, stripTags } from '../utils/sanitize';
+import { ensureUniqueSlug, generateSlug } from '../utils/slug';
+import type {
+  CreateNavigationInput,
+  CreatePageInput,
+  Navigation,
+  Page,
+  StorageAdapter,
+  UpdateNavigationInput,
+  UpdatePageInput,
+} from './types';
 
 /**
  * Error thrown when storage validation fails
@@ -23,14 +31,14 @@ export async function handleCreatePage(
   adapter: StorageAdapter,
   input: CreatePageInput
 ): Promise<Page> {
-  if (!input.title.trim()) {
-    throw new StorageValidationError(
-      'Page title must not be empty',
-      'EMPTY_TITLE'
-    );
+  // Sanitize title to remove any HTML tags
+  const sanitizedTitle = stripTags(input.title).trim();
+
+  if (!sanitizedTitle) {
+    throw new StorageValidationError('Page title must not be empty', 'EMPTY_TITLE');
   }
 
-  const slug = input.slug?.trim() || generateSlug(input.title);
+  const slug = input.slug?.trim() || generateSlug(sanitizedTitle);
 
   if (!slug) {
     throw new StorageValidationError(
@@ -44,12 +52,11 @@ export async function handleCreatePage(
   const existingSlugs = existingPages.map((p) => p.slug);
   const uniqueSlug = ensureUniqueSlug(slug, existingSlugs);
 
-  const sanitizedSections = input.sections
-    ? sanitizeSectionData(input.sections)
-    : undefined;
+  const sanitizedSections = input.sections ? sanitizeSectionData(input.sections) : undefined;
 
   return adapter.createPage({
     ...input,
+    title: sanitizedTitle,
     slug: uniqueSlug,
     sections: sanitizedSections,
   });
@@ -63,45 +70,38 @@ export async function handleUpdatePage(
   input: UpdatePageInput
 ): Promise<Page> {
   if (!input.id.trim()) {
-    throw new StorageValidationError(
-      'Page ID must not be empty',
-      'EMPTY_ID'
-    );
+    throw new StorageValidationError('Page ID must not be empty', 'EMPTY_ID');
   }
 
-  if (input.title !== undefined && !input.title.trim()) {
-    throw new StorageValidationError(
-      'Page title must not be empty',
-      'EMPTY_TITLE'
-    );
+  // Sanitize title if provided
+  let sanitizedTitle: string | undefined;
+  if (input.title !== undefined) {
+    sanitizedTitle = stripTags(input.title).trim();
+    if (!sanitizedTitle) {
+      throw new StorageValidationError('Page title must not be empty', 'EMPTY_TITLE');
+    }
   }
 
   // If slug is being updated, ensure uniqueness
   if (input.slug !== undefined) {
     const slug = input.slug.trim();
     if (!slug) {
-      throw new StorageValidationError(
-        'Page slug must not be empty',
-        'EMPTY_SLUG'
-      );
+      throw new StorageValidationError('Page slug must not be empty', 'EMPTY_SLUG');
     }
 
     const existingPages = await adapter.listPages();
-    const existingSlugs = existingPages
-      .filter((p) => p.id !== input.id)
-      .map((p) => p.slug);
+    const existingSlugs = existingPages.filter((p) => p.id !== input.id).map((p) => p.slug);
 
     if (existingSlugs.includes(slug)) {
-      throw new StorageValidationError(
-        `Slug "${slug}" is already in use`,
-        'DUPLICATE_SLUG'
-      );
+      throw new StorageValidationError(`Slug "${slug}" is already in use`, 'DUPLICATE_SLUG');
     }
   }
 
-  const sanitizedInput = input.sections
-    ? { ...input, sections: sanitizeSectionData(input.sections) }
-    : input;
+  const sanitizedInput = {
+    ...input,
+    ...(sanitizedTitle !== undefined && { title: sanitizedTitle }),
+    ...(input.sections && { sections: sanitizeSectionData(input.sections) }),
+  };
 
   return adapter.updatePage(sanitizedInput);
 }
@@ -109,15 +109,9 @@ export async function handleUpdatePage(
 /**
  * Handler for deleting a page by ID
  */
-export async function handleDeletePage(
-  adapter: StorageAdapter,
-  id: string
-): Promise<void> {
+export async function handleDeletePage(adapter: StorageAdapter, id: string): Promise<void> {
   if (!id.trim()) {
-    throw new StorageValidationError(
-      'Page ID must not be empty',
-      'EMPTY_ID'
-    );
+    throw new StorageValidationError('Page ID must not be empty', 'EMPTY_ID');
   }
 
   return adapter.deletePage(id);
@@ -131,25 +125,28 @@ export async function handleCreateNavigation(
   adapter: StorageAdapter,
   input: CreateNavigationInput
 ): Promise<Navigation> {
-  if (!input.name.trim()) {
-    throw new StorageValidationError(
-      'Navigation name must not be empty',
-      'EMPTY_NAME'
-    );
+  // Sanitize name to remove any HTML tags
+  const sanitizedName = stripTags(input.name).trim();
+
+  if (!sanitizedName) {
+    throw new StorageValidationError('Navigation name must not be empty', 'EMPTY_NAME');
   }
 
   // Ensure name uniqueness
   const existingNavigations = await adapter.listNavigations();
   const existingNames = existingNavigations.map((n) => n.name);
 
-  if (existingNames.includes(input.name.trim())) {
+  if (existingNames.includes(sanitizedName)) {
     throw new StorageValidationError(
-      `Navigation name "${input.name.trim()}" is already in use`,
+      `Navigation name "${sanitizedName}" is already in use`,
       'DUPLICATE_NAME'
     );
   }
 
-  return adapter.createNavigation(input);
+  return adapter.createNavigation({
+    ...input,
+    name: sanitizedName,
+  });
 }
 
 /**
@@ -160,50 +157,40 @@ export async function handleUpdateNavigation(
   input: UpdateNavigationInput
 ): Promise<Navigation> {
   if (!input.id.trim()) {
-    throw new StorageValidationError(
-      'Navigation ID must not be empty',
-      'EMPTY_ID'
-    );
+    throw new StorageValidationError('Navigation ID must not be empty', 'EMPTY_ID');
   }
 
   // If name is being updated, ensure uniqueness
+  let sanitizedName: string | undefined;
   if (input.name !== undefined) {
-    const name = input.name.trim();
-    if (!name) {
-      throw new StorageValidationError(
-        'Navigation name must not be empty',
-        'EMPTY_NAME'
-      );
+    sanitizedName = stripTags(input.name).trim();
+    if (!sanitizedName) {
+      throw new StorageValidationError('Navigation name must not be empty', 'EMPTY_NAME');
     }
 
     const existingNavigations = await adapter.listNavigations();
-    const existingNames = existingNavigations
-      .filter((n) => n.id !== input.id)
-      .map((n) => n.name);
+    const existingNames = existingNavigations.filter((n) => n.id !== input.id).map((n) => n.name);
 
-    if (existingNames.includes(name)) {
+    if (existingNames.includes(sanitizedName)) {
       throw new StorageValidationError(
-        `Navigation name "${name}" is already in use`,
+        `Navigation name "${sanitizedName}" is already in use`,
         'DUPLICATE_NAME'
       );
     }
   }
 
-  return adapter.updateNavigation(input);
+  return adapter.updateNavigation({
+    ...input,
+    ...(sanitizedName !== undefined && { name: sanitizedName }),
+  });
 }
 
 /**
  * Handler for deleting a navigation by ID
  */
-export async function handleDeleteNavigation(
-  adapter: StorageAdapter,
-  id: string
-): Promise<void> {
+export async function handleDeleteNavigation(adapter: StorageAdapter, id: string): Promise<void> {
   if (!id.trim()) {
-    throw new StorageValidationError(
-      'Navigation ID must not be empty',
-      'EMPTY_ID'
-    );
+    throw new StorageValidationError('Navigation ID must not be empty', 'EMPTY_ID');
   }
 
   return adapter.deleteNavigation(id);

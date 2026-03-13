@@ -1,5 +1,5 @@
-import { createNextNavigationByIdRoute } from '@structcms/api/next';
 import { storageAdapter } from '@/lib/adapters';
+import { createNextNavigationByIdRoute } from '@structcms/api/next';
 
 interface RouteParams {
   params: Promise<{ id: string }>;

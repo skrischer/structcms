@@ -10,13 +10,21 @@ export type FieldType =
   | 'image'
   | 'reference'
   | 'array'
-  | 'object';
+  | 'object'
+  | 'boolean'
+  | 'select'
+  | 'file'
+  | 'url';
 
 /**
  * Metadata stored in Zod schema description for field type identification
  */
 export interface FieldMeta {
+  version: 1;
   fieldType: FieldType;
+  options?: readonly string[];
+  allowedBlocks?: readonly string[];
+  visibleWhen?: { field: string; values: string[] };
 }
 
 /**
@@ -41,8 +49,7 @@ export interface SectionDefinition<T extends z.ZodRawShape> {
  * const HeroSection = defineSection({ name: 'hero', fields: { title: z.string() } });
  * type HeroData = InferSectionData<typeof HeroSection>; // { title: string }
  */
-export type InferSectionData<T extends SectionDefinition<z.ZodRawShape>> =
-  z.infer<T['schema']>;
+export type InferSectionData<T extends SectionDefinition<z.ZodRawShape>> = z.infer<T['schema']>;
 
 /**
  * Configuration for defining a page type
@@ -139,7 +146,4 @@ export interface CreateSectionRendererConfig<R = unknown> {
 /**
  * A function that renders a section to a component result
  */
-export type SectionRenderer<R = unknown> = (
-  section: SectionData,
-  key: string | number
-) => R | null;
+export type SectionRenderer<R = unknown> = (section: SectionData, key: string | number) => R | null;

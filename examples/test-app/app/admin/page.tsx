@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { DashboardPage, type PageSummary } from '@structcms/admin';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
   const router = useRouter();

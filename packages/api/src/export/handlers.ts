@@ -1,7 +1,14 @@
-import type { StorageAdapter, Page, Navigation } from '../storage/types';
-import type { MediaAdapter } from '../media/types';
-import type { PageExportResponse, AllPagesExportResponse, NavigationExportResponse, AllNavigationsExportResponse, SiteExportResponse, MediaExportEntry } from './types';
 import { resolveMediaReferences } from '../media/resolve';
+import type { MediaAdapter } from '../media/types';
+import type { Navigation, Page, StorageAdapter } from '../storage/types';
+import type {
+  AllNavigationsExportResponse,
+  AllPagesExportResponse,
+  MediaExportEntry,
+  NavigationExportResponse,
+  PageExportResponse,
+  SiteExportResponse,
+} from './types';
 
 /**
  * Generates a Content-Disposition header value for file download
@@ -13,14 +20,8 @@ function contentDisposition(filename: string): string {
 /**
  * Converts a Page to a PageExportResponse with resolved media references
  */
-async function toPageExport(
-  page: Page,
-  mediaAdapter: MediaAdapter
-): Promise<PageExportResponse> {
-  const resolvedSections = await resolveMediaReferences(
-    page.sections,
-    mediaAdapter
-  );
+async function toPageExport(page: Page, mediaAdapter: MediaAdapter): Promise<PageExportResponse> {
+  const resolvedSections = await resolveMediaReferences(page.sections, mediaAdapter);
 
   return {
     id: page.id,

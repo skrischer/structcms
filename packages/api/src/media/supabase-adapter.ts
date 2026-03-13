@@ -1,10 +1,6 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import type {
-  MediaAdapter,
-  MediaFile,
-  UploadMediaInput,
-  MediaFilter,
-} from './types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { MediaAdapter, MediaCategory, MediaFile, MediaFilter, UploadMediaInput } from './types';
+import { ALLOWED_MIME_TYPES } from './types';
 
 /**
  * Database row type for media (snake_case)
@@ -15,8 +11,18 @@ interface MediaRow {
   storage_path: string;
   mime_type: string;
   size: number;
+  category: string;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Derives the media category from a MIME type.
+ * Image MIME types map to 'image', everything else to 'document'.
+ */
+function deriveCategory(mimeType: string): MediaCategory {
+  const imageMimes = ALLOWED_MIME_TYPES as readonly string[];
+  return imageMimes.includes(mimeType) ? 'image' : 'document';
 }
 
 /**
@@ -67,9 +73,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
    * Constructs the public URL for a stored file
    */
   private getPublicUrl(storagePath: string): string {
-    const { data } = this.client.storage
-      .from(this.bucketName)
-      .getPublicUrl(storagePath);
+    const { data } = this.client.storage.from(this.bucketName).getPublicUrl(storagePath);
     return data.publicUrl;
   }
 
@@ -83,6 +87,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
       url: this.getPublicUrl(row.storage_path),
       mimeType: row.mime_type,
       size: row.size,
+      category: row.category as MediaCategory,
       createdAt: new Date(row.created_at),
     };
   }
@@ -114,6 +119,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
         storage_path: storagePath,
         mime_type: input.mimeType,
         size: input.size,
+        category: deriveCategory(input.mimeType),
       })
       .select()
       .single();
@@ -132,11 +138,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
   }
 
   async getMedia(id: string): Promise<MediaFile | null> {
-    const { data, error } = await this.client
-      .from('media')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await this.client.from('media').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -155,6 +157,10 @@ export class SupabaseMediaAdapter implements MediaAdapter {
       query = query.eq('mime_type', filter.mimeType);
     }
 
+    if (filter?.category) {
+      query = query.eq('category', filter.category);
+    }
+
     query = query.order('created_at', { ascending: false });
 
     if (filter?.limit) {
@@ -162,10 +168,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
     }
 
     if (filter?.offset) {
-      query = query.range(
-        filter.offset,
-        filter.offset + (filter.limit ?? 100) - 1
-      );
+      query = query.range(filter.offset, filter.offset + (filter.limit ?? 100) - 1);
     }
 
     const { data, error } = await query;
@@ -208,10 +211,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
     }
 
     // Delete database record
-    const { error: dbError } = await this.client
-      .from('media')
-      .delete()
-      .eq('id', id);
+    const { error: dbError } = await this.client.from('media').delete().eq('id', id);
 
     if (dbError) {
       throw new MediaError(dbError.message, dbError.code, dbError.details);
@@ -222,8 +222,6 @@ export class SupabaseMediaAdapter implements MediaAdapter {
 /**
  * Creates a media adapter using Supabase
  */
-export function createMediaAdapter(
-  config: SupabaseMediaAdapterConfig
-): MediaAdapter {
+export function createMediaAdapter(config: SupabaseMediaAdapterConfig): MediaAdapter {
   return new SupabaseMediaAdapter(config);
 }

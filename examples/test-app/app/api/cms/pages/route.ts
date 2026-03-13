@@ -1,7 +1,7 @@
+import { mediaAdapter, storageAdapter } from '@/lib/adapters';
 import { createNextPagesRoute } from '@structcms/api/next';
-import { storageAdapter } from '@/lib/adapters';
 
-const pagesRoute = createNextPagesRoute({ storageAdapter });
+const pagesRoute = createNextPagesRoute({ storageAdapter, mediaAdapter });
 
 export async function GET(request: Request): Promise<Response> {
   const response = await pagesRoute.GET(request);

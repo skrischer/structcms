@@ -1,11 +1,11 @@
+import { mediaAdapter, storageAdapter } from '@/lib/adapters';
 import { createNextPageBySlugRoute } from '@structcms/api/next';
-import { storageAdapter } from '@/lib/adapters';
 
 interface RouteParams {
   params: Promise<{ slug: string | string[] }>;
 }
 
-const pageBySlugRoute = createNextPageBySlugRoute({ storageAdapter });
+const pageBySlugRoute = createNextPageBySlugRoute({ storageAdapter, mediaAdapter });
 
 export async function GET(request: Request, context: RouteParams): Promise<Response> {
   const response = await pageBySlugRoute.GET(request, context);

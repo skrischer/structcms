@@ -28,18 +28,19 @@ export interface OAuthResponse {
 
 export interface VerifySessionInput {
   accessToken: string;
+  expiresAt?: Date | string;
 }
 
 export interface AuthAdapter {
   signInWithOAuth(input: SignInWithOAuthInput): Promise<OAuthResponse>;
-  
+
   signInWithPassword(input: SignInWithPasswordInput): Promise<AuthSession>;
-  
+
   signOut(accessToken: string): Promise<void>;
-  
+
   verifySession(input: VerifySessionInput): Promise<AuthUser | null>;
-  
+
   refreshSession(refreshToken: string): Promise<AuthSession>;
-  
+
   getCurrentUser(accessToken: string): Promise<AuthUser | null>;
 }

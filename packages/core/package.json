@@ -1,6 +1,6 @@
 {
   "name": "@structcms/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Core modeling, validation, and types for StructCMS",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -18,9 +18,8 @@
       }
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -38,9 +37,27 @@
     "access": "public"
   },
   "license": "MIT",
+  "author": "Sebastian Krischer",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skrischer/structcms.git",
     "directory": "packages/core"
-  }
+  },
+  "keywords": [
+    "cms",
+    "headless-cms",
+    "typescript",
+    "zod",
+    "content-management",
+    "code-first",
+    "type-safe",
+    "content-modeling"
+  ],
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "bugs": {
+    "url": "https://github.com/skrischer/structcms/issues"
+  },
+  "homepage": "https://github.com/skrischer/structcms#readme"
 }

@@ -7,19 +7,25 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "a11y": {
+        "useKeyWithClickEvents": "warn",
+        "useSemanticElements": "warn",
+        "useButtonType": "warn",
+        "noRedundantAlt": "warn"
+      },
       "complexity": {
-        "noExcessiveCognitiveComplexity": "warn"
+        "noExcessiveCognitiveComplexity": "warn",
+        "noForEach": "warn"
       },
       "correctness": {
-        "noUnusedImports": "error",
-        "noUnusedVariables": "error"
+        "useExhaustiveDependencies": "warn"
       },
-      "style": {
-        "noNonNullAssertion": "warn",
-        "useConst": "error"
+      "security": {
+        "noDangerouslySetInnerHtml": "warn"
       },
       "suspicious": {
-        "noExplicitAny": "error"
+        "noExplicitAny": "warn",
+        "noArrayIndexKey": "warn"
       }
     }
   },

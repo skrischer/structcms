@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useAuth } from '../../context/auth-context';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -61,11 +62,7 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
         />
       </div>
 
-      {error && (
-        <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{error}</div>}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Signing in...' : 'Sign In'}

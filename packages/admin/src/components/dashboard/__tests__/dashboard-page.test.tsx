@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createRegistry, defineSection } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { defineSection, createRegistry } from '@structcms/core';
 import { AdminProvider } from '../../../context/admin-context';
-import { DashboardPage } from '../dashboard-page';
 import type { PageSummary } from '../../content/page-list';
+import { DashboardPage } from '../dashboard-page';
 
 const heroSection = defineSection({
   name: 'hero',
@@ -33,7 +33,13 @@ function renderWithProvider(props = defaultProps) {
 
 const mockPages: PageSummary[] = [
   { id: '1', title: 'Home', slug: 'home', pageType: 'landing', updatedAt: '2026-02-09T00:00:00Z' },
-  { id: '2', title: 'About', slug: 'about', pageType: 'landing', updatedAt: '2026-02-08T00:00:00Z' },
+  {
+    id: '2',
+    title: 'About',
+    slug: 'about',
+    pageType: 'landing',
+    updatedAt: '2026-02-08T00:00:00Z',
+  },
 ];
 
 function mockAllApiSuccess() {

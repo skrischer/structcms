@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import { useApiClient } from '../../hooks/use-api-client';
-import { type PageSummary } from '../content/page-list';
-import { Skeleton } from '../ui/skeleton';
-import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import type { PageSummary } from '../content/page-list';
+import { Button } from '../ui/button';
+import { Skeleton } from '../ui/skeleton';
 
 export interface RecentPagesProps {
   onSelectPage: (page: PageSummary) => void;
@@ -40,30 +40,33 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
-  const fetchPages = React.useCallback(async (signal?: { cancelled: boolean }) => {
-    setLoading(true);
-    setError(false);
+  const fetchPages = React.useCallback(
+    async (signal?: { cancelled: boolean }) => {
+      setLoading(true);
+      setError(false);
 
-    const result = await api.get<PageSummary[]>('/pages');
+      const result = await api.get<PageSummary[]>('/pages');
 
-    if (signal?.cancelled) return;
+      if (signal?.cancelled) return;
 
-    if (result.error) {
-      setError(true);
+      if (result.error) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
+      const allPages = result.data ?? [];
+      const sorted = [...allPages].sort((a, b) => {
+        const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+        const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      setPages(sorted.slice(0, 10));
       setLoading(false);
-      return;
-    }
-
-    const allPages = result.data ?? [];
-    const sorted = [...allPages].sort((a, b) => {
-      const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-      const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-      return dateB - dateA;
-    });
-
-    setPages(sorted.slice(0, 10));
-    setLoading(false);
-  }, [api]);
+    },
+    [api]
+  );
 
   React.useEffect(() => {
     const signal = { cancelled: false };
@@ -80,6 +83,7 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
       {loading && (
         <div className="space-y-2" data-testid="recent-pages-loading">
           {Array.from({ length: 5 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: Temporary loading skeletons with no stable data
             <Skeleton key={i} className="h-10 w-full" />
           ))}
         </div>
@@ -102,10 +106,7 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
       )}
 
       {!loading && !error && pages.length === 0 && (
-        <p
-          className="text-sm text-muted-foreground py-4"
-          data-testid="recent-pages-empty"
-        >
+        <p className="text-sm text-muted-foreground py-4" data-testid="recent-pages-empty">
           No pages yet.
         </p>
       )}
@@ -113,18 +114,11 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
       {!loading && !error && pages.length > 0 && (
         <div className="rounded-md border border-input" data-testid="recent-pages-list">
           {pages.map((page) => (
-            <div
+            <button
+              type="button"
               key={page.id}
-              className="flex items-center justify-between border-b border-input last:border-0 px-3 py-2 hover:bg-muted/30 cursor-pointer"
+              className="flex items-center justify-between border-b border-input last:border-0 px-3 py-2 hover:bg-muted/30 cursor-pointer w-full text-left"
               onClick={() => onSelectPage(page)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectPage(page);
-                }
-              }}
               data-testid={`recent-page-${page.id}`}
             >
               <div className="min-w-0 flex-1">
@@ -136,7 +130,7 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
                   {formatTimestamp(page.updatedAt)}
                 </span>
               )}
-            </div>
+            </button>
           ))}
         </div>
       )}

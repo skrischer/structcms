@@ -25,7 +25,25 @@ export {
   StorageValidationError,
 } from './storage';
 
-export { generateSlug, ensureUniqueSlug } from './utils';
+export { generateSlug, ensureUniqueSlug, stripTags } from './utils';
+
+export type {
+  CreatePageInput as CreatePageSchemaType,
+  UpdatePageInput as UpdatePageSchemaType,
+  CreateNavigationInput as CreateNavigationSchemaType,
+  UpdateNavigationInput as UpdateNavigationSchemaType,
+  SignInInput,
+  MediaUploadInput as MediaUploadSchemaType,
+} from './validation';
+
+export {
+  CreatePageSchema,
+  UpdatePageSchema,
+  CreateNavigationSchema,
+  UpdateNavigationSchema,
+  SignInSchema,
+  MediaUploadSchema,
+} from './validation';
 
 export type {
   PageResponse,
@@ -45,11 +63,16 @@ export type {
   UploadMediaInput,
   MediaFilter,
   AllowedMimeType,
+  AllowedDocumentMimeType,
+  MediaCategory,
   SupabaseMediaAdapterConfig,
 } from './media';
 
 export {
   ALLOWED_MIME_TYPES,
+  ALLOWED_DOCUMENT_MIME_TYPES,
+  ALL_ALLOWED_MIME_TYPES,
+  MAX_FILE_SIZE,
   SupabaseMediaAdapter,
   createMediaAdapter,
   MediaError,
@@ -78,7 +101,12 @@ export type {
   MediaExportEntry,
 } from './export';
 
-export { handleExportPage, handleExportAllPages, handleExportNavigations, handleExportSite } from './export';
+export {
+  handleExportPage,
+  handleExportAllPages,
+  handleExportNavigations,
+  handleExportSite,
+} from './export';
 
 export type {
   AuthUser,
@@ -91,6 +119,9 @@ export type {
   SupabaseAuthAdapterConfig,
   AuthMiddlewareConfig,
   AuthenticatedRequest,
+  RateLimiter,
+  RateLimiterConfig,
+  RateLimitResult,
 } from './auth';
 
 export {
@@ -105,4 +136,11 @@ export {
   handleGetCurrentUser,
   AuthValidationError,
   createAuthMiddleware,
+  generateCsrfToken,
+  validateCsrfToken,
+  createRateLimiter,
 } from './auth';
+
+export type { AuditEntry } from './audit';
+
+export { createAuditLogger, withAuditLog } from './audit';

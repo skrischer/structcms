@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Label } from '../ui/label';
 import { cn } from '../../lib/utils';
+import { Label } from '../ui/label';
 
 export interface ObjectFieldProps {
   label: string;
@@ -24,15 +24,7 @@ export interface ObjectFieldProps {
  * </ObjectField>
  * ```
  */
-function ObjectField({
-  label,
-  children,
-  error,
-  required,
-  className,
-  id,
-  name,
-}: ObjectFieldProps) {
+function ObjectField({ label, children, error, required, className, id, name }: ObjectFieldProps) {
   const fieldId = id || name || React.useId();
 
   return (
@@ -47,6 +39,7 @@ function ObjectField({
           'rounded-md border border-input bg-muted/30 p-4 space-y-4',
           error && 'border-destructive'
         )}
+        // biome-ignore lint/a11y/useSemanticElements: Using div with role="group" for consistent styling with other inputs
         role="group"
         aria-labelledby={`${fieldId}-label`}
         aria-describedby={error ? `${fieldId}-error` : undefined}

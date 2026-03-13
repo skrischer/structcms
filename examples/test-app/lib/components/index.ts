@@ -1,14 +1,21 @@
+import type {
+  ContentSection as ContentSectionDef,
+  CtaSection as CtaSectionDef,
+  HeroSection as HeroSectionDef,
+} from '@/lib/registry';
 import type { InferSectionData } from '@structcms/core';
-import type { HeroSection as HeroSectionDef, ContentSection as ContentSectionDef } from '@/lib/registry';
-import { HeroSection } from './hero';
 import { ContentSection } from './content';
+import { CtaSection } from './cta';
+import { HeroSection } from './hero';
 
 export type HeroData = InferSectionData<typeof HeroSectionDef>;
 export type ContentData = InferSectionData<typeof ContentSectionDef>;
+export type CtaData = InferSectionData<typeof CtaSectionDef>;
 
 type SectionDataMap = {
   hero: HeroData;
   content: ContentData;
+  cta: CtaData;
 };
 
 export type SectionType = keyof SectionDataMap;
@@ -22,6 +29,7 @@ export const sectionComponents: {
 } = {
   hero: HeroSection,
   content: ContentSection,
+  cta: CtaSection,
 };
 
 export function isSectionType(type: string): type is SectionType {

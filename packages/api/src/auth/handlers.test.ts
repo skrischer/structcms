@@ -1,17 +1,17 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+  AuthValidationError,
+  handleGetCurrentUser,
+  handleRefreshSession,
   handleSignInWithOAuth,
   handleSignInWithPassword,
   handleSignOut,
   handleVerifySession,
-  handleRefreshSession,
-  handleGetCurrentUser,
-  AuthValidationError,
 } from './handlers';
 import type {
   AuthAdapter,
-  AuthUser,
   AuthSession,
+  AuthUser,
   SignInWithOAuthInput,
   SignInWithPasswordInput,
   VerifySessionInput,
@@ -78,9 +78,9 @@ describe('handleSignInWithOAuth', () => {
   });
 
   it('should throw validation error when provider is missing', async () => {
-    await expect(
-      handleSignInWithOAuth(adapter, {} as SignInWithOAuthInput)
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleSignInWithOAuth(adapter, {} as SignInWithOAuthInput)).rejects.toThrow(
+      AuthValidationError
+    );
   });
 
   it('should throw validation error for invalid provider', async () => {
@@ -107,7 +107,7 @@ describe('handleSignInWithPassword', () => {
   it('should sign in with valid credentials', async () => {
     const result = await handleSignInWithPassword(adapter, {
       email: 'test@example.com',
-      password: 'password123',
+      password: 'SecurePass123!', // Meets new policy: 8+ chars, uppercase, lowercase, numbers, special
     });
 
     expect(result.user.email).toBe('test@example.com');
@@ -147,7 +147,7 @@ describe('handleSignInWithPassword', () => {
         email: 'test@example.com',
         password: '12345',
       })
-    ).rejects.toThrow('Password must be at least 6 characters');
+    ).rejects.toThrow('Password must be at least 8 characters');
   });
 });
 
@@ -155,15 +155,11 @@ describe('handleSignOut', () => {
   const adapter = createMockAuthAdapter();
 
   it('should sign out with valid token', async () => {
-    await expect(
-      handleSignOut(adapter, 'valid-token')
-    ).resolves.toBeUndefined();
+    await expect(handleSignOut(adapter, 'valid-token')).resolves.toBeUndefined();
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleSignOut(adapter, '')
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleSignOut(adapter, '')).rejects.toThrow(AuthValidationError);
   });
 });
 
@@ -178,18 +174,18 @@ describe('handleVerifySession', () => {
     expect(result).toEqual(testUser);
   });
 
-  it('should return null for invalid token', async () => {
-    const result = await handleVerifySession(adapter, {
-      accessToken: 'invalid-token',
-    });
-
-    expect(result).toBeNull();
+  it('should throw error for invalid token', async () => {
+    await expect(
+      handleVerifySession(adapter, {
+        accessToken: 'invalid-token',
+      })
+    ).rejects.toThrow('Invalid or expired token');
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleVerifySession(adapter, { accessToken: '' })
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleVerifySession(adapter, { accessToken: '' })).rejects.toThrow(
+      AuthValidationError
+    );
   });
 });
 
@@ -204,9 +200,7 @@ describe('handleRefreshSession', () => {
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleRefreshSession(adapter, '')
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleRefreshSession(adapter, '')).rejects.toThrow(AuthValidationError);
   });
 });
 
@@ -226,8 +220,6 @@ describe('handleGetCurrentUser', () => {
   });
 
   it('should throw validation error when token is missing', async () => {
-    await expect(
-      handleGetCurrentUser(adapter, '')
-    ).rejects.toThrow(AuthValidationError);
+    await expect(handleGetCurrentUser(adapter, '')).rejects.toThrow(AuthValidationError);
   });
 });

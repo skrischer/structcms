@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
 import { cn } from '../../lib/utils';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 
 export interface TextInputProps
   extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'rows'> {

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { resetAndSeed } from './helpers';
 
 test.describe('Dashboard', () => {
@@ -82,11 +82,21 @@ test.describe('Dashboard', () => {
     await expect(pagesList).toBeVisible({ timeout: 10000 });
 
     // Verify seeded pages appear — each row is a div[role=button] containing title + slug
-    await expect(pagesList.locator('[role="button"]').filter({ hasText: 'Home' }).first()).toBeVisible();
-    await expect(pagesList.locator('[role="button"]').filter({ hasText: 'About Us' }).first()).toBeVisible();
-    await expect(pagesList.locator('[role="button"]').filter({ hasText: 'Blog' }).first()).toBeVisible();
-    await expect(pagesList.locator('[role="button"]').filter({ hasText: 'Our Team' }).first()).toBeVisible();
-    await expect(pagesList.locator('[role="button"]').filter({ hasText: 'Contact' }).first()).toBeVisible();
+    await expect(
+      pagesList.locator('[role="button"]').filter({ hasText: 'Home' }).first()
+    ).toBeVisible();
+    await expect(
+      pagesList.locator('[role="button"]').filter({ hasText: 'About Us' }).first()
+    ).toBeVisible();
+    await expect(
+      pagesList.locator('[role="button"]').filter({ hasText: 'Blog' }).first()
+    ).toBeVisible();
+    await expect(
+      pagesList.locator('[role="button"]').filter({ hasText: 'Our Team' }).first()
+    ).toBeVisible();
+    await expect(
+      pagesList.locator('[role="button"]').filter({ hasText: 'Contact' }).first()
+    ).toBeVisible();
   });
 
   test('should show max 10 items in recent pages', async ({ page }) => {

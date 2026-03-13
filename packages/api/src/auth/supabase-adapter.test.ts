@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SupabaseAuthAdapter, AuthError } from './supabase-adapter';
+import type { Session, User } from '@supabase/supabase-js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthError, SupabaseAuthAdapter } from './supabase-adapter';
 
 interface MockSupabaseClient {
   auth: {
@@ -29,13 +30,14 @@ describe('SupabaseAuthAdapter', () => {
 
   beforeEach(() => {
     mockClient = createMockSupabaseClient();
+    // biome-ignore lint/suspicious/noExplicitAny: Mock client doesn't fully implement SupabaseClient interface
     adapter = new SupabaseAuthAdapter({ client: mockClient as any });
   });
 
   describe('signInWithOAuth', () => {
     it('should initiate OAuth flow', async () => {
       mockClient.auth.signInWithOAuth.mockResolvedValue({
-        data: { url: 'https://oauth.provider.com/auth', provider: 'google' } as any,
+        data: { url: 'https://oauth.provider.com/auth', provider: 'google' },
         error: null,
       });
 
@@ -54,24 +56,22 @@ describe('SupabaseAuthAdapter', () => {
 
     it('should throw AuthError when OAuth fails', async () => {
       mockClient.auth.signInWithOAuth.mockResolvedValue({
-        data: { url: '', provider: 'google' } as any,
-        error: { message: 'OAuth failed' } as any,
+        data: { url: '', provider: 'google' },
+        error: { message: 'OAuth failed', name: 'AuthError', status: 400 },
       });
 
-      await expect(
-        adapter.signInWithOAuth({ provider: 'google' })
-      ).rejects.toThrow(AuthError);
+      await expect(adapter.signInWithOAuth({ provider: 'google' })).rejects.toThrow(AuthError);
     });
 
     it('should throw AuthError when URL is missing', async () => {
       mockClient.auth.signInWithOAuth.mockResolvedValue({
-        data: { url: '', provider: 'google' } as any,
+        data: { url: '', provider: 'google' },
         error: null,
       });
 
-      await expect(
-        adapter.signInWithOAuth({ provider: 'google' })
-      ).rejects.toThrow('OAuth URL not provided');
+      await expect(adapter.signInWithOAuth({ provider: 'google' })).rejects.toThrow(
+        'OAuth URL not provided'
+      );
     });
   });
 
@@ -83,12 +83,12 @@ describe('SupabaseAuthAdapter', () => {
             access_token: 'access-token',
             refresh_token: 'refresh-token',
             expires_at: 1735689600,
-          } as any,
+          } as unknown as Session,
           user: {
             id: 'user-123',
             email: 'test@example.com',
             user_metadata: { name: 'Test User' },
-          } as any,
+          } as unknown as User,
         },
         error: null,
       });
@@ -106,8 +106,8 @@ describe('SupabaseAuthAdapter', () => {
 
     it('should throw AuthError on invalid credentials', async () => {
       mockClient.auth.signInWithPassword.mockResolvedValue({
-        data: { session: null, user: null } as any,
-        error: { message: 'Invalid credentials' } as any,
+        data: { session: null, user: null },
+        error: { message: 'Invalid credentials', name: 'AuthError', status: 401 },
       });
 
       await expect(
@@ -125,19 +125,15 @@ describe('SupabaseAuthAdapter', () => {
         error: null,
       });
 
-      await expect(
-        adapter.signOut('access-token')
-      ).resolves.toBeUndefined();
+      await expect(adapter.signOut('access-token')).resolves.toBeUndefined();
     });
 
     it('should throw AuthError on signout failure', async () => {
       mockClient.auth.signOut.mockResolvedValue({
-        error: { message: 'Signout failed' } as any,
+        error: { message: 'Signout failed', name: 'AuthError', status: 500 },
       });
 
-      await expect(
-        adapter.signOut('access-token')
-      ).rejects.toThrow(AuthError);
+      await expect(adapter.signOut('access-token')).rejects.toThrow(AuthError);
     });
   });
 
@@ -149,7 +145,7 @@ describe('SupabaseAuthAdapter', () => {
             id: 'user-123',
             email: 'test@example.com',
             user_metadata: {},
-          } as any,
+          } as unknown as User,
         },
         error: null,
       });
@@ -164,8 +160,8 @@ describe('SupabaseAuthAdapter', () => {
 
     it('should return null for invalid session', async () => {
       mockClient.auth.getUser.mockResolvedValue({
-        data: { user: null } as any,
-        error: { message: 'Invalid token' } as any,
+        data: { user: null },
+        error: { message: 'Invalid token', name: 'AuthError', status: 401 },
       });
 
       const result = await adapter.verifySession({
@@ -184,12 +180,12 @@ describe('SupabaseAuthAdapter', () => {
             access_token: 'new-access-token',
             refresh_token: 'new-refresh-token',
             expires_at: 1735689600,
-          } as any,
+          } as unknown as Session,
           user: {
             id: 'user-123',
             email: 'test@example.com',
             user_metadata: {},
-          } as any,
+          } as unknown as User,
         },
         error: null,
       });
@@ -202,13 +198,11 @@ describe('SupabaseAuthAdapter', () => {
 
     it('should throw AuthError on refresh failure', async () => {
       mockClient.auth.refreshSession.mockResolvedValue({
-        data: { session: null, user: null } as any,
-        error: { message: 'Refresh failed' } as any,
+        data: { session: null, user: null },
+        error: { message: 'Refresh failed', name: 'AuthError', status: 500 },
       });
 
-      await expect(
-        adapter.refreshSession('invalid-refresh')
-      ).rejects.toThrow(AuthError);
+      await expect(adapter.refreshSession('invalid-refresh')).rejects.toThrow(AuthError);
     });
   });
 
@@ -220,7 +214,7 @@ describe('SupabaseAuthAdapter', () => {
             id: 'user-123',
             email: 'test@example.com',
             user_metadata: { name: 'Test User' },
-          } as any,
+          } as unknown as User,
         },
         error: null,
       });
@@ -234,8 +228,8 @@ describe('SupabaseAuthAdapter', () => {
 
     it('should return null when user not found', async () => {
       mockClient.auth.getUser.mockResolvedValue({
-        data: { user: null } as any,
-        error: { message: 'User not found' } as any,
+        data: { user: null },
+        error: { message: 'User not found', name: 'AuthError', status: 404 },
       });
 
       const result = await adapter.getCurrentUser('invalid-token');

@@ -1,12 +1,10 @@
 'use client';
-
-import * as React from 'react';
-import { KpiCards } from './kpi-cards';
-import { RecentPages } from './recent-pages';
-import { QuickActions } from './quick-actions';
-import { ErrorBoundary } from '../ui/error-boundary';
-import { type PageSummary } from '../content/page-list';
 import { cn } from '../../lib/utils';
+import type { PageSummary } from '../content/page-list';
+import { ErrorBoundary } from '../ui/error-boundary';
+import { KpiCards } from './kpi-cards';
+import { QuickActions } from './quick-actions';
+import { RecentPages } from './recent-pages';
 
 export interface DashboardPageProps {
   onSelectPage: (page: PageSummary) => void;
@@ -53,10 +51,7 @@ function DashboardPage({
 
         <div>
           <ErrorBoundary>
-            <QuickActions
-              onCreatePage={onCreatePage}
-              onUploadMedia={onUploadMedia}
-            />
+            <QuickActions onCreatePage={onCreatePage} onUploadMedia={onUploadMedia} />
           </ErrorBoundary>
         </div>
       </div>

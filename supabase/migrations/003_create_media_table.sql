@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS media (
   filename TEXT NOT NULL,
   storage_path TEXT NOT NULL,
   mime_type TEXT NOT NULL,
-  size INTEGER NOT NULL,
+  size BIGINT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

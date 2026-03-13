@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, type ReactNode } from 'react';
-import { type Registry } from '@structcms/core';
+import type { Registry } from '@structcms/core';
+import { type ReactNode, createContext } from 'react';
 import { ToastProvider } from '../components/ui/toast';
 
 /**

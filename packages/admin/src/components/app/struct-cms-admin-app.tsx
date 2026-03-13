@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
 import type { Registry } from '@structcms/core';
+import type React from 'react';
 import { AdminProvider } from '../../context/admin-context';
+import { AuthProvider } from '../../context/auth-context';
+import { useNavigation } from '../../hooks/use-navigation';
+import type { PageSummary } from '../content/page-list';
 import { AdminLayout, type SidebarNavItem } from '../layout/admin-layout';
-import { DashboardPage } from '../dashboard/dashboard-page';
-import { PageList, type PageSummary } from '../content/page-list';
-import { PageEditor } from '../editors/page-editor';
-import { MediaBrowser } from '../media/media-browser';
-import { NavigationEditor } from '../content/navigation-editor';
+import { ViewRenderer } from './view-renderer';
 
 export interface StructCMSAdminAppProps {
   registry: Registry;
@@ -14,125 +13,73 @@ export interface StructCMSAdminAppProps {
   className?: string;
   customNavItems?: SidebarNavItem[];
   renderView?: (view: View) => React.ReactNode | null;
+  /**
+   * If true, wraps the app in AuthProvider. When enabled, you should provide login/auth handling.
+   * @default false
+   */
+  enableAuth?: boolean;
+  /**
+   * Callback when user authentication state changes
+   */
+  onAuthStateChange?: (user: import('../../context/auth-context').AuthContextValue['user']) => void;
 }
 
-export type View = 
+export type View =
   | { type: 'dashboard' }
   | { type: 'pages' }
-  | { type: 'page-editor' }
+  | { type: 'page-editor'; pageId?: string }
   | { type: 'media' }
   | { type: 'navigation' }
   | { type: 'custom'; path: string };
 
-export function StructCMSAdminApp({ 
-  registry, 
+export function StructCMSAdminApp({
+  registry,
   apiBaseUrl = '/api/cms',
   className,
   customNavItems = [],
   renderView: customRenderView,
+  enableAuth = false,
+  onAuthStateChange,
 }: StructCMSAdminAppProps) {
-  const [currentView, setCurrentView] = useState<View>({ type: 'dashboard' });
+  const { currentView, setView, handleNavigate, buildNavItems } = useNavigation();
 
-  const handleNavigate = (path: string) => {
-    if (path === '/') {
-      setCurrentView({ type: 'dashboard' });
-    } else if (path === '/pages') {
-      setCurrentView({ type: 'pages' });
-    } else if (path === '/media') {
-      setCurrentView({ type: 'media' });
-    } else if (path === '/navigation') {
-      setCurrentView({ type: 'navigation' });
-    } else {
-      setCurrentView({ type: 'custom', path });
-    }
-  };
-
-  const handleSelectPage = (_page: PageSummary) => {
-    setCurrentView({ type: 'page-editor' });
+  const handleSelectPage = (page: PageSummary) => {
+    setView({ type: 'page-editor', pageId: page.id });
   };
 
   const handleCreatePage = () => {
-    setCurrentView({ type: 'page-editor' });
+    setView({ type: 'page-editor' });
   };
 
   const handleUploadMedia = () => {
-    setCurrentView({ type: 'media' });
+    setView({ type: 'media' });
   };
 
-  const renderView = () => {
-    if (customRenderView) {
-      const customView = customRenderView(currentView);
-      if (customView !== null) {
-        return customView;
-      }
-    }
+  const navItems = buildNavItems(customNavItems);
 
-    switch (currentView.type) {
-      case 'dashboard':
-        return (
-          <DashboardPage
-            onSelectPage={handleSelectPage}
-            onCreatePage={handleCreatePage}
-            onUploadMedia={handleUploadMedia}
-          />
-        );
-      case 'pages':
-        return (
-          <PageList
-            onSelectPage={handleSelectPage}
-            onCreatePage={handleCreatePage}
-          />
-        );
-      case 'page-editor':
-        return (
-          <PageEditor
-            sections={[]}
-            allowedSections={registry.getAllSections().map(s => s.name)}
-            onSave={() => {
-              setCurrentView({ type: 'pages' });
-            }}
-          />
-        );
-      case 'media':
-        return <MediaBrowser onSelect={() => {}} />;
-      case 'navigation':
-        return (
-          <NavigationEditor
-            items={[]}
-            onSave={async () => {
-              setCurrentView({ type: 'navigation' });
-            }}
-          />
-        );
-      case 'custom':
-        return (
-          <div data-testid="custom-view">
-            Custom view for path: {currentView.path}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const defaultNavItems = [
-    { label: 'Dashboard', path: '/' },
-    { label: 'Pages', path: '/pages' },
-    { label: 'Navigation', path: '/navigation' },
-    { label: 'Media', path: '/media' },
-  ];
-
-  const navItems = [...defaultNavItems, ...customNavItems];
-
-  return (
+  const appContent = (
     <AdminProvider registry={registry} apiBaseUrl={apiBaseUrl}>
-      <AdminLayout 
-        className={className}
-        navItems={navItems}
-        onNavigate={handleNavigate}
-      >
-        {renderView()}
+      <AdminLayout className={className} navItems={navItems} onNavigate={handleNavigate}>
+        <ViewRenderer
+          currentView={currentView}
+          registry={registry}
+          customRenderView={customRenderView}
+          onNavigate={setView}
+          onSelectPage={handleSelectPage}
+          onCreatePage={handleCreatePage}
+          onUploadMedia={handleUploadMedia}
+        />
       </AdminLayout>
     </AdminProvider>
   );
+
+  if (enableAuth) {
+    return (
+      <AuthProvider apiBaseUrl={apiBaseUrl} onAuthStateChange={onAuthStateChange}>
+        {appContent}
+      </AuthProvider>
+    );
+  }
+
+  return appContent;
 }

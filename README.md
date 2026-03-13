@@ -1,8 +1,75 @@
 # StructCMS
 
+[![npm version](https://img.shields.io/npm/v/@structcms/core.svg)](https://www.npmjs.com/package/@structcms/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
+
 A code-first, installable headless CMS framework that lives inside your website codebase. Content models are defined in TypeScript, validated with Zod, and rendered with full type safety.
 
-For product vision, scope, and positioning, see [CONCEPT.md](./CONCEPT.md).
+For product vision, scope, and positioning, see [docs/CONCEPT.md](./docs/CONCEPT.md).
+
+## Quick Start
+
+```bash
+# 1. Install packages
+npm install @structcms/core @structcms/api @structcms/admin
+
+# 2. Define a section
+import { defineSection, fields } from '@structcms/core';
+
+const HeroSection = defineSection({
+  name: 'hero',
+  fields: {
+    title: fields.string(),
+    subtitle: fields.text(),
+    image: fields.image(),
+  },
+});
+
+# 3. Create a registry
+import { createRegistry } from '@structcms/core';
+
+const registry = createRegistry({
+  sections: [HeroSection],
+});
+
+# 4. Set up API routes (Next.js example)
+import { createNextPagesRoute } from '@structcms/api/next';
+import { storageAdapter, mediaAdapter } from './lib/adapters';
+
+export const GET = createNextPagesRoute({ storageAdapter, mediaAdapter }).GET;
+export const POST = createNextPagesRoute({ storageAdapter, mediaAdapter }).POST;
+
+# 5. Add Admin UI
+import { AdminProvider, AdminLayout } from '@structcms/admin';
+
+export default function AdminLayoutRoot({ children }) {
+  return (
+    <AdminProvider registry={registry} apiBaseUrl="/api/cms">
+      <AdminLayout>{children}</AdminLayout>
+    </AdminProvider>
+  );
+}
+```
+
+See the [examples/test-app](./examples/test-app) directory for a complete working integration.
+
+## Key Concepts
+
+### Sections
+Reusable content blocks defined with TypeScript and Zod. Sections can be added to pages in any order and combination. Each section has a schema that defines its fields and validation rules.
+
+### Page Types
+Templates that define which sections are allowed on a page. For example, a "Blog Post" page type might allow Hero, Content, and Gallery sections, while a "Landing Page" might allow different sections.
+
+### Registry
+A runtime collection of all section and page type definitions. The registry is created at application startup and provides type-safe access to your content models throughout the application.
+
+### Adapters
+Interface-based persistence layer for storage and media. The default implementation uses Supabase, but the adapter pattern allows for alternative backends (PostgreSQL, MongoDB, filesystem, etc.).
+
+### Admin UI
+React-based admin interface with dynamic form generation. Forms are automatically generated from Zod schemas, providing a type-safe editing experience that stays in sync with your content models.
 
 ## Monorepo Structure
 
@@ -11,12 +78,11 @@ structcms/
 ├── packages/
 │   ├── core/                  # @structcms/core — Modeling, Registry, Types
 │   ├── api/                   # @structcms/api — Storage, Domain API, Delivery API
-│   └── admin/                 # @structcms/admin — Admin UI Components
+│   └── admin/                 # @structcms/admin — Admin UI Components (React)
 ├── examples/
 │   └── test-app/              # E2E test app (Next.js + Playwright)
 ├── supabase/                  # Database migrations
-├── ARCHITECTURE.md            # Technical layer documentation
-├── CONCEPT.md                 # Product vision, scope, risks
+├── docs/                      # Documentation (architecture, concept, setup guides)
 ├── biome.json                 # Linter/formatter config
 ├── tsconfig.base.json         # Shared TypeScript config
 ├── vitest.workspace.ts        # Test workspace config
@@ -86,13 +152,13 @@ pnpm --filter test-app test:e2e     # Terminal 2
 
 ## Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical layer documentation.
+See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for detailed technical layer documentation.
 
 ```
 Website Project
 │
 ├─ @structcms/core       # Models, validation, types
-├─ @structcms/admin      # Admin UI components
+├─ @structcms/admin      # Admin UI components (React)
 ├─ @structcms/api        # Route handlers, delivery API
 │
 └─ Supabase Backend
@@ -107,3 +173,39 @@ Website Project
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SECRET_KEY=your-service-role-key
 ```
+
+## Deployment
+
+The test-app is deployed on Vercel as a staging environment:
+
+**Staging:** https://structcms-staging.vercel.app
+
+### Deploy via CLI
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production (from repo root)
+vercel --prod
+```
+
+### Vercel Configuration
+
+The project uses the following build settings (see `examples/test-app/vercel.json`):
+
+- **Install:** `pnpm install --recursive`
+- **Build:** `pnpm --filter test-app... build` (builds all dependencies first)
+- **Root Directory:** Repository root (monorepo setup)
+
+Environment variables (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, etc.) must be configured in the Vercel project settings.
+
+
+
+## Contributing
+
+Contributions are welcome! Please see our contributing guidelines (coming soon) for details on how to submit pull requests, report issues, and suggest improvements.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

@@ -1,4 +1,4 @@
-import type { PageSection, NavigationItem } from '../storage/types';
+import type { NavigationItem, PageSection } from '../storage/types';
 
 /**
  * Page response for delivery API

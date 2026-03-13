@@ -28,20 +28,36 @@ export function createRegistry(config: CreateRegistryConfig): Registry {
   const navigationMap = new Map<string, NavigationDefinition>();
 
   for (const section of config.sections) {
+    if (sectionMap.has(section.name)) {
+      throw new Error(
+        `Duplicate section name: "${section.name}". Each section must have a unique name.`
+      );
+    }
     sectionMap.set(section.name, section);
   }
 
   for (const pageType of config.pageTypes ?? []) {
+    if (pageTypeMap.has(pageType.name)) {
+      throw new Error(
+        `Duplicate page type name: "${pageType.name}". Each page type must have a unique name.`
+      );
+    }
     pageTypeMap.set(pageType.name, pageType);
   }
 
   for (const navigation of config.navigations ?? []) {
+    if (navigationMap.has(navigation.name)) {
+      throw new Error(
+        `Duplicate navigation name: "${navigation.name}". Each navigation must have a unique name.`
+      );
+    }
     navigationMap.set(navigation.name, navigation);
   }
 
   return {
     getSection(name: string): SectionDefinition<z.ZodRawShape> | undefined {
-      return sectionMap.get(name);
+      const section = sectionMap.get(name);
+      return section ? Object.freeze({ ...section }) : undefined;
     },
 
     getAllSections(): Array<SectionDefinition<z.ZodRawShape>> {
@@ -49,7 +65,8 @@ export function createRegistry(config: CreateRegistryConfig): Registry {
     },
 
     getPageType(name: string): PageTypeDefinition | undefined {
-      return pageTypeMap.get(name);
+      const pageType = pageTypeMap.get(name);
+      return pageType ? Object.freeze({ ...pageType }) : undefined;
     },
 
     getAllPageTypes(): PageTypeDefinition[] {
@@ -57,7 +74,8 @@ export function createRegistry(config: CreateRegistryConfig): Registry {
     },
 
     getNavigation(name: string): NavigationDefinition | undefined {
-      return navigationMap.get(name);
+      const navigation = navigationMap.get(name);
+      return navigation ? Object.freeze({ ...navigation }) : undefined;
     },
 
     getAllNavigations(): NavigationDefinition[] {

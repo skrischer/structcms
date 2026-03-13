@@ -1,8 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { createRegistry, defineSection, fields } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { z } from 'zod';
-import { defineSection, fields, createRegistry } from '@structcms/core';
+import { describe, expect, it, vi } from 'vitest';
 import { AdminProvider } from '../../../context/admin-context';
 import { SectionEditor } from '../section-editor';
 
@@ -28,27 +27,21 @@ function renderWithProvider(ui: React.ReactElement) {
 
 describe('SectionEditor', () => {
   it('renders form for a known section type', () => {
-    renderWithProvider(
-      <SectionEditor sectionType="hero" onChange={() => {}} />
-    );
+    renderWithProvider(<SectionEditor sectionType="hero" onChange={() => {}} />);
 
     expect(screen.getByTestId('section-editor')).toBeInTheDocument();
     expect(screen.getByText('hero')).toBeInTheDocument();
   });
 
   it('renders form fields from section schema', () => {
-    renderWithProvider(
-      <SectionEditor sectionType="hero" onChange={() => {}} />
-    );
+    renderWithProvider(<SectionEditor sectionType="hero" onChange={() => {}} />);
 
     expect(screen.getByLabelText(/Title/)).toBeInTheDocument();
     expect(screen.getByLabelText(/Subtitle/)).toBeInTheDocument();
   });
 
   it('shows error for unknown section type', () => {
-    renderWithProvider(
-      <SectionEditor sectionType="nonexistent" onChange={() => {}} />
-    );
+    renderWithProvider(<SectionEditor sectionType="nonexistent" onChange={() => {}} />);
 
     expect(screen.getByTestId('section-editor-error')).toBeInTheDocument();
     expect(screen.getByText(/Unknown section type/)).toBeInTheDocument();
@@ -82,27 +75,19 @@ describe('SectionEditor', () => {
     await user.type(screen.getByLabelText(/Title/), 'New Title');
 
     await waitFor(() => {
-      expect(handleChange).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'New Title' })
-      );
+      expect(handleChange).toHaveBeenCalledWith(expect.objectContaining({ title: 'New Title' }));
     });
   });
 
   it('hides submit button when onChange auto-syncs', () => {
-    renderWithProvider(
-      <SectionEditor sectionType="hero" onChange={() => {}} />
-    );
+    renderWithProvider(<SectionEditor sectionType="hero" onChange={() => {}} />);
 
     expect(screen.queryByTestId('form-submit')).not.toBeInTheDocument();
   });
 
   it('applies custom className', () => {
     renderWithProvider(
-      <SectionEditor
-        sectionType="hero"
-        onChange={() => {}}
-        className="custom-class"
-      />
+      <SectionEditor sectionType="hero" onChange={() => {}} className="custom-class" />
     );
 
     expect(screen.getByTestId('section-editor')).toHaveClass('custom-class');

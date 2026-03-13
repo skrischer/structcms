@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Button } from '../ui/button';
 
 export interface OAuthButtonProps {
@@ -9,12 +9,12 @@ export interface OAuthButtonProps {
   className?: string;
 }
 
-export function OAuthButton({ 
-  provider, 
-  apiBaseUrl, 
+export function OAuthButton({
+  provider,
+  apiBaseUrl,
   redirectTo,
   children,
-  className 
+  className,
 }: OAuthButtonProps) {
   const handleClick = async () => {
     try {
@@ -46,12 +46,7 @@ export function OAuthButton({
   };
 
   return (
-    <Button 
-      type="button" 
-      variant="outline" 
-      onClick={handleClick}
-      className={className}
-    >
+    <Button type="button" variant="outline" onClick={handleClick} className={className}>
       {children || `Sign in with ${providerLabels[provider]}`}
     </Button>
   );

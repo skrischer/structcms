@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { generateSlug, ensureUniqueSlug } from './slug';
+import { describe, expect, it } from 'vitest';
+import { ensureUniqueSlug, generateSlug } from './slug';
 
 describe('generateSlug', () => {
   it('should convert title to lowercase', () => {
@@ -80,20 +80,14 @@ describe('ensureUniqueSlug', () => {
   });
 
   it('should find next available number', () => {
-    expect(
-      ensureUniqueSlug('page', ['page', 'page-1', 'page-2', 'page-3'])
-    ).toBe('page-4');
+    expect(ensureUniqueSlug('page', ['page', 'page-1', 'page-2', 'page-3'])).toBe('page-4');
   });
 
   it('should handle gaps in numbering', () => {
-    expect(ensureUniqueSlug('test', ['test', 'test-1', 'test-3'])).toBe(
-      'test-2'
-    );
+    expect(ensureUniqueSlug('test', ['test', 'test-1', 'test-3'])).toBe('test-2');
   });
 
   it('should not confuse similar slugs', () => {
-    expect(ensureUniqueSlug('hello', ['hello-world', 'hello-there'])).toBe(
-      'hello'
-    );
+    expect(ensureUniqueSlug('hello', ['hello-world', 'hello-there'])).toBe('hello');
   });
 });

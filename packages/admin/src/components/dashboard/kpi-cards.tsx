@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { useApiClient } from '../../hooks/use-api-client';
 import { useAdmin } from '../../hooks/use-admin';
-import { Skeleton } from '../ui/skeleton';
-import { Button } from '../ui/button';
+import { useApiClient } from '../../hooks/use-api-client';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Skeleton } from '../ui/skeleton';
 
 interface KpiState {
   value: number | null;
@@ -36,51 +36,60 @@ function KpiCards({ className }: KpiCardsProps) {
 
   const [pages, setPages] = React.useState<KpiState>({ value: null, loading: true, error: null });
   const [media, setMedia] = React.useState<KpiState>({ value: null, loading: true, error: null });
-  const [navigation, setNavigation] = React.useState<KpiState>({ value: null, loading: true, error: null });
+  const [navigation, setNavigation] = React.useState<KpiState>({
+    value: null,
+    loading: true,
+    error: null,
+  });
 
   const sectionsCount = registry.getAllSections().length;
 
-  const fetchPages = React.useCallback(async (signal?: { cancelled: boolean }) => {
-    setPages({ value: null, loading: true, error: null });
-    const result = await api.get<unknown[]>('/pages');
-    if (signal?.cancelled) return;
-    if (result.error) {
-      setPages({ value: null, loading: false, error: result.error.message });
-    } else {
-      setPages({ value: result.data?.length ?? 0, loading: false, error: null });
-    }
-  }, [api]);
+  const fetchPages = React.useCallback(
+    async (signal?: { cancelled: boolean }) => {
+      setPages({ value: null, loading: true, error: null });
+      const result = await api.get<unknown[]>('/pages');
+      if (signal?.cancelled) return;
+      if (result.error) {
+        setPages({ value: null, loading: false, error: result.error.message });
+      } else {
+        setPages({ value: result.data?.length ?? 0, loading: false, error: null });
+      }
+    },
+    [api]
+  );
 
-  const fetchMedia = React.useCallback(async (signal?: { cancelled: boolean }) => {
-    setMedia({ value: null, loading: true, error: null });
-    const result = await api.get<unknown[]>('/media');
-    if (signal?.cancelled) return;
-    if (result.error) {
-      setMedia({ value: null, loading: false, error: result.error.message });
-    } else {
-      setMedia({ value: result.data?.length ?? 0, loading: false, error: null });
-    }
-  }, [api]);
+  const fetchMedia = React.useCallback(
+    async (signal?: { cancelled: boolean }) => {
+      setMedia({ value: null, loading: true, error: null });
+      const result = await api.get<unknown[]>('/media');
+      if (signal?.cancelled) return;
+      if (result.error) {
+        setMedia({ value: null, loading: false, error: result.error.message });
+      } else {
+        setMedia({ value: result.data?.length ?? 0, loading: false, error: null });
+      }
+    },
+    [api]
+  );
 
-  const fetchNavigation = React.useCallback(async (signal?: { cancelled: boolean }) => {
-    setNavigation({ value: null, loading: true, error: null });
-    const result = await api.get<unknown[]>('/navigation');
-    if (signal?.cancelled) return;
-    if (result.error) {
-      setNavigation({ value: null, loading: false, error: result.error.message });
-    } else {
-      setNavigation({ value: result.data?.length ?? 0, loading: false, error: null });
-    }
-  }, [api]);
+  const fetchNavigation = React.useCallback(
+    async (signal?: { cancelled: boolean }) => {
+      setNavigation({ value: null, loading: true, error: null });
+      const result = await api.get<unknown[]>('/navigation');
+      if (signal?.cancelled) return;
+      if (result.error) {
+        setNavigation({ value: null, loading: false, error: result.error.message });
+      } else {
+        setNavigation({ value: result.data?.length ?? 0, loading: false, error: null });
+      }
+    },
+    [api]
+  );
 
   React.useEffect(() => {
     const signal = { cancelled: false };
 
-    void Promise.allSettled([
-      fetchPages(signal),
-      fetchMedia(signal),
-      fetchNavigation(signal),
-    ]);
+    void Promise.allSettled([fetchPages(signal), fetchMedia(signal), fetchNavigation(signal)]);
 
     return () => {
       signal.cancelled = true;
@@ -90,15 +99,22 @@ function KpiCards({ className }: KpiCardsProps) {
   const kpis = [
     { label: 'Pages', state: pages, onRetry: () => void fetchPages(), testId: 'kpi-pages' },
     { label: 'Media Files', state: media, onRetry: () => void fetchMedia(), testId: 'kpi-media' },
-    { label: 'Navigation Sets', state: navigation, onRetry: () => void fetchNavigation(), testId: 'kpi-navigation' },
-    { label: 'Sections', state: { value: sectionsCount, loading: false, error: null } as KpiState, onRetry: undefined, testId: 'kpi-sections' },
+    {
+      label: 'Navigation Sets',
+      state: navigation,
+      onRetry: () => void fetchNavigation(),
+      testId: 'kpi-navigation',
+    },
+    {
+      label: 'Sections',
+      state: { value: sectionsCount, loading: false, error: null } as KpiState,
+      onRetry: undefined,
+      testId: 'kpi-sections',
+    },
   ];
 
   return (
-    <div
-      className={cn('grid grid-cols-2 gap-4 md:grid-cols-4', className)}
-      data-testid="kpi-cards"
-    >
+    <div className={cn('grid grid-cols-2 gap-4 md:grid-cols-4', className)} data-testid="kpi-cards">
       {kpis.map((kpi) => (
         <div
           key={kpi.testId}

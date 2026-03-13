@@ -1,20 +1,41 @@
 import type { PageSection } from '../storage/types';
 import type { MediaAdapter } from './types';
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Convention: fields ending with these suffixes are treated as media references
  */
-const MEDIA_FIELD_SUFFIXES = ['_image', '_media', '_photo', '_thumbnail', '_avatar', '_icon'];
+const MEDIA_FIELD_SUFFIXES = [
+  '_image',
+  '_media',
+  '_photo',
+  '_thumbnail',
+  '_avatar',
+  '_icon',
+  '_file',
+  '_document',
+  '_attachment',
+  '_download',
+];
 
 /**
  * Checks if a field name is a media reference field by convention
  */
 function isMediaField(fieldName: string): boolean {
   const lower = fieldName.toLowerCase();
-  if (lower === 'image' || lower === 'media' || lower === 'photo' || lower === 'thumbnail' || lower === 'avatar' || lower === 'icon') {
+  if (
+    lower === 'image' ||
+    lower === 'media' ||
+    lower === 'photo' ||
+    lower === 'thumbnail' ||
+    lower === 'avatar' ||
+    lower === 'icon' ||
+    lower === 'file' ||
+    lower === 'document' ||
+    lower === 'attachment' ||
+    lower === 'download'
+  ) {
     return true;
   }
   return MEDIA_FIELD_SUFFIXES.some((suffix) => lower.endsWith(suffix));
@@ -43,10 +64,7 @@ async function resolveDataObject(
       const media = await adapter.getMedia(value);
       resolved[key] = media ? media.url : null;
     } else if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-      resolved[key] = await resolveDataObject(
-        value as Record<string, unknown>,
-        adapter
-      );
+      resolved[key] = await resolveDataObject(value as Record<string, unknown>, adapter);
     } else {
       resolved[key] = value;
     }

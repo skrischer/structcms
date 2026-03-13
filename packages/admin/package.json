@@ -1,6 +1,6 @@
 {
   "name": "@structcms/admin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Admin UI components for StructCMS",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -18,9 +18,8 @@
       }
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -59,9 +58,20 @@
     "access": "public"
   },
   "license": "MIT",
+  "author": "Sebastian Krischer",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skrischer/structcms.git",
     "directory": "packages/admin"
-  }
+  },
+  "keywords": [
+    "cms",
+    "headless-cms",
+    "admin-ui",
+    "react",
+    "typescript",
+    "forms",
+    "content-editor",
+    "tailwindcss"
+  ]
 }

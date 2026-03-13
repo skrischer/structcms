@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
-import { cn } from '../../lib/utils';
 
 export interface ArrayFieldProps<T> {
   label: string;
@@ -14,6 +14,11 @@ export interface ArrayFieldProps<T> {
   className?: string;
   id?: string;
   name?: string;
+}
+
+interface ItemWithKey<T> {
+  key: string;
+  item: T;
 }
 
 /**
@@ -51,6 +56,30 @@ function ArrayFieldInner<T>(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const inputId = id || name || React.useId();
+  const keyCounterRef = React.useRef(0);
+  const prevItemsRef = React.useRef<ItemWithKey<T>[]>([]);
+
+  // Generate stable keys for items
+  const itemsWithKeys = React.useMemo(() => {
+    const newItemsWithKeys = value.map((item, idx) => {
+      const existing = prevItemsRef.current[idx];
+      // If item at same position exists and hasn't changed reference, reuse key
+      if (existing && existing.item === item) {
+        return existing;
+      }
+      // Try to find the item elsewhere (moved)
+      const found = prevItemsRef.current.find((x) => x.item === item);
+      if (found) {
+        return found;
+      }
+      // New item, generate key
+      const key = `item-${keyCounterRef.current++}`;
+      return { key, item };
+    });
+
+    prevItemsRef.current = newItemsWithKeys;
+    return newItemsWithKeys;
+  }, [value]);
 
   const handleAdd = () => {
     onChange([...value, createDefaultItem()]);
@@ -99,21 +128,17 @@ function ArrayFieldInner<T>(
         )}
       >
         {value.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            No items yet
-          </p>
+          <p className="text-sm text-muted-foreground text-center py-4">No items yet</p>
         ) : (
           <div className="space-y-3">
-            {value.map((item, index) => (
+            {itemsWithKeys.map(({ key, item }, index) => (
               <div
-                key={index}
+                key={key}
                 className="flex gap-2 items-start p-3 rounded-md border border-input bg-muted/50"
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
-                  {renderItem(item, index, (newItem) =>
-                    handleItemChange(index, newItem)
-                  )}
+                  {renderItem(item, index, (newItem) => handleItemChange(index, newItem))}
                 </div>
                 <div className="flex flex-col gap-1">
                   <Button

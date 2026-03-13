@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { resetOnly, resetAndSeed, BASE_URL } from './helpers';
-import path from 'path';
+import path from 'node:path';
+import { expect, test } from '@playwright/test';
+import { BASE_URL, resetAndSeed, resetOnly } from './helpers';
 
 test.describe('Upload Media', () => {
   test.describe.configure({ mode: 'serial' });
@@ -17,9 +17,9 @@ test.describe('Upload Media', () => {
     await page.goto('/admin/media');
 
     const fileInput = page.locator('input[type="file"]');
-    
+
     const testImagePath = path.join(__dirname, 'fixtures', 'test-image.png');
-    
+
     await fileInput.setInputFiles(testImagePath);
 
     await expect(async () => {
@@ -31,9 +31,11 @@ test.describe('Upload Media', () => {
     const response = await fetch(`${BASE_URL}/api/cms/media`);
     expect(response.ok).toBe(true);
     const mediaList = await response.json();
-    
+
     expect(mediaList.length).toBeGreaterThan(0);
-    const uploadedImage = mediaList.find((m: { filename: string }) => m.filename.includes('test-image'));
+    const uploadedImage = mediaList.find((m: { filename: string }) =>
+      m.filename.includes('test-image')
+    );
     expect(uploadedImage).toBeDefined();
   });
 });

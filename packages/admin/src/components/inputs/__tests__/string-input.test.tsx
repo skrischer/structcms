@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
 import { StringInput } from '../string-input';
 
 describe('StringInput', () => {
@@ -12,9 +12,7 @@ describe('StringInput', () => {
   });
 
   it('displays placeholder text', () => {
-    render(
-      <StringInput label="Title" name="title" placeholder="Enter title..." />
-    );
+    render(<StringInput label="Title" name="title" placeholder="Enter title..." />);
 
     expect(screen.getByPlaceholderText('Enter title...')).toBeInTheDocument();
   });
@@ -32,17 +30,13 @@ describe('StringInput', () => {
   });
 
   it('displays validation error below input', () => {
-    render(
-      <StringInput label="Title" name="title" error="Title is required" />
-    );
+    render(<StringInput label="Title" name="title" error="Title is required" />);
 
     expect(screen.getByText('Title is required')).toBeInTheDocument();
   });
 
   it('sets aria-invalid when error is present', () => {
-    render(
-      <StringInput label="Title" name="title" error="Title is required" />
-    );
+    render(<StringInput label="Title" name="title" error="Title is required" />);
 
     expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true');
   });
@@ -50,10 +44,7 @@ describe('StringInput', () => {
   it('does not set aria-invalid when no error', () => {
     render(<StringInput label="Title" name="title" />);
 
-    expect(screen.getByRole('textbox')).toHaveAttribute(
-      'aria-invalid',
-      'false'
-    );
+    expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'false');
   });
 
   it('accepts user input', async () => {

@@ -1,23 +1,23 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  createNextPagesRoute,
-  createNextPageBySlugRoute,
-  createNextPageByIdRoute,
-  createNextMediaRoute,
-  createNextMediaByIdRoute,
-  createNextNavigationRoute,
-  createNextNavigationByIdRoute,
-} from './factories';
+import type { MediaAdapter, MediaFile, UploadMediaInput } from '../media';
 import type {
-  StorageAdapter,
-  Page,
-  Navigation,
-  CreatePageInput,
-  UpdatePageInput,
   CreateNavigationInput,
+  CreatePageInput,
+  Navigation,
+  Page,
+  StorageAdapter,
   UpdateNavigationInput,
+  UpdatePageInput,
 } from '../storage';
-import type { MediaAdapter, UploadMediaInput, MediaFile } from '../media';
+import {
+  createNextMediaByIdRoute,
+  createNextMediaRoute,
+  createNextNavigationByIdRoute,
+  createNextNavigationRoute,
+  createNextPageByIdRoute,
+  createNextPageBySlugRoute,
+  createNextPagesRoute,
+} from './factories';
 
 function createPage(overrides: Partial<Page> = {}): Page {
   return {
@@ -49,14 +49,13 @@ function createMediaFile(overrides: Partial<MediaFile> = {}): MediaFile {
     url: 'https://cdn.example.com/hero.jpg',
     mimeType: 'image/jpeg',
     size: 128,
+    category: 'image',
     createdAt: new Date('2026-01-04T00:00:00.000Z'),
     ...overrides,
   };
 }
 
-function createStorageAdapterMock(
-  overrides: Partial<StorageAdapter> = {}
-): StorageAdapter {
+function createStorageAdapterMock(overrides: Partial<StorageAdapter> = {}): StorageAdapter {
   const defaults: StorageAdapter = {
     getPage: async () => null,
     getPageById: async () => null,
@@ -144,12 +143,9 @@ describe('Next preset factories', () => {
     });
     expect(okResponse.status).toBe(200);
 
-    const missingResponse = await route.GET(
-      new Request('http://localhost/api/cms/pages/unknown'),
-      {
-        params: { slug: 'unknown' },
-      }
-    );
+    const missingResponse = await route.GET(new Request('http://localhost/api/cms/pages/unknown'), {
+      params: { slug: 'unknown' },
+    });
     expect(missingResponse.status).toBe(404);
   });
 
@@ -167,12 +163,9 @@ describe('Next preset factories', () => {
     });
     expect(okResponse.status).toBe(200);
 
-    const missingResponse = await route.GET(
-      new Request('http://localhost/api/cms/pages/page-x'),
-      {
-        params: { id: 'page-x' },
-      }
-    );
+    const missingResponse = await route.GET(new Request('http://localhost/api/cms/pages/page-x'), {
+      params: { id: 'page-x' },
+    });
     expect(missingResponse.status).toBe(404);
   });
 
@@ -214,12 +207,9 @@ describe('Next preset factories', () => {
     });
     expect(okResponse.status).toBe(200);
 
-    const missingResponse = await route.GET(
-      new Request('http://localhost/api/cms/media/media-x'),
-      {
-        params: { id: 'media-x' },
-      }
-    );
+    const missingResponse = await route.GET(new Request('http://localhost/api/cms/media/media-x'), {
+      params: { id: 'media-x' },
+    });
     expect(missingResponse.status).toBe(404);
   });
 
@@ -232,9 +222,7 @@ describe('Next preset factories', () => {
       }),
     });
 
-    const okResponse = await okRoute.GET(
-      new Request('http://localhost/api/cms/navigation')
-    );
+    const okResponse = await okRoute.GET(new Request('http://localhost/api/cms/navigation'));
     expect(okResponse.status).toBe(200);
 
     const errorRoute = createNextNavigationRoute({
@@ -245,9 +233,7 @@ describe('Next preset factories', () => {
       }),
     });
 
-    const errorResponse = await errorRoute.GET(
-      new Request('http://localhost/api/cms/navigation')
-    );
+    const errorResponse = await errorRoute.GET(new Request('http://localhost/api/cms/navigation'));
     expect(errorResponse.status).toBe(500);
   });
 
@@ -262,12 +248,9 @@ describe('Next preset factories', () => {
       }),
     });
 
-    const okResponse = await route.GET(
-      new Request('http://localhost/api/cms/navigation/nav-1'),
-      {
-        params: { id: 'nav-1' },
-      }
-    );
+    const okResponse = await route.GET(new Request('http://localhost/api/cms/navigation/nav-1'), {
+      params: { id: 'nav-1' },
+    });
     expect(okResponse.status).toBe(200);
 
     const missingResponse = await route.GET(

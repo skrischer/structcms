@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { RichTextEditor } from '../rich-text-editor';
 
 describe('RichTextEditor', () => {
@@ -22,13 +22,7 @@ describe('RichTextEditor', () => {
   });
 
   it('displays validation error below editor', () => {
-    render(
-      <RichTextEditor
-        label="Content"
-        name="content"
-        error="Content is required"
-      />
-    );
+    render(<RichTextEditor label="Content" name="content" error="Content is required" />);
 
     expect(screen.getByText('Content is required')).toBeInTheDocument();
   });
@@ -53,26 +47,14 @@ describe('RichTextEditor', () => {
   });
 
   it('initializes with provided value', () => {
-    render(
-      <RichTextEditor
-        label="Content"
-        name="content"
-        value="<p>Hello World</p>"
-      />
-    );
+    render(<RichTextEditor label="Content" name="content" value="<p>Hello World</p>" />);
 
     expect(screen.getByText('Hello World')).toBeInTheDocument();
   });
 
   it('calls onChange when content changes', async () => {
     const handleChange = vi.fn();
-    render(
-      <RichTextEditor
-        label="Content"
-        name="content"
-        onChange={handleChange}
-      />
-    );
+    render(<RichTextEditor label="Content" name="content" onChange={handleChange} />);
 
     const editor = document.querySelector('.ProseMirror');
     expect(editor).toBeInTheDocument();
@@ -87,11 +69,32 @@ describe('RichTextEditor', () => {
   });
 
   it('applies error styling when error is present', () => {
-    render(
-      <RichTextEditor label="Content" name="content" error="Error message" />
-    );
+    render(<RichTextEditor label="Content" name="content" error="Error message" />);
 
     const editorContainer = document.querySelector('.border-destructive');
     expect(editorContainer).toBeInTheDocument();
+  });
+
+  it('renders only allowed toolbar buttons when allowedBlocks is set', () => {
+    render(<RichTextEditor label="Content" name="content" allowedBlocks={['paragraph', 'bold', 'italic']} />);
+    expect(screen.getByTitle('Bold')).toBeInTheDocument();
+    expect(screen.getByTitle('Italic')).toBeInTheDocument();
+    expect(screen.queryByTitle('Heading 1')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Heading 2')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Link')).not.toBeInTheDocument();
+  });
+
+  it('renders all buttons when allowedBlocks is not set', () => {
+    render(<RichTextEditor label="Content" name="content" />);
+    expect(screen.getByTitle('Bold')).toBeInTheDocument();
+    expect(screen.getByTitle('Heading 1')).toBeInTheDocument();
+    expect(screen.getByTitle('Link')).toBeInTheDocument();
+  });
+
+  it('supports list shorthand for both bullet and ordered list', () => {
+    render(<RichTextEditor label="Content" name="content" allowedBlocks={['paragraph', 'list']} />);
+    expect(screen.getByTitle('Bullet List')).toBeInTheDocument();
+    expect(screen.getByTitle('Ordered List')).toBeInTheDocument();
+    expect(screen.queryByTitle('Bold')).not.toBeInTheDocument();
   });
 });

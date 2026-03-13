@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { resetAndSeed, BASE_URL } from './helpers';
+import { expect, test } from '@playwright/test';
+import { BASE_URL, resetAndSeed } from './helpers';
 
 test.describe('Navigation Editor', () => {
   test.describe.configure({ mode: 'serial' });

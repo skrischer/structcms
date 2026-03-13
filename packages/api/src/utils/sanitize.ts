@@ -5,12 +5,23 @@ import type { PageSection } from '../storage/types';
  * Allowed HTML tags for sanitization
  */
 const ALLOWED_TAGS = [
-  'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-  'ul', 'ol', 'li',
+  'p',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'ul',
+  'ol',
+  'li',
   'a',
-  'strong', 'em', 'br',
+  'strong',
+  'em',
+  'br',
   'blockquote',
-  'code', 'pre',
+  'code',
+  'pre',
   'img',
 ];
 
@@ -36,6 +47,16 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
  */
 export function sanitizeString(value: string): string {
   return sanitizeHtml(value, SANITIZE_OPTIONS);
+}
+
+/**
+ * Strip all HTML tags from a string (for plain text fields like titles, names)
+ */
+export function stripTags(value: string): string {
+  return sanitizeHtml(value, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
 }
 
 /**

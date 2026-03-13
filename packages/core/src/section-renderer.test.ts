@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createSectionRenderer } from './section-renderer';
 import type { SectionComponentProps, SectionData } from './types';
 
@@ -197,5 +197,129 @@ describe('createSectionRenderer', () => {
       hasSubtitle: false,
       ctaLabel: 'Click me',
     });
+  });
+});
+
+describe('section renderer error handling', () => {
+  it('should catch component errors and return null when no fallback is configured', () => {
+    const errorComponent = () => {
+      throw new Error('Component rendering failed');
+    };
+
+    const renderSection = createSectionRenderer({
+      components: {
+        error: errorComponent,
+      },
+    });
+
+    const section: SectionData = {
+      type: 'error',
+      data: {},
+    };
+
+    // Should not throw, but return null
+    const result = renderSection(section, 0);
+    expect(result).toBeNull();
+  });
+
+  it('should use fallback component when main component throws error', () => {
+    const errorComponent = () => {
+      throw new Error('Component rendering failed');
+    };
+
+    const fallbackComponent = (props: SectionComponentProps) => ({
+      type: 'fallback-rendered',
+      key: props.sectionKey,
+    });
+
+    const renderSection = createSectionRenderer({
+      components: {
+        error: errorComponent,
+      },
+      fallback: fallbackComponent,
+    });
+
+    const section: SectionData = {
+      type: 'error',
+      data: { test: 'data' },
+    };
+
+    const result = renderSection(section, 5);
+    expect(result).toEqual({
+      type: 'fallback-rendered',
+      key: 5,
+    });
+  });
+
+  it('should log error with section type and index when component fails', () => {
+    const errorComponent = () => {
+      throw new Error('Rendering failed');
+    };
+
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const renderSection = createSectionRenderer({
+      components: {
+        hero: errorComponent,
+      },
+    });
+
+    const section: SectionData = {
+      type: 'hero',
+      data: {},
+    };
+
+    renderSection(section, 42);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error rendering section type "hero" at index 42:',
+      expect.any(Error)
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should handle string key in error log', () => {
+    const errorComponent = () => {
+      throw new Error('Rendering failed');
+    };
+
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const renderSection = createSectionRenderer({
+      components: {
+        text: errorComponent,
+      },
+    });
+
+    const section: SectionData = {
+      type: 'text',
+      data: {},
+    };
+
+    renderSection(section, 'section-key-123');
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error rendering section type "text" at index section-key-123:',
+      expect.any(Error)
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should not catch errors when no component is found (unknown section type)', () => {
+    const renderSection = createSectionRenderer({
+      components: {
+        hero: () => 'hero',
+      },
+    });
+
+    const section: SectionData = {
+      type: 'unknown',
+      data: {},
+    };
+
+    const result = renderSection(section, 0);
+    expect(result).toBeNull();
   });
 });

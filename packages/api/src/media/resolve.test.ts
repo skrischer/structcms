@@ -1,11 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import type { PageSection } from '../storage/types';
 import { resolveMediaReferences } from './resolve';
 import type { MediaAdapter } from './types';
-import type { PageSection } from '../storage/types';
 
-function createMockAdapter(
-  mediaMap: Record<string, string>
-): MediaAdapter {
+function createMockAdapter(mediaMap: Record<string, string>): MediaAdapter {
   return {
     upload: async () => {
       throw new Error('Not implemented');
@@ -19,6 +17,7 @@ function createMockAdapter(
         url,
         mimeType: 'image/jpeg',
         size: 1024,
+        category: 'image' as const,
         createdAt: new Date(),
       };
     },
@@ -63,9 +62,7 @@ describe('resolveMediaReferences', () => {
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.thumbnail).toBe(
-      'https://cdn.example.com/image2.png'
-    );
+    expect(resolved[0].data.thumbnail).toBe('https://cdn.example.com/image2.png');
   });
 
   it('should resolve fields ending with _image suffix', async () => {
@@ -79,12 +76,8 @@ describe('resolveMediaReferences', () => {
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.hero_image).toBe(
-      'https://cdn.example.com/image1.jpg'
-    );
-    expect(resolved[0].data.background_image).toBe(
-      'https://cdn.example.com/image2.png'
-    );
+    expect(resolved[0].data.hero_image).toBe('https://cdn.example.com/image1.jpg');
+    expect(resolved[0].data.background_image).toBe('https://cdn.example.com/image2.png');
   });
 
   it('should resolve null for missing media', async () => {
@@ -173,9 +166,7 @@ describe('resolveMediaReferences', () => {
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
     expect(resolved[0].data.image).toBe('https://cdn.example.com/image1.jpg');
-    expect(resolved[1].data.thumbnail).toBe(
-      'https://cdn.example.com/image2.png'
-    );
+    expect(resolved[1].data.thumbnail).toBe('https://cdn.example.com/image2.png');
   });
 
   it('should handle empty sections', async () => {

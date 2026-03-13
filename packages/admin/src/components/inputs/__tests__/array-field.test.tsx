@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { ArrayField } from '../array-field';
 
 interface TestItem {
@@ -10,11 +10,7 @@ interface TestItem {
 
 const createDefaultItem = (): TestItem => ({ id: Date.now(), name: '' });
 
-const renderItem = (
-  item: TestItem,
-  index: number,
-  onChange: (item: TestItem) => void
-) => (
+const renderItem = (item: TestItem, index: number, onChange: (item: TestItem) => void) => (
   <input
     data-testid={`item-input-${index}`}
     value={item.name}

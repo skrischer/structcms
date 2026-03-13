@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createRegistry } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRegistry } from '@structcms/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminProvider } from '../../../context/admin-context';
-import { RecentPages } from '../recent-pages';
 import type { PageSummary } from '../../content/page-list';
+import { RecentPages } from '../recent-pages';
 
 const registry = createRegistry({
   sections: [],
@@ -39,8 +39,20 @@ function mockFetchError() {
 
 const mockPages: PageSummary[] = [
   { id: '1', title: 'Old Page', slug: 'old', pageType: 'blog', updatedAt: '2026-01-01T00:00:00Z' },
-  { id: '2', title: 'Newest Page', slug: 'newest', pageType: 'landing', updatedAt: '2026-02-09T12:00:00Z' },
-  { id: '3', title: 'Middle Page', slug: 'middle', pageType: 'blog', updatedAt: '2026-01-15T00:00:00Z' },
+  {
+    id: '2',
+    title: 'Newest Page',
+    slug: 'newest',
+    pageType: 'landing',
+    updatedAt: '2026-02-09T12:00:00Z',
+  },
+  {
+    id: '3',
+    title: 'Middle Page',
+    slug: 'middle',
+    pageType: 'blog',
+    updatedAt: '2026-01-15T00:00:00Z',
+  },
 ];
 
 beforeEach(() => {
@@ -61,9 +73,7 @@ describe('RecentPages', () => {
   });
 
   it('shows skeleton loading state', () => {
-    vi.spyOn(globalThis, 'fetch').mockImplementation(
-      () => new Promise(() => {})
-    );
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {}));
     renderWithProvider(<RecentPages onSelectPage={() => {}} />);
     expect(screen.getByTestId('recent-pages-loading')).toBeInTheDocument();
   });
@@ -205,7 +215,13 @@ describe('RecentPages', () => {
   it('handles pages without updatedAt field', async () => {
     const pagesWithoutDate: PageSummary[] = [
       { id: '1', title: 'No Date Page', slug: 'no-date', pageType: 'blog' },
-      { id: '2', title: 'Has Date', slug: 'has-date', pageType: 'blog', updatedAt: '2026-02-01T00:00:00Z' },
+      {
+        id: '2',
+        title: 'Has Date',
+        slug: 'has-date',
+        pageType: 'blog',
+        updatedAt: '2026-02-01T00:00:00Z',
+      },
     ];
 
     mockFetchSuccess(pagesWithoutDate);
