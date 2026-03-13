@@ -132,6 +132,7 @@ SQL migrations for Supabase PostgreSQL:
 - `004_enable_rls.sql` - Row Level Security policies
 - `005_media_size_bigint.sql` - Media size column INTEGER→BIGINT
 - `006_authenticated_policies.sql` - RLS policies for authenticated role
+- `007_media_category.sql` - Media category column (image/document) with CHECK constraint
 
 All migrations use PostgreSQL with Supabase extensions.
 
@@ -232,7 +233,7 @@ For detailed documentation, see:
 
 ### Create a Section
 ```typescript
-import { defineSection, fields } from '@structcms/core';
+import { defineSection, fields, visibleWhen } from '@structcms/core';
 
 const HeroSection = defineSection({
   name: 'hero',
@@ -240,6 +241,9 @@ const HeroSection = defineSection({
     title: fields.string(),
     subtitle: fields.text(),
     image: fields.image(),
+    showCta: fields.boolean(),
+    ctaUrl: visibleWhen(fields.url(), 'showCta', 'true'),
+    layout: fields.select({ options: ['centered', 'split'] as const }),
   },
 });
 ```
