@@ -15,7 +15,7 @@ npm install @structcms/core
 ## Quick Start
 
 ```typescript
-import { defineSection, fields, createRegistry } from '@structcms/core';
+import { defineSection, fields, visibleWhen, createRegistry } from '@structcms/core';
 
 // Define a section
 const HeroSection = defineSection({
@@ -24,6 +24,9 @@ const HeroSection = defineSection({
     title: fields.string(),
     subtitle: fields.text(),
     image: fields.image(),
+    showCta: fields.boolean(),
+    ctaUrl: visibleWhen(fields.url(), 'showCta', 'true'),
+    layout: fields.select({ options: ['centered', 'split'] as const }),
   },
 });
 
@@ -45,7 +48,7 @@ packages/core/
 │   ├── define-section.ts         # defineSection() API
 │   ├── define-page-type.ts       # definePageType() API
 │   ├── define-navigation.ts      # defineNavigation() API
-│   ├── fields.ts                 # Field type helpers (string, text, richtext, image, etc.)
+│   ├── fields.ts                 # Field type helpers + visibleWhen utility
 │   ├── registry.ts               # createRegistry() API
 │   ├── section-renderer.ts       # createSectionRenderer() API
 │   ├── types.ts                  # All type definitions
@@ -81,8 +84,12 @@ The registry collects all section, page type, and navigation definitions at star
 
 - **`fields.string()`** — Short text (single line input)
 - **`fields.text()`** — Long text (textarea)
-- **`fields.richtext()`** — Rich text (WYSIWYG editor, outputs HTML)
+- **`fields.richtext(config?)`** — Rich text (WYSIWYG editor, outputs HTML). Optional `{ allowedBlocks }` to restrict toolbar (e.g. `['bold', 'italic', 'heading2', 'list']`)
 - **`fields.image()`** — Image reference (media ID or URL)
+- **`fields.file()`** — Document/file reference (media ID or URL)
+- **`fields.url()`** — Validated URL string
+- **`fields.boolean()`** — Boolean (checkbox/toggle)
+- **`fields.select({ options })`** — Enum select (dropdown). Options must be `as const` for type-safety
 - **`fields.reference()`** — Page reference (slug or ID)
 - **`fields.array(itemSchema)`** — Array field with add/remove/reorder
 - **`fields.object(shape)`** — Nested object field
@@ -91,8 +98,9 @@ Each field helper wraps a Zod schema with metadata used by `@structcms/admin` fo
 
 ### Field Utilities
 
-- **`getFieldMeta(schema)`** — Extract `FieldMeta` (including `fieldType`) from a Zod schema. Returns `null` if no metadata is present.
+- **`getFieldMeta(schema)`** — Extract `FieldMeta` (including `fieldType`, `options`, `allowedBlocks`, `visibleWhen`) from a Zod schema. Returns `null` if no metadata is present.
 - **`isFieldType(schema, fieldType)`** — Check whether a Zod schema has a specific field type (e.g. `'richtext'`).
+- **`visibleWhen(schema, field, value)`** — Attach conditional visibility to a field. The field is only shown in the admin UI when the specified field has one of the given values. Accepts a single string or an array of strings.
 
 ### Registry
 
