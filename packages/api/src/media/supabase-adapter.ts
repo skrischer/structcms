@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { MediaAdapter, MediaFile, MediaFilter, UploadMediaInput } from './types';
+import type { MediaAdapter, MediaCategory, MediaFile, MediaFilter, UploadMediaInput } from './types';
+import { ALLOWED_MIME_TYPES } from './types';
 
 /**
  * Database row type for media (snake_case)
@@ -10,8 +11,18 @@ interface MediaRow {
   storage_path: string;
   mime_type: string;
   size: number;
+  category: string;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Derives the media category from a MIME type.
+ * Image MIME types map to 'image', everything else to 'document'.
+ */
+function deriveCategory(mimeType: string): MediaCategory {
+  const imageMimes = ALLOWED_MIME_TYPES as readonly string[];
+  return imageMimes.includes(mimeType) ? 'image' : 'document';
 }
 
 /**
@@ -76,6 +87,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
       url: this.getPublicUrl(row.storage_path),
       mimeType: row.mime_type,
       size: row.size,
+      category: row.category as MediaCategory,
       createdAt: new Date(row.created_at),
     };
   }
@@ -107,6 +119,7 @@ export class SupabaseMediaAdapter implements MediaAdapter {
         storage_path: storagePath,
         mime_type: input.mimeType,
         size: input.size,
+        category: deriveCategory(input.mimeType),
       })
       .select()
       .single();
@@ -142,6 +155,10 @@ export class SupabaseMediaAdapter implements MediaAdapter {
 
     if (filter?.mimeType) {
       query = query.eq('mime_type', filter.mimeType);
+    }
+
+    if (filter?.category) {
+      query = query.eq('category', filter.category);
     }
 
     query = query.order('created_at', { ascending: false });

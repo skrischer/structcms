@@ -10,6 +10,8 @@ export interface MediaItem {
   url: string;
   filename: string;
   mimeType?: string;
+  size?: number;
+  category?: string;
   createdAt?: string;
 }
 
@@ -17,6 +19,7 @@ export interface MediaBrowserProps {
   onSelect?: (item: MediaItem) => void;
   className?: string;
   pageSize?: number;
+  category?: 'image' | 'document';
 }
 
 /**
@@ -29,7 +32,43 @@ export interface MediaBrowserProps {
  * </AdminProvider>
  * ```
  */
-function MediaBrowser({ onSelect, className, pageSize = 12 }: MediaBrowserProps) {
+/**
+ * Returns true if the given MIME type is an image type.
+ */
+function isImageMimeType(mimeType?: string): boolean {
+  return !!mimeType && mimeType.startsWith('image/');
+}
+
+/**
+ * Returns the accept attribute value for the file input based on category.
+ */
+function getAcceptAttribute(category?: 'image' | 'document'): string | undefined {
+  if (category === 'image') return 'image/*';
+  if (category === 'document') return '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.rtf';
+  return undefined;
+}
+
+/**
+ * Returns a text-based icon label for non-image file types.
+ */
+function getDocumentIcon(filename: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+  const iconMap: Record<string, string> = {
+    pdf: 'PDF',
+    doc: 'DOC',
+    docx: 'DOC',
+    xls: 'XLS',
+    xlsx: 'XLS',
+    ppt: 'PPT',
+    pptx: 'PPT',
+    txt: 'TXT',
+    csv: 'CSV',
+    rtf: 'RTF',
+  };
+  return iconMap[ext] ?? 'FILE';
+}
+
+function MediaBrowser({ onSelect, className, pageSize = 12, category }: MediaBrowserProps) {
   const api = useApiClient();
   const [items, setItems] = React.useState<MediaItem[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -43,9 +82,11 @@ function MediaBrowser({ onSelect, className, pageSize = 12 }: MediaBrowserProps)
       setLoading(true);
       setError(null);
 
-      const result = await api.get<MediaItem[]>(
-        `/media?limit=${pageSize}&offset=${pageNum * pageSize}`
-      );
+      let url = `/media?limit=${pageSize}&offset=${pageNum * pageSize}`;
+      if (category) {
+        url += `&category=${category}`;
+      }
+      const result = await api.get<MediaItem[]>(url);
 
       if (result.error) {
         setError(result.error.message);
@@ -58,7 +99,7 @@ function MediaBrowser({ onSelect, className, pageSize = 12 }: MediaBrowserProps)
       setHasMore(newItems.length >= pageSize);
       setLoading(false);
     },
-    [api, pageSize]
+    [api, pageSize, category]
   );
 
   React.useEffect(() => {
@@ -115,7 +156,7 @@ function MediaBrowser({ onSelect, className, pageSize = 12 }: MediaBrowserProps)
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept={getAcceptAttribute(category)}
             className="hidden"
             onChange={(e) => void handleUpload(e)}
             data-testid="file-input"
@@ -159,7 +200,13 @@ function MediaBrowser({ onSelect, className, pageSize = 12 }: MediaBrowserProps)
                 onClick={() => onSelect?.(item)}
                 data-testid={`media-select-${item.id}`}
               >
-                <img src={item.url} alt={item.filename} className="h-full w-full object-cover" />
+                {isImageMimeType(item.mimeType) || (!item.mimeType && !category) || (category === 'image') ? (
+                  <img src={item.url} alt={item.filename} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-2xl font-bold text-muted-foreground" data-testid={`media-icon-${item.id}`}>
+                    {getDocumentIcon(item.filename)}
+                  </span>
+                )}
               </button>
               <div className="p-2 flex items-center justify-between">
                 <p className="text-xs text-muted-foreground truncate flex-1">{item.filename}</p>
@@ -199,4 +246,4 @@ function MediaBrowser({ onSelect, className, pageSize = 12 }: MediaBrowserProps)
 
 MediaBrowser.displayName = 'MediaBrowser';
 
-export { MediaBrowser };
+export { MediaBrowser, isImageMimeType };

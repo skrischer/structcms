@@ -1,5 +1,5 @@
 import type { MediaAdapter, MediaFile, MediaFilter, UploadMediaInput } from './types';
-import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from './types';
+import { ALL_ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from './types';
 
 /**
  * Error thrown when media validation fails
@@ -18,10 +18,10 @@ export class MediaValidationError extends Error {
  * Validates that the MIME type is allowed
  */
 function validateMimeType(mimeType: string): void {
-  const allowed = ALLOWED_MIME_TYPES as readonly string[];
+  const allowed = ALL_ALLOWED_MIME_TYPES as readonly string[];
   if (!allowed.includes(mimeType)) {
     throw new MediaValidationError(
-      `Invalid file type: ${mimeType}. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`,
+      `Invalid file type: ${mimeType}. Allowed types: ${ALL_ALLOWED_MIME_TYPES.join(', ')}`,
       'INVALID_MIME_TYPE'
     );
   }

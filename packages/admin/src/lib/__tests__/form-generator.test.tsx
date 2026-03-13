@@ -1,9 +1,9 @@
-import { fields } from '@structcms/core';
+import { fields, visibleWhen } from '@structcms/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { FormGenerator, fieldNameToLabel, resolveFieldType } from '../form-generator';
+import { FormGenerator, fieldNameToLabel, resolveFieldMeta, resolveFieldType } from '../form-generator';
 
 describe('resolveFieldType', () => {
   it('resolves string field type', () => {
@@ -22,12 +22,46 @@ describe('resolveFieldType', () => {
     expect(resolveFieldType(fields.image())).toBe('image');
   });
 
+  it('resolves file field type', () => {
+    expect(resolveFieldType(fields.file())).toBe('file');
+  });
+
   it('resolves optional string field type', () => {
     expect(resolveFieldType(fields.string().optional())).toBe('string');
   });
 
+  it('resolves boolean field type', () => {
+    expect(resolveFieldType(fields.boolean())).toBe('boolean');
+  });
+
+  it('resolves select field type', () => {
+    expect(resolveFieldType(fields.select({ options: ['a', 'b'] as const }))).toBe('select');
+  });
+
+  it('resolves url field type', () => {
+    expect(resolveFieldType(fields.url())).toBe('url');
+  });
+
   it('returns null for plain zod schema without field meta', () => {
     expect(resolveFieldType(z.string())).toBeNull();
+  });
+});
+
+describe('resolveFieldMeta', () => {
+  it('resolves select metadata with options', () => {
+    const meta = resolveFieldMeta(fields.select({ options: ['x', 'y', 'z'] as const }));
+    expect(meta?.fieldType).toBe('select');
+    expect(meta?.options).toEqual(['x', 'y', 'z']);
+  });
+
+  it('resolves select metadata through optional wrapper', () => {
+    const meta = resolveFieldMeta(fields.select({ options: ['a', 'b'] as const }).optional());
+    expect(meta?.fieldType).toBe('select');
+    expect(meta?.options).toEqual(['a', 'b']);
+  });
+
+  it('returns null for plain zod schema', () => {
+    expect(resolveFieldMeta(z.string())).toBeNull();
   });
 });
 
@@ -170,6 +204,77 @@ describe('FormGenerator', () => {
     expect(screen.getByTestId('array-field')).toBeInTheDocument();
   });
 
+  it('renders BooleanInput for boolean fields', () => {
+    const schema = z.object({
+      active: fields.boolean(),
+    });
+
+    render(
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ active: false }}
+      />
+    );
+
+    expect(screen.getByTestId('boolean-input')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+  });
+
+  it('renders SelectInput with radio for select fields with ≤ 3 options', () => {
+    const schema = z.object({
+      mode: fields.select({ options: ['static', 'overlay'] as const }),
+    });
+
+    render(
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ mode: 'static' }}
+      />
+    );
+
+    expect(screen.getByTestId('select-input')).toBeInTheDocument();
+    expect(screen.getAllByRole('radio')).toHaveLength(2);
+    expect(screen.getByText('Mode')).toBeInTheDocument();
+  });
+
+  it('renders SelectInput with dropdown for select fields with > 3 options', () => {
+    const schema = z.object({
+      color: fields.select({ options: ['red', 'green', 'blue', 'yellow'] as const }),
+    });
+
+    render(
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ color: 'red' }}
+      />
+    );
+
+    expect(screen.getByTestId('select-input')).toBeInTheDocument();
+    expect(screen.getByTestId('select-dropdown')).toBeInTheDocument();
+  });
+
+  it('renders FilePicker for file fields', () => {
+    const schema = z.object({
+      document: fields.file(),
+    });
+
+    render(
+      <FormGenerator
+        schema={schema}
+        onSubmit={() => {}}
+        defaultValues={{ document: '' }}
+      />
+    );
+
+    expect(screen.getByText('Document')).toBeInTheDocument();
+    expect(screen.getByText('No file selected')).toBeInTheDocument();
+    expect(screen.getByText('Browse Files')).toBeInTheDocument();
+  });
+
   it('renders ObjectField for object field types', () => {
     const schema = z.object({
       address: fields.object({
@@ -190,5 +295,47 @@ describe('FormGenerator', () => {
     expect(screen.getByTestId('object-field-container')).toBeInTheDocument();
     expect(screen.getByLabelText(/Street/)).toBeInTheDocument();
     expect(screen.getByLabelText(/City/)).toBeInTheDocument();
+  });
+
+  it('renders UrlInput for url fields', () => {
+    const schema = z.object({
+      website: fields.url(),
+    });
+    render(
+      <FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ website: '' }} />
+    );
+    const input = screen.getByLabelText(/Website/);
+    expect(input).toHaveAttribute('type', 'url');
+    expect(input).toHaveAttribute('placeholder', 'https://...');
+  });
+
+  it('hides fields when visibleWhen condition is not met', () => {
+    const schema = z.object({
+      variant: fields.select({ options: ['static', 'overlay'] as const }),
+      overlayColor: visibleWhen(
+        fields.select({ options: ['teal', 'petrol', 'none'] as const }),
+        'variant', 'overlay'
+      ),
+    });
+    render(
+      <FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ variant: 'static', overlayColor: 'teal' }} />
+    );
+    expect(screen.getByText('Variant')).toBeInTheDocument();
+    expect(screen.queryByText('Overlay Color')).not.toBeInTheDocument();
+  });
+
+  it('shows fields when visibleWhen condition is met', () => {
+    const schema = z.object({
+      variant: fields.select({ options: ['static', 'overlay'] as const }),
+      overlayColor: visibleWhen(
+        fields.select({ options: ['teal', 'petrol', 'none'] as const }),
+        'variant', 'overlay'
+      ),
+    });
+    render(
+      <FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ variant: 'overlay', overlayColor: 'teal' }} />
+    );
+    expect(screen.getByText('Variant')).toBeInTheDocument();
+    expect(screen.getByText('Overlay Color')).toBeInTheDocument();
   });
 });

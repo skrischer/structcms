@@ -2,11 +2,12 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import type {
   AllowedMimeType,
   MediaAdapter,
+  MediaCategory,
   MediaFile,
   MediaFilter,
   UploadMediaInput,
 } from './types';
-import { ALLOWED_MIME_TYPES } from './types';
+import { ALLOWED_DOCUMENT_MIME_TYPES, ALLOWED_MIME_TYPES, ALL_ALLOWED_MIME_TYPES } from './types';
 
 describe('Media Types', () => {
   describe('MediaFile', () => {
@@ -17,6 +18,7 @@ describe('Media Types', () => {
         url: 'https://example.com/test.jpg',
         mimeType: 'image/jpeg',
         size: 1024,
+        category: 'image',
         createdAt: new Date(),
       };
 
@@ -25,6 +27,7 @@ describe('Media Types', () => {
       expect(mediaFile.url).toBe('https://example.com/test.jpg');
       expect(mediaFile.mimeType).toBe('image/jpeg');
       expect(mediaFile.size).toBe(1024);
+      expect(mediaFile.category).toBe('image');
       expect(mediaFile.createdAt).toBeInstanceOf(Date);
     });
 
@@ -34,6 +37,7 @@ describe('Media Types', () => {
       expectTypeOf<MediaFile>().toHaveProperty('url');
       expectTypeOf<MediaFile>().toHaveProperty('mimeType');
       expectTypeOf<MediaFile>().toHaveProperty('size');
+      expectTypeOf<MediaFile>().toHaveProperty('category');
       expectTypeOf<MediaFile>().toHaveProperty('createdAt');
     });
   });
@@ -72,11 +76,21 @@ describe('Media Types', () => {
         limit: 10,
         offset: 20,
         mimeType: 'image/jpeg',
+        category: 'image',
       };
 
       expect(emptyFilter).toEqual({});
       expect(limitFilter.limit).toBe(10);
       expect(fullFilter.offset).toBe(20);
+      expect(fullFilter.category).toBe('image');
+    });
+
+    it('should accept category filter', () => {
+      const imageFilter: MediaFilter = { category: 'image' };
+      const documentFilter: MediaFilter = { category: 'document' };
+
+      expect(imageFilter.category).toBe('image');
+      expect(documentFilter.category).toBe('document');
     });
   });
 
@@ -91,6 +105,48 @@ describe('Media Types', () => {
 
     it('should have correct length', () => {
       expect(ALLOWED_MIME_TYPES).toHaveLength(5);
+    });
+  });
+
+  describe('ALLOWED_DOCUMENT_MIME_TYPES', () => {
+    it('should contain expected document types', () => {
+      expect(ALLOWED_DOCUMENT_MIME_TYPES).toContain('application/pdf');
+      expect(ALLOWED_DOCUMENT_MIME_TYPES).toContain('application/msword');
+      expect(ALLOWED_DOCUMENT_MIME_TYPES).toContain('text/plain');
+      expect(ALLOWED_DOCUMENT_MIME_TYPES).toContain('text/csv');
+      expect(ALLOWED_DOCUMENT_MIME_TYPES).toContain('application/zip');
+      expect(ALLOWED_DOCUMENT_MIME_TYPES).toContain('application/gzip');
+    });
+
+    it('should have correct length', () => {
+      expect(ALLOWED_DOCUMENT_MIME_TYPES).toHaveLength(11);
+    });
+  });
+
+  describe('ALL_ALLOWED_MIME_TYPES', () => {
+    it('should contain all image and document types', () => {
+      for (const mime of ALLOWED_MIME_TYPES) {
+        expect(ALL_ALLOWED_MIME_TYPES).toContain(mime);
+      }
+      for (const mime of ALLOWED_DOCUMENT_MIME_TYPES) {
+        expect(ALL_ALLOWED_MIME_TYPES).toContain(mime);
+      }
+    });
+
+    it('should have correct length', () => {
+      expect(ALL_ALLOWED_MIME_TYPES).toHaveLength(
+        ALLOWED_MIME_TYPES.length + ALLOWED_DOCUMENT_MIME_TYPES.length
+      );
+    });
+  });
+
+  describe('MediaCategory', () => {
+    it('should accept image and document values', () => {
+      const imageCategory: MediaCategory = 'image';
+      const documentCategory: MediaCategory = 'document';
+
+      expect(imageCategory).toBe('image');
+      expect(documentCategory).toBe('document');
     });
   });
 
@@ -119,6 +175,7 @@ describe('Media Types', () => {
           url: 'https://example.com/test.jpg',
           mimeType: 'image/jpeg',
           size: 1024,
+          category: 'image' as MediaCategory,
           createdAt: new Date(),
         }),
         getMedia: async () => null,

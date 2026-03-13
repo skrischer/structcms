@@ -74,4 +74,27 @@ describe('RichTextEditor', () => {
     const editorContainer = document.querySelector('.border-destructive');
     expect(editorContainer).toBeInTheDocument();
   });
+
+  it('renders only allowed toolbar buttons when allowedBlocks is set', () => {
+    render(<RichTextEditor label="Content" name="content" allowedBlocks={['paragraph', 'bold', 'italic']} />);
+    expect(screen.getByTitle('Bold')).toBeInTheDocument();
+    expect(screen.getByTitle('Italic')).toBeInTheDocument();
+    expect(screen.queryByTitle('Heading 1')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Heading 2')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Link')).not.toBeInTheDocument();
+  });
+
+  it('renders all buttons when allowedBlocks is not set', () => {
+    render(<RichTextEditor label="Content" name="content" />);
+    expect(screen.getByTitle('Bold')).toBeInTheDocument();
+    expect(screen.getByTitle('Heading 1')).toBeInTheDocument();
+    expect(screen.getByTitle('Link')).toBeInTheDocument();
+  });
+
+  it('supports list shorthand for both bullet and ordered list', () => {
+    render(<RichTextEditor label="Content" name="content" allowedBlocks={['paragraph', 'list']} />);
+    expect(screen.getByTitle('Bullet List')).toBeInTheDocument();
+    expect(screen.getByTitle('Ordered List')).toBeInTheDocument();
+    expect(screen.queryByTitle('Bold')).not.toBeInTheDocument();
+  });
 });

@@ -4,7 +4,7 @@
 export const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 /**
- * Allowed MIME types for media uploads
+ * Allowed MIME types for image uploads
  */
 export const ALLOWED_MIME_TYPES = [
   'image/jpeg',
@@ -17,6 +17,38 @@ export const ALLOWED_MIME_TYPES = [
 export type AllowedMimeType = (typeof ALLOWED_MIME_TYPES)[number];
 
 /**
+ * Allowed MIME types for document uploads
+ */
+export const ALLOWED_DOCUMENT_MIME_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain',
+  'text/csv',
+  'application/zip',
+  'application/gzip',
+] as const;
+
+export type AllowedDocumentMimeType = (typeof ALLOWED_DOCUMENT_MIME_TYPES)[number];
+
+/**
+ * All allowed MIME types (images + documents)
+ */
+export const ALL_ALLOWED_MIME_TYPES = [
+  ...ALLOWED_MIME_TYPES,
+  ...ALLOWED_DOCUMENT_MIME_TYPES,
+] as const;
+
+/**
+ * Media category discriminator
+ */
+export type MediaCategory = 'image' | 'document';
+
+/**
  * Represents a media file stored in the CMS
  */
 export interface MediaFile {
@@ -25,6 +57,7 @@ export interface MediaFile {
   url: string;
   mimeType: string;
   size: number;
+  category: MediaCategory;
   createdAt: Date;
 }
 
@@ -46,6 +79,7 @@ export interface MediaFilter {
   limit?: number;
   offset?: number;
   mimeType?: string;
+  category?: MediaCategory;
 }
 
 /**

@@ -5,7 +5,7 @@ export {
   defaultNavigationItemSchema,
   type NavigationItem,
 } from './define-navigation';
-export { fields, getFieldMeta, isFieldType } from './fields';
+export { fields, getFieldMeta, isFieldType, visibleWhen } from './fields';
 export { createRegistry } from './registry';
 export { createSectionRenderer } from './section-renderer';
 export type {

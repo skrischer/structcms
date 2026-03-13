@@ -6,7 +6,7 @@ import {
   handleListMedia,
   handleUploadMedia,
 } from '../media';
-import type { MediaAdapter, UploadMediaInput } from '../media';
+import type { MediaAdapter, MediaCategory, MediaFilter, UploadMediaInput } from '../media';
 import {
   StorageValidationError,
   handleCreateNavigation,
@@ -42,6 +42,7 @@ type ParsedUpdatePagePatch = {
 };
 
 interface RequestLike {
+  url?: string;
   json(): Promise<unknown>;
   formData(): Promise<FormDataLike>;
 }
@@ -583,11 +584,66 @@ export function createNextPageByIdRoute(config: NextPageByIdRouteConfig) {
   };
 }
 
+function getQueryParam(url: string, name: string): string | null {
+  const queryStart = url.indexOf('?');
+  if (queryStart === -1) {
+    return null;
+  }
+
+  const query = url.slice(queryStart + 1);
+  for (const pair of query.split('&')) {
+    const eqIndex = pair.indexOf('=');
+    const key = eqIndex === -1 ? pair : pair.slice(0, eqIndex);
+    if (decodeURIComponent(key) === name) {
+      return eqIndex === -1 ? '' : decodeURIComponent(pair.slice(eqIndex + 1));
+    }
+  }
+
+  return null;
+}
+
+function parseMediaFilter(request: RequestLike): MediaFilter | undefined {
+  if (!request.url) {
+    return undefined;
+  }
+
+  const category = getQueryParam(request.url, 'category');
+  const limit = getQueryParam(request.url, 'limit');
+  const offset = getQueryParam(request.url, 'offset');
+
+  const filter: MediaFilter = {};
+  let hasFilter = false;
+
+  if (category === 'image' || category === 'document') {
+    filter.category = category as MediaCategory;
+    hasFilter = true;
+  }
+
+  if (limit) {
+    const parsed = Number.parseInt(limit, 10);
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      filter.limit = parsed;
+      hasFilter = true;
+    }
+  }
+
+  if (offset) {
+    const parsed = Number.parseInt(offset, 10);
+    if (!Number.isNaN(parsed) && parsed >= 0) {
+      filter.offset = parsed;
+      hasFilter = true;
+    }
+  }
+
+  return hasFilter ? filter : undefined;
+}
+
 export function createNextMediaRoute(config: NextMediaRouteConfig) {
   return {
-    GET: async (_request: RequestLike): Promise<ResponseLike> => {
+    GET: async (request: RequestLike): Promise<ResponseLike> => {
       try {
-        const media = await handleListMedia(config.mediaAdapter);
+        const filter = parseMediaFilter(request);
+        const media = await handleListMedia(config.mediaAdapter, filter);
         return jsonResponse(media);
       } catch (error) {
         return errorResponse(error);

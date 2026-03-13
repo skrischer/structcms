@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 import { Dialog } from '../ui/dialog';
 import { Label } from '../ui/label';
 
-export interface ImagePickerProps {
+export interface FilePickerProps {
   label: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -18,21 +18,32 @@ export interface ImagePickerProps {
 }
 
 /**
- * Component for image fields that opens MediaBrowser for selection.
+ * Extracts the filename from a URL or path string.
+ */
+function extractFilename(url: string): string {
+  try {
+    const pathname = new URL(url).pathname;
+    return pathname.split('/').pop() ?? url;
+  } catch {
+    return url.split('/').pop() ?? url;
+  }
+}
+
+/**
+ * Component for file/document fields that opens MediaBrowser for selection.
  *
  * @example
  * ```tsx
- * <ImagePicker
- *   label="Hero Image"
- *   value={imageUrl}
- *   onChange={setImageUrl}
- *   onBrowse={() => setMediaBrowserOpen(true)}
+ * <FilePicker
+ *   label="Download File"
+ *   value={fileUrl}
+ *   onChange={setFileUrl}
  *   required
- *   error={errors.image?.message}
+ *   error={errors.file?.message}
  * />
  * ```
  */
-function ImagePicker({
+function FilePicker({
   label,
   value,
   onChange,
@@ -42,7 +53,7 @@ function ImagePicker({
   className,
   id,
   name,
-}: ImagePickerProps) {
+}: FilePickerProps) {
   const inputId = id || name || React.useId();
   const [mediaBrowserOpen, setMediaBrowserOpen] = React.useState(false);
 
@@ -71,14 +82,9 @@ function ImagePicker({
       >
         {value ? (
           <div className="space-y-3">
-            <div className="relative aspect-video w-full max-w-xs overflow-hidden rounded-md bg-muted">
-              <img
-                src={value}
-                alt="Preview"
-                className="h-full w-full object-cover"
-                data-testid="image-preview"
-              />
-            </div>
+            <p className="text-sm text-foreground truncate" data-testid="file-name">
+              {extractFilename(value)}
+            </p>
             <div className="flex gap-2">
               <Button type="button" variant="outline" size="sm" onClick={handleBrowse}>
                 Change
@@ -96,8 +102,7 @@ function ImagePicker({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="mb-4 text-4xl text-muted-foreground">🖼️</div>
-            <p className="mb-4 text-sm text-muted-foreground">No image selected</p>
+            <p className="mb-4 text-sm text-muted-foreground">No file selected</p>
             <Button
               type="button"
               variant="outline"
@@ -105,7 +110,7 @@ function ImagePicker({
               id={inputId}
               data-testid="browse-button"
             >
-              Browse Media
+              Browse Files
             </Button>
           </div>
         )}
@@ -119,15 +124,15 @@ function ImagePicker({
         <Dialog
           open={mediaBrowserOpen}
           onClose={() => setMediaBrowserOpen(false)}
-          title="Select Media"
+          title="Select File"
         >
-          <MediaBrowser onSelect={handleMediaSelect} category="image" />
+          <MediaBrowser onSelect={handleMediaSelect} category="document" />
         </Dialog>
       )}
     </div>
   );
 }
 
-ImagePicker.displayName = 'ImagePicker';
+FilePicker.displayName = 'FilePicker';
 
-export { ImagePicker };
+export { FilePicker };

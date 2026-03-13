@@ -6,7 +6,18 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 /**
  * Convention: fields ending with these suffixes are treated as media references
  */
-const MEDIA_FIELD_SUFFIXES = ['_image', '_media', '_photo', '_thumbnail', '_avatar', '_icon'];
+const MEDIA_FIELD_SUFFIXES = [
+  '_image',
+  '_media',
+  '_photo',
+  '_thumbnail',
+  '_avatar',
+  '_icon',
+  '_file',
+  '_document',
+  '_attachment',
+  '_download',
+];
 
 /**
  * Checks if a field name is a media reference field by convention
@@ -19,7 +30,11 @@ function isMediaField(fieldName: string): boolean {
     lower === 'photo' ||
     lower === 'thumbnail' ||
     lower === 'avatar' ||
-    lower === 'icon'
+    lower === 'icon' ||
+    lower === 'file' ||
+    lower === 'document' ||
+    lower === 'attachment' ||
+    lower === 'download'
   ) {
     return true;
   }

@@ -49,6 +49,7 @@ function createMediaFile(overrides: Partial<MediaFile> = {}): MediaFile {
     url: 'https://cdn.example.com/hero.jpg',
     mimeType: 'image/jpeg',
     size: 128,
+    category: 'image',
     createdAt: new Date('2026-01-04T00:00:00.000Z'),
     ...overrides,
   };

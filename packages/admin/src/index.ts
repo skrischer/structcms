@@ -16,6 +16,7 @@ export {
   type ApiError,
 } from './hooks/use-api-client';
 export { StringInput, type StringInputProps } from './components/inputs/string-input';
+export { UrlInput, type UrlInputProps } from './components/inputs/url-input';
 export { TextInput, type TextInputProps } from './components/inputs/text-input';
 export { RichTextEditor } from './components/inputs/rich-text-editor';
 export type { RichTextEditorProps } from './components/inputs/rich-text-editor';
@@ -27,6 +28,7 @@ export { LoginForm, ProtectedRoute, OAuthButton } from './components/auth';
 export type { LoginFormProps, ProtectedRouteProps, OAuthButtonProps } from './components/auth';
 
 export { ImagePicker, type ImagePickerProps } from './components/inputs/image-picker';
+export { FilePicker, type FilePickerProps } from './components/inputs/file-picker';
 export { ArrayField, type ArrayFieldProps } from './components/inputs/array-field';
 export { ObjectField, type ObjectFieldProps } from './components/inputs/object-field';
 export { Input, type InputProps } from './components/ui/input';
