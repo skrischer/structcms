@@ -19,6 +19,52 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
   return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
 }
 
+function openDialog(
+  dialog: HTMLDialogElement,
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+) {
+  previousActiveElementRef.current = document.activeElement as HTMLElement;
+  if (!dialog.open) {
+    dialog.showModal();
+  }
+  const focusableElements = getFocusableElements(dialog);
+  if (focusableElements.length > 0) {
+    focusableElements[0]?.focus();
+  }
+}
+
+function closeDialog(
+  dialog: HTMLDialogElement,
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+) {
+  if (dialog.open) {
+    dialog.close();
+  }
+  if (previousActiveElementRef.current) {
+    previousActiveElementRef.current.focus();
+    previousActiveElementRef.current = null;
+  }
+}
+
+function trapFocus(e: KeyboardEvent, elements: HTMLElement[]) {
+  if (elements.length === 0) return;
+  const firstElement = elements[0];
+  const lastElement = elements[elements.length - 1];
+  const activeElement = document.activeElement;
+
+  if (e.shiftKey) {
+    if (activeElement === firstElement && lastElement) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+  } else {
+    if (activeElement === lastElement && firstElement) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+  }
+}
+
 /**
  * Minimal dialog component using native <dialog> element with React Portal.
  * Implements focus trapping and restores focus when closed.
@@ -40,28 +86,9 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
     if (!dialog) return;
 
     if (open) {
-      // Save currently focused element before opening
-      previousActiveElementRef.current = document.activeElement as HTMLElement;
-
-      if (!dialog.open) {
-        dialog.showModal();
-      }
-
-      // Focus first focusable element
-      const focusableElements = getFocusableElements(dialog);
-      if (focusableElements.length > 0) {
-        focusableElements[0]?.focus();
-      }
+      openDialog(dialog, previousActiveElementRef);
     } else {
-      if (dialog.open) {
-        dialog.close();
-      }
-
-      // Restore focus to previous element
-      if (previousActiveElementRef.current) {
-        previousActiveElementRef.current.focus();
-        previousActiveElementRef.current = null;
-      }
+      closeDialog(dialog, previousActiveElementRef);
     }
   }, [open]);
 
@@ -70,37 +97,13 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
     const dialog = dialogRef.current;
     if (!dialog || !open) return;
 
-    const handleTabKey = (e: KeyboardEvent, elements: HTMLElement[]) => {
-      if (elements.length === 0) return;
-
-      const firstElement = elements[0];
-      const lastElement = elements[elements.length - 1];
-      const activeElement = document.activeElement;
-
-      if (e.shiftKey) {
-        // Shift+Tab: cycle to last element if on first
-        if (activeElement === firstElement && lastElement) {
-          e.preventDefault();
-          lastElement.focus();
-        }
-      } else {
-        // Tab: cycle to first element if on last
-        if (activeElement === lastElement && firstElement) {
-          e.preventDefault();
-          firstElement.focus();
-        }
-      }
-    };
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Tab') {
-        const focusableElements = getFocusableElements(dialog);
-        handleTabKey(e, focusableElements);
+        trapFocus(e, getFocusableElements(dialog));
       }
     };
 
     dialog.addEventListener('keydown', handleKeyDown);
-
     return () => {
       dialog.removeEventListener('keydown', handleKeyDown);
     };

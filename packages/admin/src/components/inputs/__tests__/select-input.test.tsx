@@ -52,7 +52,13 @@ describe('SelectInput', () => {
     const user = userEvent.setup();
     let selected = '';
     render(
-      <SelectInput label="Color" options={['Red', 'Blue']} onChange={(v) => (selected = v)} />
+      <SelectInput
+        label="Color"
+        options={['Red', 'Blue']}
+        onChange={(v) => {
+          selected = v;
+        }}
+      />
     );
 
     await user.click(screen.getByTestId('select-option-Blue'));
@@ -67,7 +73,9 @@ describe('SelectInput', () => {
       <SelectInput
         label="Color"
         options={['Red', 'Blue', 'Green', 'Yellow']}
-        onChange={(v) => (selected = v)}
+        onChange={(v) => {
+          selected = v;
+        }}
       />
     );
 

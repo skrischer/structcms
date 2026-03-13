@@ -55,30 +55,16 @@ function ToolbarButton({ onClick, isActive, disabled, children, title }: Toolbar
   );
 }
 
-interface ToolbarProps {
-  editor: Editor;
-  allowedBlocks?: readonly string[];
-  setLink: () => void;
-}
-
-function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
+function InlineButtons({
+  editor,
+  allowedBlocks,
+  setLink,
+}: { editor: Editor; allowedBlocks?: readonly string[]; setLink: () => void }) {
   const showBold = isBlockAllowed('bold', allowedBlocks);
   const showItalic = isBlockAllowed('italic', allowedBlocks);
   const showLink = isBlockAllowed('link', allowedBlocks);
-  const showH1 = isBlockAllowed('heading1', allowedBlocks);
-  const showH2 = isBlockAllowed('heading2', allowedBlocks);
-  const showH3 = isBlockAllowed('heading3', allowedBlocks);
-  const showBulletList =
-    isBlockAllowed('bulletList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
-  const showOrderedList =
-    isBlockAllowed('orderedList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
-
-  const hasInlineButtons = showBold || showItalic || showLink;
-  const hasHeadingButtons = showH1 || showH2 || showH3;
-  const hasListButtons = showBulletList || showOrderedList;
-
   return (
-    <div className="flex flex-wrap gap-1 border-b border-input p-2">
+    <>
       {showBold && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -104,7 +90,19 @@ function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
           Link
         </ToolbarButton>
       )}
-      {hasInlineButtons && hasHeadingButtons && <div className="w-px bg-border mx-1" />}
+    </>
+  );
+}
+
+function HeadingButtons({
+  editor,
+  allowedBlocks,
+}: { editor: Editor; allowedBlocks?: readonly string[] }) {
+  const showH1 = isBlockAllowed('heading1', allowedBlocks);
+  const showH2 = isBlockAllowed('heading2', allowedBlocks);
+  const showH3 = isBlockAllowed('heading3', allowedBlocks);
+  return (
+    <>
       {showH1 && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -132,9 +130,20 @@ function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
           H3
         </ToolbarButton>
       )}
-      {(hasInlineButtons || hasHeadingButtons) && hasListButtons && (
-        <div className="w-px bg-border mx-1" />
-      )}
+    </>
+  );
+}
+
+function ListButtons({
+  editor,
+  allowedBlocks,
+}: { editor: Editor; allowedBlocks?: readonly string[] }) {
+  const showBulletList =
+    isBlockAllowed('bulletList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
+  const showOrderedList =
+    isBlockAllowed('orderedList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
+  return (
+    <>
       {showBulletList && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -153,6 +162,39 @@ function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
           1.
         </ToolbarButton>
       )}
+    </>
+  );
+}
+
+interface ToolbarProps {
+  editor: Editor;
+  allowedBlocks?: readonly string[];
+  setLink: () => void;
+}
+
+function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
+  const hasInlineButtons =
+    isBlockAllowed('bold', allowedBlocks) ||
+    isBlockAllowed('italic', allowedBlocks) ||
+    isBlockAllowed('link', allowedBlocks);
+  const hasHeadingButtons =
+    isBlockAllowed('heading1', allowedBlocks) ||
+    isBlockAllowed('heading2', allowedBlocks) ||
+    isBlockAllowed('heading3', allowedBlocks);
+  const hasListButtons =
+    isBlockAllowed('bulletList', allowedBlocks) ||
+    isBlockAllowed('orderedList', allowedBlocks) ||
+    isBlockAllowed('list', allowedBlocks);
+
+  return (
+    <div className="flex flex-wrap gap-1 border-b border-input p-2">
+      <InlineButtons editor={editor} allowedBlocks={allowedBlocks} setLink={setLink} />
+      {hasInlineButtons && hasHeadingButtons && <div className="w-px bg-border mx-1" />}
+      <HeadingButtons editor={editor} allowedBlocks={allowedBlocks} />
+      {(hasInlineButtons || hasHeadingButtons) && hasListButtons && (
+        <div className="w-px bg-border mx-1" />
+      )}
+      <ListButtons editor={editor} allowedBlocks={allowedBlocks} />
     </div>
   );
 }
