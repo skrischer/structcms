@@ -12,6 +12,12 @@ export interface NavigationEditorProps {
   className?: string;
 }
 
+interface ItemWithKey {
+  key: string;
+  item: NavigationItem;
+  childrenKeys: string[];
+}
+
 /**
  * Editor for navigation items with nested structure support (one level).
  *
@@ -25,6 +31,31 @@ export interface NavigationEditorProps {
  */
 function NavigationEditor({ items: initialItems, onSave, className }: NavigationEditorProps) {
   const [items, setItems] = React.useState<NavigationItem[]>(initialItems);
+  const keyCounterRef = React.useRef(0);
+
+  // Stable keys: assigned once per index position, grow as items are added
+  const keysRef = React.useRef<string[]>([]);
+  const childKeysRef = React.useRef<string[][]>([]);
+
+  // Ensure we have enough keys for current items
+  while (keysRef.current.length < items.length) {
+    keysRef.current.push(`nav-item-${keyCounterRef.current++}`);
+    childKeysRef.current.push([]);
+  }
+  for (let i = 0; i < items.length; i++) {
+    const childCount = items[i]?.children?.length ?? 0;
+    const existing = childKeysRef.current[i] ?? [];
+    while (existing.length < childCount) {
+      existing.push(`child-${keyCounterRef.current++}`);
+    }
+    childKeysRef.current[i] = existing;
+  }
+
+  const itemsWithKeys = items.map((item, idx) => ({
+    key: keysRef.current[idx] as string,
+    item,
+    childrenKeys: childKeysRef.current[idx] ?? [],
+  }));
 
   const handleAddItem = () => {
     setItems([...items, { label: '', href: '', children: [] }]);
@@ -33,6 +64,8 @@ function NavigationEditor({ items: initialItems, onSave, className }: Navigation
   const handleRemoveItem = (index: number) => {
     const newItems = [...items];
     newItems.splice(index, 1);
+    keysRef.current.splice(index, 1);
+    childKeysRef.current.splice(index, 1);
     setItems(newItems);
   };
 
@@ -103,10 +136,9 @@ function NavigationEditor({ items: initialItems, onSave, className }: Navigation
         </p>
       ) : (
         <div className="space-y-3">
-          {items.map((item, index) => (
+          {itemsWithKeys.map(({ key, item, childrenKeys }, index) => (
             <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: Navigation items have no stable IDs, order is user-controlled
-              key={index}
+              key={key}
               className="rounded-md border border-input bg-background p-4 space-y-3"
               data-testid={`nav-item-${index}`}
             >
@@ -142,8 +174,7 @@ function NavigationEditor({ items: initialItems, onSave, className }: Navigation
                 <div className="ml-6 space-y-2">
                   {(item.children ?? []).map((child, childIndex) => (
                     <div
-                      // biome-ignore lint/suspicious/noArrayIndexKey: Child items have no stable IDs, order is user-controlled
-                      key={childIndex}
+                      key={childrenKeys[childIndex] ?? `child-${childIndex}`}
                       className="flex gap-2 items-start rounded-md border border-input bg-muted/30 p-3"
                       data-testid={`nav-child-${index}-${childIndex}`}
                     >

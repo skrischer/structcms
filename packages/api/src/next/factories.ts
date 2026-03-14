@@ -6,7 +6,7 @@ import {
   handleListMedia,
   handleUploadMedia,
 } from '../media';
-import type { MediaAdapter, UploadMediaInput } from '../media';
+import type { MediaAdapter, MediaCategory, MediaFilter, UploadMediaInput } from '../media';
 import {
   StorageValidationError,
   handleCreateNavigation,
@@ -42,6 +42,7 @@ type ParsedUpdatePagePatch = {
 };
 
 interface RequestLike {
+  url?: string;
   json(): Promise<unknown>;
   formData(): Promise<FormDataLike>;
 }
@@ -131,6 +132,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 function errorResponse(error: unknown, fallbackStatus = 500): ResponseLike {
+  // Only expose error messages for known error types
   if (
     error instanceof StorageValidationError ||
     error instanceof MediaValidationError ||
@@ -139,7 +141,8 @@ function errorResponse(error: unknown, fallbackStatus = 500): ResponseLike {
     return jsonResponse({ error: getErrorMessage(error) }, 400);
   }
 
-  return jsonResponse({ error: getErrorMessage(error) }, fallbackStatus);
+  // For unknown errors, return a generic message to avoid leaking internal details
+  return jsonResponse({ error: 'Internal Server Error' }, fallbackStatus);
 }
 
 async function resolveParams<TParams extends Record<string, string | string[]>>(
@@ -581,11 +584,59 @@ export function createNextPageByIdRoute(config: NextPageByIdRouteConfig) {
   };
 }
 
+function getQueryParam(url: string, name: string): string | null {
+  const queryStart = url.indexOf('?');
+  if (queryStart === -1) return null;
+  for (const pair of url.slice(queryStart + 1).split('&')) {
+    const eqIndex = pair.indexOf('=');
+    const key = decodeURIComponent(eqIndex === -1 ? pair : pair.slice(0, eqIndex));
+    if (key === name) return eqIndex === -1 ? '' : decodeURIComponent(pair.slice(eqIndex + 1));
+  }
+  return null;
+}
+
+function parseMediaFilter(request: RequestLike): MediaFilter | undefined {
+  if (!request.url) {
+    return undefined;
+  }
+
+  const category = getQueryParam(request.url, 'category');
+  const limit = getQueryParam(request.url, 'limit');
+  const offset = getQueryParam(request.url, 'offset');
+
+  const filter: MediaFilter = {};
+  let hasFilter = false;
+
+  if (category === 'image' || category === 'document') {
+    filter.category = category as MediaCategory;
+    hasFilter = true;
+  }
+
+  if (limit) {
+    const parsed = Number.parseInt(limit, 10);
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      filter.limit = parsed;
+      hasFilter = true;
+    }
+  }
+
+  if (offset) {
+    const parsed = Number.parseInt(offset, 10);
+    if (!Number.isNaN(parsed) && parsed >= 0) {
+      filter.offset = parsed;
+      hasFilter = true;
+    }
+  }
+
+  return hasFilter ? filter : undefined;
+}
+
 export function createNextMediaRoute(config: NextMediaRouteConfig) {
   return {
-    GET: async (_request: RequestLike): Promise<ResponseLike> => {
+    GET: async (request: RequestLike): Promise<ResponseLike> => {
       try {
-        const media = await handleListMedia(config.mediaAdapter);
+        const filter = parseMediaFilter(request);
+        const media = await handleListMedia(config.mediaAdapter, filter);
         return jsonResponse(media);
       } catch (error) {
         return errorResponse(error);

@@ -6,7 +6,7 @@
 
 A code-first, installable headless CMS framework that lives inside your website codebase. Content models are defined in TypeScript, validated with Zod, and rendered with full type safety.
 
-For product vision, scope, and positioning, see [CONCEPT.md](./CONCEPT.md).
+For product vision, scope, and positioning, see [docs/CONCEPT.md](./docs/CONCEPT.md).
 
 ## Quick Start
 
@@ -15,7 +15,7 @@ For product vision, scope, and positioning, see [CONCEPT.md](./CONCEPT.md).
 npm install @structcms/core @structcms/api @structcms/admin
 
 # 2. Define a section
-import { defineSection, fields } from '@structcms/core';
+import { defineSection, fields, visibleWhen } from '@structcms/core';
 
 const HeroSection = defineSection({
   name: 'hero',
@@ -23,6 +23,9 @@ const HeroSection = defineSection({
     title: fields.string(),
     subtitle: fields.text(),
     image: fields.image(),
+    showCta: fields.boolean(),
+    ctaUrl: visibleWhen(fields.url(), 'showCta', 'true'),
+    layout: fields.select({ options: ['centered', 'split'] as const }),
   },
 });
 
@@ -82,8 +85,7 @@ structcms/
 ├── examples/
 │   └── test-app/              # E2E test app (Next.js + Playwright)
 ├── supabase/                  # Database migrations
-├── ARCHITECTURE.md            # Technical layer documentation
-├── CONCEPT.md                 # Product vision, scope, risks
+├── docs/                      # Documentation (architecture, concept, setup guides)
 ├── biome.json                 # Linter/formatter config
 ├── tsconfig.base.json         # Shared TypeScript config
 ├── vitest.workspace.ts        # Test workspace config
@@ -153,7 +155,7 @@ pnpm --filter test-app test:e2e     # Terminal 2
 
 ## Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical layer documentation.
+See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for detailed technical layer documentation.
 
 ```
 Website Project
@@ -174,6 +176,34 @@ Website Project
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SECRET_KEY=your-service-role-key
 ```
+
+## Deployment
+
+The test-app is deployed on Vercel as a staging environment:
+
+**Staging:** https://structcms-staging.vercel.app
+
+### Deploy via CLI
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production (from repo root)
+vercel --prod
+```
+
+### Vercel Configuration
+
+The project uses the following build settings (see `examples/test-app/vercel.json`):
+
+- **Install:** `pnpm install --recursive`
+- **Build:** `pnpm --filter test-app... build` (builds all dependencies first)
+- **Root Directory:** Repository root (monorepo setup)
+
+Environment variables (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, etc.) must be configured in the Vercel project settings.
+
+
 
 ## Contributing
 

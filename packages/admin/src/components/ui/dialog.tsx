@@ -12,9 +12,62 @@ export interface DialogProps {
   title?: string;
 }
 
+const FOCUSABLE_SELECTOR =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+}
+
+function openDialog(
+  dialog: HTMLDialogElement,
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+) {
+  previousActiveElementRef.current = document.activeElement as HTMLElement;
+  if (!dialog.open) {
+    dialog.showModal();
+  }
+  const focusableElements = getFocusableElements(dialog);
+  if (focusableElements.length > 0) {
+    focusableElements[0]?.focus();
+  }
+}
+
+function closeDialog(
+  dialog: HTMLDialogElement,
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+) {
+  if (dialog.open) {
+    dialog.close();
+  }
+  if (previousActiveElementRef.current) {
+    previousActiveElementRef.current.focus();
+    previousActiveElementRef.current = null;
+  }
+}
+
+function trapFocus(e: KeyboardEvent, elements: HTMLElement[]) {
+  if (elements.length === 0) return;
+  const firstElement = elements[0];
+  const lastElement = elements[elements.length - 1];
+  const activeElement = document.activeElement;
+
+  if (e.shiftKey) {
+    if (activeElement === firstElement && lastElement) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+  } else {
+    if (activeElement === lastElement && firstElement) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+  }
+}
+
 /**
- * Minimal dialog component using React Portal.
- * Renders a modal overlay with backdrop that closes on outside click or Escape key.
+ * Minimal dialog component using native <dialog> element with React Portal.
+ * Implements focus trapping and restores focus when closed.
  *
  * @example
  * ```tsx
@@ -24,28 +77,62 @@ export interface DialogProps {
  * ```
  */
 function Dialog({ open, onClose, children, className, title }: DialogProps) {
-  const overlayRef = React.useRef<HTMLDivElement>(null);
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  const previousActiveElementRef = React.useRef<HTMLElement | null>(null);
 
+  // Handle opening/closing the native dialog
   React.useEffect(() => {
-    if (!open) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open) {
+      openDialog(dialog, previousActiveElementRef);
+    } else {
+      closeDialog(dialog, previousActiveElementRef);
+    }
+  }, [open]);
+
+  // Handle focus trapping with Tab key
+  React.useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog || !open) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
+      if (e.key === 'Tab') {
+        trapFocus(e, getFocusableElements(dialog));
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
-
+    dialog.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
+      dialog.removeEventListener('keydown', handleKeyDown);
     };
-  }, [open, onClose]);
+  }, [open]);
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current) {
+  // Handle native dialog events
+  const handleCancel = (e: React.SyntheticEvent<HTMLDialogElement>) => {
+    e.preventDefault();
+    onClose();
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    // Close on backdrop click (clicking outside the dialog content)
+    const rect = dialog.getBoundingClientRect();
+    if (
+      e.clientX < rect.left ||
+      e.clientX > rect.right ||
+      e.clientY < rect.top ||
+      e.clientY > rect.bottom
+    ) {
+      onClose();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDialogElement>) => {
+    if (e.key === 'Escape') {
       onClose();
     }
   };
@@ -53,19 +140,12 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
   if (!open) return null;
 
   return createPortal(
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={handleOverlayClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === 'Escape') {
-          e.preventDefault();
-          onClose();
-        }
-      }}
-      // biome-ignore lint/a11y/useSemanticElements: Dialog overlay backdrop, not a semantic button
-      role="button"
-      tabIndex={-1}
+    <dialog
+      ref={dialogRef}
+      onCancel={handleCancel}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      className="backdrop:bg-black/50 fixed inset-0 z-50 p-0 bg-transparent"
       data-testid="dialog-overlay"
     >
       <div
@@ -73,10 +153,6 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
           'relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-lg border border-input bg-background p-6 shadow-lg',
           className
         )}
-        // biome-ignore lint/a11y/useSemanticElements: Using div with role for flexibility, native <dialog> has styling limitations
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
         data-testid="dialog-content"
       >
         {title && (
@@ -95,7 +171,7 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
         )}
         {children}
       </div>
-    </div>,
+    </dialog>,
     document.body
   );
 }

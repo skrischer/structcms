@@ -80,8 +80,11 @@ export function createNextAuthOAuthRoute(
         );
       }
 
-      const message = err instanceof Error ? err.message : 'OAuth initialization failed';
-      return Response.json({ error: { message, code: 'OAUTH_ERROR' } }, { status: 500 });
+      // For unknown errors, return a generic message to avoid leaking internal details
+      return Response.json(
+        { error: { message: 'Internal Server Error', code: 'OAUTH_ERROR' } },
+        { status: 500 }
+      );
     }
   };
 }
@@ -106,8 +109,11 @@ export function createNextAuthSignInRoute(
         );
       }
 
-      const message = err instanceof Error ? err.message : 'Sign in failed';
-      return Response.json({ error: { message, code: 'AUTH_ERROR' } }, { status: 401 });
+      // For unknown errors, return a generic message to avoid leaking internal details
+      return Response.json(
+        { error: { message: 'Invalid credentials', code: 'AUTH_ERROR' } },
+        { status: 401 }
+      );
     }
   };
 }
@@ -130,8 +136,11 @@ export function createNextAuthSignOutRoute(
 
       return Response.json({ message: 'Signed out successfully' }, { status: 200 });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Sign out failed';
-      return Response.json({ error: { message, code: 'SIGNOUT_ERROR' } }, { status: 500 });
+      // Return generic error message to avoid leaking internal details
+      return Response.json(
+        { error: { message: 'Internal Server Error', code: 'SIGNOUT_ERROR' } },
+        { status: 500 }
+      );
     }
   };
 }
@@ -161,8 +170,11 @@ export function createNextAuthVerifyRoute(
 
       return Response.json(user, { status: 200 });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Verification failed';
-      return Response.json({ error: { message, code: 'VERIFY_ERROR' } }, { status: 401 });
+      // Return generic error message to avoid leaking internal details
+      return Response.json(
+        { error: { message: 'Authentication failed', code: 'VERIFY_ERROR' } },
+        { status: 401 }
+      );
     }
   };
 }
@@ -187,8 +199,11 @@ export function createNextAuthRefreshRoute(
 
       return Response.json(session, { status: 200 });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Refresh failed';
-      return Response.json({ error: { message, code: 'REFRESH_ERROR' } }, { status: 401 });
+      // Return generic error message to avoid leaking internal details
+      return Response.json(
+        { error: { message: 'Session refresh failed', code: 'REFRESH_ERROR' } },
+        { status: 401 }
+      );
     }
   };
 }
@@ -218,8 +233,11 @@ export function createNextAuthCurrentUserRoute(
 
       return Response.json(user, { status: 200 });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get user';
-      return Response.json({ error: { message, code: 'GET_USER_ERROR' } }, { status: 500 });
+      // Return generic error message to avoid leaking internal details
+      return Response.json(
+        { error: { message: 'Internal Server Error', code: 'GET_USER_ERROR' } },
+        { status: 500 }
+      );
     }
   };
 }

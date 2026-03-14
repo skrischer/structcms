@@ -25,18 +25,20 @@ function NavItem({ item }: { item: NavigationItem }) {
       >
         {item.label}
       </Link>
-      <ul className="absolute left-0 top-[calc(100%+0.4rem)] hidden min-w-44 rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-xl shadow-primary/10 backdrop-blur-sm group-hover:block">
-        {item.children?.map((child) => (
-          <li key={child.href}>
-            <Link
-              href={child.href}
-              className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary/70 hover:text-secondary-foreground"
-            >
-              {child.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="absolute left-0 top-full hidden pt-2 group-hover:block">
+        <ul className="min-w-44 rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-xl shadow-primary/10 backdrop-blur-sm">
+          {item.children?.map((child) => (
+            <li key={child.href}>
+              <Link
+                href={child.href}
+                className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary/70 hover:text-secondary-foreground"
+              >
+                {child.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </li>
   );
 }

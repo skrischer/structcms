@@ -17,6 +17,7 @@ function createMockAdapter(mediaMap: Record<string, string>): MediaAdapter {
         url,
         mimeType: 'image/jpeg',
         size: 1024,
+        category: 'image' as const,
         createdAt: new Date(),
       };
     },

@@ -13,6 +13,8 @@ export const seedPages: CreatePageInput[] = [
           title: 'Welcome to StructCMS',
           subtitle: 'A code-first, installable headless CMS framework for developers.',
           image: '',
+          layout: 'center',
+          centered: true,
         },
       },
       {
@@ -20,6 +22,18 @@ export const seedPages: CreatePageInput[] = [
         type: 'content',
         data: {
           body: '<p>StructCMS empowers developers to define content models in TypeScript and embed a full CMS experience directly into their projects.</p>',
+        },
+      },
+      {
+        id: 'cta-1',
+        type: 'cta',
+        data: {
+          heading: 'Get Started',
+          description: 'Try StructCMS in your next project.',
+          buttonText: 'View on GitHub',
+          buttonUrl: 'https://github.com/structcms',
+          buttonStyle: 'primary',
+          openInNewTab: true,
         },
       },
     ],
@@ -35,6 +49,8 @@ export const seedPages: CreatePageInput[] = [
         data: {
           title: 'About StructCMS',
           subtitle: 'Built by developers, for developers.',
+          layout: 'left',
+          centered: false,
         },
       },
       {
@@ -71,6 +87,8 @@ export const seedPages: CreatePageInput[] = [
         data: {
           title: 'Our Team',
           subtitle: 'The people behind StructCMS.',
+          layout: 'center',
+          centered: true,
         },
       },
       {
@@ -93,6 +111,8 @@ export const seedPages: CreatePageInput[] = [
         data: {
           title: 'Contact Us',
           subtitle: 'Get in touch with the StructCMS team.',
+          layout: 'right',
+          centered: false,
         },
       },
       {

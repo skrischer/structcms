@@ -2,7 +2,7 @@
 
 Storage, domain API, delivery API, and content export for StructCMS. Provides Supabase-agnostic adapter interfaces, handler functions for content CRUD, media management, and JSON export.
 
-For architectural context, see [ARCHITECTURE.md](../../ARCHITECTURE.md) (Layer 3: Storage, Layer 4: Domain API, Layer 5: Delivery API).
+For architectural context, see [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) (Layer 3: Storage, Layer 4: Domain API, Layer 5: Delivery API).
 
 **[← Back to main README](../../README.md)**
 
@@ -82,7 +82,7 @@ This package exports **handler functions**, not complete route handlers. This ke
 ### Adapter Interfaces
 
 - **`StorageAdapter`** — Interface for page and navigation persistence
-- **`MediaAdapter`** — Interface for media file operations
+- **`MediaAdapter`** — Interface for media file operations (upload, list with category filter, delete)
 
 Both have Supabase implementations but the interfaces are Supabase-agnostic for future portability.
 
@@ -116,11 +116,15 @@ Rich text content is sanitized on write using `sanitize-html` to prevent XSS att
 
 - **`handleUploadMedia(adapter, input)`** — Upload a media file (validates MIME type)
 - **`handleGetMedia(adapter, id)`** — Get media by ID
-- **`handleListMedia(adapter, filter?)`** — List media files
+- **`handleListMedia(adapter, filter?)`** — List media files (filter supports `category`, `limit`, `offset`)
 - **`handleDeleteMedia(adapter, id)`** — Delete a media file
-- **`resolveMediaReferences(adapter, sections)`** — Resolve media IDs to URLs in section data
+- **`resolveMediaReferences(adapter, sections)`** — Resolve media IDs to URLs in section data. Recognizes fields named `image`, `file`, `document`, `attachment`, `download` (and `_`-suffixed variants)
 
-**Allowed MIME types:** `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`
+**Allowed image MIME types:** `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/svg+xml`
+
+**Allowed document MIME types:** `application/pdf`, Word (`.doc`/`.docx`), Excel (`.xls`/`.xlsx`), PowerPoint (`.ppt`/`.pptx`), `text/plain`, `text/csv`, `application/zip`, `application/gzip`
+
+Media files are categorized as `'image'` or `'document'` based on MIME type. Use the `category` filter parameter in `handleListMedia` to filter by category.
 
 ### Export Handlers
 
@@ -139,6 +143,12 @@ Rich text content is sanitized on write using `sanitize-html` to prevent XSS att
 - **`createNextNavigationRoute({ storageAdapter })`** — List and create navigation
 - **`createNextNavigationByIdRoute({ storageAdapter })`** — Update/delete navigation by ID
 
+### Types
+
+- **`MediaCategory`** — `'image' | 'document'` discriminator for media files
+- **`MediaFile`** — Media file record with `id`, `filename`, `url`, `mimeType`, `size`, `category`, `createdAt`
+- **`MediaFilter`** — Filter options for listing media: `limit`, `offset`, `mimeType`, `category`
+
 ### Error Classes
 
 - **`StorageError`** — Thrown by storage adapter on database errors
@@ -148,7 +158,9 @@ Rich text content is sanitized on write using `sanitize-html` to prevent XSS att
 
 ### Constants
 
-- **`ALLOWED_MIME_TYPES`** — Readonly array of allowed MIME types
+- **`ALLOWED_MIME_TYPES`** — Readonly array of allowed image MIME types
+- **`ALLOWED_DOCUMENT_MIME_TYPES`** — Readonly array of allowed document MIME types
+- **`ALL_ALLOWED_MIME_TYPES`** — Combined array of all allowed MIME types (images + documents)
 
 ### Utilities
 
@@ -164,7 +176,7 @@ Rich text content is sanitized on write using `sanitize-html` to prevent XSS att
 
 ## Database
 
-Migrations live in `supabase/migrations/` at the monorepo root. See [ARCHITECTURE.md](../../ARCHITECTURE.md) for the database schema.
+Migrations live in `supabase/migrations/` at the monorepo root. See [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) for the database schema.
 
 ## Development
 

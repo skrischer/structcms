@@ -28,6 +28,7 @@ export interface OAuthResponse {
 
 export interface VerifySessionInput {
   accessToken: string;
+  expiresAt?: Date | string;
 }
 
 export interface AuthAdapter {

@@ -121,7 +121,7 @@ function ImagePicker({
           onClose={() => setMediaBrowserOpen(false)}
           title="Select Media"
         >
-          <MediaBrowser onSelect={handleMediaSelect} />
+          <MediaBrowser onSelect={handleMediaSelect} category="image" />
         </Dialog>
       )}
     </div>

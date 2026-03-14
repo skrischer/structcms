@@ -107,7 +107,7 @@ describe('handleSignInWithPassword', () => {
   it('should sign in with valid credentials', async () => {
     const result = await handleSignInWithPassword(adapter, {
       email: 'test@example.com',
-      password: 'password123',
+      password: 'SecurePass123!', // Meets new policy: 8+ chars, uppercase, lowercase, numbers, special
     });
 
     expect(result.user.email).toBe('test@example.com');
@@ -147,7 +147,7 @@ describe('handleSignInWithPassword', () => {
         email: 'test@example.com',
         password: '12345',
       })
-    ).rejects.toThrow('Password must be at least 6 characters');
+    ).rejects.toThrow('Password must be at least 8 characters');
   });
 });
 
@@ -174,12 +174,12 @@ describe('handleVerifySession', () => {
     expect(result).toEqual(testUser);
   });
 
-  it('should return null for invalid token', async () => {
-    const result = await handleVerifySession(adapter, {
-      accessToken: 'invalid-token',
-    });
-
-    expect(result).toBeNull();
+  it('should throw error for invalid token', async () => {
+    await expect(
+      handleVerifySession(adapter, {
+        accessToken: 'invalid-token',
+      })
+    ).rejects.toThrow('Invalid or expired token');
   });
 
   it('should throw validation error when token is missing', async () => {

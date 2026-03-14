@@ -85,26 +85,38 @@ describe('Media Handlers', () => {
 
       await expect(
         handleUploadMedia(adapter, {
-          filename: `${testPrefix}-invalid.pdf`,
-          mimeType: 'application/pdf',
+          filename: `${testPrefix}-invalid.exe`,
+          mimeType: 'application/x-msdownload',
           size: testData.length,
           data: testData,
         })
       ).rejects.toThrow(MediaValidationError);
     });
 
-    it.skipIf(!supabaseUrl || !supabaseKey)('should reject text/plain MIME type', async () => {
-      const testData = new TextEncoder().encode('plain text');
+    it.skipIf(!supabaseUrl || !supabaseKey)(
+      'should accept document MIME types (PDF, text/plain)',
+      async () => {
+        const testData = new TextEncoder().encode('test document');
 
-      await expect(
-        handleUploadMedia(adapter, {
-          filename: `${testPrefix}-text.txt`,
+        const pdfResult = await handleUploadMedia(adapter, {
+          filename: `${testPrefix}-doc.pdf`,
+          mimeType: 'application/pdf',
+          size: testData.length,
+          data: testData,
+        });
+        uploadedMediaIds.push(pdfResult.id);
+        expect(pdfResult.mimeType).toBe('application/pdf');
+
+        const txtResult = await handleUploadMedia(adapter, {
+          filename: `${testPrefix}-doc.txt`,
           mimeType: 'text/plain',
           size: testData.length,
           data: testData,
-        })
-      ).rejects.toThrow('Invalid file type');
-    });
+        });
+        uploadedMediaIds.push(txtResult.id);
+        expect(txtResult.mimeType).toBe('text/plain');
+      }
+    );
   });
 
   describe('handleGetMedia', () => {

@@ -14,6 +14,11 @@ export interface PageEditorProps {
   className?: string;
 }
 
+interface SectionWithKey {
+  key: string;
+  section: SectionData;
+}
+
 /**
  * Full page editor with multiple sections, add/remove/reorder sections.
  *
@@ -39,6 +44,18 @@ function PageEditor({
   const [selectedSectionType, setSelectedSectionType] = React.useState<string>(
     allowedSections[0] ?? ''
   );
+  const keyCounterRef = React.useRef(0);
+  const sectionKeysRef = React.useRef<string[]>([]);
+
+  // Ensure we have enough stable keys for current sections
+  while (sectionKeysRef.current.length < sections.length) {
+    sectionKeysRef.current.push(`section-${keyCounterRef.current++}`);
+  }
+
+  const sectionsWithKeys = sections.map((section, idx) => ({
+    key: sectionKeysRef.current[idx] as string,
+    section,
+  }));
 
   const handleAddSection = () => {
     if (!selectedSectionType) return;
@@ -52,6 +69,7 @@ function PageEditor({
   const handleRemoveSection = (index: number) => {
     const newSections = [...sections];
     newSections.splice(index, 1);
+    sectionKeysRef.current.splice(index, 1);
     setSections(newSections);
   };
 
@@ -94,13 +112,13 @@ function PageEditor({
         </p>
       ) : (
         <div className="space-y-4">
-          {sections.map((section, index) => {
+          {sectionsWithKeys.map(({ key, section }, index) => {
             const sectionDef = registry.getSection(section.type);
             const sectionLabel = sectionDef?.name ?? section.type;
 
             return (
               <div
-                key={`${section.type}-${index}`}
+                key={key}
                 className="rounded-md border border-input bg-background p-4"
                 data-testid={`page-section-${index}`}
               >

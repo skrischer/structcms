@@ -3,13 +3,28 @@ import type { z } from 'zod';
 /**
  * Supported field types for CMS content
  */
-export type FieldType = 'string' | 'text' | 'richtext' | 'image' | 'reference' | 'array' | 'object';
+export type FieldType =
+  | 'string'
+  | 'text'
+  | 'richtext'
+  | 'image'
+  | 'reference'
+  | 'array'
+  | 'object'
+  | 'boolean'
+  | 'select'
+  | 'file'
+  | 'url';
 
 /**
  * Metadata stored in Zod schema description for field type identification
  */
 export interface FieldMeta {
+  version: 1;
   fieldType: FieldType;
+  options?: readonly string[];
+  allowedBlocks?: readonly string[];
+  visibleWhen?: { field: string; values: string[] };
 }
 
 /**

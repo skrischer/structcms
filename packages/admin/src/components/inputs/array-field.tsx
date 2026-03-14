@@ -16,6 +16,11 @@ export interface ArrayFieldProps<T> {
   name?: string;
 }
 
+interface ItemWithKey<T> {
+  key: string;
+  item: T;
+}
+
 /**
  * Component for array fields with add/remove/reorder functionality.
  *
@@ -51,6 +56,30 @@ function ArrayFieldInner<T>(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const inputId = id || name || React.useId();
+  const keyCounterRef = React.useRef(0);
+  const prevItemsRef = React.useRef<ItemWithKey<T>[]>([]);
+
+  // Generate stable keys for items
+  const itemsWithKeys = React.useMemo(() => {
+    const newItemsWithKeys = value.map((item, idx) => {
+      const existing = prevItemsRef.current[idx];
+      // If item at same position exists and hasn't changed reference, reuse key
+      if (existing && existing.item === item) {
+        return existing;
+      }
+      // Try to find the item elsewhere (moved)
+      const found = prevItemsRef.current.find((x) => x.item === item);
+      if (found) {
+        return found;
+      }
+      // New item, generate key
+      const key = `item-${keyCounterRef.current++}`;
+      return { key, item };
+    });
+
+    prevItemsRef.current = newItemsWithKeys;
+    return newItemsWithKeys;
+  }, [value]);
 
   const handleAdd = () => {
     onChange([...value, createDefaultItem()]);
@@ -102,10 +131,9 @@ function ArrayFieldInner<T>(
           <p className="text-sm text-muted-foreground text-center py-4">No items yet</p>
         ) : (
           <div className="space-y-3">
-            {value.map((item, index) => (
+            {itemsWithKeys.map(({ key, item }, index) => (
               <div
-                // biome-ignore lint/suspicious/noArrayIndexKey: Dynamic array items with no stable IDs
-                key={index}
+                key={key}
                 className="flex gap-2 items-start p-3 rounded-md border border-input bg-muted/50"
                 data-testid={`array-item-${index}`}
               >
