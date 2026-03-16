@@ -94,6 +94,12 @@ export {
   type AdminLayoutProps,
   type SidebarNavItem,
 } from './components/layout/admin-layout';
+export {
+  Sidebar,
+  type SidebarProps,
+  type SidebarNavItem as SidebarItem,
+} from './components/layout/sidebar';
+export { HeaderBar, type HeaderBarProps } from './components/layout/header-bar';
 export { Skeleton, type SkeletonProps } from './components/ui/skeleton';
 export {
   ToastProvider,
@@ -135,4 +141,10 @@ export {
   type SelectProps,
   type SelectOption,
 } from './components/ui/select';
+export {
+  DataTable,
+  type DataTableProps,
+  type Column,
+} from './components/ui/data-table';
+export { Pagination, type PaginationProps } from './components/ui/pagination';
 export { cn } from './lib/utils';
