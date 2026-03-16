@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { cn } from '../../lib/utils';
+import * as React from "react";
+import { cn } from "../../lib/utils";
 
 export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
@@ -13,20 +13,26 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
     <label
       ref={ref}
       className={cn(
-        'text-[13px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-        error ? 'text-[#B91C1C]' : 'text-[#334155]',
-        className
+        "text-[13px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+        error
+          ? "text-[var(--admin-error-700)]"
+          : "text-[var(--admin-gray-700)]",
+        className,
       )}
       {...props}
     >
       {children}
-      {required && <span className="text-[#EF4444] ml-0.5">*</span>}
+      {required && (
+        <span className="text-[var(--admin-error-500)] ml-0.5">*</span>
+      )}
       {optional && (
-        <span className="text-[11px] text-[#94A3B8] font-normal ml-1.5">(optional)</span>
+        <span className="text-[11px] text-[var(--admin-gray-400)] font-normal ml-1.5">
+          (optional)
+        </span>
       )}
     </label>
-  )
+  ),
 );
-Label.displayName = 'Label';
+Label.displayName = "Label";
 
 export { Label };

@@ -1,6 +1,6 @@
-import { ChevronRight } from 'lucide-react';
-import * as React from 'react';
-import { cn } from '../../lib/utils';
+import { ChevronRight } from "lucide-react";
+import * as React from "react";
+import { cn } from "../../lib/utils";
 
 export interface BreadcrumbItem {
   label: string;
@@ -15,30 +15,37 @@ export interface BreadcrumbProps {
 
 function Breadcrumb({ items, className }: BreadcrumbProps) {
   return (
-    <nav aria-label="Breadcrumb" className={cn('flex items-center gap-1.5', className)}>
+    <nav
+      aria-label="Breadcrumb"
+      className={cn("flex items-center gap-1.5", className)}
+    >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
         return (
           <React.Fragment key={`${item.label}-${index}`}>
             {index > 0 && (
-              <ChevronRight size={14} strokeWidth={1.5} className="text-[#CBD5E1] shrink-0" />
+              <ChevronRight
+                size={14}
+                strokeWidth={1.5}
+                className="text-[var(--admin-gray-300)] shrink-0"
+              />
             )}
             {isLast ? (
-              <span className="text-[14px] leading-[18px] font-medium text-[#1E293B]">
+              <span className="text-[14px] leading-[18px] font-medium text-[var(--admin-gray-800)]">
                 {item.icon}
                 {item.label}
               </span>
             ) : item.href ? (
               <a
                 href={item.href}
-                className="text-[14px] leading-[18px] text-[#3B82F6] hover:underline inline-flex items-center"
+                className="text-[14px] leading-[18px] text-[var(--admin-primary-500)] hover:underline inline-flex items-center"
               >
                 {item.icon}
                 {item.label}
               </a>
             ) : (
-              <span className="text-[14px] leading-[18px] text-[#3B82F6] inline-flex items-center">
+              <span className="text-[14px] leading-[18px] text-[var(--admin-primary-500)] inline-flex items-center">
                 {item.icon}
                 {item.label}
               </span>
@@ -50,6 +57,6 @@ function Breadcrumb({ items, className }: BreadcrumbProps) {
   );
 }
 
-Breadcrumb.displayName = 'Breadcrumb';
+Breadcrumb.displayName = "Breadcrumb";
 
 export { Breadcrumb };

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { ArrowUpDown, ChevronDown, ChevronUp } from 'lucide-react';
-import * as React from 'react';
-import { cn } from '../../lib/utils';
-import { Checkbox } from '../ui/checkbox';
+import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
+import * as React from "react";
+import { cn } from "../../lib/utils";
+import { Checkbox } from "../ui/checkbox";
 
 export interface Column<T> {
   key: string;
@@ -21,8 +21,8 @@ export interface DataTableProps<T extends Record<string, unknown>> {
   selectedRows?: Set<string>;
   onSelectionChange?: (selected: Set<string>) => void;
   sortColumn?: string;
-  sortDirection?: 'asc' | 'desc';
-  onSort?: (column: string, direction: 'asc' | 'desc') => void;
+  sortDirection?: "asc" | "desc";
+  onSort?: (column: string, direction: "asc" | "desc") => void;
   onRowClick?: (row: T) => void;
   emptyState?: React.ReactNode;
   className?: string;
@@ -30,9 +30,9 @@ export interface DataTableProps<T extends Record<string, unknown>> {
 
 function getRowKey<T extends Record<string, unknown>>(
   row: T,
-  rowKey: keyof T | ((row: T) => string)
+  rowKey: keyof T | ((row: T) => string),
 ): string {
-  if (typeof rowKey === 'function') {
+  if (typeof rowKey === "function") {
     return rowKey(row);
   }
   return String(row[rowKey]);
@@ -53,9 +53,12 @@ function DataTableInner<T extends Record<string, unknown>>(
     emptyState,
     className,
   }: DataTableProps<T>,
-  ref: React.ForwardedRef<HTMLTableElement>
+  ref: React.ForwardedRef<HTMLTableElement>,
 ) {
-  const allKeys = React.useMemo(() => data.map((row) => getRowKey(row, rowKey)), [data, rowKey]);
+  const allKeys = React.useMemo(
+    () => data.map((row) => getRowKey(row, rowKey)),
+    [data, rowKey],
+  );
 
   const selectedCount = selectedRows?.size ?? 0;
   const allSelected = data.length > 0 && selectedCount === data.length;
@@ -83,20 +86,20 @@ function DataTableInner<T extends Record<string, unknown>>(
 
   function handleSort(columnKey: string) {
     if (!onSort) return;
-    const nextDirection: 'asc' | 'desc' =
-      sortColumn === columnKey && sortDirection === 'asc' ? 'desc' : 'asc';
+    const nextDirection: "asc" | "desc" =
+      sortColumn === columnKey && sortDirection === "asc" ? "desc" : "asc";
     onSort(columnKey, nextDirection);
   }
 
   function renderSortIcon(columnKey: string) {
     if (sortColumn === columnKey) {
-      return sortDirection === 'asc' ? (
-        <ChevronUp className="w-4 h-4 text-[#2563EB]" />
+      return sortDirection === "asc" ? (
+        <ChevronUp className="w-4 h-4 text-[var(--admin-primary-600)]" />
       ) : (
-        <ChevronDown className="w-4 h-4 text-[#2563EB]" />
+        <ChevronDown className="w-4 h-4 text-[var(--admin-primary-600)]" />
       );
     }
-    return <ArrowUpDown className="w-4 h-4 text-[#94A3B8]" />;
+    return <ArrowUpDown className="w-4 h-4 text-[var(--admin-gray-400)]" />;
   }
 
   function renderCellValue(column: Column<T>, row: T): React.ReactNode {
@@ -104,15 +107,15 @@ function DataTableInner<T extends Record<string, unknown>>(
     if (column.render) {
       return column.render(value, row);
     }
-    if (value == null) return '';
+    if (value == null) return "";
     return String(value);
   }
 
   return (
-    <div className={cn('w-full overflow-auto', className)}>
+    <div className={cn("w-full overflow-auto", className)}>
       <table ref={ref} className="w-full border-collapse">
         <thead>
-          <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+          <tr className="bg-[var(--admin-gray-50)] border-b border-[var(--admin-gray-200)]">
             {selectable && (
               <th className="w-[52px] px-4">
                 <Checkbox
@@ -125,7 +128,7 @@ function DataTableInner<T extends Record<string, unknown>>(
             {columns.map((column) => (
               <th
                 key={column.key}
-                className="px-4 text-left text-[13px] tracking-[0.01em] font-medium text-[#475569] h-[44px]"
+                className="px-4 text-left text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)] h-[44px]"
                 style={column.width ? { width: column.width } : undefined}
               >
                 {column.sortable ? (
@@ -151,7 +154,11 @@ function DataTableInner<T extends Record<string, unknown>>(
                 colSpan={columns.length + (selectable ? 1 : 0)}
                 className="h-[200px] text-center align-middle"
               >
-                {emptyState ?? <span className="text-[14px] text-[#94A3B8]">No data</span>}
+                {emptyState ?? (
+                  <span className="text-[14px] text-[var(--admin-gray-400)]">
+                    No data
+                  </span>
+                )}
               </td>
             </tr>
           ) : (
@@ -163,26 +170,32 @@ function DataTableInner<T extends Record<string, unknown>>(
                 <tr
                   key={key}
                   className={cn(
-                    'h-[52px] border-b border-[#F1F5F9] transition-colors',
-                    isSelected ? 'bg-[#EFF6FF]' : 'hover:bg-[#F8FAFC]',
-                    onRowClick && 'cursor-pointer'
+                    "h-[52px] border-b border-[var(--admin-gray-100)] transition-colors",
+                    isSelected
+                      ? "bg-[var(--admin-primary-50)]"
+                      : "hover:bg-[var(--admin-gray-50)]",
+                    onRowClick && "cursor-pointer",
                   )}
                   onClick={() => onRowClick?.(row)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') onRowClick?.(row);
+                    if (e.key === "Enter") onRowClick?.(row);
                   }}
                 >
                   {selectable && (
                     <td className="w-[52px] px-4">
-                      <Checkbox checked={isSelected} onChange={() => handleSelectRow(key)} />
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={() => handleSelectRow(key)}
+                      />
                     </td>
                   )}
                   {columns.map((column) => (
                     <td
                       key={column.key}
                       className={cn(
-                        'px-4 text-[14px] text-[#1E293B]',
-                        column.key === 'slug' && 'font-[JetBrains_Mono,monospace]'
+                        "px-4 text-[14px] text-[var(--admin-gray-800)]",
+                        column.key === "slug" &&
+                          "font-[JetBrains_Mono,monospace]",
                       )}
                     >
                       {renderCellValue(column, row)}
@@ -198,10 +211,12 @@ function DataTableInner<T extends Record<string, unknown>>(
   );
 }
 
-const DataTable = React.forwardRef(DataTableInner) as <T extends Record<string, unknown>>(
-  props: DataTableProps<T> & { ref?: React.ForwardedRef<HTMLTableElement> }
+const DataTable = React.forwardRef(DataTableInner) as <
+  T extends Record<string, unknown>,
+>(
+  props: DataTableProps<T> & { ref?: React.ForwardedRef<HTMLTableElement> },
 ) => React.ReactElement;
 
-(DataTable as React.FC).displayName = 'DataTable';
+(DataTable as React.FC).displayName = "DataTable";
 
 export { DataTable };

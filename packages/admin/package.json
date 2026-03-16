@@ -19,8 +19,14 @@
     },
     "./styles.css": "./dist/styles/admin.css"
   },
-  "files": ["dist", "README.md", "LICENSE"],
-  "sideEffects": ["./dist/styles/*.css"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "./dist/styles/*.css"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

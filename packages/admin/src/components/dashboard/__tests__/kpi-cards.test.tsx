@@ -74,8 +74,6 @@ describe('KpiCards', () => {
     expect(screen.getByTestId('kpi-pages-skeleton')).toBeInTheDocument();
     expect(screen.getByTestId('kpi-media-skeleton')).toBeInTheDocument();
     expect(screen.getByTestId('kpi-navigation-skeleton')).toBeInTheDocument();
-    // Sections is from registry, never loading
-    expect(screen.queryByTestId('kpi-sections-skeleton')).not.toBeInTheDocument();
   });
 
   it('displays counts after successful fetch', async () => {
@@ -95,13 +93,12 @@ describe('KpiCards', () => {
     expect(screen.getByTestId('kpi-navigation-value')).toHaveTextContent('1');
   });
 
-  it('shows sections count from registry', () => {
+  it('does not render a sections card', () => {
     mockFetchResponses([{ data: [] }, { data: [] }, { data: [] }]);
 
     renderWithProvider(<KpiCards />);
 
-    // Registry has 2 sections (hero, content)
-    expect(screen.getByTestId('kpi-sections-value')).toHaveTextContent('2');
+    expect(screen.queryByTestId('kpi-sections')).not.toBeInTheDocument();
   });
 
   it('shows error state when API call fails', async () => {
@@ -191,7 +188,7 @@ describe('KpiCards', () => {
     );
   });
 
-  it('renders all four KPI cards', () => {
+  it('renders all three KPI cards', () => {
     mockFetchResponses([{ data: [] }, { data: [] }, { data: [] }]);
 
     renderWithProvider(<KpiCards />);
@@ -199,7 +196,6 @@ describe('KpiCards', () => {
     expect(screen.getByTestId('kpi-pages')).toBeInTheDocument();
     expect(screen.getByTestId('kpi-media')).toBeInTheDocument();
     expect(screen.getByTestId('kpi-navigation')).toBeInTheDocument();
-    expect(screen.getByTestId('kpi-sections')).toBeInTheDocument();
   });
 
   it('displays correct labels', () => {
@@ -210,7 +206,6 @@ describe('KpiCards', () => {
     expect(screen.getByText('Pages')).toBeInTheDocument();
     expect(screen.getByText('Media Files')).toBeInTheDocument();
     expect(screen.getByText('Navigation Sets')).toBeInTheDocument();
-    expect(screen.getByText('Sections')).toBeInTheDocument();
   });
 
   it('applies custom className', () => {
