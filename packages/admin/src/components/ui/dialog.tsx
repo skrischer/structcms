@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { createPortal } from 'react-dom';
-import { cn } from '../../lib/utils';
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { cn } from "../../lib/utils";
 
 export interface DialogProps {
   open: boolean;
@@ -16,12 +16,14 @@ const FOCUSABLE_SELECTOR =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+  );
 }
 
 function openDialog(
   dialog: HTMLDialogElement,
-  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>,
 ) {
   previousActiveElementRef.current = document.activeElement as HTMLElement;
   if (!dialog.open) {
@@ -35,7 +37,7 @@ function openDialog(
 
 function closeDialog(
   dialog: HTMLDialogElement,
-  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>,
 ) {
   if (dialog.open) {
     dialog.close();
@@ -98,14 +100,14 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
     if (!dialog || !open) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
+      if (e.key === "Tab") {
         trapFocus(e, getFocusableElements(dialog));
       }
     };
 
-    dialog.addEventListener('keydown', handleKeyDown);
+    dialog.addEventListener("keydown", handleKeyDown);
     return () => {
-      dialog.removeEventListener('keydown', handleKeyDown);
+      dialog.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
 
@@ -132,7 +134,7 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDialogElement>) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       onClose();
     }
   };
@@ -145,13 +147,14 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
       onCancel={handleCancel}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="backdrop:bg-black/50 fixed inset-0 z-50 p-0 bg-transparent"
+      className="backdrop:bg-black/50 fixed inset-0 z-50 p-0 bg-transparent flex items-center justify-center"
+      data-structcms-admin=""
       data-testid="dialog-overlay"
     >
       <div
         className={cn(
-          'relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-lg border border-input bg-background p-6 shadow-lg',
-          className
+          "relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-6 shadow-lg",
+          className,
         )}
         data-testid="dialog-content"
       >
@@ -172,10 +175,10 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
         {children}
       </div>
     </dialog>,
-    document.body
+    document.body,
   );
 }
 
-Dialog.displayName = 'Dialog';
+Dialog.displayName = "Dialog";
 
 export { Dialog };
