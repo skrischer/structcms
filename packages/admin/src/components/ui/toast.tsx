@@ -90,6 +90,85 @@ const compactIcons: Record<ToastVariant, React.ReactNode> = {
   info: <Info size={16} strokeWidth={2} className="text-[#3B82F6] shrink-0" />,
 };
 
+export interface ToastItemProps {
+  variant?: ToastVariant;
+  title?: string;
+  message: string;
+  onDismiss?: () => void;
+  className?: string;
+  'data-testid'?: string;
+  dismissTestId?: string;
+}
+
+function ToastItem({
+  variant = 'default',
+  title,
+  message,
+  onDismiss,
+  className,
+  'data-testid': testId,
+  dismissTestId,
+}: ToastItemProps) {
+  const isCompact = !title;
+
+  if (isCompact) {
+    return (
+      <div
+        className={cn(
+          'flex items-center rounded-lg py-2.5 px-3.5 gap-2.5 bg-white border border-[#E2E8F0] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]',
+          className
+        )}
+        role="alert"
+        data-testid={testId}
+      >
+        {compactIcons[variant]}
+        <p className="text-[14px] text-[#1E293B] leading-[18px] grow">{message}</p>
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="shrink-0"
+            aria-label="Dismiss"
+            data-testid={dismissTestId}
+          >
+            <X size={14} strokeWidth={1.5} className="text-[#94A3B8]" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex items-start rounded-lg gap-3 bg-white border border-[#E2E8F0] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] p-4',
+        className
+      )}
+      role="alert"
+      data-testid={testId}
+    >
+      {variantIcons[variant]}
+      <div className="flex flex-col grow gap-0.5">
+        <p className="text-[14px] font-medium text-[#0F172A] leading-[18px]">{title}</p>
+        <p className="text-[13px] text-[#64748B] leading-4">{message}</p>
+      </div>
+      {onDismiss && (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="shrink-0"
+          aria-label="Dismiss"
+          data-testid={dismissTestId}
+        >
+          <X size={16} strokeWidth={1.5} className="text-[#94A3B8]" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+ToastItem.displayName = 'ToastItem';
+
 interface ToastContainerProps {
   toasts: Toast[];
   onDismiss: (id: string) => void;
@@ -103,63 +182,19 @@ function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
       className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm"
       data-testid="toast-container"
     >
-      {toasts.map((toast) => {
-        const variant = toast.variant ?? 'default';
-        const isCompact = !toast.title;
-
-        if (isCompact) {
-          return (
-            <div
-              key={toast.id}
-              className={cn(
-                'flex items-center rounded-lg py-2.5 px-3.5 gap-2.5 bg-white border border-[#E2E8F0] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]'
-              )}
-              role="alert"
-              data-testid={`toast-${toast.id}`}
-            >
-              {compactIcons[variant]}
-              <p className="text-[14px] text-[#1E293B] leading-[18px] grow">{toast.message}</p>
-              <button
-                type="button"
-                onClick={() => onDismiss(toast.id)}
-                className="shrink-0"
-                data-testid={`toast-dismiss-${toast.id}`}
-                aria-label="Dismiss"
-              >
-                <X size={14} strokeWidth={1.5} className="text-[#94A3B8]" />
-              </button>
-            </div>
-          );
-        }
-
-        return (
-          <div
-            key={toast.id}
-            className={cn(
-              'flex items-start rounded-lg gap-3 bg-white border border-[#E2E8F0] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] p-4'
-            )}
-            role="alert"
-            data-testid={`toast-${toast.id}`}
-          >
-            {variantIcons[variant]}
-            <div className="flex flex-col grow gap-0.5">
-              <p className="text-[14px] font-medium text-[#0F172A] leading-[18px]">{toast.title}</p>
-              <p className="text-[13px] text-[#64748B] leading-4">{toast.message}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onDismiss(toast.id)}
-              className="shrink-0"
-              data-testid={`toast-dismiss-${toast.id}`}
-              aria-label="Dismiss"
-            >
-              <X size={16} strokeWidth={1.5} className="text-[#94A3B8]" />
-            </button>
-          </div>
-        );
-      })}
+      {toasts.map((toast) => (
+        <ToastItem
+          key={toast.id}
+          variant={toast.variant}
+          title={toast.title}
+          message={toast.message}
+          onDismiss={() => onDismiss(toast.id)}
+          data-testid={`toast-${toast.id}`}
+          dismissTestId={`toast-dismiss-${toast.id}`}
+        />
+      ))}
     </div>
   );
 }
 
-export { ToastProvider, useToast };
+export { ToastProvider, useToast, ToastItem };

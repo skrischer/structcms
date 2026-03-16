@@ -98,7 +98,9 @@ export { Skeleton, type SkeletonProps } from './components/ui/skeleton';
 export {
   ToastProvider,
   useToast,
+  ToastItem,
   type ToastProviderProps,
+  type ToastItemProps,
   type Toast,
   type ToastVariant,
 } from './components/ui/toast';
