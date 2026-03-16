@@ -105,8 +105,8 @@ describe('Toast', () => {
     await user.click(screen.getByTestId('trigger-default'));
     expect(screen.getByText('Default message')).toBeInTheDocument();
 
-    const dismissButtons = screen.getAllByText('✕');
-    await user.click(dismissButtons[0] as HTMLElement);
+    const dismissButton = screen.getByTestId('toast-dismiss-toast-1');
+    await user.click(dismissButton);
 
     expect(screen.queryByText('Default message')).not.toBeInTheDocument();
   });

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@structcms/admin/styles.css";
 @source "../node_modules/@structcms/admin/dist/**/*.js";
 
 @theme {

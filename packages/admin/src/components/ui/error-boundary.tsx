@@ -60,7 +60,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           </p>
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             size="sm"
             className="mt-3"
             onClick={this.handleReset}

@@ -135,7 +135,7 @@ function KpiCards({ className }: KpiCardsProps) {
               {kpi.onRetry && (
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   className="mt-2"
                   onClick={kpi.onRetry}

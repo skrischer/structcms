@@ -189,7 +189,7 @@ function PageEditor({
         </select>
         <Button
           type="button"
-          variant="outline"
+          variant="secondary"
           onClick={handleAddSection}
           data-testid="add-section"
         >

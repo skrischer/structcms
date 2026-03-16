@@ -240,7 +240,12 @@ function MediaBrowser({ onSelect, className, pageSize = 12, category }: MediaBro
 
       {hasMore && !loading && (
         <div className="text-center">
-          <Button type="button" variant="outline" onClick={handleLoadMore} data-testid="load-more">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleLoadMore}
+            data-testid="load-more"
+          >
             Load More
           </Button>
         </div>

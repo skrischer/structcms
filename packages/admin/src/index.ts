@@ -15,35 +15,71 @@ export {
   type ApiResponse,
   type ApiError,
 } from './hooks/use-api-client';
-export { StringInput, type StringInputProps } from './components/inputs/string-input';
+export {
+  StringInput,
+  type StringInputProps,
+} from './components/inputs/string-input';
 export { UrlInput, type UrlInputProps } from './components/inputs/url-input';
 export { TextInput, type TextInputProps } from './components/inputs/text-input';
 export { RichTextEditor } from './components/inputs/rich-text-editor';
 export type { RichTextEditorProps } from './components/inputs/rich-text-editor';
 
 export { AuthProvider, useAuth } from './context/auth-context';
-export type { AuthContextValue, AuthProviderProps } from './context/auth-context';
+export type {
+  AuthContextValue,
+  AuthProviderProps,
+} from './context/auth-context';
 
 export { LoginForm, ProtectedRoute, OAuthButton } from './components/auth';
-export type { LoginFormProps, ProtectedRouteProps, OAuthButtonProps } from './components/auth';
+export type {
+  LoginFormProps,
+  ProtectedRouteProps,
+  OAuthButtonProps,
+} from './components/auth';
 
-export { ImagePicker, type ImagePickerProps } from './components/inputs/image-picker';
-export { FilePicker, type FilePickerProps } from './components/inputs/file-picker';
-export { ArrayField, type ArrayFieldProps } from './components/inputs/array-field';
-export { ObjectField, type ObjectFieldProps } from './components/inputs/object-field';
+export {
+  ImagePicker,
+  type ImagePickerProps,
+} from './components/inputs/image-picker';
+export {
+  FilePicker,
+  type FilePickerProps,
+} from './components/inputs/file-picker';
+export {
+  ArrayField,
+  type ArrayFieldProps,
+} from './components/inputs/array-field';
+export {
+  ObjectField,
+  type ObjectFieldProps,
+} from './components/inputs/object-field';
 export { Input, type InputProps } from './components/ui/input';
 export { Textarea, type TextareaProps } from './components/ui/textarea';
 export { Label, type LabelProps } from './components/ui/label';
-export { Button, type ButtonProps, buttonVariants } from './components/ui/button';
+export {
+  Button,
+  type ButtonProps,
+  buttonVariants,
+} from './components/ui/button';
 export {
   FormGenerator,
   type FormGeneratorProps,
   resolveFieldType,
   fieldNameToLabel,
 } from './lib/form-generator';
-export { SectionEditor, type SectionEditorProps } from './components/editors/section-editor';
-export { PageEditor, type PageEditorProps } from './components/editors/page-editor';
-export { PageList, type PageListProps, type PageSummary } from './components/content/page-list';
+export {
+  SectionEditor,
+  type SectionEditorProps,
+} from './components/editors/section-editor';
+export {
+  PageEditor,
+  type PageEditorProps,
+} from './components/editors/page-editor';
+export {
+  PageList,
+  type PageListProps,
+  type PageSummary,
+} from './components/content/page-list';
 export {
   NavigationEditor,
   type NavigationEditorProps,
@@ -66,10 +102,35 @@ export {
   type Toast,
   type ToastVariant,
 } from './components/ui/toast';
-export { ErrorBoundary, type ErrorBoundaryProps } from './components/ui/error-boundary';
+export {
+  ErrorBoundary,
+  type ErrorBoundaryProps,
+} from './components/ui/error-boundary';
 export { Dialog, type DialogProps } from './components/ui/dialog';
-export { DashboardPage, type DashboardPageProps } from './components/dashboard/dashboard-page';
-export { QuickActions, type QuickActionsProps } from './components/dashboard/quick-actions';
+export {
+  DashboardPage,
+  type DashboardPageProps,
+} from './components/dashboard/dashboard-page';
+export {
+  QuickActions,
+  type QuickActionsProps,
+} from './components/dashboard/quick-actions';
 export { KpiCards, type KpiCardsProps } from './components/dashboard/kpi-cards';
-export { RecentPages, type RecentPagesProps } from './components/dashboard/recent-pages';
+export {
+  RecentPages,
+  type RecentPagesProps,
+} from './components/dashboard/recent-pages';
+export { Badge, type BadgeProps, badgeVariants } from './components/ui/badge';
+export {
+  Breadcrumb,
+  type BreadcrumbProps,
+  type BreadcrumbItem,
+} from './components/ui/breadcrumb';
+export { Checkbox, type CheckboxProps } from './components/ui/checkbox';
+export { Toggle, type ToggleProps } from './components/ui/toggle';
+export {
+  Select,
+  type SelectProps,
+  type SelectOption,
+} from './components/ui/select';
 export { cn } from './lib/utils';

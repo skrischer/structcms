@@ -94,7 +94,7 @@ function RecentPages({ onSelectPage, className }: RecentPagesProps) {
           <p className="text-sm text-destructive">Unable to load recent pages</p>
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             size="sm"
             className="mt-2"
             onClick={() => void fetchPages()}

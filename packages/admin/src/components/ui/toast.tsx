@@ -1,19 +1,21 @@
 'use client';
 
+import { AlertTriangle, CheckCircle, Info, X, XCircle } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
-export type ToastVariant = 'default' | 'success' | 'error';
+export type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info';
 
 export interface Toast {
   id: string;
   message: string;
+  title?: string;
   variant?: ToastVariant;
 }
 
 interface ToastContextValue {
   toasts: Toast[];
-  addToast: (message: string, variant?: ToastVariant) => void;
+  addToast: (message: string, variant?: ToastVariant, title?: string) => void;
   removeToast: (id: string) => void;
 }
 
@@ -24,16 +26,6 @@ export interface ToastProviderProps {
   autoDismissMs?: number;
 }
 
-/**
- * Provider for toast notifications. Wrap your app with this to enable useToast().
- *
- * @example
- * ```tsx
- * <ToastProvider>
- *   <App />
- * </ToastProvider>
- * ```
- */
 function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
   const counterRef = React.useRef(0);
@@ -43,9 +35,9 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
   }, []);
 
   const addToast = React.useCallback(
-    (message: string, variant: ToastVariant = 'default') => {
+    (message: string, variant: ToastVariant = 'default', title?: string) => {
       const id = `toast-${++counterRef.current}`;
-      const toast: Toast = { id, message, variant };
+      const toast: Toast = { id, message, variant, title };
       setToasts((prev) => [...prev, toast]);
 
       if (autoDismissMs > 0) {
@@ -70,16 +62,6 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
 
 ToastProvider.displayName = 'ToastProvider';
 
-/**
- * Hook to trigger toast notifications. Must be used within a ToastProvider.
- *
- * @example
- * ```tsx
- * const { toast } = useToast();
- * toast('Page saved!', 'success');
- * toast('Something went wrong', 'error');
- * ```
- */
 function useToast() {
   const context = React.useContext(ToastContext);
   if (!context) {
@@ -92,10 +74,20 @@ function useToast() {
   };
 }
 
-const variantStyles: Record<ToastVariant, string> = {
-  default: 'bg-card border-input text-foreground',
-  success: 'bg-card border-green-500 text-foreground',
-  error: 'bg-card border-destructive text-foreground',
+const variantIcons: Record<ToastVariant, React.ReactNode> = {
+  default: null,
+  success: <CheckCircle size={20} strokeWidth={1.5} className="text-[#22C55E] shrink-0 mt-px" />,
+  error: <XCircle size={20} strokeWidth={1.5} className="text-[#EF4444] shrink-0 mt-px" />,
+  warning: <AlertTriangle size={20} strokeWidth={1.5} className="text-[#F59E0B] shrink-0 mt-px" />,
+  info: <Info size={20} strokeWidth={1.5} className="text-[#3B82F6] shrink-0 mt-px" />,
+};
+
+const compactIcons: Record<ToastVariant, React.ReactNode> = {
+  default: null,
+  success: <CheckCircle size={16} strokeWidth={2} className="text-[#22C55E] shrink-0" />,
+  error: <XCircle size={16} strokeWidth={2} className="text-[#EF4444] shrink-0" />,
+  warning: <AlertTriangle size={16} strokeWidth={2} className="text-[#F59E0B] shrink-0" />,
+  info: <Info size={16} strokeWidth={2} className="text-[#3B82F6] shrink-0" />,
 };
 
 interface ToastContainerProps {
@@ -111,27 +103,61 @@ function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
       className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm"
       data-testid="toast-container"
     >
-      {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          className={cn(
-            'rounded-md border px-4 py-3 shadow-md flex items-center justify-between gap-2',
-            variantStyles[toast.variant ?? 'default']
-          )}
-          role="alert"
-          data-testid={`toast-${toast.id}`}
-        >
-          <p className="text-sm">{toast.message}</p>
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground text-sm"
-            onClick={() => onDismiss(toast.id)}
-            data-testid={`toast-dismiss-${toast.id}`}
+      {toasts.map((toast) => {
+        const variant = toast.variant ?? 'default';
+        const isCompact = !toast.title;
+
+        if (isCompact) {
+          return (
+            <div
+              key={toast.id}
+              className={cn(
+                'flex items-center rounded-lg py-2.5 px-3.5 gap-2.5 bg-white border border-[#E2E8F0] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]'
+              )}
+              role="alert"
+              data-testid={`toast-${toast.id}`}
+            >
+              {compactIcons[variant]}
+              <p className="text-[14px] text-[#1E293B] leading-[18px] grow">{toast.message}</p>
+              <button
+                type="button"
+                onClick={() => onDismiss(toast.id)}
+                className="shrink-0"
+                data-testid={`toast-dismiss-${toast.id}`}
+                aria-label="Dismiss"
+              >
+                <X size={14} strokeWidth={1.5} className="text-[#94A3B8]" />
+              </button>
+            </div>
+          );
+        }
+
+        return (
+          <div
+            key={toast.id}
+            className={cn(
+              'flex items-start rounded-lg gap-3 bg-white border border-[#E2E8F0] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] p-4'
+            )}
+            role="alert"
+            data-testid={`toast-${toast.id}`}
           >
-            ✕
-          </button>
-        </div>
-      ))}
+            {variantIcons[variant]}
+            <div className="flex flex-col grow gap-0.5">
+              <p className="text-[14px] font-medium text-[#0F172A] leading-[18px]">{toast.title}</p>
+              <p className="text-[13px] text-[#64748B] leading-4">{toast.message}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onDismiss(toast.id)}
+              className="shrink-0"
+              data-testid={`toast-dismiss-${toast.id}`}
+              aria-label="Dismiss"
+            >
+              <X size={16} strokeWidth={1.5} className="text-[#94A3B8]" />
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }

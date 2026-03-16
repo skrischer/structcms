@@ -96,7 +96,7 @@ export default function CreatePagePage() {
       {!pageType && <p className="text-gray-500">Select a page type to add sections.</p>}
 
       <div className="flex gap-2">
-        <Button variant="outline" onClick={() => router.push('/admin/pages')}>
+        <Button variant="secondary" onClick={() => router.push('/admin/pages')}>
           Cancel
         </Button>
       </div>

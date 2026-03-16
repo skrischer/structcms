@@ -1,12 +1,12 @@
-import { describe, expect, it } from "vitest";
-import type { PageSection } from "../storage/types";
-import { resolveMediaReferences } from "./resolve";
-import type { MediaAdapter } from "./types";
+import { describe, expect, it } from 'vitest';
+import type { PageSection } from '../storage/types';
+import { resolveMediaReferences } from './resolve';
+import type { MediaAdapter } from './types';
 
 function createMockAdapter(mediaMap: Record<string, string>): MediaAdapter {
   return {
     upload: async () => {
-      throw new Error("Not implemented");
+      throw new Error('Not implemented');
     },
     getMedia: async (id: string) => {
       const url = mediaMap[id];
@@ -15,9 +15,9 @@ function createMockAdapter(mediaMap: Record<string, string>): MediaAdapter {
         id,
         filename: `${id}.jpg`,
         url,
-        mimeType: "image/jpeg",
+        mimeType: 'image/jpeg',
         size: 1024,
-        category: "image" as const,
+        category: 'image' as const,
         createdAt: new Date(),
       };
     },
@@ -26,71 +26,65 @@ function createMockAdapter(mediaMap: Record<string, string>): MediaAdapter {
   };
 }
 
-describe("resolveMediaReferences", () => {
-  const mediaId1 = "11111111-1111-1111-1111-111111111111";
-  const mediaId2 = "22222222-2222-2222-2222-222222222222";
-  const missingId = "99999999-9999-9999-9999-999999999999";
+describe('resolveMediaReferences', () => {
+  const mediaId1 = '11111111-1111-1111-1111-111111111111';
+  const mediaId2 = '22222222-2222-2222-2222-222222222222';
+  const missingId = '99999999-9999-9999-9999-999999999999';
 
   const mockAdapter = createMockAdapter({
-    [mediaId1]: "https://cdn.example.com/image1.jpg",
-    [mediaId2]: "https://cdn.example.com/image2.png",
+    [mediaId1]: 'https://cdn.example.com/image1.jpg',
+    [mediaId2]: 'https://cdn.example.com/image2.png',
   });
 
   it('should resolve "image" field to URL', async () => {
     const sections: PageSection[] = [
       {
-        id: "hero-1",
-        type: "hero",
-        data: { title: "Welcome", image: mediaId1 },
+        id: 'hero-1',
+        type: 'hero',
+        data: { title: 'Welcome', image: mediaId1 },
       },
     ];
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.image).toBe("https://cdn.example.com/image1.jpg");
-    expect(resolved[0].data.title).toBe("Welcome");
+    expect(resolved[0].data.image).toBe('https://cdn.example.com/image1.jpg');
+    expect(resolved[0].data.title).toBe('Welcome');
   });
 
   it('should resolve "thumbnail" field to URL', async () => {
     const sections: PageSection[] = [
       {
-        id: "card-1",
-        type: "card",
-        data: { text: "Hello", thumbnail: mediaId2 },
+        id: 'card-1',
+        type: 'card',
+        data: { text: 'Hello', thumbnail: mediaId2 },
       },
     ];
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.thumbnail).toBe(
-      "https://cdn.example.com/image2.png",
-    );
+    expect(resolved[0].data.thumbnail).toBe('https://cdn.example.com/image2.png');
   });
 
-  it("should resolve fields ending with _image suffix", async () => {
+  it('should resolve fields ending with _image suffix', async () => {
     const sections: PageSection[] = [
       {
-        id: "banner-1",
-        type: "banner",
+        id: 'banner-1',
+        type: 'banner',
         data: { hero_image: mediaId1, background_image: mediaId2 },
       },
     ];
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.hero_image).toBe(
-      "https://cdn.example.com/image1.jpg",
-    );
-    expect(resolved[0].data.background_image).toBe(
-      "https://cdn.example.com/image2.png",
-    );
+    expect(resolved[0].data.hero_image).toBe('https://cdn.example.com/image1.jpg');
+    expect(resolved[0].data.background_image).toBe('https://cdn.example.com/image2.png');
   });
 
-  it("should resolve null for missing media", async () => {
+  it('should resolve null for missing media', async () => {
     const sections: PageSection[] = [
       {
-        id: "hero-1",
-        type: "hero",
+        id: 'hero-1',
+        type: 'hero',
         data: { image: missingId },
       },
     ];
@@ -100,14 +94,14 @@ describe("resolveMediaReferences", () => {
     expect(resolved[0].data.image).toBeNull();
   });
 
-  it("should not modify non-media fields", async () => {
+  it('should not modify non-media fields', async () => {
     const sections: PageSection[] = [
       {
-        id: "text-1",
-        type: "text",
+        id: 'text-1',
+        type: 'text',
         data: {
-          title: "Hello",
-          description: "Some text",
+          title: 'Hello',
+          description: 'Some text',
           count: 42,
         },
       },
@@ -115,34 +109,34 @@ describe("resolveMediaReferences", () => {
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.title).toBe("Hello");
-    expect(resolved[0].data.description).toBe("Some text");
+    expect(resolved[0].data.title).toBe('Hello');
+    expect(resolved[0].data.description).toBe('Some text');
     expect(resolved[0].data.count).toBe(42);
   });
 
-  it("should not resolve non-UUID strings in media fields", async () => {
+  it('should not resolve non-UUID strings in media fields', async () => {
     const sections: PageSection[] = [
       {
-        id: "hero-1",
-        type: "hero",
-        data: { image: "not-a-uuid", title: "Test" },
+        id: 'hero-1',
+        type: 'hero',
+        data: { image: 'not-a-uuid', title: 'Test' },
       },
     ];
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.image).toBe("not-a-uuid");
+    expect(resolved[0].data.image).toBe('not-a-uuid');
   });
 
-  it("should resolve nested media references", async () => {
+  it('should resolve nested media references', async () => {
     const sections: PageSection[] = [
       {
-        id: "nested-1",
-        type: "nested",
+        id: 'nested-1',
+        type: 'nested',
         data: {
           content: {
             image: mediaId1,
-            label: "Nested label",
+            label: 'Nested label',
           },
         },
       },
@@ -151,61 +145,59 @@ describe("resolveMediaReferences", () => {
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
     const content = resolved[0].data.content as Record<string, unknown>;
-    expect(content.image).toBe("https://cdn.example.com/image1.jpg");
-    expect(content.label).toBe("Nested label");
+    expect(content.image).toBe('https://cdn.example.com/image1.jpg');
+    expect(content.label).toBe('Nested label');
   });
 
-  it("should handle multiple sections", async () => {
+  it('should handle multiple sections', async () => {
     const sections: PageSection[] = [
       {
-        id: "hero-1",
-        type: "hero",
+        id: 'hero-1',
+        type: 'hero',
         data: { image: mediaId1 },
       },
       {
-        id: "card-1",
-        type: "card",
+        id: 'card-1',
+        type: 'card',
         data: { thumbnail: mediaId2 },
       },
     ];
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.image).toBe("https://cdn.example.com/image1.jpg");
-    expect(resolved[1].data.thumbnail).toBe(
-      "https://cdn.example.com/image2.png",
-    );
+    expect(resolved[0].data.image).toBe('https://cdn.example.com/image1.jpg');
+    expect(resolved[1].data.thumbnail).toBe('https://cdn.example.com/image2.png');
   });
 
-  it("should handle empty sections", async () => {
+  it('should handle empty sections', async () => {
     const resolved = await resolveMediaReferences([], mockAdapter);
     expect(resolved).toEqual([]);
   });
 
-  it("should not mutate original sections", async () => {
+  it('should not mutate original sections', async () => {
     const sections: PageSection[] = [
       {
-        id: "hero-1",
-        type: "hero",
-        data: { image: mediaId1, title: "Original" },
+        id: 'hero-1',
+        type: 'hero',
+        data: { image: mediaId1, title: 'Original' },
       },
     ];
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
     expect(sections[0].data.image).toBe(mediaId1);
-    expect(resolved[0].data.image).toBe("https://cdn.example.com/image1.jpg");
+    expect(resolved[0].data.image).toBe('https://cdn.example.com/image1.jpg');
   });
 
-  it("should resolve media references inside arrays", async () => {
+  it('should resolve media references inside arrays', async () => {
     const sections: PageSection[] = [
       {
-        id: "gallery-1",
-        type: "gallery",
+        id: 'gallery-1',
+        type: 'gallery',
         data: {
           images: [
-            { image: mediaId1, caption: "First" },
-            { image: mediaId2, caption: "Second" },
+            { image: mediaId1, caption: 'First' },
+            { image: mediaId2, caption: 'Second' },
           ],
         },
       },
@@ -214,24 +206,24 @@ describe("resolveMediaReferences", () => {
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
     const images = resolved[0].data.images as Record<string, unknown>[];
-    expect(images[0].image).toBe("https://cdn.example.com/image1.jpg");
-    expect(images[0].caption).toBe("First");
-    expect(images[1].image).toBe("https://cdn.example.com/image2.png");
-    expect(images[1].caption).toBe("Second");
+    expect(images[0].image).toBe('https://cdn.example.com/image1.jpg');
+    expect(images[0].caption).toBe('First');
+    expect(images[1].image).toBe('https://cdn.example.com/image2.png');
+    expect(images[1].caption).toBe('Second');
   });
 
-  it("should resolve deeply nested arrays", async () => {
+  it('should resolve deeply nested arrays', async () => {
     const sections: PageSection[] = [
       {
-        id: "team-1",
-        type: "team",
+        id: 'team-1',
+        type: 'team',
         data: {
           departments: [
             {
-              name: "Engineering",
+              name: 'Engineering',
               persons: [
-                { name: "Alice", avatar: mediaId1 },
-                { name: "Bob", avatar: mediaId2 },
+                { name: 'Alice', avatar: mediaId1 },
+                { name: 'Bob', avatar: mediaId2 },
               ],
             },
           ],
@@ -241,36 +233,33 @@ describe("resolveMediaReferences", () => {
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    const departments = resolved[0].data.departments as Record<
-      string,
-      unknown
-    >[];
+    const departments = resolved[0].data.departments as Record<string, unknown>[];
     const persons = departments[0].persons as Record<string, unknown>[];
-    expect(persons[0].avatar).toBe("https://cdn.example.com/image1.jpg");
-    expect(persons[1].avatar).toBe("https://cdn.example.com/image2.png");
+    expect(persons[0].avatar).toBe('https://cdn.example.com/image1.jpg');
+    expect(persons[1].avatar).toBe('https://cdn.example.com/image2.png');
   });
 
-  it("should handle arrays with non-object items", async () => {
+  it('should handle arrays with non-object items', async () => {
     const sections: PageSection[] = [
       {
-        id: "tags-1",
-        type: "tags",
+        id: 'tags-1',
+        type: 'tags',
         data: {
-          tags: ["foo", "bar", 42],
+          tags: ['foo', 'bar', 42],
         },
       },
     ];
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.tags).toEqual(["foo", "bar", 42]);
+    expect(resolved[0].data.tags).toEqual(['foo', 'bar', 42]);
   });
 
   it('should resolve "media", "photo", "avatar", "icon" fields', async () => {
     const sections: PageSection[] = [
       {
-        id: "profile-1",
-        type: "profile",
+        id: 'profile-1',
+        type: 'profile',
         data: {
           media: mediaId1,
           photo: mediaId2,
@@ -282,9 +271,9 @@ describe("resolveMediaReferences", () => {
 
     const resolved = await resolveMediaReferences(sections, mockAdapter);
 
-    expect(resolved[0].data.media).toBe("https://cdn.example.com/image1.jpg");
-    expect(resolved[0].data.photo).toBe("https://cdn.example.com/image2.png");
-    expect(resolved[0].data.avatar).toBe("https://cdn.example.com/image1.jpg");
-    expect(resolved[0].data.icon).toBe("https://cdn.example.com/image2.png");
+    expect(resolved[0].data.media).toBe('https://cdn.example.com/image1.jpg');
+    expect(resolved[0].data.photo).toBe('https://cdn.example.com/image2.png');
+    expect(resolved[0].data.avatar).toBe('https://cdn.example.com/image1.jpg');
+    expect(resolved[0].data.icon).toBe('https://cdn.example.com/image2.png');
   });
 });

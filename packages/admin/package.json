@@ -16,10 +16,11 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./styles.css": "./dist/styles/admin.css"
   },
   "files": ["dist", "README.md", "LICENSE"],
-  "sideEffects": false,
+  "sideEffects": ["./dist/styles/*.css"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -36,6 +37,7 @@
     "@tiptap/starter-kit": "^3.19.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.577.0",
     "react-hook-form": "^7.71.1",
     "tailwind-merge": "^3.4.0",
     "zod": "^3.23.0"

@@ -1,23 +1,22 @@
-import type { PageSection } from "../storage/types";
-import type { MediaAdapter } from "./types";
+import type { PageSection } from '../storage/types';
+import type { MediaAdapter } from './types';
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Convention: fields ending with these suffixes are treated as media references
  */
 const MEDIA_FIELD_SUFFIXES = [
-  "_image",
-  "_media",
-  "_photo",
-  "_thumbnail",
-  "_avatar",
-  "_icon",
-  "_file",
-  "_document",
-  "_attachment",
-  "_download",
+  '_image',
+  '_media',
+  '_photo',
+  '_thumbnail',
+  '_avatar',
+  '_icon',
+  '_file',
+  '_document',
+  '_attachment',
+  '_download',
 ];
 
 /**
@@ -26,16 +25,16 @@ const MEDIA_FIELD_SUFFIXES = [
 function isMediaField(fieldName: string): boolean {
   const lower = fieldName.toLowerCase();
   if (
-    lower === "image" ||
-    lower === "media" ||
-    lower === "photo" ||
-    lower === "thumbnail" ||
-    lower === "avatar" ||
-    lower === "icon" ||
-    lower === "file" ||
-    lower === "document" ||
-    lower === "attachment" ||
-    lower === "download"
+    lower === 'image' ||
+    lower === 'media' ||
+    lower === 'photo' ||
+    lower === 'thumbnail' ||
+    lower === 'avatar' ||
+    lower === 'icon' ||
+    lower === 'file' ||
+    lower === 'document' ||
+    lower === 'attachment' ||
+    lower === 'download'
   ) {
     return true;
   }
@@ -46,7 +45,7 @@ function isMediaField(fieldName: string): boolean {
  * Checks if a value looks like a media ID (UUID format)
  */
 function isMediaId(value: unknown): value is string {
-  return typeof value === "string" && UUID_PATTERN.test(value);
+  return typeof value === 'string' && UUID_PATTERN.test(value);
 }
 
 /**
@@ -56,7 +55,7 @@ function isMediaId(value: unknown): value is string {
  */
 async function resolveDataObject(
   data: Record<string, unknown>,
-  adapter: MediaAdapter,
+  adapter: MediaAdapter
 ): Promise<Record<string, unknown>> {
   const resolved: Record<string, unknown> = {};
 
@@ -67,16 +66,13 @@ async function resolveDataObject(
     } else if (Array.isArray(value)) {
       resolved[key] = await Promise.all(
         value.map((item) =>
-          item !== null && typeof item === "object" && !Array.isArray(item)
+          item !== null && typeof item === 'object' && !Array.isArray(item)
             ? resolveDataObject(item as Record<string, unknown>, adapter)
-            : item,
-        ),
+            : item
+        )
       );
-    } else if (value !== null && typeof value === "object") {
-      resolved[key] = await resolveDataObject(
-        value as Record<string, unknown>,
-        adapter,
-      );
+    } else if (value !== null && typeof value === 'object') {
+      resolved[key] = await resolveDataObject(value as Record<string, unknown>, adapter);
     } else {
       resolved[key] = value;
     }
@@ -96,7 +92,7 @@ async function resolveDataObject(
  */
 export async function resolveMediaReferences(
   sections: PageSection[],
-  adapter: MediaAdapter,
+  adapter: MediaAdapter
 ): Promise<PageSection[]> {
   const resolved: PageSection[] = [];
 

@@ -80,12 +80,12 @@ function ImagePicker({
               />
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={handleBrowse}>
+              <Button type="button" variant="secondary" size="sm" onClick={handleBrowse}>
                 Change
               </Button>
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={handleClear}
                 data-testid="clear-button"
@@ -100,7 +100,7 @@ function ImagePicker({
             <p className="mb-4 text-sm text-muted-foreground">No image selected</p>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={handleBrowse}
               id={inputId}
               data-testid="browse-button"

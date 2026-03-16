@@ -181,7 +181,7 @@ function ArrayFieldInner<T>(
         <div className="mt-4">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={handleAdd}
             id={inputId}
             data-testid="add-item"

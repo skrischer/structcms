@@ -1,3 +1,4 @@
+import { copyFileSync, mkdirSync } from 'node:fs';
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
@@ -8,4 +9,8 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   external: ['react', 'react-dom'],
+  onSuccess: async () => {
+    mkdirSync('dist/styles', { recursive: true });
+    copyFileSync('src/styles/admin.css', 'dist/styles/admin.css');
+  },
 });

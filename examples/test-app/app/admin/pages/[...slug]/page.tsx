@@ -122,7 +122,7 @@ export default function EditPagePage() {
       )}
 
       <div className="flex gap-2">
-        <Button variant="outline" onClick={() => router.push('/admin/pages')}>
+        <Button variant="secondary" onClick={() => router.push('/admin/pages')}>
           Cancel
         </Button>
       </div>

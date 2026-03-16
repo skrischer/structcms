@@ -213,7 +213,7 @@ function NavigationEditor({ items: initialItems, onSave, className }: Navigation
 
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => handleAddChild(index)}
                 data-testid={`nav-add-child-${index}`}
@@ -226,7 +226,12 @@ function NavigationEditor({ items: initialItems, onSave, className }: Navigation
       )}
 
       <div className="flex gap-2 border-t border-input pt-4">
-        <Button type="button" variant="outline" onClick={handleAddItem} data-testid="nav-add-item">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleAddItem}
+          data-testid="nav-add-item"
+        >
           Add Item
         </Button>
         <Button type="button" onClick={handleSave} data-testid="nav-save">

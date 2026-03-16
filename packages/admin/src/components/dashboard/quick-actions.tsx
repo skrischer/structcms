@@ -20,7 +20,7 @@ export function QuickActions({ onCreatePage, onUploadMedia, className }: QuickAc
           Create New Page
         </Button>
         <Button
-          variant="outline"
+          variant="secondary"
           onClick={onUploadMedia}
           aria-label="Upload Media"
           data-testid="quick-action-upload-media"

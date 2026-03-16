@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '../../lib/utils';
-import { Button } from '../ui/button';
+import * as React from "react";
+import { cn } from "../../lib/utils";
+import { Button } from "../ui/button";
 
 export interface SidebarNavItem {
   label: string;
@@ -10,9 +10,9 @@ export interface SidebarNavItem {
 }
 
 const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
-  { label: 'Pages', path: '/pages' },
-  { label: 'Navigation', path: '/navigation' },
-  { label: 'Media', path: '/media' },
+  { label: "Pages", path: "/pages" },
+  { label: "Navigation", path: "/navigation" },
+  { label: "Media", path: "/media" },
 ];
 
 export interface AdminLayoutProps {
@@ -40,7 +40,7 @@ export interface AdminLayoutProps {
  */
 function AdminLayout({
   children,
-  title = 'StructCMS',
+  title = "StructCMS",
   navItems = DEFAULT_NAV_ITEMS,
   activePath,
   onNavigate,
@@ -49,14 +49,18 @@ function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   return (
-    <div className={cn('flex h-screen bg-background', className)} data-testid="admin-layout">
+    <div
+      className={cn("flex h-dvh overflow-hidden bg-background", className)}
+      data-testid="admin-layout"
+      data-structcms-admin=""
+    >
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === 'Escape') {
+            if (e.key === "Enter" || e.key === "Escape") {
               setSidebarOpen(false);
             }
           }}
@@ -69,8 +73,8 @@ function AdminLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-input transform transition-transform duration-200 md:relative md:translate-x-0',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-input transform transition-transform duration-200 md:relative md:translate-x-0",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
         data-testid="sidebar"
       >
@@ -85,8 +89,10 @@ function AdminLayout({
               key={item.path}
               type="button"
               className={cn(
-                'w-full text-left px-3 py-2 rounded-md text-sm transition-colors',
-                activePath === item.path ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                "w-full text-left px-3 py-2 rounded-md text-sm transition-colors",
+                activePath === item.path
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted",
               )}
               onClick={() => {
                 onNavigate(item.path);
@@ -131,6 +137,6 @@ function AdminLayout({
   );
 }
 
-AdminLayout.displayName = 'AdminLayout';
+AdminLayout.displayName = "AdminLayout";
 
 export { AdminLayout };
