@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { cn } from "../../lib/utils";
+import { cn } from '../../lib/utils';
 
 export interface CheckboxProps {
   checked?: boolean;
@@ -11,36 +11,29 @@ export interface CheckboxProps {
   className?: string;
 }
 
-function Checkbox({
-  checked,
-  indeterminate,
-  onChange,
-  label,
-  disabled,
-  className,
-}: CheckboxProps) {
+function Checkbox({ checked, indeterminate, onChange, label, disabled, className }: CheckboxProps) {
   const isChecked = checked ?? false;
   const showCheck = isChecked || indeterminate;
 
   return (
     <label
       className={cn(
-        "relative inline-flex items-center gap-2 cursor-pointer",
-        disabled && "cursor-not-allowed",
-        className,
+        'relative inline-flex items-center gap-2 cursor-pointer',
+        disabled && 'cursor-not-allowed',
+        className
       )}
     >
       <button
         type="button"
         // biome-ignore lint/a11y/useSemanticElements: Custom styled checkbox requires button with role for visual design
         role="checkbox"
-        aria-checked={indeterminate ? "mixed" : isChecked}
+        aria-checked={indeterminate ? 'mixed' : isChecked}
         disabled={disabled}
         onClick={() => onChange?.(!isChecked)}
         className={cn(
-          "flex items-center justify-center w-[18px] h-[18px] rounded-sm shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[rgba(59,130,246,0.15)]",
-          showCheck ? "bg-[#2563EB]" : "bg-white border-2 border-[#CBD5E1]",
-          disabled && "opacity-50",
+          'flex items-center justify-center w-[18px] h-[18px] rounded-sm shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[rgba(59,130,246,0.15)]',
+          showCheck ? 'bg-[#2563EB]' : 'bg-white border-2 border-[#CBD5E1]',
+          disabled && 'opacity-50'
         )}
       >
         {isChecked && !indeterminate && (
@@ -59,31 +52,23 @@ function Checkbox({
             <polyline points="20 6 9 17 4 12" />
           </svg>
         )}
-        {indeterminate && (
-          <div className="w-2.5 h-0.5 rounded-[1px] bg-white" />
-        )}
+        {indeterminate && <div className="w-2.5 h-0.5 rounded-[1px] bg-white" />}
       </button>
       {label && (
         <span
           className={cn(
-            "text-[14px] leading-[18px]",
-            disabled ? "text-[#94A3B8]" : "text-[#1E293B]",
+            'text-[14px] leading-[18px]',
+            disabled ? 'text-[#94A3B8]' : 'text-[#1E293B]'
           )}
         >
           {label}
         </span>
       )}
-      <input
-        type="checkbox"
-        className="sr-only"
-        checked={isChecked}
-        disabled={disabled}
-        readOnly
-      />
+      <input type="checkbox" className="sr-only" checked={isChecked} disabled={disabled} readOnly />
     </label>
   );
 }
 
-Checkbox.displayName = "Checkbox";
+Checkbox.displayName = 'Checkbox';
 
 export { Checkbox };
