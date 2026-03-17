@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Bell, Menu, Search } from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import type { BreadcrumbItem } from "../ui/breadcrumb";
-import { Breadcrumb } from "../ui/breadcrumb";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Bell, Menu, Search } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import type { BreadcrumbItem } from '../ui/breadcrumb';
+import { Breadcrumb } from '../ui/breadcrumb';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 export interface HeaderBarProps {
   breadcrumbItems?: BreadcrumbItem[];
@@ -21,13 +21,13 @@ export interface HeaderBarProps {
 function HeaderBar({
   breadcrumbItems,
   onSearch,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = 'Search...',
   onToggleSidebar,
   userInitials,
   notificationCount = 0,
   className,
 }: HeaderBarProps) {
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -38,8 +38,8 @@ function HeaderBar({
   return (
     <header
       className={cn(
-        "flex h-14 items-center justify-between border-b border-[var(--admin-gray-200)] bg-[var(--admin-surface-header)] px-4",
-        className,
+        'flex h-14 items-center justify-between border-b border-[var(--admin-gray-200)] bg-[var(--admin-surface-header)] px-4',
+        className
       )}
     >
       <div className="flex items-center gap-3">
@@ -50,15 +50,9 @@ function HeaderBar({
           onClick={onToggleSidebar}
           aria-label="Toggle sidebar"
         >
-          <Menu
-            size={20}
-            strokeWidth={1.5}
-            className="text-[var(--admin-gray-600)]"
-          />
+          <Menu size={20} strokeWidth={1.5} className="text-[var(--admin-gray-600)]" />
         </Button>
-        {breadcrumbItems && breadcrumbItems.length > 0 && (
-          <Breadcrumb items={breadcrumbItems} />
-        )}
+        {breadcrumbItems && breadcrumbItems.length > 0 && <Breadcrumb items={breadcrumbItems} />}
       </div>
 
       <div className="flex items-center gap-2">
@@ -78,17 +72,8 @@ function HeaderBar({
           </div>
         )}
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-          aria-label="Notifications"
-        >
-          <Bell
-            size={20}
-            strokeWidth={1.5}
-            className="text-[var(--admin-gray-600)]"
-          />
+        <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+          <Bell size={20} strokeWidth={1.5} className="text-[var(--admin-gray-600)]" />
           {notificationCount > 0 && (
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[var(--admin-error-500)]" />
           )}
@@ -104,6 +89,6 @@ function HeaderBar({
   );
 }
 
-HeaderBar.displayName = "HeaderBar";
+HeaderBar.displayName = 'HeaderBar';
 
 export { HeaderBar };

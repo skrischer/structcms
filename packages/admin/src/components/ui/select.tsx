@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Check, ChevronDown } from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
+import { Check, ChevronDown } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
 
 export interface SelectOption {
   value: string;
@@ -39,45 +39,43 @@ function Select({
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
-    <div ref={ref} className={cn("relative", className)}>
+    <div ref={ref} className={cn('relative', className)}>
       <button
         type="button"
         disabled={disabled}
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
-          "flex items-center justify-between w-full h-9 rounded-md py-2 px-3 text-[14px] leading-[18px] text-[var(--admin-gray-700)] bg-[var(--admin-surface-card)] border transition-colors focus-visible:outline-none",
-          disabled && "opacity-60 cursor-not-allowed bg-[var(--admin-gray-50)]",
+          'flex items-center justify-between w-full h-9 rounded-md py-2 px-3 text-[14px] leading-[18px] text-[var(--admin-gray-700)] bg-[var(--admin-surface-card)] border transition-colors focus-visible:outline-none',
+          disabled && 'opacity-60 cursor-not-allowed bg-[var(--admin-gray-50)]',
           error
-            ? "border-[var(--admin-error-500)] ring-[3px] ring-[var(--admin-shadow-ring-error)]"
+            ? 'border-[var(--admin-error-500)] ring-[3px] ring-[var(--admin-shadow-ring-error)]'
             : open
-              ? "border-[var(--admin-primary-500)] ring-[3px] ring-[var(--admin-shadow-ring)]"
-              : "border-[var(--admin-gray-200)] focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:ring-[var(--admin-shadow-ring)]",
-          open && "rounded-b-none",
+              ? 'border-[var(--admin-primary-500)] ring-[3px] ring-[var(--admin-shadow-ring)]'
+              : 'border-[var(--admin-gray-200)] focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:ring-[var(--admin-shadow-ring)]',
+          open && 'rounded-b-none'
         )}
       >
         <span
           className={
-            selectedOption
-              ? "text-[var(--admin-gray-800)]"
-              : "text-[var(--admin-gray-400)]"
+            selectedOption ? 'text-[var(--admin-gray-800)]' : 'text-[var(--admin-gray-400)]'
           }
         >
-          {selectedOption ? selectedOption.label : (placeholder ?? "Select...")}
+          {selectedOption ? selectedOption.label : (placeholder ?? 'Select...')}
         </span>
         <ChevronDown
           size={16}
           className={cn(
-            "shrink-0 transition-transform",
+            'shrink-0 transition-transform',
             error
-              ? "text-[var(--admin-error-500)]"
+              ? 'text-[var(--admin-error-500)]'
               : open
-                ? "text-[var(--admin-primary-500)] rotate-180"
-                : "text-[var(--admin-gray-400)]",
+                ? 'text-[var(--admin-primary-500)] rotate-180'
+                : 'text-[var(--admin-gray-400)]'
           )}
           strokeWidth={1.5}
         />
@@ -92,9 +90,9 @@ function Select({
                 key={option.value}
                 type="button"
                 className={cn(
-                  "flex items-center gap-2 w-full py-2 px-3 text-[14px] leading-[18px] text-left transition-colors hover:bg-[var(--admin-gray-50)]",
+                  'flex items-center gap-2 w-full py-2 px-3 text-[14px] leading-[18px] text-left transition-colors hover:bg-[var(--admin-gray-50)]',
                   isSelected &&
-                    "bg-[var(--admin-primary-50)] text-[var(--admin-primary-600)] font-medium",
+                    'bg-[var(--admin-primary-50)] text-[var(--admin-primary-600)] font-medium'
                 )}
                 onClick={() => {
                   onChange?.(option.value);
@@ -102,15 +100,9 @@ function Select({
                 }}
               >
                 {isSelected && (
-                  <Check
-                    size={14}
-                    strokeWidth={2}
-                    className="text-[var(--admin-primary-600)]"
-                  />
+                  <Check size={14} strokeWidth={2} className="text-[var(--admin-primary-600)]" />
                 )}
-                <span
-                  className={isSelected ? "" : "text-[var(--admin-gray-800)]"}
-                >
+                <span className={isSelected ? '' : 'text-[var(--admin-gray-800)]'}>
                   {option.label}
                 </span>
               </button>
@@ -122,6 +114,6 @@ function Select({
   );
 }
 
-Select.displayName = "Select";
+Select.displayName = 'Select';
 
 export { Select };

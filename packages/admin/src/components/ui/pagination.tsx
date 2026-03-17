@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { Button } from "./button";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { Button } from './button';
 
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  variant?: "standard" | "compact";
+  variant?: 'standard' | 'compact';
   itemsPerPage?: number;
   totalItems?: number;
   onItemsPerPageChange?: (count: number) => void;
@@ -19,33 +19,33 @@ export interface PaginationProps {
 
 function getPageNumbers(
   currentPage: number,
-  totalPages: number,
-): (number | "ellipsis-start" | "ellipsis-end")[] {
+  totalPages: number
+): (number | 'ellipsis-start' | 'ellipsis-end')[] {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
-  const pages: (number | "ellipsis-start" | "ellipsis-end")[] = [1];
+  const pages: (number | 'ellipsis-start' | 'ellipsis-end')[] = [1];
 
   if (currentPage <= 3) {
-    pages.push(2, 3, 4, 5, "ellipsis-end", totalPages);
+    pages.push(2, 3, 4, 5, 'ellipsis-end', totalPages);
   } else if (currentPage >= totalPages - 2) {
     pages.push(
-      "ellipsis-start",
+      'ellipsis-start',
       totalPages - 4,
       totalPages - 3,
       totalPages - 2,
       totalPages - 1,
-      totalPages,
+      totalPages
     );
   } else {
     pages.push(
-      "ellipsis-start",
+      'ellipsis-start',
       currentPage - 1,
       currentPage,
       currentPage + 1,
-      "ellipsis-end",
-      totalPages,
+      'ellipsis-end',
+      totalPages
     );
   }
 
@@ -56,7 +56,7 @@ function Pagination({
   currentPage,
   totalPages,
   onPageChange,
-  variant = "standard",
+  variant = 'standard',
   itemsPerPage,
   totalItems,
   onItemsPerPageChange,
@@ -68,12 +68,10 @@ function Pagination({
 
   const showItemsInfo = itemsPerPage != null && totalItems != null;
   const rangeStart = showItemsInfo ? (currentPage - 1) * itemsPerPage + 1 : 0;
-  const rangeEnd = showItemsInfo
-    ? Math.min(currentPage * itemsPerPage, totalItems)
-    : 0;
+  const rangeEnd = showItemsInfo ? Math.min(currentPage * itemsPerPage, totalItems) : 0;
 
   return (
-    <div className={cn("flex items-center justify-between gap-4", className)}>
+    <div className={cn('flex items-center justify-between gap-4', className)}>
       {showItemsInfo && (
         <div className="flex items-center gap-2 text-[13px] text-[var(--admin-gray-500)]">
           <span>Rows per page</span>
@@ -106,9 +104,9 @@ function Pagination({
           <ChevronLeft size={16} strokeWidth={1.5} />
         </Button>
 
-        {variant === "standard" ? (
+        {variant === 'standard' ? (
           getPageNumbers(currentPage, totalPages).map((page) => {
-            if (page === "ellipsis-start" || page === "ellipsis-end") {
+            if (page === 'ellipsis-start' || page === 'ellipsis-end') {
               return (
                 <span
                   key={page}
@@ -124,12 +122,12 @@ function Pagination({
             return (
               <Button
                 key={page}
-                variant={isActive ? "default" : "secondary"}
+                variant={isActive ? 'default' : 'secondary'}
                 size="sm"
                 className="w-8 px-0 shrink-0"
                 onClick={() => onPageChange(page)}
                 aria-label={`Page ${page}`}
-                aria-current={isActive ? "page" : undefined}
+                aria-current={isActive ? 'page' : undefined}
               >
                 {page}
               </Button>
@@ -156,6 +154,6 @@ function Pagination({
   );
 }
 
-Pagination.displayName = "Pagination";
+Pagination.displayName = 'Pagination';
 
 export { Pagination };

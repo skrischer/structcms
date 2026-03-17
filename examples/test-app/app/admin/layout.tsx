@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { registry } from "@/lib/registry";
+import { registry } from '@/lib/registry';
 import {
   AdminProvider,
   AuthProvider,
@@ -9,60 +9,59 @@ import {
   Sidebar,
   type SidebarItem,
   useAuth,
-} from "@structcms/admin";
-import type { BreadcrumbItem } from "@structcms/admin";
-import { FileText, Image, LayoutDashboard, Navigation2 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+} from '@structcms/admin';
+import type { BreadcrumbItem } from '@structcms/admin';
+import { FileText, Image, LayoutDashboard, Navigation2 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 const navItems: SidebarItem[] = [
   {
-    label: "Dashboard",
-    path: "/",
+    label: 'Dashboard',
+    path: '/',
     icon: <LayoutDashboard size={20} strokeWidth={1.5} />,
   },
   {
-    label: "Pages",
-    path: "/pages",
+    label: 'Pages',
+    path: '/pages',
     icon: <FileText size={20} strokeWidth={1.5} />,
   },
   {
-    label: "Media",
-    path: "/media",
+    label: 'Media',
+    path: '/media',
     icon: <Image size={20} strokeWidth={1.5} />,
   },
   {
-    label: "Navigation",
-    path: "/navigation",
+    label: 'Navigation',
+    path: '/navigation',
     icon: <Navigation2 size={20} strokeWidth={1.5} />,
   },
 ];
 
 const pathLabels: Record<string, string> = {
-  pages: "Pages",
-  media: "Media",
-  navigation: "Navigation",
+  pages: 'Pages',
+  media: 'Media',
+  navigation: 'Navigation',
 };
 
 function buildBreadcrumbs(pathname: string): BreadcrumbItem[] {
   const segments = pathname
-    .replace(/^\/admin\/?/, "")
-    .split("/")
+    .replace(/^\/admin\/?/, '')
+    .split('/')
     .filter(Boolean);
 
   if (segments.length === 0) {
-    return [{ label: "Dashboard" }];
+    return [{ label: 'Dashboard' }];
   }
 
-  const items: BreadcrumbItem[] = [{ label: "Dashboard", href: "/admin" }];
+  const items: BreadcrumbItem[] = [{ label: 'Dashboard', href: '/admin' }];
 
-  let currentPath = "/admin";
+  let currentPath = '/admin';
   for (let i = 0; i < segments.length; i++) {
-    const segment = segments[i] ?? "";
+    const segment = segments[i] ?? '';
     currentPath += `/${segment}`;
     const isLast = i === segments.length - 1;
-    const label =
-      pathLabels[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
+    const label = pathLabels[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
 
     items.push({
       label,
@@ -73,7 +72,7 @@ function buildBreadcrumbs(pathname: string): BreadcrumbItem[] {
   return items;
 }
 
-const isAuthDisabled = process.env.NEXT_PUBLIC_DISABLE_AUTH === "true";
+const isAuthDisabled = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
 
 function useAuthSafe() {
   try {
@@ -84,10 +83,10 @@ function useAuthSafe() {
 }
 
 function deriveInitials(email: string): string {
-  const name = email.split("@")[0] ?? "";
+  const name = email.split('@')[0] ?? '';
   const parts = name.split(/[._-]/);
   if (parts.length >= 2) {
-    return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
+    return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase();
   }
   return name.slice(0, 2).toUpperCase();
 }
@@ -99,12 +98,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const currentPath = pathname.replace(/^\/admin/, "") || "/";
+  const currentPath = pathname.replace(/^\/admin/, '') || '/';
 
   const breadcrumbItems = useMemo(() => buildBreadcrumbs(pathname), [pathname]);
 
   const handleNavigate = (path: string) => {
-    router.push(`/admin${path === "/" ? "" : path}`);
+    router.push(`/admin${path === '/' ? '' : path}`);
     setSidebarOpen(false);
   };
 
@@ -112,9 +111,9 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const userName = auth?.user?.metadata?.name as string | undefined;
   const userInitials = userName
     ? userName
-        .split(" ")
+        .split(' ')
         .map((n) => n[0])
-        .join("")
+        .join('')
         .slice(0, 2)
         .toUpperCase()
     : userEmail
@@ -129,7 +128,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
           onKeyDown={(e) => {
-            if (e.key === "Escape") setSidebarOpen(false);
+            if (e.key === 'Escape') setSidebarOpen(false);
           }}
         />
       )}
@@ -144,12 +143,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         userInitials={userInitials}
         onLogout={() => {
           auth?.signOut();
-          router.push("/admin/login");
+          router.push('/admin/login');
         }}
         className={[
-          "fixed md:relative z-50 transition-transform duration-200",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-        ].join(" ")}
+          'fixed md:relative z-50 transition-transform duration-200',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+        ].join(' ')}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -159,9 +158,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           notificationCount={0}
           onToggleSidebar={() => setSidebarOpen((o) => !o)}
         />
-        <main className="flex-1 overflow-auto p-10 bg-[#F8FAFC]">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto p-10 bg-[#F8FAFC]">{children}</main>
       </div>
     </div>
   );
@@ -176,11 +173,11 @@ export default function AdminRootLayout({
   const pathname = usePathname();
 
   // Don't protect the login page
-  const isLoginPage = pathname === "/admin/login";
+  const isLoginPage = pathname === '/admin/login';
 
   // If auth is disabled and user tries to access login, redirect to dashboard
   if (isAuthDisabled && isLoginPage) {
-    router.push("/admin");
+    router.push('/admin');
     return <div>Redirecting...</div>;
   }
 
@@ -203,12 +200,10 @@ export default function AdminRootLayout({
           fallback={
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
               <div className="text-center">
-                <p className="text-gray-600">
-                  Please sign in to access this page.
-                </p>
+                <p className="text-gray-600">Please sign in to access this page.</p>
                 <button
                   type="button"
-                  onClick={() => router.push("/admin/login")}
+                  onClick={() => router.push('/admin/login')}
                   className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                   Go to Sign In

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Filter, Pencil, Plus, Search, Trash2 } from "lucide-react";
-import * as React from "react";
-import { useAdmin } from "../../hooks/use-admin";
-import { useApiClient } from "../../hooks/use-api-client";
-import { cn } from "../../lib/utils";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
-import { Pagination } from "../ui/pagination";
-import { Skeleton } from "../ui/skeleton";
+import { Filter, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import * as React from 'react';
+import { useAdmin } from '../../hooks/use-admin';
+import { useApiClient } from '../../hooks/use-api-client';
+import { cn } from '../../lib/utils';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Checkbox } from '../ui/checkbox';
+import { Pagination } from '../ui/pagination';
+import { Skeleton } from '../ui/skeleton';
 
 export interface PageSummary {
   id: string;
@@ -29,17 +29,17 @@ export interface PageListProps {
   className?: string;
 }
 
-type SortField = "title" | "updatedAt";
-type SortDirection = "asc" | "desc";
+type SortField = 'title' | 'updatedAt';
+type SortDirection = 'asc' | 'desc';
 
 const ITEMS_PER_PAGE_DEFAULT = 10;
 
 function formatTimestamp(dateString: string): string {
   try {
     return new Date(dateString).toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   } catch {
     return dateString;
@@ -53,22 +53,18 @@ function getUpdatedAt(page: PageSummary): string | undefined {
 function sortPages(
   pages: PageSummary[],
   field: SortField,
-  direction: SortDirection,
+  direction: SortDirection
 ): PageSummary[] {
   return [...pages].sort((a, b) => {
     let cmp = 0;
-    if (field === "title") {
+    if (field === 'title') {
       cmp = a.title.localeCompare(b.title);
     } else {
-      const dateA = getUpdatedAt(a)
-        ? new Date(getUpdatedAt(a) as string).getTime()
-        : 0;
-      const dateB = getUpdatedAt(b)
-        ? new Date(getUpdatedAt(b) as string).getTime()
-        : 0;
+      const dateA = getUpdatedAt(a) ? new Date(getUpdatedAt(a) as string).getTime() : 0;
+      const dateB = getUpdatedAt(b) ? new Date(getUpdatedAt(b) as string).getTime() : 0;
       cmp = dateA - dateB;
     }
-    return direction === "asc" ? cmp : -cmp;
+    return direction === 'asc' ? cmp : -cmp;
   });
 }
 
@@ -111,7 +107,7 @@ function SortIcon({
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d={direction === "asc" ? "m7 9 5-5 5 5" : "m7 15 5 5 5-5"} />
+      <path d={direction === 'asc' ? 'm7 9 5-5 5 5' : 'm7 15 5 5 5-5'} />
     </svg>
   );
 }
@@ -122,16 +118,13 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
   const [pages, setPages] = React.useState<PageSummary[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [search, setSearch] = React.useState("");
-  const [pageTypeFilter, setPageTypeFilter] = React.useState("");
-  const [sortField, setSortField] = React.useState<SortField>("updatedAt");
-  const [sortDirection, setSortDirection] =
-    React.useState<SortDirection>("desc");
+  const [search, setSearch] = React.useState('');
+  const [pageTypeFilter, setPageTypeFilter] = React.useState('');
+  const [sortField, setSortField] = React.useState<SortField>('updatedAt');
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>('desc');
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [itemsPerPage, setItemsPerPage] = React.useState(
-    ITEMS_PER_PAGE_DEFAULT,
-  );
+  const [itemsPerPage, setItemsPerPage] = React.useState(ITEMS_PER_PAGE_DEFAULT);
 
   const pageTypes = registry.getAllPageTypes();
 
@@ -142,7 +135,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
       setLoading(true);
       setError(null);
 
-      const result = await api.get<PageSummary[]>("/pages");
+      const result = await api.get<PageSummary[]>('/pages');
 
       if (cancelled) return;
 
@@ -171,7 +164,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
       result = result.filter(
         (page) =>
           page.title.toLowerCase().includes(lowerSearch) ||
-          page.slug.toLowerCase().includes(lowerSearch),
+          page.slug.toLowerCase().includes(lowerSearch)
       );
     }
 
@@ -184,20 +177,15 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
 
   const sortedPages = React.useMemo(
     () => sortPages(filteredPages, sortField, sortDirection),
-    [filteredPages, sortField, sortDirection],
+    [filteredPages, sortField, sortDirection]
   );
 
   const totalPages = Math.max(1, Math.ceil(sortedPages.length / itemsPerPage));
   const safePage = Math.min(currentPage, totalPages);
-  const paginatedPages = sortedPages.slice(
-    (safePage - 1) * itemsPerPage,
-    safePage * itemsPerPage,
-  );
+  const paginatedPages = sortedPages.slice((safePage - 1) * itemsPerPage, safePage * itemsPerPage);
 
-  const allSelected =
-    paginatedPages.length > 0 && selectedIds.size === paginatedPages.length;
-  const someSelected =
-    selectedIds.size > 0 && selectedIds.size < paginatedPages.length;
+  const allSelected = paginatedPages.length > 0 && selectedIds.size === paginatedPages.length;
+  const someSelected = selectedIds.size > 0 && selectedIds.size < paginatedPages.length;
 
   const handleToggleAll = React.useCallback(() => {
     if (allSelected) {
@@ -222,13 +210,13 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
   const handleSort = React.useCallback(
     (field: SortField) => {
       if (field === sortField) {
-        setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+        setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
       } else {
         setSortField(field);
-        setSortDirection(field === "title" ? "asc" : "desc");
+        setSortDirection(field === 'title' ? 'asc' : 'desc');
       }
     },
-    [sortField],
+    [sortField]
   );
 
   const handlePageChange = React.useCallback((page: number) => {
@@ -250,10 +238,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
 
   return (
     <div
-      className={cn(
-        "max-w-[1100px] mx-auto w-full flex flex-col gap-6",
-        className,
-      )}
+      className={cn('max-w-[1100px] mx-auto w-full flex flex-col gap-6', className)}
       data-testid="page-list"
     >
       {/* Page Header */}
@@ -304,11 +289,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
               </select>
             </div>
           )}
-          <Button
-            type="button"
-            onClick={onCreatePage}
-            data-testid="create-page"
-          >
+          <Button type="button" onClick={onCreatePage} data-testid="create-page">
             <Plus size={16} strokeWidth={2} />
             New Page
           </Button>
@@ -327,10 +308,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
 
       {/* Error */}
       {error && (
-        <p
-          className="text-sm text-[var(--admin-error-700)]"
-          data-testid="error"
-        >
+        <p className="text-sm text-[var(--admin-error-700)]" data-testid="error">
           {error}
         </p>
       )}
@@ -342,9 +320,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
           data-testid="empty-state"
         >
           <p className="text-[14px] font-medium text-[var(--admin-gray-800)]">
-            {pages.length === 0
-              ? "No pages found"
-              : "No pages match your search."}
+            {pages.length === 0 ? 'No pages found' : 'No pages match your search.'}
           </p>
           {pages.length === 0 && (
             <p className="text-[14px] text-[var(--admin-gray-500)] mt-1">
@@ -365,7 +341,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
         <>
           <div
             className="rounded-[var(--admin-radius-lg)] border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] overflow-hidden"
-            style={{ boxShadow: "var(--admin-shadow-xs)" }}
+            style={{ boxShadow: 'var(--admin-shadow-xs)' }}
             data-testid="page-table"
           >
             <table className="w-full">
@@ -381,15 +357,11 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                   <th className="px-4 py-3 text-left">
                     <button
                       type="button"
-                      onClick={() => handleSort("title")}
+                      onClick={() => handleSort('title')}
                       className="inline-flex items-center gap-1 text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)] hover:text-[var(--admin-gray-800)] transition-colors"
                     >
                       Title
-                      <SortIcon
-                        field="title"
-                        activeField={sortField}
-                        direction={sortDirection}
-                      />
+                      <SortIcon field="title" activeField={sortField} direction={sortDirection} />
                     </button>
                   </th>
                   <th className="w-[120px] px-4 py-3 text-left text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)]">
@@ -401,7 +373,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                   <th className="w-[140px] px-4 py-3 text-left">
                     <button
                       type="button"
-                      onClick={() => handleSort("updatedAt")}
+                      onClick={() => handleSort('updatedAt')}
                       className="inline-flex items-center gap-1 text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)] hover:text-[var(--admin-gray-800)] transition-colors"
                     >
                       Last Modified
@@ -422,9 +394,8 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                   <tr
                     key={page.id}
                     className={cn(
-                      "border-b border-[var(--admin-border-subtle)] last:border-b-0 hover:bg-[var(--admin-gray-50)]",
-                      selectedIds.has(page.id) &&
-                        "bg-[var(--admin-primary-50)]",
+                      'border-b border-[var(--admin-border-subtle)] last:border-b-0 hover:bg-[var(--admin-gray-50)]',
+                      selectedIds.has(page.id) && 'bg-[var(--admin-primary-50)]'
                     )}
                     data-testid={`page-row-${page.id}`}
                   >
@@ -446,9 +417,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                       {page.slug}
                     </td>
                     <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)]">
-                      {getUpdatedAt(page)
-                        ? formatTimestamp(getUpdatedAt(page) as string)
-                        : ""}
+                      {getUpdatedAt(page) ? formatTimestamp(getUpdatedAt(page) as string) : ''}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
@@ -464,11 +433,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                             className="text-[var(--admin-gray-500)]"
                           />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Delete ${page.title}`}
-                        >
+                        <Button variant="ghost" size="icon" aria-label={`Delete ${page.title}`}>
                           <Trash2
                             size={16}
                             strokeWidth={1.5}
@@ -499,6 +464,6 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
   );
 }
 
-PageList.displayName = "PageList";
+PageList.displayName = 'PageList';
 
 export { PageList };
