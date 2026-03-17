@@ -16,7 +16,7 @@ describe('NavigationEditor', () => {
     render(<NavigationEditor items={[]} onSave={() => {}} />);
 
     expect(screen.getByTestId('empty-state')).toBeInTheDocument();
-    expect(screen.getByText(/No navigation items yet/)).toBeInTheDocument();
+    expect(screen.getByText('No navigation items')).toBeInTheDocument();
   });
 
   it('renders Add Item button', () => {
@@ -27,7 +27,8 @@ describe('NavigationEditor', () => {
   });
 
   it('renders Save Navigation button', () => {
-    render(<NavigationEditor items={[]} onSave={() => {}} />);
+    const items: NavigationItem[] = [{ label: 'Home', href: '/' }];
+    render(<NavigationEditor items={items} onSave={() => {}} />);
 
     expect(screen.getByTestId('nav-save')).toBeInTheDocument();
     expect(screen.getByText('Save Navigation')).toBeInTheDocument();
