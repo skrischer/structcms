@@ -8,6 +8,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
@@ -19,14 +20,8 @@
     },
     "./styles.css": "./dist/styles/admin.css"
   },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "sideEffects": [
-    "./dist/styles/*.css"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": ["./dist/styles/*.css"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "../../../packages/admin/src/styles/admin.css";
-@source "../node_modules/@structcms/admin/dist/**/*.js";
+@source "../../../packages/admin/src/**/*.{ts,tsx}";
 
 @theme {
   --color-background: #f3f6ff;
