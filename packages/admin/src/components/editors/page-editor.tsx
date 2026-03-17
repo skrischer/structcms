@@ -1,9 +1,11 @@
 'use client';
 
 import type { SectionData } from '@structcms/core';
+import { ChevronDown, ChevronUp, Plus, Save, X } from 'lucide-react';
 import * as React from 'react';
 import { useAdmin } from '../../hooks/use-admin';
 import { cn } from '../../lib/utils';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { SectionEditor } from './section-editor';
 
@@ -107,9 +109,14 @@ function PageEditor({
   return (
     <div className={cn('space-y-6', className)} data-testid="page-editor">
       {sections.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No sections yet. Add a section to get started.
-        </p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="rounded-full bg-[var(--admin-gray-100)] p-3 mb-3">
+            <Plus size={20} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />
+          </div>
+          <p className="text-[14px] text-[var(--admin-gray-500)]">
+            No sections yet. Add a section to get started.
+          </p>
+        </div>
       ) : (
         <div className="space-y-4">
           {sectionsWithKeys.map(({ key, section }, index) => {
@@ -119,11 +126,16 @@ function PageEditor({
             return (
               <div
                 key={key}
-                className="rounded-md border border-input bg-background p-4"
+                className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)]"
                 data-testid={`page-section-${index}`}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold capitalize">{sectionLabel}</h3>
+                <div className="flex items-center justify-between border-b border-[var(--admin-border-default)] px-5 py-3">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-[16px] font-semibold leading-[1.3] text-[var(--admin-gray-900)] capitalize">
+                      {sectionLabel}
+                    </h3>
+                    <Badge variant="primary">{section.type}</Badge>
+                  </div>
                   <div className="flex gap-1">
                     <Button
                       type="button"
@@ -134,7 +146,7 @@ function PageEditor({
                       title="Move up"
                       data-testid={`section-move-up-${index}`}
                     >
-                      ↑
+                      <ChevronUp size={16} strokeWidth={1.5} />
                     </Button>
                     <Button
                       type="button"
@@ -145,7 +157,7 @@ function PageEditor({
                       title="Move down"
                       data-testid={`section-move-down-${index}`}
                     >
-                      ↓
+                      <ChevronDown size={16} strokeWidth={1.5} />
                     </Button>
                     <Button
                       type="button"
@@ -155,27 +167,29 @@ function PageEditor({
                       title="Remove section"
                       data-testid={`section-remove-${index}`}
                     >
-                      ✕
+                      <X size={16} strokeWidth={1.5} />
                     </Button>
                   </div>
                 </div>
-                <SectionEditor
-                  sectionType={section.type}
-                  data={section.data}
-                  onChange={(data) => handleSectionChange(index, data)}
-                  submitLabel="Update Section"
-                />
+                <div className="p-5">
+                  <SectionEditor
+                    sectionType={section.type}
+                    data={section.data}
+                    onChange={(data) => handleSectionChange(index, data)}
+                    submitLabel="Update Section"
+                  />
+                </div>
               </div>
             );
           })}
         </div>
       )}
 
-      <div className="flex items-center gap-2 border-t border-input pt-4">
+      <div className="flex items-center gap-2 border-t border-[var(--admin-border-default)] pt-4">
         <select
           value={selectedSectionType}
           onChange={(e) => setSelectedSectionType(e.target.value)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="flex h-9 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] px-3 py-2 text-[14px] text-[var(--admin-gray-700)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:ring-[var(--admin-shadow-ring)]"
           data-testid="section-type-select"
         >
           {allowedSections.map((type) => {
@@ -193,12 +207,14 @@ function PageEditor({
           onClick={handleAddSection}
           data-testid="add-section"
         >
+          <Plus size={16} strokeWidth={2} />
           Add Section
         </Button>
       </div>
 
-      <div className="border-t border-input pt-4">
+      <div className="border-t border-[var(--admin-border-default)] bg-[var(--admin-gray-50)] -mx-6 px-6 py-4 rounded-b-lg">
         <Button type="button" onClick={handleSave} data-testid="save-page">
+          <Save size={16} strokeWidth={2} />
           Save Page
         </Button>
       </div>

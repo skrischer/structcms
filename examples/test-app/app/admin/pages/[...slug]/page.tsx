@@ -1,6 +1,16 @@
 'use client';
 
-import { Button, Label, PageEditor, Skeleton, useAdmin, useApiClient } from '@structcms/admin';
+import {
+  Badge,
+  Breadcrumb,
+  Button,
+  Input,
+  Label,
+  PageEditor,
+  Skeleton,
+  useAdmin,
+  useApiClient,
+} from '@structcms/admin';
 import type { SectionData } from '@structcms/core';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -74,42 +84,67 @@ export default function EditPagePage() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-10 w-full max-w-md" />
-        <Skeleton className="h-64 w-full" />
+      <div className="max-w-[1100px] mx-auto space-y-6 py-6">
+        <Skeleton className="h-4 w-48" shape="text" />
+        <Skeleton className="h-8 w-64" shape="text" />
+        <div className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)] p-5 space-y-4">
+          <Skeleton className="h-4 w-24" shape="text" />
+          <Skeleton className="h-9 w-full max-w-md" shape="rect" />
+          <Skeleton className="h-4 w-24" shape="text" />
+          <Skeleton className="h-9 w-48" shape="rect" />
+        </div>
+        <Skeleton className="h-64 w-full" shape="rect" />
       </div>
     );
   }
 
   if (error || !page) {
-    return <div className="text-red-600">{error || 'Page not found'}</div>;
+    return (
+      <div className="max-w-[1100px] mx-auto py-6">
+        <p className="text-[14px] text-[var(--admin-error-700)]">{error || 'Page not found'}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Edit Page: {page.title}</h1>
+    <div className="max-w-[1100px] mx-auto space-y-6 py-6">
+      <Breadcrumb items={[{ label: 'Pages', href: '/admin/pages' }, { label: page.title }]} />
 
-      <div className="space-y-4 max-w-md">
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <input
-            id="title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-          />
+      <div className="flex items-center gap-3">
+        <h1 className="text-[24px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--admin-gray-900)]">
+          Edit Page
+        </h1>
+        <Badge variant="default">{page.pageType}</Badge>
+      </div>
+
+      <div className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)]">
+        <div className="border-b border-[var(--admin-border-default)] px-5 py-3">
+          <h2 className="text-[16px] font-semibold leading-[1.3] text-[var(--admin-gray-900)]">
+            Page Details
+          </h2>
         </div>
+        <div className="p-5 space-y-4 max-w-md">
+          <div className="space-y-1.5">
+            <Label htmlFor="title" required>
+              Title
+            </Label>
+            <Input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
 
-        <div>
-          <Label>Page Type</Label>
-          <p className="text-gray-600">{page.pageType}</p>
-        </div>
+          <div className="space-y-1.5">
+            <Label>Page Type</Label>
+            <p className="text-[14px] text-[var(--admin-gray-600)]">{page.pageType}</p>
+          </div>
 
-        <div>
-          <Label>Slug</Label>
-          <p className="text-gray-600">{page.slug}</p>
+          <div className="space-y-1.5">
+            <Label>Slug</Label>
+            <p className="text-[14px] text-[var(--admin-gray-600)]">{page.slug}</p>
+          </div>
         </div>
       </div>
 
