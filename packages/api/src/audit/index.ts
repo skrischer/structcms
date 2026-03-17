@@ -1,2 +1,2 @@
-export { createAuditLogger, withAuditLog } from './logger.js';
-export type { AuditEntry } from './logger.js';
+export { createAuditLogger, withAuditLog } from './logger';
+export type { AuditEntry } from './logger';
