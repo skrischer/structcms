@@ -1,14 +1,9 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  type FieldGroup,
-  type FieldMeta,
-  type FieldType,
-  getFieldMeta,
-} from "@structcms/core";
-import { ArrowDown, ArrowUp, X } from "lucide-react";
-import * as React from "react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type FieldGroup, type FieldMeta, type FieldType, getFieldMeta } from '@structcms/core';
+import { ArrowDown, ArrowUp, X } from 'lucide-react';
+import * as React from 'react';
 import {
   type Control,
   Controller,
@@ -18,33 +13,33 @@ import {
   get,
   useFieldArray,
   useForm,
-} from "react-hook-form";
-import type { z } from "zod";
-import { cn } from "../../lib/utils";
-import { ArrayField } from "../fields/array-field";
-import { BooleanField } from "../fields/boolean-field";
-import { FilePicker } from "../fields/file-picker";
-import { ImagePicker } from "../fields/image-picker";
-import { ObjectField } from "../fields/object-field";
-import { RichTextEditor } from "../fields/rich-text-editor";
-import { SelectField } from "../fields/select-field";
-import { StringField } from "../fields/string-field";
-import { TextField } from "../fields/text-field";
-import { UrlField } from "../fields/url-field";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from 'react-hook-form';
+import type { z } from 'zod';
+import { cn } from '../../lib/utils';
+import { ArrayField } from '../fields/array-field';
+import { BooleanField } from '../fields/boolean-field';
+import { FilePicker } from '../fields/file-picker';
+import { ImagePicker } from '../fields/image-picker';
+import { ObjectField } from '../fields/object-field';
+import { RichTextEditor } from '../fields/rich-text-editor';
+import { SelectField } from '../fields/select-field';
+import { StringField } from '../fields/string-field';
+import { TextField } from '../fields/text-field';
+import { UrlField } from '../fields/url-field';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 /**
  * Unwraps Zod wrappers (optional, default, nullable, etc.) to find the inner schema
  */
 function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
-  if ("unwrap" in schema && typeof schema.unwrap === "function") {
+  if ('unwrap' in schema && typeof schema.unwrap === 'function') {
     return unwrapSchema(schema.unwrap() as z.ZodTypeAny);
   }
-  if ("_def" in schema) {
+  if ('_def' in schema) {
     const def = schema._def as Record<string, unknown>;
-    if ("innerType" in def && def.innerType) {
+    if ('innerType' in def && def.innerType) {
       return unwrapSchema(def.innerType as z.ZodTypeAny);
     }
   }
@@ -79,8 +74,8 @@ function resolveFieldMeta(schema: z.ZodTypeAny): FieldMeta | null {
  */
 function fieldNameToLabel(name: string): string {
   return name
-    .replace(/([A-Z])/g, " $1")
-    .replace(/[_-]/g, " ")
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[_-]/g, ' ')
     .replace(/^\w/, (c) => c.toUpperCase())
     .trim();
 }
@@ -88,23 +83,21 @@ function fieldNameToLabel(name: string): string {
 /**
  * Creates a default object from an inner shape, using field-type-aware defaults
  */
-function createDefaultObject(
-  innerShape: Record<string, z.ZodTypeAny>,
-): Record<string, unknown> {
+function createDefaultObject(innerShape: Record<string, z.ZodTypeAny>): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
   for (const [key, schema] of Object.entries(innerShape)) {
     const fieldType = resolveFieldType(schema);
     switch (fieldType) {
-      case "boolean":
+      case 'boolean':
         obj[key] = false;
         break;
-      case "select": {
+      case 'select': {
         const meta = resolveFieldMeta(schema);
-        obj[key] = meta?.options?.[0] ?? "";
+        obj[key] = meta?.options?.[0] ?? '';
         break;
       }
       default:
-        obj[key] = "";
+        obj[key] = '';
     }
   }
   return obj;
@@ -117,10 +110,7 @@ interface ObjectArrayFieldProps {
   required: boolean;
   error: string | undefined;
   innerShape: Record<string, z.ZodTypeAny>;
-  renderField: (
-    fieldName: string,
-    fieldSchema: z.ZodTypeAny,
-  ) => React.ReactNode;
+  renderField: (fieldName: string, fieldSchema: z.ZodTypeAny) => React.ReactNode;
   className?: string;
   id?: string;
 }
@@ -141,7 +131,7 @@ function ObjectArrayFieldInner(
     className,
     id,
   }: ObjectArrayFieldProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {
     fields: arrayFields,
@@ -157,27 +147,19 @@ function ObjectArrayFieldInner(
   const inputId = id || name || generatedId;
 
   return (
-    <div
-      ref={ref}
-      className={cn("space-y-2", className)}
-      data-testid="array-field"
-    >
+    <div ref={ref} className={cn('space-y-2', className)} data-testid="array-field">
       <Label htmlFor={inputId}>
         {label}
-        {required && (
-          <span className="text-[var(--admin-error-500)] ml-1">*</span>
-        )}
+        {required && <span className="text-[var(--admin-error-500)] ml-1">*</span>}
       </Label>
       <div
         className={cn(
-          "rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-4",
-          error && "border-[var(--admin-error-500)]",
+          'rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-4',
+          error && 'border-[var(--admin-error-500)]'
         )}
       >
         {arrayFields.length === 0 ? (
-          <p className="text-sm text-[var(--admin-gray-500)] text-center py-4">
-            No items yet
-          </p>
+          <p className="text-sm text-[var(--admin-gray-500)] text-center py-4">No items yet</p>
         ) : (
           <div className="space-y-3">
             {arrayFields.map((field, index) => (
@@ -187,10 +169,7 @@ function ObjectArrayFieldInner(
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
-                  <div
-                    className="space-y-3"
-                    data-testid={`${name}-object-item-${index}`}
-                  >
+                  <div className="space-y-3" data-testid={`${name}-object-item-${index}`}>
                     {Object.entries(innerShape).map(([subName, subSchema]) => {
                       const subFieldName = `${name}.${index}.${subName}`;
                       return renderField(subFieldName, subSchema);
@@ -216,8 +195,7 @@ function ObjectArrayFieldInner(
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      if (index < arrayFields.length - 1)
-                        swap(index, index + 1);
+                      if (index < arrayFields.length - 1) swap(index, index + 1);
                     }}
                     disabled={index === arrayFields.length - 1}
                     title="Move down"
@@ -244,9 +222,7 @@ function ObjectArrayFieldInner(
           <Button
             type="button"
             variant="secondary"
-            onClick={() =>
-              append(createDefaultObject(innerShape) as FieldValues)
-            }
+            onClick={() => append(createDefaultObject(innerShape) as FieldValues)}
             id={inputId}
             data-testid="add-item"
           >
@@ -255,10 +231,7 @@ function ObjectArrayFieldInner(
         </div>
       </div>
       {error && (
-        <p
-          id={`${inputId}-error`}
-          className="text-sm text-[var(--admin-error-500)]"
-        >
+        <p id={`${inputId}-error`} className="text-sm text-[var(--admin-error-500)]">
           {error}
         </p>
       )}
@@ -302,7 +275,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
   onSubmit,
   onChange,
   defaultValues,
-  submitLabel = "Submit",
+  submitLabel = 'Submit',
   className,
   descriptions,
   groups,
@@ -338,21 +311,16 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
   /**
    * Extracts the item schema from a ZodArray
    */
-  const getArrayItemSchema = (
-    fieldSchema: z.ZodTypeAny,
-  ): z.ZodTypeAny | null => {
+  const getArrayItemSchema = (fieldSchema: z.ZodTypeAny): z.ZodTypeAny | null => {
     const unwrapped = unwrapSchema(fieldSchema);
     const def = unwrapped._def as Record<string, unknown>;
-    if ("type" in def && def.type) {
+    if ('type' in def && def.type) {
       return def.type as z.ZodTypeAny;
     }
     return null;
   };
 
-  const wrapWithDescription = (
-    fieldName: string,
-    element: React.ReactNode,
-  ): React.ReactNode => {
+  const wrapWithDescription = (fieldName: string, element: React.ReactNode): React.ReactNode => {
     const description = descriptions?.[fieldName];
     if (!description) return element;
     return (
@@ -371,27 +339,20 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
   const renderField = (fieldName: string, fieldSchema: z.ZodTypeAny) => {
     const fieldType = resolveFieldType(fieldSchema);
     const fieldMeta = resolveFieldMeta(fieldSchema);
-    const leafName = fieldName.includes(".")
-      ? (fieldName.split(".").pop() as string)
-      : fieldName;
+    const leafName = fieldName.includes('.') ? (fieldName.split('.').pop() as string) : fieldName;
     const label = fieldNameToLabel(leafName);
     const isRequired = !fieldSchema.isOptional();
     const errorMessage = getErrorMessage(fieldName);
 
     // Conditional visibility
     if (fieldMeta?.visibleWhen) {
-      const watchedValue =
-        watchedValues[
-          fieldMeta.visibleWhen.field as keyof typeof watchedValues
-        ];
-      const matches = fieldMeta.visibleWhen.values.some(
-        (v) => v === watchedValue,
-      );
+      const watchedValue = watchedValues[fieldMeta.visibleWhen.field as keyof typeof watchedValues];
+      const matches = fieldMeta.visibleWhen.values.some((v) => v === watchedValue);
       if (!matches) return null;
     }
 
     switch (fieldType) {
-      case "string":
+      case 'string':
         return (
           <StringField
             key={fieldName}
@@ -402,7 +363,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
-      case "text":
+      case 'text':
         return (
           <TextField
             key={fieldName}
@@ -413,7 +374,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
-      case "richtext": {
+      case 'richtext': {
         const meta = resolveFieldMeta(fieldSchema);
         return (
           <Controller
@@ -435,7 +396,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
         );
       }
 
-      case "image":
+      case 'image':
         return (
           <Controller
             key={fieldName}
@@ -454,7 +415,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
-      case "file":
+      case 'file':
         return (
           <Controller
             key={fieldName}
@@ -473,7 +434,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
-      case "url":
+      case 'url':
         return (
           <UrlField
             key={fieldName}
@@ -484,17 +445,15 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
-      case "array": {
+      case 'array': {
         const itemSchema = getArrayItemSchema(fieldSchema);
         const unwrappedItem = itemSchema ? unwrapSchema(itemSchema) : null;
-        const itemFieldType = unwrappedItem
-          ? resolveFieldType(unwrappedItem)
-          : null;
+        const itemFieldType = unwrappedItem ? resolveFieldType(unwrappedItem) : null;
 
-        if (itemFieldType === "object" && unwrappedItem) {
+        if (itemFieldType === 'object' && unwrappedItem) {
           // Array of objects — use ObjectArrayField with useFieldArray
           const innerShape =
-            "shape" in unwrappedItem
+            'shape' in unwrappedItem
               ? ((unwrappedItem as z.ZodObject<z.ZodRawShape>).shape as Record<
                   string,
                   z.ZodTypeAny
@@ -531,7 +490,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 value={(field.value as string[] | undefined) ?? []}
                 onChange={field.onChange}
                 name={field.name}
-                createDefaultItem={() => ""}
+                createDefaultItem={() => ''}
                 renderItem={(item, index, onItemChange) => (
                   <Input
                     value={item}
@@ -545,7 +504,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
         );
       }
 
-      case "boolean":
+      case 'boolean':
         return (
           <Controller
             key={fieldName}
@@ -564,7 +523,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           />
         );
 
-      case "select": {
+      case 'select': {
         const meta = resolveFieldMeta(fieldSchema);
         const options = meta?.options ?? [];
         return (
@@ -587,26 +546,18 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
         );
       }
 
-      case "object": {
+      case 'object': {
         const innerSchema = unwrapSchema(fieldSchema);
         const innerShape =
-          "shape" in innerSchema
-            ? ((innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<
-                string,
-                z.ZodTypeAny
-              >)
+          'shape' in innerSchema
+            ? ((innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<string, z.ZodTypeAny>)
             : null;
 
         return (
-          <ObjectField
-            key={fieldName}
-            label={label}
-            required={isRequired}
-            error={errorMessage}
-          >
+          <ObjectField key={fieldName} label={label} required={isRequired} error={errorMessage}>
             {innerShape
               ? Object.entries(innerShape).map(([subName, subSchema]) =>
-                  renderField(`${fieldName}.${subName}`, subSchema),
+                  renderField(`${fieldName}.${subName}`, subSchema)
                 )
               : null}
           </ObjectField>
@@ -626,10 +577,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
     }
   };
 
-  const renderFieldWithDescription = (
-    fieldName: string,
-    fieldSchema: z.ZodTypeAny,
-  ) => {
+  const renderFieldWithDescription = (fieldName: string, fieldSchema: z.ZodTypeAny) => {
     const rendered = renderField(fieldName, fieldSchema);
     if (!rendered) return null;
     return wrapWithDescription(fieldName, rendered);
@@ -638,14 +586,12 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
   const renderFields = () => {
     if (!groups || groups.length === 0) {
       return Object.entries(shape).map(([fieldName, fieldSchema]) =>
-        renderFieldWithDescription(fieldName, fieldSchema),
+        renderFieldWithDescription(fieldName, fieldSchema)
       );
     }
 
     const groupedFieldNames = new Set(groups.flatMap((g) => g.fields));
-    const ungroupedFields = Object.keys(shape).filter(
-      (name) => !groupedFieldNames.has(name),
-    );
+    const ungroupedFields = Object.keys(shape).filter((name) => !groupedFieldNames.has(name));
 
     return (
       <>
@@ -657,9 +603,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
           >
             <legend className="px-2 text-sm font-semibold">{group.name}</legend>
             {group.description && (
-              <p className="text-xs text-[var(--admin-gray-500)]">
-                {group.description}
-              </p>
+              <p className="text-xs text-[var(--admin-gray-500)]">{group.description}</p>
             )}
             {group.fields.map((fieldName) => {
               const fieldSchema = shape[fieldName];
@@ -680,7 +624,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={cn("space-y-4", className)}
+      className={cn('space-y-4', className)}
       data-testid="form-generator"
     >
       {renderFields()}
@@ -693,6 +637,6 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
   );
 }
 
-FormGenerator.displayName = "FormGenerator";
+FormGenerator.displayName = 'FormGenerator';
 
 export { FormGenerator, resolveFieldType, resolveFieldMeta, fieldNameToLabel };

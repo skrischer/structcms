@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { HeaderBar } from "./header-bar";
-import { Sidebar, type SidebarNavItem } from "./sidebar";
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { HeaderBar } from './header-bar';
+import { Sidebar, type SidebarNavItem } from './sidebar';
 
 export type { SidebarNavItem };
 
@@ -36,9 +36,9 @@ export interface AdminLayoutProps {
  */
 function AdminLayout({
   children,
-  title = "StructCMS",
+  title = 'StructCMS',
   navItems,
-  activePath = "/",
+  activePath = '/',
   onNavigate,
   userName,
   userInitials,
@@ -51,10 +51,7 @@ function AdminLayout({
 
   return (
     <div
-      className={cn(
-        "flex h-dvh overflow-hidden bg-[var(--admin-gray-50)]",
-        className,
-      )}
+      className={cn('flex h-dvh overflow-hidden bg-[var(--admin-gray-50)]', className)}
       data-testid="admin-layout"
       data-structcms-admin=""
     >
@@ -64,7 +61,7 @@ function AdminLayout({
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={() => setMobileSidebarOpen(false)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === "Escape") {
+            if (e.key === 'Enter' || e.key === 'Escape') {
               setMobileSidebarOpen(false);
             }
           }}
@@ -77,8 +74,8 @@ function AdminLayout({
       {/* Sidebar — fixed on mobile, relative on desktop */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 md:relative md:translate-x-0",
-          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
+          'fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 md:relative md:translate-x-0',
+          mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <Sidebar
@@ -114,6 +111,6 @@ function AdminLayout({
   );
 }
 
-AdminLayout.displayName = "AdminLayout";
+AdminLayout.displayName = 'AdminLayout';
 
 export { AdminLayout };
