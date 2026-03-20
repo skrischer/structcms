@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 import { Label } from '../ui/label';
+import { RadioGroup } from '../ui/radio-group';
 
 export interface SelectFieldProps {
   label: string;
@@ -36,31 +37,17 @@ function SelectField({
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
       {isRadio ? (
-        <div
-          role="radiogroup"
+        <RadioGroup
+          options={options.map((o) => ({ value: o, label: o }))}
+          value={value}
+          onChange={onChange}
+          name={name || inputId}
+          error={!!error}
           aria-label={label}
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : undefined}
-          className="flex flex-col gap-2"
-        >
-          {options.map((option) => {
-            const optionId = `${inputId}-${option}`;
-            return (
-              <label key={option} className="flex items-center gap-2 text-sm" htmlFor={optionId}>
-                <input
-                  type="radio"
-                  id={optionId}
-                  name={name || inputId}
-                  value={option}
-                  checked={value === option}
-                  onChange={() => onChange?.(option)}
-                  data-testid={`select-option-${option}`}
-                />
-                {option}
-              </label>
-            );
-          })}
-        </div>
+          testIdPrefix="select"
+        />
       ) : (
         <select
           id={inputId}

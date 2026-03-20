@@ -1,7 +1,7 @@
-"use client";
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { Badge } from "./badge";
+'use client';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { Badge } from './badge';
 
 export interface TagInputProps {
   value: string[];
@@ -12,15 +12,8 @@ export interface TagInputProps {
   className?: string;
 }
 
-function TagInput({
-  value,
-  onChange,
-  placeholder,
-  error,
-  disabled,
-  className,
-}: TagInputProps) {
-  const [inputValue, setInputValue] = React.useState("");
+function TagInput({ value, onChange, placeholder, error, disabled, className }: TagInputProps) {
+  const [inputValue, setInputValue] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   function addTag(raw: string) {
@@ -35,11 +28,11 @@ function TagInput({
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" || e.key === ",") {
+    if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
       addTag(inputValue);
-      setInputValue("");
-    } else if (e.key === "Backspace" && inputValue === "" && value.length > 0) {
+      setInputValue('');
+    } else if (e.key === 'Backspace' && inputValue === '' && value.length > 0) {
       const last = value[value.length - 1];
       if (last !== undefined) removeTag(last);
     }
@@ -47,12 +40,12 @@ function TagInput({
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
-    if (val.includes(",")) {
-      const parts = val.split(",");
+    if (val.includes(',')) {
+      const parts = val.split(',');
       for (const part of parts) {
         addTag(part);
       }
-      setInputValue("");
+      setInputValue('');
     } else {
       setInputValue(val);
     }
@@ -61,21 +54,18 @@ function TagInput({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-1.5 min-h-9 w-full rounded-md border bg-[var(--admin-surface-card)] px-2 py-1.5 transition-colors focus-within:outline-none",
+        'flex flex-wrap items-center gap-1.5 min-h-9 w-full rounded-md border bg-[var(--admin-surface-card)] px-2 py-1.5 transition-colors focus-within:outline-none',
         error
-          ? "border-[var(--admin-error-500)] ring-[3px] ring-[var(--admin-shadow-ring-error)]"
-          : "border-[var(--admin-gray-200)] focus-within:border-[var(--admin-primary-500)] focus-within:ring-[3px] focus-within:ring-[var(--admin-shadow-ring)]",
-        disabled && "cursor-not-allowed opacity-60 bg-[var(--admin-gray-50)]",
-        className,
+          ? 'border-[var(--admin-error-500)] ring-[3px] ring-[var(--admin-shadow-ring-error)]'
+          : 'border-[var(--admin-gray-200)] focus-within:border-[var(--admin-primary-500)] focus-within:ring-[3px] focus-within:ring-[var(--admin-shadow-ring)]',
+        disabled && 'cursor-not-allowed opacity-60 bg-[var(--admin-gray-50)]',
+        className
       )}
       data-testid="tag-input"
       role="group"
       onClick={() => !disabled && inputRef.current?.focus()}
       onKeyDown={(e) => {
-        if (
-          (e.key === "Enter" || e.key === " ") &&
-          e.target === e.currentTarget
-        ) {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
           e.preventDefault();
           if (!disabled) inputRef.current?.focus();
         }
@@ -105,6 +95,6 @@ function TagInput({
   );
 }
 
-TagInput.displayName = "TagInput";
+TagInput.displayName = 'TagInput';
 
 export { TagInput };

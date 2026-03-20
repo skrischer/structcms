@@ -15,6 +15,7 @@ import {
   Link,
   List,
   MoreHorizontal,
+  Paperclip,
   Pencil,
   Plus,
   RefreshCw,
@@ -23,6 +24,7 @@ import {
   Trash2,
   Type,
   Upload,
+  X,
 } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
@@ -36,9 +38,12 @@ import type { Column } from '../ui/data-table';
 import { Dialog } from '../ui/dialog';
 import { EmptyState } from '../ui/empty-state';
 import { ErrorAlert } from '../ui/error-alert';
+import { FieldGroup } from '../ui/field-group';
+import { FieldMessage } from '../ui/field-message';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Pagination } from '../ui/pagination';
+import { RadioGroup } from '../ui/radio-group';
 import { Select } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
 import { TagInput } from '../ui/tag-input';
@@ -161,10 +166,15 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [formLayout, setFormLayout] = React.useState('default');
+  const [formTheme, setFormTheme] = React.useState('light');
+  const [formTarget, setFormTarget] = React.useState('_self');
+  const [formShowCta, setFormShowCta] = React.useState(true);
+  const [formPublished, setFormPublished] = React.useState(true);
 
   return (
     <div
-      className={cn('max-w-[1200px] mx-auto w-full', className)}
+      className={cn('max-w-[1200px] mx-auto w-full flex flex-col gap-6', className)}
       data-testid="design-system-page"
     >
       <h1 className="text-[30px] font-bold text-[var(--admin-gray-900)] leading-[1.2] tracking-[-0.02em] mb-2">
@@ -956,50 +966,272 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
 
       {/* Form Layout mockup */}
       <SectionTitle>Form Layout</SectionTitle>
-      <SubSection title="Page Form">
-        <Card variant="default" className="max-w-lg">
-          <div className="flex flex-col gap-5">
+      <SubSection title="Full Section Editor">
+        <Card variant="default" className="max-w-2xl" padding="none">
+          {/* Header */}
+          <div className="px-5 py-5 border-b border-[var(--admin-gray-200)]">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-[16px] font-semibold text-[var(--admin-gray-900)]">
+                    Showcase Section
+                  </h3>
+                  <Badge variant="primary" size="sm">
+                    showcase
+                  </Badge>
+                </div>
+                <p className="text-[13px] text-[var(--admin-gray-500)]">
+                  Edit the showcase section for this page.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Group 1: Content */}
+          <FieldGroup label="Content" className="px-5 py-5">
             <div className="flex flex-col gap-1.5">
               <Label required>Title</Label>
-              <Input placeholder="Enter page title..." />
+              <Input placeholder="Enter headline..." defaultValue="Welcome to StructCMS" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label subtitle="URL-friendly identifier">Slug</Label>
-              <Input
-                prefix={<span className="text-[13px] font-['JetBrains_Mono',monospace]">/</span>}
-                placeholder="page-slug"
+              <Label>Subtitle</Label>
+              <Input placeholder="Optional subtitle..." />
+              <FieldMessage>Short tagline displayed below the title</FieldMessage>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label optional>Summary</Label>
+              <Textarea
+                placeholder="Brief summary for previews..."
+                error
+                defaultValue="This text is too long for a summary and should be shortened to fit the preview card layout properly."
               />
+              <FieldMessage variant="error">Summary must not exceed 120 characters.</FieldMessage>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label optional subtitle="A short summary shown in search results">
-                Meta Description
-              </Label>
-              <Textarea showCount maxLength={160} placeholder="Page description for SEO..." />
+              <Label>Body</Label>
+              <Card variant="outlined" padding="none">
+                <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-[var(--admin-gray-100)]">
+                  {[
+                    { icon: <Bold size={16} />, active: true },
+                    { icon: <Italic size={16} />, active: false },
+                    { icon: <Heading1 size={16} />, active: false },
+                    { icon: <List size={16} />, active: false },
+                    { icon: <Link size={16} />, active: false },
+                  ].map((btn, i) => (
+                    <button
+                      key={`form-toolbar-${i}`}
+                      type="button"
+                      className={cn(
+                        'flex items-center justify-center w-8 h-8 rounded-md transition-colors',
+                        btn.active
+                          ? 'bg-[var(--admin-gray-100)] text-[var(--admin-gray-800)]'
+                          : 'text-[var(--admin-gray-500)] hover:bg-[var(--admin-gray-50)]'
+                      )}
+                    >
+                      {btn.icon}
+                    </button>
+                  ))}
+                </div>
+                <div className="p-4 min-h-[80px]">
+                  <p className="text-[14px] text-[var(--admin-gray-400)]">
+                    Write your content here...
+                  </p>
+                </div>
+              </Card>
+            </div>
+          </FieldGroup>
+
+          <hr className="border-[var(--admin-gray-200)] border-t" />
+
+          {/* Group 2: Media */}
+          <FieldGroup label="Media" className="px-5 py-5">
+            <div className="flex flex-col gap-1.5">
+              <Label>Image</Label>
+              <div className="flex items-center justify-center h-[100px] rounded-lg border-2 border-dashed border-[var(--admin-gray-300)] bg-[var(--admin-gray-50)] cursor-pointer hover:border-[var(--admin-primary-400)] transition-colors">
+                <div className="flex flex-col items-center gap-1 text-[var(--admin-gray-400)]">
+                  <Upload size={20} strokeWidth={1.5} />
+                  <span className="text-[12px]">Click or drag to upload</span>
+                </div>
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label>Status</Label>
-              <Select
+              <div className="flex items-center justify-between">
+                <Label>Grid Items</Label>
+                <span className="text-[12px] text-[var(--admin-gray-400)]">2 items</span>
+              </div>
+              <Card variant="outlined" padding="none">
+                {['Product Overview', 'Team Photo'].map((item, i) => (
+                  <div
+                    key={item}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-2.5',
+                      i < 1 && 'border-b border-[var(--admin-gray-100)]'
+                    )}
+                  >
+                    <GripVertical
+                      size={14}
+                      strokeWidth={1.5}
+                      className="text-[var(--admin-gray-300)] cursor-grab shrink-0"
+                    />
+                    <span className="text-[13px] text-[var(--admin-gray-700)] grow">{item}</span>
+                    <Button size="icon" variant="ghost" className="w-6 h-6">
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                ))}
+                <div className="p-2 border-t border-[var(--admin-gray-100)]">
+                  <Button variant="secondary" size="sm" className="w-full">
+                    <Plus size={14} /> Add Item
+                  </Button>
+                </div>
+              </Card>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label>Attachment</Label>
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-gray-50)]">
+                <Paperclip
+                  size={16}
+                  strokeWidth={1.5}
+                  className="text-[var(--admin-gray-400)] shrink-0"
+                />
+                <div className="flex flex-col grow min-w-0">
+                  <span className="text-[13px] text-[var(--admin-gray-700)] truncate">
+                    datasheet-v2.pdf
+                  </span>
+                  <span className="text-[11px] text-[var(--admin-gray-400)]">248 KB</span>
+                </div>
+                <Button size="icon" variant="ghost" className="w-6 h-6 shrink-0">
+                  <X size={12} />
+                </Button>
+              </div>
+              <FieldMessage>Downloadable file (PDF, document, etc.)</FieldMessage>
+            </div>
+          </FieldGroup>
+
+          <hr className="border-[var(--admin-gray-200)] border-t" />
+
+          {/* Group 3: Appearance */}
+          <FieldGroup label="Appearance" className="px-5 py-5">
+            <div className="flex flex-col gap-1.5">
+              <Label>Layout</Label>
+              <RadioGroup
                 options={[
-                  { value: 'draft', label: 'Draft' },
-                  { value: 'published', label: 'Published' },
-                  { value: 'archived', label: 'Archived' },
+                  { value: 'default', label: 'Default' },
+                  { value: 'cards', label: 'Cards' },
+                  { value: 'grid', label: 'Grid' },
                 ]}
-                placeholder="Select status..."
+                value={formLayout}
+                onChange={setFormLayout}
               />
+              <FieldMessage>Controls how the section content is arranged</FieldMessage>
             </div>
+            <div className="flex flex-col gap-1.5">
+              <Label>Theme</Label>
+              <RadioGroup
+                options={[
+                  { value: 'light', label: 'Light' },
+                  { value: 'dark', label: 'Dark' },
+                  { value: 'auto', label: 'Auto' },
+                ]}
+                value={formTheme}
+                onChange={setFormTheme}
+              />
+              <FieldMessage>Color scheme for this section</FieldMessage>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Checkbox label="Display captions below grid/card items" checked={false} />
+              <p className="text-[11px] italic text-[var(--admin-gray-400)] pl-6">
+                Visible when Layout is cards or grid
+              </p>
+            </div>
+          </FieldGroup>
+
+          <hr className="border-[var(--admin-gray-200)] border-t" />
+
+          {/* Group 4: Call to Action */}
+          <FieldGroup label="Call to Action" className="px-5 py-5">
+            <div className="flex flex-col gap-1.5">
+              <Label>External URL</Label>
+              <Input placeholder="https://..." defaultValue="https://structcms.dev/docs" />
+              <FieldMessage>Link to an external resource</FieldMessage>
+            </div>
+            <Toggle label="Show Button" checked={formShowCta} onChange={setFormShowCta} />
+            {formShowCta && (
+              <div className="flex flex-col gap-3 pl-4 border-l-2 border-[var(--admin-gray-200)]">
+                <FieldMessage>Visible when "Show Button" is enabled</FieldMessage>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Button Label</Label>
+                  <Input placeholder="e.g. Get Started" defaultValue="Get Started" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Button URL</Label>
+                  <Input
+                    prefix={
+                      <span className="text-[13px] font-['JetBrains_Mono',monospace]">/</span>
+                    }
+                    placeholder="path"
+                    defaultValue="docs/getting-started"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Variant</Label>
+                  <Select
+                    options={[
+                      { value: 'primary', label: 'Primary' },
+                      { value: 'secondary', label: 'Secondary' },
+                      { value: 'ghost', label: 'Ghost' },
+                      { value: 'outline', label: 'Outline' },
+                    ]}
+                    value="primary"
+                    onChange={() => {}}
+                    placeholder="Select variant..."
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Target</Label>
+                  <RadioGroup
+                    options={[
+                      { value: '_self', label: 'Same tab' },
+                      { value: '_blank', label: 'New tab' },
+                    ]}
+                    value={formTarget}
+                    onChange={setFormTarget}
+                    orientation="horizontal"
+                  />
+                </div>
+              </div>
+            )}
+          </FieldGroup>
+
+          <hr className="border-[var(--admin-gray-200)] border-t" />
+
+          {/* Group 5: Metadata */}
+          <FieldGroup label="Metadata" className="px-5 py-5">
             <div className="flex flex-col gap-1.5">
               <Label>Tags</Label>
-              <TagInput
-                value={['blog', 'featured']}
-                onChange={() => {}}
-                placeholder="Add tags..."
-              />
+              <TagInput value={tags} onChange={setTags} placeholder="Add a tag..." />
+              <FieldMessage>Keywords for categorization</FieldMessage>
             </div>
-            <Toggle label="Published" checked />
-            <div className="flex justify-end gap-2 pt-2 border-t border-[var(--admin-gray-200)]">
-              <Button variant="secondary">Cancel</Button>
-              <Button>Save Page</Button>
+            <div className="flex flex-col gap-3 pl-4 border-l-2 border-[var(--admin-gray-200)]">
+              <div className="text-[11px] tracking-[0.06em] uppercase font-semibold text-[var(--admin-gray-400)]">
+                Author
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>Name</Label>
+                <Input defaultValue="Jane Doe" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>Role</Label>
+                <Input defaultValue="Editor" />
+              </div>
             </div>
+            <Toggle label="Published" checked={formPublished} onChange={setFormPublished} />
+          </FieldGroup>
+
+          {/* Footer */}
+          <div className="flex justify-end gap-2 px-5 py-4 bg-[var(--admin-surface-subtle)] border-t border-[var(--admin-gray-200)]">
+            <Button variant="secondary">Cancel</Button>
+            <Button>Save Changes</Button>
           </div>
         </Card>
       </SubSection>
