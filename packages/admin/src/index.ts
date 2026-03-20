@@ -15,14 +15,6 @@ export {
   type ApiResponse,
   type ApiError,
 } from './hooks/use-api-client';
-export {
-  StringInput,
-  type StringInputProps,
-} from './components/inputs/string-input';
-export { UrlInput, type UrlInputProps } from './components/inputs/url-input';
-export { TextInput, type TextInputProps } from './components/inputs/text-input';
-export { RichTextEditor } from './components/inputs/rich-text-editor';
-export type { RichTextEditorProps } from './components/inputs/rich-text-editor';
 
 export { AuthProvider, useAuth } from './context/auth-context';
 export type {
@@ -37,22 +29,6 @@ export type {
   OAuthButtonProps,
 } from './components/auth';
 
-export {
-  ImagePicker,
-  type ImagePickerProps,
-} from './components/inputs/image-picker';
-export {
-  FilePicker,
-  type FilePickerProps,
-} from './components/inputs/file-picker';
-export {
-  ArrayField,
-  type ArrayFieldProps,
-} from './components/inputs/array-field';
-export {
-  ObjectField,
-  type ObjectFieldProps,
-} from './components/inputs/object-field';
 export { Input, type InputProps } from './components/ui/input';
 export { Textarea, type TextareaProps } from './components/ui/textarea';
 export { Label, type LabelProps } from './components/ui/label';
@@ -66,7 +42,7 @@ export {
   type FormGeneratorProps,
   resolveFieldType,
   fieldNameToLabel,
-} from './lib/form-generator';
+} from './components/forms/form-generator';
 export {
   SectionEditor,
   type SectionEditorProps,
@@ -114,6 +90,7 @@ export {
   ErrorBoundary,
   type ErrorBoundaryProps,
 } from './components/ui/error-boundary';
+export { ErrorAlert, type ErrorAlertProps } from './components/ui/error-alert';
 export { Dialog, type DialogProps } from './components/ui/dialog';
 export {
   DashboardPage,

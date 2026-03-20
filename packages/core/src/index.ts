@@ -1,13 +1,13 @@
-export { defineSection } from "./define-section";
-export { definePageType } from "./define-page-type";
+export { defineSection } from './define-section';
+export { definePageType } from './define-page-type';
 export {
   defineNavigation,
   defaultNavigationItemSchema,
   type NavigationItem,
-} from "./define-navigation";
-export { fields, getFieldMeta, isFieldType, visibleWhen } from "./fields";
-export { createRegistry } from "./registry";
-export { createSectionRenderer } from "./section-renderer";
+} from './define-navigation';
+export { fields, getFieldMeta, isFieldType, visibleWhen } from './fields';
+export { createRegistry } from './registry';
+export { createSectionRenderer } from './section-renderer';
 export type {
   SectionDefinition,
   DefineSectionConfig,
@@ -27,4 +27,4 @@ export type {
   SectionComponentMap,
   CreateSectionRendererConfig,
   SectionRenderer,
-} from "./types";
+} from './types';

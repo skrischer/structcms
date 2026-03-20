@@ -1,20 +1,20 @@
-import type { z } from "zod";
+import type { z } from 'zod';
 
 /**
  * Supported field types for CMS content
  */
 export type FieldType =
-  | "string"
-  | "text"
-  | "richtext"
-  | "image"
-  | "reference"
-  | "array"
-  | "object"
-  | "boolean"
-  | "select"
-  | "file"
-  | "url";
+  | 'string'
+  | 'text'
+  | 'richtext'
+  | 'image'
+  | 'reference'
+  | 'array'
+  | 'object'
+  | 'boolean'
+  | 'select'
+  | 'file'
+  | 'url';
 
 /**
  * Metadata stored in Zod schema description for field type identification
@@ -62,8 +62,7 @@ export interface SectionDefinition<T extends z.ZodRawShape> {
  * const HeroSection = defineSection({ name: 'hero', fields: { title: z.string() } });
  * type HeroData = InferSectionData<typeof HeroSection>; // { title: string }
  */
-export type InferSectionData<T extends SectionDefinition<z.ZodRawShape>> =
-  z.infer<T["schema"]>;
+export type InferSectionData<T extends SectionDefinition<z.ZodRawShape>> = z.infer<T['schema']>;
 
 /**
  * Configuration for defining a page type
@@ -138,7 +137,7 @@ export interface SectionComponentProps<T = Record<string, unknown>> {
  * A component that renders a section (framework-agnostic)
  */
 export type SectionComponent<T = Record<string, unknown>, R = unknown> = (
-  props: SectionComponentProps<T>,
+  props: SectionComponentProps<T>
 ) => R;
 
 /**
@@ -160,7 +159,4 @@ export interface CreateSectionRendererConfig<R = unknown> {
 /**
  * A function that renders a section to a component result
  */
-export type SectionRenderer<R = unknown> = (
-  section: SectionData,
-  key: string | number,
-) => R | null;
+export type SectionRenderer<R = unknown> = (section: SectionData, key: string | number) => R | null;

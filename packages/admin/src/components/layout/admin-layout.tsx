@@ -1,19 +1,11 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '../../lib/utils';
-import { Button } from '../ui/button';
+import * as React from "react";
+import { cn } from "../../lib/utils";
+import { HeaderBar } from "./header-bar";
+import { Sidebar, type SidebarNavItem } from "./sidebar";
 
-export interface SidebarNavItem {
-  label: string;
-  path: string;
-}
-
-const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
-  { label: 'Pages', path: '/pages' },
-  { label: 'Navigation', path: '/navigation' },
-  { label: 'Media', path: '/media' },
-];
+export type { SidebarNavItem };
 
 export interface AdminLayoutProps {
   children: React.ReactNode;
@@ -21,6 +13,10 @@ export interface AdminLayoutProps {
   navItems?: SidebarNavItem[];
   activePath?: string;
   onNavigate: (path: string) => void;
+  userName?: string;
+  userInitials?: string;
+  userRole?: string;
+  onLogout?: () => void;
   className?: string;
 }
 
@@ -40,28 +36,36 @@ export interface AdminLayoutProps {
  */
 function AdminLayout({
   children,
-  title = 'StructCMS',
-  navItems = DEFAULT_NAV_ITEMS,
-  activePath,
+  title = "StructCMS",
+  navItems,
+  activePath = "/",
   onNavigate,
+  userName,
+  userInitials,
+  userRole,
+  onLogout,
   className,
 }: AdminLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
 
   return (
     <div
-      className={cn('flex h-dvh overflow-hidden bg-background', className)}
+      className={cn(
+        "flex h-dvh overflow-hidden bg-[var(--admin-gray-50)]",
+        className,
+      )}
       data-testid="admin-layout"
       data-structcms-admin=""
     >
       {/* Mobile overlay */}
-      {sidebarOpen && (
+      {mobileSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={() => setMobileSidebarOpen(false)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === 'Escape') {
-              setSidebarOpen(false);
+            if (e.key === "Enter" || e.key === "Escape") {
+              setMobileSidebarOpen(false);
             }
           }}
           role="button"
@@ -70,61 +74,36 @@ function AdminLayout({
         />
       )}
 
-      {/* Sidebar */}
-      <aside
+      {/* Sidebar — fixed on mobile, relative on desktop */}
+      <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-input transform transition-transform duration-200 md:relative md:translate-x-0',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          "fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 md:relative md:translate-x-0",
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
-        data-testid="sidebar"
       >
-        <div className="flex items-center h-14 px-4 border-b border-input">
-          <h1 className="text-lg font-bold" data-testid="sidebar-title">
-            {title}
-          </h1>
-        </div>
-        <nav className="p-2 space-y-1" data-testid="sidebar-nav">
-          {navItems.map((item) => (
-            <button
-              key={item.path}
-              type="button"
-              className={cn(
-                'w-full text-left px-3 py-2 rounded-md text-sm transition-colors',
-                activePath === item.path ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-              )}
-              onClick={() => {
-                onNavigate(item.path);
-                setSidebarOpen(false);
-              }}
-              data-testid={`nav-link-${item.path}`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-      </aside>
+        <Sidebar
+          currentPath={activePath}
+          onNavigate={(path) => {
+            onNavigate(path);
+            setMobileSidebarOpen(false);
+          }}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
+          title={title}
+          navItems={navItems}
+          userName={userName}
+          userInitials={userInitials}
+          userRole={userRole}
+          onLogout={onLogout}
+        />
+      </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header
-          className="flex items-center h-14 px-4 border-b border-input bg-card"
-          data-testid="header"
-        >
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="md:hidden mr-2"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            data-testid="sidebar-toggle"
-          >
-            ☰
-          </Button>
-          <h2 className="text-lg font-semibold" data-testid="header-title">
-            {title}
-          </h2>
-        </header>
+        <HeaderBar
+          onToggleSidebar={() => setMobileSidebarOpen((o) => !o)}
+          userInitials={userInitials}
+        />
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-6" data-testid="main-content">
@@ -135,6 +114,6 @@ function AdminLayout({
   );
 }
 
-AdminLayout.displayName = 'AdminLayout';
+AdminLayout.displayName = "AdminLayout";
 
 export { AdminLayout };

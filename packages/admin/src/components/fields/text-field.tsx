@@ -1,30 +1,17 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
-import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 
-export interface StringInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface TextFieldProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'rows'> {
   label: string;
   error?: string;
+  rows?: number;
 }
 
-/**
- * Text input component for string fields with label, placeholder, and validation error display.
- *
- * @example
- * ```tsx
- * <StringInput
- *   label="Title"
- *   placeholder="Enter title..."
- *   required
- *   {...register('title')}
- *   error={errors.title?.message}
- * />
- * ```
- */
-const StringInput = React.forwardRef<HTMLInputElement, StringInputProps>(
-  ({ className, label, error, required, id, ...props }, ref) => {
+const TextField = React.forwardRef<HTMLTextAreaElement, TextFieldProps>(
+  ({ className, label, error, required, id, rows = 3, ...props }, ref) => {
     const inputId = id || props.name || React.useId();
 
     return (
@@ -33,10 +20,10 @@ const StringInput = React.forwardRef<HTMLInputElement, StringInputProps>(
           {label}
           {required && <span className="text-destructive ml-1">*</span>}
         </Label>
-        <Input
+        <Textarea
           id={inputId}
           ref={ref}
-          type="text"
+          rows={rows}
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : undefined}
           className={cn(error && 'border-destructive')}
@@ -51,6 +38,6 @@ const StringInput = React.forwardRef<HTMLInputElement, StringInputProps>(
     );
   }
 );
-StringInput.displayName = 'StringInput';
+TextField.displayName = 'TextField';
 
-export { StringInput };
+export { TextField };

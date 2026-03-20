@@ -3,12 +3,12 @@ import type {
   CtaSection as CtaSectionDef,
   HeroSection as HeroSectionDef,
   ShowcaseSection as ShowcaseSectionDef,
-} from "@/lib/registry";
-import type { InferSectionData } from "@structcms/core";
-import { ContentSection } from "./content";
-import { CtaSection } from "./cta";
-import { HeroSection } from "./hero";
-import { ShowcaseSection } from "./showcase";
+} from '@/lib/registry';
+import type { InferSectionData } from '@structcms/core';
+import { ContentSection } from './content';
+import { CtaSection } from './cta';
+import { HeroSection } from './hero';
+import { ShowcaseSection } from './showcase';
 
 export type HeroData = InferSectionData<typeof HeroSectionDef>;
 export type ContentData = InferSectionData<typeof ContentSectionDef>;
@@ -42,7 +42,7 @@ export function isSectionType(type: string): type is SectionType {
 }
 
 export function getComponent(
-  type: SectionType,
+  type: SectionType
 ): React.ComponentType<{ data: Record<string, unknown> }> {
   return sectionComponents[type] as React.ComponentType<{
     data: Record<string, unknown>;

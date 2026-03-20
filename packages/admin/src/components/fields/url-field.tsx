@@ -1,32 +1,15 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
+import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
 
-export interface TextInputProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'rows'> {
+export interface UrlFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string;
   error?: string;
-  rows?: number;
 }
 
-/**
- * Textarea component for long text fields with label, placeholder, and validation error display.
- *
- * @example
- * ```tsx
- * <TextInput
- *   label="Description"
- *   placeholder="Enter description..."
- *   rows={5}
- *   required
- *   {...register('description')}
- *   error={errors.description?.message}
- * />
- * ```
- */
-const TextInput = React.forwardRef<HTMLTextAreaElement, TextInputProps>(
-  ({ className, label, error, required, id, rows = 3, ...props }, ref) => {
+const UrlField = React.forwardRef<HTMLInputElement, UrlFieldProps>(
+  ({ className, label, error, required, id, ...props }, ref) => {
     const inputId = id || props.name || React.useId();
 
     return (
@@ -35,10 +18,11 @@ const TextInput = React.forwardRef<HTMLTextAreaElement, TextInputProps>(
           {label}
           {required && <span className="text-destructive ml-1">*</span>}
         </Label>
-        <Textarea
+        <Input
           id={inputId}
           ref={ref}
-          rows={rows}
+          type="url"
+          placeholder="https://..."
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : undefined}
           className={cn(error && 'border-destructive')}
@@ -53,6 +37,6 @@ const TextInput = React.forwardRef<HTMLTextAreaElement, TextInputProps>(
     );
   }
 );
-TextInput.displayName = 'TextInput';
+UrlField.displayName = 'UrlField';
 
-export { TextInput };
+export { UrlField };

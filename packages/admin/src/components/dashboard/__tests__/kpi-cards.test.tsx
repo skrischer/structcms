@@ -114,7 +114,7 @@ describe('KpiCards', () => {
       expect(screen.getByTestId('kpi-pages-error')).toBeInTheDocument();
     });
 
-    expect(screen.getByTestId('kpi-pages-retry')).toBeInTheDocument();
+    expect(screen.getByTestId('kpi-pages-error-retry')).toBeInTheDocument();
     expect(screen.getByTestId('kpi-media-value')).toHaveTextContent('1');
     expect(screen.getByTestId('kpi-navigation-value')).toHaveTextContent('0');
   });
@@ -160,7 +160,7 @@ describe('KpiCards', () => {
       })
     );
 
-    await user.click(screen.getByTestId('kpi-pages-retry'));
+    await user.click(screen.getByTestId('kpi-pages-error-retry'));
 
     await waitFor(() => {
       expect(screen.getByTestId('kpi-pages-value')).toHaveTextContent('2');

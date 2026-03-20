@@ -164,7 +164,7 @@ describe('RecentPages', () => {
     renderWithProvider(<RecentPages onSelectPage={() => {}} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('recent-pages-retry')).toBeInTheDocument();
+      expect(screen.getByTestId('recent-pages-error-retry')).toBeInTheDocument();
     });
   });
 
@@ -183,7 +183,7 @@ describe('RecentPages', () => {
     renderWithProvider(<RecentPages onSelectPage={() => {}} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('recent-pages-retry')).toBeInTheDocument();
+      expect(screen.getByTestId('recent-pages-error-retry')).toBeInTheDocument();
     });
 
     // Retry succeeds
@@ -194,7 +194,7 @@ describe('RecentPages', () => {
       })
     );
 
-    await user.click(screen.getByTestId('recent-pages-retry'));
+    await user.click(screen.getByTestId('recent-pages-error-retry'));
 
     await waitFor(() => {
       expect(screen.getByTestId('recent-pages-list')).toBeInTheDocument();

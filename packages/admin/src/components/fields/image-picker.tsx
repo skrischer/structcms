@@ -1,6 +1,8 @@
+import { Image } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
-import { MediaBrowser, type MediaItem } from '../media/media-browser';
+import type { MediaItem } from '../../types/media';
+import { MediaBrowser } from '../media/media-browser';
 import { Button } from '../ui/button';
 import { Dialog } from '../ui/dialog';
 import { Label } from '../ui/label';
@@ -17,21 +19,6 @@ export interface ImagePickerProps {
   name?: string;
 }
 
-/**
- * Component for image fields that opens MediaBrowser for selection.
- *
- * @example
- * ```tsx
- * <ImagePicker
- *   label="Hero Image"
- *   value={imageUrl}
- *   onChange={setImageUrl}
- *   onBrowse={() => setMediaBrowserOpen(true)}
- *   required
- *   error={errors.image?.message}
- * />
- * ```
- */
 function ImagePicker({
   label,
   value,
@@ -96,7 +83,7 @@ function ImagePicker({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="mb-4 text-4xl text-muted-foreground">🖼️</div>
+            <Image size={32} strokeWidth={1.5} className="mb-4 text-muted-foreground" />
             <p className="mb-4 text-sm text-muted-foreground">No image selected</p>
             <Button
               type="button"

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cn } from '../../lib/utils';
 import { Label } from '../ui/label';
 
-export interface BooleanInputProps
+export interface BooleanFieldProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'checked'> {
   label: string;
   error?: string;
@@ -10,7 +10,7 @@ export interface BooleanInputProps
   onCheckedChange?: (checked: boolean) => void;
 }
 
-const BooleanInput = React.forwardRef<HTMLInputElement, BooleanInputProps>(
+const BooleanField = React.forwardRef<HTMLInputElement, BooleanFieldProps>(
   (
     { className, label, error, required, id, checked, onCheckedChange, onChange, ...props },
     ref
@@ -50,6 +50,6 @@ const BooleanInput = React.forwardRef<HTMLInputElement, BooleanInputProps>(
     );
   }
 );
-BooleanInput.displayName = 'BooleanInput';
+BooleanField.displayName = 'BooleanField';
 
-export { BooleanInput };
+export { BooleanField };

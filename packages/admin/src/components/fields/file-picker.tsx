@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
-import { MediaBrowser, type MediaItem } from '../media/media-browser';
+import type { MediaItem } from '../../types/media';
+import { MediaBrowser } from '../media/media-browser';
 import { Button } from '../ui/button';
 import { Dialog } from '../ui/dialog';
 import { Label } from '../ui/label';
@@ -17,9 +18,6 @@ export interface FilePickerProps {
   name?: string;
 }
 
-/**
- * Extracts the filename from a URL or path string.
- */
 function extractFilename(url: string): string {
   try {
     const pathname = new URL(url).pathname;
@@ -29,20 +27,6 @@ function extractFilename(url: string): string {
   }
 }
 
-/**
- * Component for file/document fields that opens MediaBrowser for selection.
- *
- * @example
- * ```tsx
- * <FilePicker
- *   label="Download File"
- *   value={fileUrl}
- *   onChange={setFileUrl}
- *   required
- *   error={errors.file?.message}
- * />
- * ```
- */
 function FilePicker({
   label,
   value,

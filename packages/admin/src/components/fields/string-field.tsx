@@ -3,15 +3,13 @@ import { cn } from '../../lib/utils';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
-export interface UrlInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface StringFieldProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string;
   error?: string;
 }
 
-/**
- * URL input component for url fields with label, placeholder, and validation error display.
- */
-const UrlInput = React.forwardRef<HTMLInputElement, UrlInputProps>(
+const StringField = React.forwardRef<HTMLInputElement, StringFieldProps>(
   ({ className, label, error, required, id, ...props }, ref) => {
     const inputId = id || props.name || React.useId();
 
@@ -24,8 +22,7 @@ const UrlInput = React.forwardRef<HTMLInputElement, UrlInputProps>(
         <Input
           id={inputId}
           ref={ref}
-          type="url"
-          placeholder="https://..."
+          type="text"
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : undefined}
           className={cn(error && 'border-destructive')}
@@ -40,6 +37,6 @@ const UrlInput = React.forwardRef<HTMLInputElement, UrlInputProps>(
     );
   }
 );
-UrlInput.displayName = 'UrlInput';
+StringField.displayName = 'StringField';
 
-export { UrlInput };
+export { StringField };

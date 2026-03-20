@@ -1,9 +1,5 @@
-import { z } from "zod";
-import type {
-  DefineSectionConfig,
-  FieldGroup,
-  SectionDefinition,
-} from "./types";
+import { z } from 'zod';
+import type { DefineSectionConfig, FieldGroup, SectionDefinition } from './types';
 
 /**
  * Defines a section with a name and Zod schema fields.
@@ -23,7 +19,7 @@ import type {
  * type HeroData = InferSectionData<typeof HeroSection>;
  */
 export function defineSection<T extends z.ZodRawShape>(
-  config: DefineSectionConfig<T>,
+  config: DefineSectionConfig<T>
 ): SectionDefinition<T> {
   const schema = z.object(config.fields);
 

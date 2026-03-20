@@ -165,7 +165,13 @@ describe('FilePicker built-in MediaBrowser dialog', () => {
   });
 
   it('selects media item and closes dialog', async () => {
-    const mockMedia = [{ id: '1', url: 'https://example.com/report.pdf', filename: 'report.pdf' }];
+    const mockMedia = [
+      {
+        id: '1',
+        url: 'https://example.com/report.pdf',
+        filename: 'report.pdf',
+      },
+    ];
     mockFetchSuccess(mockMedia);
     const handleChange = vi.fn();
     const user = userEvent.setup();

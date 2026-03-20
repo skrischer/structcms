@@ -59,7 +59,11 @@ function InlineButtons({
   editor,
   allowedBlocks,
   setLink,
-}: { editor: Editor; allowedBlocks?: readonly string[]; setLink: () => void }) {
+}: {
+  editor: Editor;
+  allowedBlocks?: readonly string[];
+  setLink: () => void;
+}) {
   const showBold = isBlockAllowed('bold', allowedBlocks);
   const showItalic = isBlockAllowed('italic', allowedBlocks);
   const showLink = isBlockAllowed('link', allowedBlocks);
@@ -97,7 +101,10 @@ function InlineButtons({
 function HeadingButtons({
   editor,
   allowedBlocks,
-}: { editor: Editor; allowedBlocks?: readonly string[] }) {
+}: {
+  editor: Editor;
+  allowedBlocks?: readonly string[];
+}) {
   const showH1 = isBlockAllowed('heading1', allowedBlocks);
   const showH2 = isBlockAllowed('heading2', allowedBlocks);
   const showH3 = isBlockAllowed('heading3', allowedBlocks);
@@ -137,7 +144,10 @@ function HeadingButtons({
 function ListButtons({
   editor,
   allowedBlocks,
-}: { editor: Editor; allowedBlocks?: readonly string[] }) {
+}: {
+  editor: Editor;
+  allowedBlocks?: readonly string[];
+}) {
   const showBulletList =
     isBlockAllowed('bulletList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
   const showOrderedList =

@@ -1,4 +1,4 @@
-import { fields } from "@structcms/core";
+import { fields } from '@structcms/core';
 
 /**
  * Reusable button field group for CTA patterns.
@@ -9,8 +9,8 @@ export function buttonFields() {
     label: fields.string().min(1),
     url: fields.url(),
     variant: fields.select({
-      options: ["primary", "secondary", "outline", "ghost"] as const,
+      options: ['primary', 'secondary', 'outline', 'ghost'] as const,
     }),
-    target: fields.select({ options: ["_self", "_blank"] as const }),
+    target: fields.select({ options: ['_self', '_blank'] as const }),
   });
 }

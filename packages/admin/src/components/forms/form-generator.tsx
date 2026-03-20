@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowDown, ArrowUp, X } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   type FieldGroup,
@@ -8,6 +7,7 @@ import {
   type FieldType,
   getFieldMeta,
 } from "@structcms/core";
+import { ArrowDown, ArrowUp, X } from "lucide-react";
 import * as React from "react";
 import {
   type Control,
@@ -20,20 +20,20 @@ import {
   useForm,
 } from "react-hook-form";
 import type { z } from "zod";
-import { ArrayField } from "../components/inputs/array-field";
-import { BooleanInput } from "../components/inputs/boolean-input";
-import { FilePicker } from "../components/inputs/file-picker";
-import { ImagePicker } from "../components/inputs/image-picker";
-import { ObjectField } from "../components/inputs/object-field";
-import { RichTextEditor } from "../components/inputs/rich-text-editor";
-import { SelectInput } from "../components/inputs/select-input";
-import { StringInput } from "../components/inputs/string-input";
-import { TextInput } from "../components/inputs/text-input";
-import { UrlInput } from "../components/inputs/url-input";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { cn } from "./utils";
+import { cn } from "../../lib/utils";
+import { ArrayField } from "../fields/array-field";
+import { BooleanField } from "../fields/boolean-field";
+import { FilePicker } from "../fields/file-picker";
+import { ImagePicker } from "../fields/image-picker";
+import { ObjectField } from "../fields/object-field";
+import { RichTextEditor } from "../fields/rich-text-editor";
+import { SelectField } from "../fields/select-field";
+import { StringField } from "../fields/string-field";
+import { TextField } from "../fields/text-field";
+import { UrlField } from "../fields/url-field";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 /**
  * Unwraps Zod wrappers (optional, default, nullable, etc.) to find the inner schema
@@ -164,16 +164,18 @@ function ObjectArrayFieldInner(
     >
       <Label htmlFor={inputId}>
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
+        {required && (
+          <span className="text-[var(--admin-error-500)] ml-1">*</span>
+        )}
       </Label>
       <div
         className={cn(
-          "rounded-md border border-input bg-background p-4",
-          error && "border-destructive",
+          "rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-4",
+          error && "border-[var(--admin-error-500)]",
         )}
       >
         {arrayFields.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
+          <p className="text-sm text-[var(--admin-gray-500)] text-center py-4">
             No items yet
           </p>
         ) : (
@@ -181,7 +183,7 @@ function ObjectArrayFieldInner(
             {arrayFields.map((field, index) => (
               <div
                 key={field.id}
-                className="flex gap-2 items-start p-3 rounded-md border border-input bg-muted/50"
+                className="flex gap-2 items-start p-3 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-gray-50)]"
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
@@ -253,7 +255,10 @@ function ObjectArrayFieldInner(
         </div>
       </div>
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-destructive">
+        <p
+          id={`${inputId}-error`}
+          className="text-sm text-[var(--admin-error-500)]"
+        >
           {error}
         </p>
       )}
@@ -354,7 +359,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       <div key={`${fieldName}-wrapper`} className="space-y-1">
         {element}
         <p
-          className="text-xs text-muted-foreground"
+          className="text-xs text-[var(--admin-gray-500)]"
           data-testid={`${fieldName}-description`}
         >
           {description}
@@ -388,7 +393,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
     switch (fieldType) {
       case "string":
         return (
-          <StringInput
+          <StringField
             key={fieldName}
             label={label}
             required={isRequired}
@@ -399,7 +404,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
       case "text":
         return (
-          <TextInput
+          <TextField
             key={fieldName}
             label={label}
             required={isRequired}
@@ -470,7 +475,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
       case "url":
         return (
-          <UrlInput
+          <UrlField
             key={fieldName}
             label={label}
             required={isRequired}
@@ -547,7 +552,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
             name={fieldName as Parameters<typeof register>[0]}
             control={control}
             render={({ field }) => (
-              <BooleanInput
+              <BooleanField
                 label={label}
                 required={isRequired}
                 error={errorMessage}
@@ -568,7 +573,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
             name={fieldName as Parameters<typeof register>[0]}
             control={control}
             render={({ field }) => (
-              <SelectInput
+              <SelectField
                 label={label}
                 required={isRequired}
                 error={errorMessage}
@@ -610,7 +615,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
       default:
         return (
-          <StringInput
+          <StringField
             key={fieldName}
             label={label}
             required={isRequired}
@@ -647,12 +652,12 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
         {groups.map((group) => (
           <fieldset
             key={group.name}
-            className="space-y-4 rounded-lg border border-border p-4"
+            className="space-y-4 rounded-lg border border-[var(--admin-gray-200)] p-4"
             data-testid={`field-group-${group.name}`}
           >
             <legend className="px-2 text-sm font-semibold">{group.name}</legend>
             {group.description && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[var(--admin-gray-500)]">
                 {group.description}
               </p>
             )}

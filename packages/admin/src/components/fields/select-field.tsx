@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cn } from '../../lib/utils';
 import { Label } from '../ui/label';
 
-export interface SelectInputProps {
+export interface SelectFieldProps {
   label: string;
   options: readonly string[];
   value?: string;
@@ -14,7 +14,7 @@ export interface SelectInputProps {
   className?: string;
 }
 
-function SelectInput({
+function SelectField({
   label,
   options,
   value,
@@ -24,7 +24,7 @@ function SelectInput({
   name,
   id,
   className,
-}: SelectInputProps) {
+}: SelectFieldProps) {
   const generatedId = React.useId();
   const inputId = id || name || generatedId;
   const isRadio = options.length <= 3;
@@ -93,6 +93,6 @@ function SelectInput({
     </div>
   );
 }
-SelectInput.displayName = 'SelectInput';
+SelectField.displayName = 'SelectField';
 
-export { SelectInput };
+export { SelectField };

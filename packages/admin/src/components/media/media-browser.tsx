@@ -4,20 +4,13 @@ import { Check, File, Filter, Search, Trash2, Upload } from 'lucide-react';
 import * as React from 'react';
 import { useApiClient } from '../../hooks/use-api-client';
 import { cn } from '../../lib/utils';
+import type { MediaItem } from '../../types/media';
 import { Button } from '../ui/button';
 import { Dialog } from '../ui/dialog';
 import { Pagination } from '../ui/pagination';
 import { Skeleton } from '../ui/skeleton';
 
-export interface MediaItem {
-  id: string;
-  url: string;
-  filename: string;
-  mimeType?: string;
-  size?: number;
-  category?: string;
-  createdAt?: string;
-}
+export type { MediaItem };
 
 export interface MediaBrowserProps {
   onSelect?: (item: MediaItem) => void;
