@@ -47,26 +47,15 @@ describe("FieldGroup", () => {
     expect(label).toHaveClass("font-semibold");
   });
 
-  it("applies mt-4 to children wrapper when label is present", () => {
-    const { container } = render(
+  it("uses flex-col gap-4 layout on wrapper", () => {
+    render(
       <FieldGroup label="Group">
         <span>Field</span>
       </FieldGroup>,
     );
 
-    const childrenWrapper = container.querySelector(".flex.flex-col.gap-4");
-    expect(childrenWrapper).toHaveClass("mt-4");
-  });
-
-  it("does not apply mt-4 when label is absent", () => {
-    const { container } = render(
-      <FieldGroup>
-        <span>Field</span>
-      </FieldGroup>,
-    );
-
-    const childrenWrapper = container.querySelector(".flex.flex-col.gap-4");
-    expect(childrenWrapper).not.toHaveClass("mt-3");
+    const wrapper = screen.getByTestId("field-group");
+    expect(wrapper).toHaveClass("flex", "flex-col", "gap-4");
   });
 
   it("forwards className", () => {
