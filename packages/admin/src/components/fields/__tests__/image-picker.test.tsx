@@ -99,11 +99,10 @@ describe('ImagePicker', () => {
     expect(screen.getByText('Image is required')).toBeInTheDocument();
   });
 
-  it('applies error styling when error is present', () => {
+  it('renders error via FieldMessage when error is present', () => {
     render(<ImagePicker label="Hero Image" name="hero" error="Error message" />);
 
-    const container = document.querySelector('.border-destructive');
-    expect(container).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Error message');
   });
 
   it('applies custom className', () => {

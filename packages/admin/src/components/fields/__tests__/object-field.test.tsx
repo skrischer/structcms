@@ -47,7 +47,7 @@ describe('ObjectField', () => {
     expect(screen.getByTestId('child-2')).toBeInTheDocument();
   });
 
-  it('renders container with visual grouping (border)', () => {
+  it('renders container with visual grouping (border-l-2)', () => {
     render(
       <ObjectField label="Address" name="address">
         <div>Nested content</div>
@@ -55,8 +55,8 @@ describe('ObjectField', () => {
     );
 
     const container = screen.getByTestId('object-field-container');
-    expect(container).toHaveClass('border');
-    expect(container).toHaveClass('rounded-md');
+    expect(container).toHaveClass('border-l-2');
+    expect(container).toHaveClass('pl-4');
   });
 
   it('displays validation error below container', () => {
@@ -69,15 +69,14 @@ describe('ObjectField', () => {
     expect(screen.getByText('Address is invalid')).toBeInTheDocument();
   });
 
-  it('applies error styling when error is present', () => {
+  it('renders error via FieldMessage when error is present', () => {
     render(
       <ObjectField label="Address" name="address" error="Error message">
         <div>Nested content</div>
       </ObjectField>
     );
 
-    const container = screen.getByTestId('object-field-container');
-    expect(container).toHaveClass('border-destructive');
+    expect(screen.getByRole('alert')).toHaveTextContent('Error message');
   });
 
   it('has role="group" for accessibility', () => {

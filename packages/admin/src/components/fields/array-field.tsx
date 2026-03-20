@@ -2,6 +2,7 @@ import { ArrowDown, ArrowUp, X } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
+import { FieldMessage } from '../ui/field-message';
 import { Label } from '../ui/label';
 
 export interface ArrayFieldProps<T> {
@@ -11,6 +12,7 @@ export interface ArrayFieldProps<T> {
   renderItem: (item: T, index: number, onChange: (item: T) => void) => React.ReactNode;
   createDefaultItem: () => T;
   error?: string;
+  description?: string;
   required?: boolean;
   className?: string;
   id?: string;
@@ -49,6 +51,7 @@ function ArrayFieldInner<T>(
     renderItem,
     createDefaultItem,
     error,
+    description,
     required,
     className,
     id,
@@ -117,25 +120,24 @@ function ArrayFieldInner<T>(
   };
 
   return (
-    <div ref={ref} className={cn('space-y-2', className)} data-testid="array-field">
-      <Label htmlFor={inputId}>
+    <div ref={ref} className={cn('flex flex-col gap-1.5', className)} data-testid="array-field">
+      <Label htmlFor={inputId} required={required}>
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
       </Label>
       <div
         className={cn(
-          'rounded-md border border-input bg-background p-4',
-          error && 'border-destructive'
+          'rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-4',
+          error && 'border-[var(--admin-error-500)]'
         )}
       >
         {value.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">No items yet</p>
+          <p className="text-sm text-[var(--admin-gray-500)] text-center py-4">No items yet</p>
         ) : (
           <div className="space-y-3">
             {itemsWithKeys.map(({ key, item }, index) => (
               <div
                 key={key}
-                className="flex gap-2 items-start p-3 rounded-md border border-input bg-muted/50"
+                className="flex gap-2 items-start p-3 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-gray-50)]"
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
@@ -191,10 +193,11 @@ function ArrayFieldInner<T>(
           </Button>
         </div>
       </div>
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-destructive">
+        <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
-        </p>
+        </FieldMessage>
       )}
     </div>
   );

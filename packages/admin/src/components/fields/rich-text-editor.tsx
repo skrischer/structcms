@@ -5,6 +5,7 @@ import { type Editor, EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
+import { FieldMessage } from '../ui/field-message';
 import { Label } from '../ui/label';
 
 export interface RichTextEditorProps {
@@ -12,6 +13,7 @@ export interface RichTextEditorProps {
   value?: string;
   onChange?: (value: string) => void;
   error?: string;
+  description?: string;
   required?: boolean;
   placeholder?: string;
   className?: string;
@@ -228,6 +230,7 @@ function RichTextEditor({
   value = '',
   onChange,
   error,
+  description,
   required,
   placeholder,
   className,
@@ -236,6 +239,7 @@ function RichTextEditor({
   allowedBlocks,
 }: RichTextEditorProps) {
   const inputId = id || name || React.useId();
+  const messageId = error ? `${inputId}-error` : description ? `${inputId}-desc` : undefined;
 
   // Determine allowed heading levels based on allowedBlocks
   const headingLevels = React.useMemo(() => {
@@ -267,7 +271,7 @@ function RichTextEditor({
       attributes: {
         class: 'prose prose-sm max-w-none min-h-[150px] p-3 focus:outline-none',
         'aria-invalid': error ? 'true' : 'false',
-        ...(error ? { 'aria-describedby': `${inputId}-error` } : {}),
+        ...(messageId ? { 'aria-describedby': messageId } : {}),
       },
     },
     onUpdate: ({ editor: updatedEditor }) => {
@@ -298,24 +302,24 @@ function RichTextEditor({
   }
 
   return (
-    <div className={cn('space-y-2', className)}>
-      <Label htmlFor={inputId}>
+    <div className={cn('flex flex-col gap-1.5', className)}>
+      <Label htmlFor={inputId} required={required}>
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
       </Label>
       <div
         className={cn(
           'rounded-md border border-input bg-background',
-          error && 'border-destructive'
+          error && 'border-[var(--admin-error-500)]'
         )}
       >
         <Toolbar editor={editor} allowedBlocks={allowedBlocks} setLink={setLink} />
         <EditorContent editor={editor} id={inputId} data-placeholder={placeholder} />
       </div>
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-destructive">
+        <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
-        </p>
+        </FieldMessage>
       )}
     </div>
   );

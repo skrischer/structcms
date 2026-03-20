@@ -1,7 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type FieldGroup, type FieldMeta, type FieldType, getFieldMeta } from '@structcms/core';
+import {
+  type FieldGroup as FieldGroupType,
+  type FieldMeta,
+  type FieldType,
+  getFieldMeta,
+} from '@structcms/core';
 import { ArrowDown, ArrowUp, X } from 'lucide-react';
 import * as React from 'react';
 import {
@@ -27,6 +32,8 @@ import { StringField } from '../fields/string-field';
 import { TextField } from '../fields/text-field';
 import { UrlField } from '../fields/url-field';
 import { Button } from '../ui/button';
+import { FieldGroup } from '../ui/field-group';
+import { FieldMessage } from '../ui/field-message';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
@@ -109,6 +116,7 @@ interface ObjectArrayFieldProps {
   label: string;
   required: boolean;
   error: string | undefined;
+  description: string | undefined;
   innerShape: Record<string, z.ZodTypeAny>;
   renderField: (fieldName: string, fieldSchema: z.ZodTypeAny) => React.ReactNode;
   className?: string;
@@ -126,6 +134,7 @@ function ObjectArrayFieldInner(
     label,
     required,
     error,
+    description,
     innerShape,
     renderField,
     className,
@@ -147,10 +156,9 @@ function ObjectArrayFieldInner(
   const inputId = id || name || generatedId;
 
   return (
-    <div ref={ref} className={cn('space-y-2', className)} data-testid="array-field">
-      <Label htmlFor={inputId}>
+    <div ref={ref} className={cn('flex flex-col gap-1.5', className)} data-testid="array-field">
+      <Label htmlFor={inputId} required={required}>
         {label}
-        {required && <span className="text-[var(--admin-error-500)] ml-1">*</span>}
       </Label>
       <div
         className={cn(
@@ -230,10 +238,11 @@ function ObjectArrayFieldInner(
           </Button>
         </div>
       </div>
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-[var(--admin-error-500)]">
+        <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
-        </p>
+        </FieldMessage>
       )}
     </div>
   );
@@ -249,7 +258,7 @@ export interface FormGeneratorProps<T extends z.ZodObject<z.ZodRawShape>> {
   submitLabel?: string;
   className?: string;
   descriptions?: Partial<Record<string, string>>;
-  groups?: Array<FieldGroup>;
+  groups?: Array<FieldGroupType>;
 }
 
 /**
@@ -320,29 +329,14 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
     return null;
   };
 
-  const wrapWithDescription = (fieldName: string, element: React.ReactNode): React.ReactNode => {
-    const description = descriptions?.[fieldName];
-    if (!description) return element;
-    return (
-      <div key={`${fieldName}-wrapper`} className="space-y-1">
-        {element}
-        <p
-          className="text-xs text-[var(--admin-gray-500)]"
-          data-testid={`${fieldName}-description`}
-        >
-          {description}
-        </p>
-      </div>
-    );
-  };
-
-  const renderField = (fieldName: string, fieldSchema: z.ZodTypeAny) => {
+  const renderField = (fieldName: string, fieldSchema: z.ZodTypeAny): React.ReactNode => {
     const fieldType = resolveFieldType(fieldSchema);
     const fieldMeta = resolveFieldMeta(fieldSchema);
     const leafName = fieldName.includes('.') ? (fieldName.split('.').pop() as string) : fieldName;
     const label = fieldNameToLabel(leafName);
     const isRequired = !fieldSchema.isOptional();
     const errorMessage = getErrorMessage(fieldName);
+    const description = descriptions?.[fieldName];
 
     // Conditional visibility
     if (fieldMeta?.visibleWhen) {
@@ -351,32 +345,48 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       if (!matches) return null;
     }
 
+    // Wraps rendered field with a visibility hint when visibleWhen is present
+    const wrapWithHint = (element: React.ReactNode): React.ReactNode => {
+      if (!fieldMeta?.visibleWhen) return element;
+      return (
+        <div key={fieldName} className="flex flex-col gap-1">
+          <p className="text-[11px] italic text-[var(--admin-gray-400)]">
+            Visible when {fieldNameToLabel(fieldMeta.visibleWhen.field)} is{' '}
+            {fieldMeta.visibleWhen.values.map(String).join(' or ')}
+          </p>
+          {element}
+        </div>
+      );
+    };
+
     switch (fieldType) {
       case 'string':
-        return (
+        return wrapWithHint(
           <StringField
             key={fieldName}
             label={label}
             required={isRequired}
             error={errorMessage}
+            description={description}
             {...register(fieldName as Parameters<typeof register>[0])}
           />
         );
 
       case 'text':
-        return (
+        return wrapWithHint(
           <TextField
             key={fieldName}
             label={label}
             required={isRequired}
             error={errorMessage}
+            description={description}
             {...register(fieldName as Parameters<typeof register>[0])}
           />
         );
 
       case 'richtext': {
         const meta = resolveFieldMeta(fieldSchema);
-        return (
+        return wrapWithHint(
           <Controller
             key={fieldName}
             name={fieldName as Parameters<typeof register>[0]}
@@ -386,6 +396,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 label={label}
                 required={isRequired}
                 error={errorMessage}
+                description={description}
                 value={field.value as string | undefined}
                 onChange={field.onChange}
                 name={field.name}
@@ -397,7 +408,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       }
 
       case 'image':
-        return (
+        return wrapWithHint(
           <Controller
             key={fieldName}
             name={fieldName as Parameters<typeof register>[0]}
@@ -407,6 +418,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 label={label}
                 required={isRequired}
                 error={errorMessage}
+                description={description}
                 value={field.value as string | undefined}
                 onChange={field.onChange}
                 name={field.name}
@@ -416,7 +428,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
         );
 
       case 'file':
-        return (
+        return wrapWithHint(
           <Controller
             key={fieldName}
             name={fieldName as Parameters<typeof register>[0]}
@@ -426,6 +438,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 label={label}
                 required={isRequired}
                 error={errorMessage}
+                description={description}
                 value={field.value as string | undefined}
                 onChange={field.onChange}
                 name={field.name}
@@ -435,12 +448,13 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
         );
 
       case 'url':
-        return (
+        return wrapWithHint(
           <UrlField
             key={fieldName}
             label={label}
             required={isRequired}
             error={errorMessage}
+            description={description}
             {...register(fieldName as Parameters<typeof register>[0])}
           />
         );
@@ -462,7 +476,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
           if (!innerShape) return null;
 
-          return (
+          return wrapWithHint(
             <ObjectArrayField
               key={fieldName}
               name={fieldName}
@@ -470,6 +484,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
               label={label}
               required={isRequired}
               error={errorMessage}
+              description={description}
               innerShape={innerShape}
               renderField={renderField}
             />
@@ -477,7 +492,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
         }
 
         // Array of primitives — existing behavior
-        return (
+        return wrapWithHint(
           <Controller
             key={fieldName}
             name={fieldName as Parameters<typeof register>[0]}
@@ -487,6 +502,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 label={label}
                 required={isRequired}
                 error={errorMessage}
+                description={description}
                 value={(field.value as string[] | undefined) ?? []}
                 onChange={field.onChange}
                 name={field.name}
@@ -505,7 +521,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       }
 
       case 'boolean':
-        return (
+        return wrapWithHint(
           <Controller
             key={fieldName}
             name={fieldName as Parameters<typeof register>[0]}
@@ -515,6 +531,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 label={label}
                 required={isRequired}
                 error={errorMessage}
+                description={description}
                 checked={!!field.value}
                 onCheckedChange={field.onChange}
                 name={field.name}
@@ -526,7 +543,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       case 'select': {
         const meta = resolveFieldMeta(fieldSchema);
         const options = meta?.options ?? [];
-        return (
+        return wrapWithHint(
           <Controller
             key={fieldName}
             name={fieldName as Parameters<typeof register>[0]}
@@ -536,6 +553,7 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
                 label={label}
                 required={isRequired}
                 error={errorMessage}
+                description={description}
                 options={options}
                 value={field.value as string | undefined}
                 onChange={field.onChange}
@@ -553,8 +571,14 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
             ? ((innerSchema as z.ZodObject<z.ZodRawShape>).shape as Record<string, z.ZodTypeAny>)
             : null;
 
-        return (
-          <ObjectField key={fieldName} label={label} required={isRequired} error={errorMessage}>
+        return wrapWithHint(
+          <ObjectField
+            key={fieldName}
+            label={label}
+            required={isRequired}
+            error={errorMessage}
+            description={description}
+          >
             {innerShape
               ? Object.entries(innerShape).map(([subName, subSchema]) =>
                   renderField(`${fieldName}.${subName}`, subSchema)
@@ -565,28 +589,23 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
       }
 
       default:
-        return (
+        return wrapWithHint(
           <StringField
             key={fieldName}
             label={label}
             required={isRequired}
             error={errorMessage}
+            description={description}
             {...register(fieldName as Parameters<typeof register>[0])}
           />
         );
     }
   };
 
-  const renderFieldWithDescription = (fieldName: string, fieldSchema: z.ZodTypeAny) => {
-    const rendered = renderField(fieldName, fieldSchema);
-    if (!rendered) return null;
-    return wrapWithDescription(fieldName, rendered);
-  };
-
   const renderFields = () => {
     if (!groups || groups.length === 0) {
       return Object.entries(shape).map(([fieldName, fieldSchema]) =>
-        renderFieldWithDescription(fieldName, fieldSchema)
+        renderField(fieldName, fieldSchema)
       );
     }
 
@@ -595,27 +614,27 @@ function FormGenerator<T extends z.ZodObject<z.ZodRawShape>>({
 
     return (
       <>
-        {groups.map((group) => (
-          <fieldset
-            key={group.name}
-            className="space-y-4 rounded-lg border border-[var(--admin-gray-200)] p-4"
-            data-testid={`field-group-${group.name}`}
-          >
-            <legend className="px-2 text-sm font-semibold">{group.name}</legend>
-            {group.description && (
-              <p className="text-xs text-[var(--admin-gray-500)]">{group.description}</p>
-            )}
-            {group.fields.map((fieldName) => {
-              const fieldSchema = shape[fieldName];
-              if (!fieldSchema) return null;
-              return renderFieldWithDescription(fieldName, fieldSchema);
-            })}
-          </fieldset>
+        {groups.map((group, i) => (
+          <React.Fragment key={group.name}>
+            {i > 0 && <hr className="border-[var(--admin-gray-200)] border-t" />}
+            <FieldGroup
+              label={group.name}
+              className="px-5 py-5"
+              data-testid={`field-group-${group.name}`}
+            >
+              {group.description && <FieldMessage>{group.description}</FieldMessage>}
+              {group.fields.map((fieldName) => {
+                const fieldSchema = shape[fieldName];
+                if (!fieldSchema) return null;
+                return renderField(fieldName, fieldSchema);
+              })}
+            </FieldGroup>
+          </React.Fragment>
         ))}
         {ungroupedFields.map((fieldName) => {
           const fieldSchema = shape[fieldName];
           if (!fieldSchema) return null;
-          return renderFieldWithDescription(fieldName, fieldSchema);
+          return renderField(fieldName, fieldSchema);
         })}
       </>
     );

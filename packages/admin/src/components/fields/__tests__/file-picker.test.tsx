@@ -71,11 +71,10 @@ describe('FilePicker', () => {
     expect(screen.getByText('File is required')).toBeInTheDocument();
   });
 
-  it('applies error styling when error is present', () => {
+  it('renders error via FieldMessage when error is present', () => {
     render(<FilePicker label="Download File" name="file" error="Error message" />);
 
-    const container = document.querySelector('.border-destructive');
-    expect(container).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Error message');
   });
 
   it('applies custom className', () => {

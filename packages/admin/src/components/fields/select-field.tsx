@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
+import { FieldMessage } from '../ui/field-message';
 import { Label } from '../ui/label';
 import { RadioGroup } from '../ui/radio-group';
 
@@ -9,6 +10,7 @@ export interface SelectFieldProps {
   value?: string;
   onChange?: (value: string) => void;
   error?: string;
+  description?: string;
   required?: boolean;
   name?: string;
   id?: string;
@@ -21,6 +23,7 @@ function SelectField({
   value,
   onChange,
   error,
+  description,
   required,
   name,
   id,
@@ -29,12 +32,12 @@ function SelectField({
   const generatedId = React.useId();
   const inputId = id || name || generatedId;
   const isRadio = options.length <= 3;
+  const messageId = error ? `${inputId}-error` : description ? `${inputId}-desc` : undefined;
 
   return (
-    <div className={cn('space-y-2', className)} data-testid="select-input">
-      <Label htmlFor={isRadio ? undefined : inputId}>
+    <div className={cn('flex flex-col gap-1.5', className)} data-testid="select-input">
+      <Label htmlFor={isRadio ? undefined : inputId} required={required}>
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
       </Label>
       {isRadio ? (
         <RadioGroup
@@ -45,7 +48,7 @@ function SelectField({
           error={!!error}
           aria-label={label}
           aria-invalid={!!error}
-          aria-describedby={error ? `${inputId}-error` : undefined}
+          aria-describedby={messageId}
           testIdPrefix="select"
         />
       ) : (
@@ -55,10 +58,10 @@ function SelectField({
           value={value ?? ''}
           onChange={(e) => onChange?.(e.target.value)}
           aria-invalid={!!error}
-          aria-describedby={error ? `${inputId}-error` : undefined}
+          aria-describedby={messageId}
           className={cn(
             'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm',
-            error && 'border-destructive'
+            error && 'border-[var(--admin-error-500)]'
           )}
           data-testid="select-dropdown"
         >
@@ -72,10 +75,11 @@ function SelectField({
           ))}
         </select>
       )}
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-destructive">
+        <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
-        </p>
+        </FieldMessage>
       )}
     </div>
   );

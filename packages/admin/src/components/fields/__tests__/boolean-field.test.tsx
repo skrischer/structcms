@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { BooleanField } from '../boolean-field';
 
 describe('BooleanField', () => {
@@ -8,7 +8,7 @@ describe('BooleanField', () => {
     render(<BooleanField label="Active" name="active" />);
 
     expect(screen.getByLabelText('Active')).toBeInTheDocument();
-    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.getByRole('switch')).toBeInTheDocument();
   });
 
   it('shows required indicator when required', () => {
@@ -29,30 +29,20 @@ describe('BooleanField', () => {
     expect(screen.getByText('Field is required')).toBeInTheDocument();
   });
 
-  it('sets aria-invalid when error is present', () => {
+  it('renders error via FieldMessage with alert role', () => {
     render(<BooleanField label="Active" name="active" error="Field is required" />);
 
-    expect(screen.getByRole('checkbox')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByRole('alert')).toHaveTextContent('Field is required');
   });
 
-  it('does not set aria-invalid when no error', () => {
-    render(<BooleanField label="Active" name="active" />);
-
-    expect(screen.getByRole('checkbox')).toHaveAttribute('aria-invalid', 'false');
-  });
-
-  it('toggles checked state on click', async () => {
+  it('calls onCheckedChange when clicked', async () => {
+    const handleChange = vi.fn();
     const user = userEvent.setup();
-    render(<BooleanField label="Active" name="active" />);
+    render(<BooleanField label="Active" name="active" onCheckedChange={handleChange} />);
 
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).not.toBeChecked();
+    await user.click(screen.getByRole('switch'));
 
-    await user.click(checkbox);
-    expect(checkbox).toBeChecked();
-
-    await user.click(checkbox);
-    expect(checkbox).not.toBeChecked();
+    expect(handleChange).toHaveBeenCalledWith(true);
   });
 
   it('applies custom className', () => {
@@ -66,6 +56,12 @@ describe('BooleanField', () => {
   it('renders as unchecked by default', () => {
     render(<BooleanField label="Active" name="active" />);
 
-    expect(screen.getByRole('checkbox')).not.toBeChecked();
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('renders as checked when checked prop is true', () => {
+    render(<BooleanField label="Active" name="active" checked />);
+
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
   });
 });

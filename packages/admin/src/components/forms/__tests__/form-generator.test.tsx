@@ -217,7 +217,7 @@ describe('FormGenerator', () => {
     render(<FormGenerator schema={schema} onSubmit={() => {}} defaultValues={{ active: false }} />);
 
     expect(screen.getByTestId('boolean-input')).toBeInTheDocument();
-    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.getByRole('switch')).toBeInTheDocument();
     expect(screen.getByText('Active')).toBeInTheDocument();
   });
 

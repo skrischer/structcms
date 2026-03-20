@@ -68,11 +68,10 @@ describe('RichTextEditor', () => {
     expect(container.firstChild).toHaveClass('custom-class');
   });
 
-  it('applies error styling when error is present', () => {
+  it('renders error via FieldMessage when error is present', () => {
     render(<RichTextEditor label="Content" name="content" error="Error message" />);
 
-    const editorContainer = document.querySelector('.border-destructive');
-    expect(editorContainer).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Error message');
   });
 
   it('renders only allowed toolbar buttons when allowedBlocks is set', () => {

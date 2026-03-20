@@ -4,6 +4,7 @@ import type { MediaItem } from '../../types/media';
 import { MediaBrowser } from '../media/media-browser';
 import { Button } from '../ui/button';
 import { Dialog } from '../ui/dialog';
+import { FieldMessage } from '../ui/field-message';
 import { Label } from '../ui/label';
 
 export interface FilePickerProps {
@@ -12,6 +13,7 @@ export interface FilePickerProps {
   onChange?: (value: string) => void;
   onBrowse?: () => void;
   error?: string;
+  description?: string;
   required?: boolean;
   className?: string;
   id?: string;
@@ -33,6 +35,7 @@ function FilePicker({
   onChange,
   onBrowse,
   error,
+  description,
   required,
   className,
   id,
@@ -53,15 +56,14 @@ function FilePicker({
   };
 
   return (
-    <div className={cn('space-y-2', className)}>
-      <Label htmlFor={inputId}>
+    <div className={cn('flex flex-col gap-1.5', className)}>
+      <Label htmlFor={inputId} required={required}>
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
       </Label>
       <div
         className={cn(
           'rounded-md border border-input bg-background p-4',
-          error && 'border-destructive'
+          error && 'border-[var(--admin-error-500)]'
         )}
       >
         {value ? (
@@ -99,10 +101,11 @@ function FilePicker({
           </div>
         )}
       </div>
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-destructive">
+        <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
-        </p>
+        </FieldMessage>
       )}
       {!onBrowse && (
         <Dialog

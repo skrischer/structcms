@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
+import { FieldMessage } from '../ui/field-message';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
@@ -7,31 +8,33 @@ export interface StringFieldProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string;
   error?: string;
+  description?: string;
 }
 
 const StringField = React.forwardRef<HTMLInputElement, StringFieldProps>(
-  ({ className, label, error, required, id, ...props }, ref) => {
+  ({ className, label, error, description, required, id, ...props }, ref) => {
     const inputId = id || props.name || React.useId();
+    const messageId = error ? `${inputId}-error` : description ? `${inputId}-desc` : undefined;
 
     return (
-      <div className={cn('space-y-2', className)}>
-        <Label htmlFor={inputId}>
+      <div className={cn('flex flex-col gap-1.5', className)}>
+        <Label htmlFor={inputId} required={required}>
           {label}
-          {required && <span className="text-destructive ml-1">*</span>}
         </Label>
         <Input
           id={inputId}
           ref={ref}
           type="text"
           aria-invalid={!!error}
-          aria-describedby={error ? `${inputId}-error` : undefined}
-          className={cn(error && 'border-destructive')}
+          aria-describedby={messageId}
+          className={cn(error && 'border-[var(--admin-error-500)]')}
           {...props}
         />
+        {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
         {error && (
-          <p id={`${inputId}-error`} className="text-sm text-destructive">
+          <FieldMessage id={`${inputId}-error`} variant="error">
             {error}
-          </p>
+          </FieldMessage>
         )}
       </div>
     );
