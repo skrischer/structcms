@@ -5,10 +5,11 @@ export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> 
   required?: boolean;
   optional?: boolean;
   error?: boolean;
+  subtitle?: string;
 }
 
 const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className, children, required, optional, error, ...props }, ref) => (
+  ({ className, children, required, optional, error, subtitle, ...props }, ref) => (
     // biome-ignore lint/a11y/noLabelWithoutControl: Generic label component, control association handled by consumers
     <label
       ref={ref}
@@ -24,6 +25,11 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
       {optional && (
         <span className="text-[11px] text-[var(--admin-gray-400)] font-normal ml-1.5">
           (optional)
+        </span>
+      )}
+      {subtitle && (
+        <span className="text-[11px] text-[var(--admin-gray-400)] font-normal block mt-0.5">
+          {subtitle}
         </span>
       )}
     </label>
