@@ -1,13 +1,18 @@
-import * as React from 'react';
-import { cn } from '../../lib/utils';
-import { Button } from '../ui/button';
-import { Label } from '../ui/label';
+import { ArrowDown, ArrowUp, X } from "lucide-react";
+import * as React from "react";
+import { cn } from "../../lib/utils";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 
 export interface ArrayFieldProps<T> {
   label: string;
   value: T[];
   onChange: (value: T[]) => void;
-  renderItem: (item: T, index: number, onChange: (item: T) => void) => React.ReactNode;
+  renderItem: (
+    item: T,
+    index: number,
+    onChange: (item: T) => void,
+  ) => React.ReactNode;
   createDefaultItem: () => T;
   error?: string;
   required?: boolean;
@@ -53,7 +58,7 @@ function ArrayFieldInner<T>(
     id,
     name,
   }: ArrayFieldProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const inputId = id || name || React.useId();
   const keyCounterRef = React.useRef(0);
@@ -116,19 +121,25 @@ function ArrayFieldInner<T>(
   };
 
   return (
-    <div ref={ref} className={cn('space-y-2', className)} data-testid="array-field">
+    <div
+      ref={ref}
+      className={cn("space-y-2", className)}
+      data-testid="array-field"
+    >
       <Label htmlFor={inputId}>
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
       <div
         className={cn(
-          'rounded-md border border-input bg-background p-4',
-          error && 'border-destructive'
+          "rounded-md border border-input bg-background p-4",
+          error && "border-destructive",
         )}
       >
         {value.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">No items yet</p>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            No items yet
+          </p>
         ) : (
           <div className="space-y-3">
             {itemsWithKeys.map(({ key, item }, index) => (
@@ -138,7 +149,9 @@ function ArrayFieldInner<T>(
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
-                  {renderItem(item, index, (newItem) => handleItemChange(index, newItem))}
+                  {renderItem(item, index, (newItem) =>
+                    handleItemChange(index, newItem),
+                  )}
                 </div>
                 <div className="flex flex-col gap-1">
                   <Button
@@ -150,7 +163,7 @@ function ArrayFieldInner<T>(
                     title="Move up"
                     data-testid={`move-up-${index}`}
                   >
-                    ↑
+                    <ArrowUp className="h-4 w-4" />
                   </Button>
                   <Button
                     type="button"
@@ -161,7 +174,7 @@ function ArrayFieldInner<T>(
                     title="Move down"
                     data-testid={`move-down-${index}`}
                   >
-                    ↓
+                    <ArrowDown className="h-4 w-4" />
                   </Button>
                   <Button
                     type="button"
@@ -171,7 +184,7 @@ function ArrayFieldInner<T>(
                     title="Remove"
                     data-testid={`remove-${index}`}
                   >
-                    ✕
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -200,7 +213,7 @@ function ArrayFieldInner<T>(
 }
 
 const ArrayField = React.forwardRef(ArrayFieldInner) as <T>(
-  props: ArrayFieldProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
+  props: ArrayFieldProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> },
 ) => React.ReactElement;
 
 export { ArrayField };
