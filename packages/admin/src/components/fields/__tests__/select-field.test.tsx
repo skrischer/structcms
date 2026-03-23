@@ -19,7 +19,8 @@ describe("SelectField", () => {
       />,
     );
 
-    expect(screen.getByTestId("select-dropdown")).toBeInTheDocument();
+    // Select atom renders a button trigger (not a native <select>)
+    expect(screen.getByRole("button", { name: /select/i })).toBeInTheDocument();
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
   });
 
@@ -99,7 +100,10 @@ describe("SelectField", () => {
       />,
     );
 
-    await user.selectOptions(screen.getByTestId("select-dropdown"), "Green");
+    // Open the Select dropdown by clicking the trigger button
+    await user.click(screen.getByRole("button", { name: /select/i }));
+    // Click the "Green" option
+    await user.click(screen.getByText("Green"));
 
     expect(selected).toBe("Green");
   });
@@ -145,8 +149,8 @@ describe("SelectField", () => {
       />,
     );
 
-    const select = screen.getByTestId("select-dropdown") as HTMLSelectElement;
-    expect(select.value).toBe("Green");
+    // Select atom shows the selected label in the trigger button
+    expect(screen.getByText("Green")).toBeInTheDocument();
   });
 
   it("renders description when no error is present", () => {

@@ -1,9 +1,9 @@
-import type React from 'react';
-import { useState } from 'react';
-import { useAuth } from '../../context/auth-context';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import type React from "react";
+import { useState } from "react";
+import { useAuth } from "../../context/auth-context";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 export interface LoginFormProps {
   onSuccess?: () => void;
@@ -12,8 +12,8 @@ export interface LoginFormProps {
 
 export function LoginForm({ onSuccess, onError }: LoginFormProps) {
   const { signIn } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,7 +26,8 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       await signIn(email, password);
       onSuccess?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Sign in failed';
+      const errorMessage =
+        err instanceof Error ? err.message : "Sign in failed";
       setError(errorMessage);
       onError?.(err instanceof Error ? err : new Error(errorMessage));
     } finally {
@@ -60,14 +61,6 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
           required
           disabled={isSubmitting}
         />
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="text-[13px] font-medium text-[var(--admin-primary-600)] hover:underline"
-          >
-            Forgot password?
-          </button>
-        </div>
       </div>
 
       {error && (
@@ -77,7 +70,7 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Signing in...' : 'Sign In'}
+        {isSubmitting ? "Signing in..." : "Sign In"}
       </Button>
     </form>
   );

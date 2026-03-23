@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import Link from '@tiptap/extension-link';
-import { type Editor, EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import * as React from 'react';
-import { cn } from '../../lib/utils';
-import { FieldMessage } from '../ui/field-message';
-import { Label } from '../ui/label';
+import Link from "@tiptap/extension-link";
+import { type Editor, EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import * as React from "react";
+import { cn } from "../../lib/utils";
+import { FieldMessage } from "../ui/field-message";
+import { Label } from "../ui/label";
 
 export interface RichTextEditorProps {
   label: string;
@@ -27,7 +27,10 @@ export interface RichTextEditorProps {
  * When allowedBlocks is undefined or empty, all blocks are allowed.
  * The 'list' shorthand allows both 'bulletList' and 'orderedList'.
  */
-function isBlockAllowed(blockName: string, allowedBlocks?: readonly string[]): boolean {
+function isBlockAllowed(
+  blockName: string,
+  allowedBlocks?: readonly string[],
+): boolean {
   if (!allowedBlocks || allowedBlocks.length === 0) return true;
   return allowedBlocks.includes(blockName);
 }
@@ -40,7 +43,13 @@ interface ToolbarButtonProps {
   title: string;
 }
 
-function ToolbarButton({ onClick, isActive, disabled, children, title }: ToolbarButtonProps) {
+function ToolbarButton({
+  onClick,
+  isActive,
+  disabled,
+  children,
+  title,
+}: ToolbarButtonProps) {
   return (
     <button
       type="button"
@@ -48,8 +57,8 @@ function ToolbarButton({ onClick, isActive, disabled, children, title }: Toolbar
       disabled={disabled}
       title={title}
       className={cn(
-        'px-2 py-1 text-sm rounded hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed',
-        isActive && 'bg-accent text-accent-foreground'
+        "px-2 py-1 text-sm rounded hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed",
+        isActive && "bg-accent text-accent-foreground",
       )}
     >
       {children}
@@ -66,15 +75,15 @@ function InlineButtons({
   allowedBlocks?: readonly string[];
   setLink: () => void;
 }) {
-  const showBold = isBlockAllowed('bold', allowedBlocks);
-  const showItalic = isBlockAllowed('italic', allowedBlocks);
-  const showLink = isBlockAllowed('link', allowedBlocks);
+  const showBold = isBlockAllowed("bold", allowedBlocks);
+  const showItalic = isBlockAllowed("italic", allowedBlocks);
+  const showLink = isBlockAllowed("link", allowedBlocks);
   return (
     <>
       {showBold && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
-          isActive={editor.isActive('bold')}
+          isActive={editor.isActive("bold")}
           disabled={!editor.can().chain().focus().toggleBold().run()}
           title="Bold"
         >
@@ -84,7 +93,7 @@ function InlineButtons({
       {showItalic && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          isActive={editor.isActive('italic')}
+          isActive={editor.isActive("italic")}
           disabled={!editor.can().chain().focus().toggleItalic().run()}
           title="Italic"
         >
@@ -92,7 +101,11 @@ function InlineButtons({
         </ToolbarButton>
       )}
       {showLink && (
-        <ToolbarButton onClick={setLink} isActive={editor.isActive('link')} title="Link">
+        <ToolbarButton
+          onClick={setLink}
+          isActive={editor.isActive("link")}
+          title="Link"
+        >
           Link
         </ToolbarButton>
       )}
@@ -107,15 +120,17 @@ function HeadingButtons({
   editor: Editor;
   allowedBlocks?: readonly string[];
 }) {
-  const showH1 = isBlockAllowed('heading1', allowedBlocks);
-  const showH2 = isBlockAllowed('heading2', allowedBlocks);
-  const showH3 = isBlockAllowed('heading3', allowedBlocks);
+  const showH1 = isBlockAllowed("heading1", allowedBlocks);
+  const showH2 = isBlockAllowed("heading2", allowedBlocks);
+  const showH3 = isBlockAllowed("heading3", allowedBlocks);
   return (
     <>
       {showH1 && (
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          isActive={editor.isActive('heading', { level: 1 })}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
+          isActive={editor.isActive("heading", { level: 1 })}
           title="Heading 1"
         >
           H1
@@ -123,8 +138,10 @@ function HeadingButtons({
       )}
       {showH2 && (
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          isActive={editor.isActive('heading', { level: 2 })}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
+          isActive={editor.isActive("heading", { level: 2 })}
           title="Heading 2"
         >
           H2
@@ -132,8 +149,10 @@ function HeadingButtons({
       )}
       {showH3 && (
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          isActive={editor.isActive('heading', { level: 3 })}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
+          isActive={editor.isActive("heading", { level: 3 })}
           title="Heading 3"
         >
           H3
@@ -151,15 +170,17 @@ function ListButtons({
   allowedBlocks?: readonly string[];
 }) {
   const showBulletList =
-    isBlockAllowed('bulletList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
+    isBlockAllowed("bulletList", allowedBlocks) ||
+    isBlockAllowed("list", allowedBlocks);
   const showOrderedList =
-    isBlockAllowed('orderedList', allowedBlocks) || isBlockAllowed('list', allowedBlocks);
+    isBlockAllowed("orderedList", allowedBlocks) ||
+    isBlockAllowed("list", allowedBlocks);
   return (
     <>
       {showBulletList && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          isActive={editor.isActive('bulletList')}
+          isActive={editor.isActive("bulletList")}
           title="Bullet List"
         >
           &bull;
@@ -168,7 +189,7 @@ function ListButtons({
       {showOrderedList && (
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          isActive={editor.isActive('orderedList')}
+          isActive={editor.isActive("orderedList")}
           title="Ordered List"
         >
           1.
@@ -186,22 +207,28 @@ interface ToolbarProps {
 
 function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
   const hasInlineButtons =
-    isBlockAllowed('bold', allowedBlocks) ||
-    isBlockAllowed('italic', allowedBlocks) ||
-    isBlockAllowed('link', allowedBlocks);
+    isBlockAllowed("bold", allowedBlocks) ||
+    isBlockAllowed("italic", allowedBlocks) ||
+    isBlockAllowed("link", allowedBlocks);
   const hasHeadingButtons =
-    isBlockAllowed('heading1', allowedBlocks) ||
-    isBlockAllowed('heading2', allowedBlocks) ||
-    isBlockAllowed('heading3', allowedBlocks);
+    isBlockAllowed("heading1", allowedBlocks) ||
+    isBlockAllowed("heading2", allowedBlocks) ||
+    isBlockAllowed("heading3", allowedBlocks);
   const hasListButtons =
-    isBlockAllowed('bulletList', allowedBlocks) ||
-    isBlockAllowed('orderedList', allowedBlocks) ||
-    isBlockAllowed('list', allowedBlocks);
+    isBlockAllowed("bulletList", allowedBlocks) ||
+    isBlockAllowed("orderedList", allowedBlocks) ||
+    isBlockAllowed("list", allowedBlocks);
 
   return (
-    <div className="flex flex-wrap gap-1 border-b border-input p-2">
-      <InlineButtons editor={editor} allowedBlocks={allowedBlocks} setLink={setLink} />
-      {hasInlineButtons && hasHeadingButtons && <div className="w-px bg-border mx-1" />}
+    <div className="flex flex-wrap gap-0.5 border-b border-input py-1.5 px-2">
+      <InlineButtons
+        editor={editor}
+        allowedBlocks={allowedBlocks}
+        setLink={setLink}
+      />
+      {hasInlineButtons && hasHeadingButtons && (
+        <div className="w-px bg-border mx-1" />
+      )}
       <HeadingButtons editor={editor} allowedBlocks={allowedBlocks} />
       {(hasInlineButtons || hasHeadingButtons) && hasListButtons && (
         <div className="w-px bg-border mx-1" />
@@ -227,7 +254,7 @@ function Toolbar({ editor, allowedBlocks, setLink }: ToolbarProps) {
  */
 function RichTextEditor({
   label,
-  value = '',
+  value = "",
   onChange,
   error,
   description,
@@ -239,15 +266,19 @@ function RichTextEditor({
   allowedBlocks,
 }: RichTextEditorProps) {
   const inputId = id || name || React.useId();
-  const messageId = error ? `${inputId}-error` : description ? `${inputId}-desc` : undefined;
+  const messageId = error
+    ? `${inputId}-error`
+    : description
+      ? `${inputId}-desc`
+      : undefined;
 
   // Determine allowed heading levels based on allowedBlocks
   const headingLevels = React.useMemo(() => {
     if (!allowedBlocks || allowedBlocks.length === 0) return [1, 2, 3] as const;
     const levels: (1 | 2 | 3)[] = [];
-    if (allowedBlocks.includes('heading1')) levels.push(1);
-    if (allowedBlocks.includes('heading2')) levels.push(2);
-    if (allowedBlocks.includes('heading3')) levels.push(3);
+    if (allowedBlocks.includes("heading1")) levels.push(1);
+    if (allowedBlocks.includes("heading2")) levels.push(2);
+    if (allowedBlocks.includes("heading3")) levels.push(3);
     return levels.length > 0 ? levels : ([1, 2, 3] as const);
   }, [allowedBlocks]);
 
@@ -258,10 +289,10 @@ function RichTextEditor({
           levels: headingLevels as (1 | 2 | 3 | 4 | 5 | 6)[],
         },
       }),
-      Link.extend({ name: 'customLink' }).configure({
+      Link.extend({ name: "customLink" }).configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-primary underline',
+          class: "text-primary underline",
         },
       }),
     ],
@@ -269,9 +300,10 @@ function RichTextEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none min-h-[150px] p-3 focus:outline-none',
-        'aria-invalid': error ? 'true' : 'false',
-        ...(messageId ? { 'aria-describedby': messageId } : {}),
+        class:
+          "prose prose-sm max-w-none min-h-[120px] py-3 px-4 focus:outline-none",
+        "aria-invalid": error ? "true" : "false",
+        ...(messageId ? { "aria-describedby": messageId } : {}),
       },
     },
     onUpdate: ({ editor: updatedEditor }) => {
@@ -282,19 +314,19 @@ function RichTextEditor({
   const setLink = React.useCallback(() => {
     if (!editor) return;
 
-    const previousUrl = editor.getAttributes('link').href as string | undefined;
-    const url = window.prompt('URL', previousUrl);
+    const previousUrl = editor.getAttributes("link").href as string | undefined;
+    const url = window.prompt("URL", previousUrl);
 
     if (url === null) {
       return;
     }
 
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+    if (url === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
       return;
     }
 
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }, [editor]);
 
   if (!editor) {
@@ -302,20 +334,30 @@ function RichTextEditor({
   }
 
   return (
-    <div className={cn('flex flex-col gap-1.5', className)}>
+    <div className={cn("flex flex-col gap-1", className)}>
       <Label htmlFor={inputId} required={required}>
         {label}
       </Label>
       <div
         className={cn(
-          'rounded-md border border-input bg-background',
-          error && 'border-[var(--admin-error-500)]'
+          "rounded-md border border-input bg-background",
+          error && "border-[var(--admin-error-500)]",
         )}
       >
-        <Toolbar editor={editor} allowedBlocks={allowedBlocks} setLink={setLink} />
-        <EditorContent editor={editor} id={inputId} data-placeholder={placeholder} />
+        <Toolbar
+          editor={editor}
+          allowedBlocks={allowedBlocks}
+          setLink={setLink}
+        />
+        <EditorContent
+          editor={editor}
+          id={inputId}
+          data-placeholder={placeholder}
+        />
       </div>
-      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
+      {description && !error && (
+        <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>
+      )}
       {error && (
         <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
@@ -325,6 +367,6 @@ function RichTextEditor({
   );
 }
 
-RichTextEditor.displayName = 'RichTextEditor';
+RichTextEditor.displayName = "RichTextEditor";
 
 export { RichTextEditor };

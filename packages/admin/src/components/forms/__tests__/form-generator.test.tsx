@@ -294,7 +294,8 @@ describe("FormGenerator", () => {
     );
 
     expect(screen.getByTestId("select-input")).toBeInTheDocument();
-    expect(screen.getByTestId("select-dropdown")).toBeInTheDocument();
+    // Select atom renders a button trigger showing the selected value
+    expect(screen.getByText("red")).toBeInTheDocument();
   });
 
   it("renders FilePicker for file fields", () => {

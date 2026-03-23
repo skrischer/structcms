@@ -1,10 +1,9 @@
-'use client';
-import { cn } from '../../lib/utils';
-import type { PageSummary } from '../content/page-list';
-import { ErrorBoundary } from '../ui/error-boundary';
-import { KpiCards } from './kpi-cards';
-import { QuickActions } from './quick-actions';
-import { RecentPages } from './recent-pages';
+"use client";
+import { cn } from "../../lib/utils";
+import type { PageSummary } from "../content/page-list";
+import { ErrorBoundary } from "../ui/error-boundary";
+import { KpiCards } from "./kpi-cards";
+import { RecentPages } from "./recent-pages";
 
 export interface DashboardPageProps {
   onSelectPage: (page: PageSummary) => void;
@@ -40,7 +39,10 @@ function DashboardPage({
 }: DashboardPageProps) {
   return (
     <div
-      className={cn('max-w-[1100px] mx-auto w-full flex flex-col gap-6', className)}
+      className={cn(
+        "max-w-[1100px] mx-auto w-full flex flex-col gap-6",
+        className,
+      )}
       data-testid="dashboard-page"
     >
       <ErrorBoundary>
@@ -50,18 +52,10 @@ function DashboardPage({
       <ErrorBoundary>
         <RecentPages onSelectPage={onSelectPage} onViewAll={onViewAllPages} />
       </ErrorBoundary>
-
-      <ErrorBoundary>
-        <QuickActions
-          onCreatePage={onCreatePage}
-          onUploadMedia={onUploadMedia}
-          onEditNavigation={onEditNavigation}
-        />
-      </ErrorBoundary>
     </div>
   );
 }
 
-DashboardPage.displayName = 'DashboardPage';
+DashboardPage.displayName = "DashboardPage";
 
 export { DashboardPage };

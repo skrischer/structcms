@@ -1,8 +1,9 @@
-import * as React from 'react';
-import { cn } from '../../lib/utils';
-import { FieldMessage } from '../ui/field-message';
-import { Label } from '../ui/label';
-import { RadioGroup } from '../ui/radio-group';
+import * as React from "react";
+import { cn } from "../../lib/utils";
+import { FieldMessage } from "../ui/field-message";
+import { Label } from "../ui/label";
+import { RadioGroup } from "../ui/radio-group";
+import { Select } from "../ui/select";
 
 export interface SelectFieldProps {
   label: string;
@@ -32,10 +33,17 @@ function SelectField({
   const generatedId = React.useId();
   const inputId = id || name || generatedId;
   const isRadio = options.length <= 3;
-  const messageId = error ? `${inputId}-error` : description ? `${inputId}-desc` : undefined;
+  const messageId = error
+    ? `${inputId}-error`
+    : description
+      ? `${inputId}-desc`
+      : undefined;
 
   return (
-    <div className={cn('flex flex-col gap-1.5', className)} data-testid="select-input">
+    <div
+      className={cn("flex flex-col gap-1.5", className)}
+      data-testid="select-input"
+    >
       <Label htmlFor={isRadio ? undefined : inputId} required={required}>
         {label}
       </Label>
@@ -52,30 +60,17 @@ function SelectField({
           testIdPrefix="select"
         />
       ) : (
-        <select
-          id={inputId}
-          name={name}
-          value={value ?? ''}
-          onChange={(e) => onChange?.(e.target.value)}
-          aria-invalid={!!error}
-          aria-describedby={messageId}
-          className={cn(
-            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm',
-            error && 'border-[var(--admin-error-500)]'
-          )}
-          data-testid="select-dropdown"
-        >
-          <option value="" disabled>
-            Select...
-          </option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <Select
+          options={options.map((o) => ({ value: o, label: o }))}
+          value={value}
+          onChange={onChange}
+          placeholder="Select..."
+          error={!!error}
+        />
       )}
-      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
+      {description && !error && (
+        <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>
+      )}
       {error && (
         <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
@@ -84,6 +79,6 @@ function SelectField({
     </div>
   );
 }
-SelectField.displayName = 'SelectField';
+SelectField.displayName = "SelectField";
 
 export { SelectField };
