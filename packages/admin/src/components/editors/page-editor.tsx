@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Plus, Save, X } from "lucide-react";
 import * as React from "react";
 import { useAdmin } from "../../hooks/use-admin";
 import { cn } from "../../lib/utils";
+import { ActionFooter } from "../ui/action-footer";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { SectionEditor } from "./section-editor";
@@ -132,7 +133,7 @@ function PageEditor({
           className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)]"
           data-testid="page-settings"
         >
-          <div className="border-b border-[var(--admin-border-default)] px-5 py-5">
+          <div className="px-5 py-5">
             <h3 className="text-[16px] font-semibold leading-[1.3] text-[var(--admin-gray-900)]">
               Page Settings
             </h3>
@@ -157,17 +158,6 @@ function PageEditor({
             </div>
             <div>
               <span className="block text-[13px] text-[var(--admin-gray-500)] mb-1.5">
-                Page Type
-              </span>
-              <div
-                className="flex h-9 items-center rounded-md bg-[var(--admin-gray-50)] py-2 px-3 text-[14px] text-[var(--admin-gray-700)]"
-                data-testid="page-type-display"
-              >
-                {pageType ?? ""}
-              </div>
-            </div>
-            <div>
-              <span className="block text-[13px] text-[var(--admin-gray-500)] mb-1.5">
                 Slug
               </span>
               <div
@@ -175,6 +165,17 @@ function PageEditor({
                 data-testid="page-slug-display"
               >
                 {pageSlug ?? ""}
+              </div>
+            </div>
+            <div>
+              <span className="block text-[13px] text-[var(--admin-gray-500)] mb-1.5">
+                Page Type
+              </span>
+              <div
+                className="flex h-9 items-center rounded-md bg-[var(--admin-gray-50)] py-2 px-3 text-[14px] text-[var(--admin-gray-700)]"
+                data-testid="page-type-display"
+              >
+                {pageType ?? ""}
               </div>
             </div>
           </div>
@@ -185,7 +186,7 @@ function PageEditor({
         <h2 className="text-[20px] font-semibold leading-[1.3] text-[var(--admin-gray-900)]">
           Sections
         </h2>
-        <Badge>{sections.length} sections</Badge>
+        <Badge>{sections.length} sections on this page</Badge>
       </div>
 
       {sections.length === 0 ? (
@@ -216,7 +217,7 @@ function PageEditor({
                 <div className="flex items-center justify-between border-b border-[var(--admin-border-default)] px-5 py-5">
                   <div className="flex items-center gap-2">
                     <h3 className="text-[16px] font-semibold leading-[1.3] text-[var(--admin-gray-900)] capitalize">
-                      {sectionLabel}
+                      {sectionLabel} Section
                     </h3>
                     <Badge variant="primary">{section.type}</Badge>
                   </div>
@@ -269,40 +270,43 @@ function PageEditor({
         </div>
       )}
 
-      <div className="flex items-center gap-2 border-t border-[var(--admin-border-default)] pt-4">
-        <select
-          value={selectedSectionType}
-          onChange={(e) => setSelectedSectionType(e.target.value)}
-          aria-label="Section type"
-          className="flex h-9 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] px-3 py-2 text-[14px] text-[var(--admin-gray-700)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:ring-[var(--admin-shadow-ring)]"
-          data-testid="section-type-select"
-        >
-          {allowedSections.map((type) => {
-            const sectionDef = registry.getSection(type);
-            return (
-              <option key={type} value={type}>
-                {sectionDef?.name ?? type}
-              </option>
-            );
-          })}
-        </select>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={handleAddSection}
-          data-testid="add-section"
-        >
-          <Plus size={16} strokeWidth={2} />
-          Add Section
-        </Button>
-      </div>
-
-      <div className="border-t border-[var(--admin-border-default)] bg-[var(--admin-gray-50)] -mx-6 px-6 py-4 rounded-b-lg">
-        <Button type="button" onClick={handleSave} data-testid="save-page">
-          <Save size={16} strokeWidth={2} />
-          Save Page
-        </Button>
-      </div>
+      <ActionFooter
+        left={
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedSectionType}
+              onChange={(e) => setSelectedSectionType(e.target.value)}
+              aria-label="Section type"
+              className="flex h-9 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] px-3 py-2 text-[14px] text-[var(--admin-gray-700)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:ring-[var(--admin-shadow-ring)]"
+              data-testid="section-type-select"
+            >
+              {allowedSections.map((type) => {
+                const sectionDef = registry.getSection(type);
+                return (
+                  <option key={type} value={type}>
+                    {sectionDef?.name ?? type}
+                  </option>
+                );
+              })}
+            </select>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleAddSection}
+              data-testid="add-section"
+            >
+              <Plus size={16} strokeWidth={2} />
+              Add Section
+            </Button>
+          </div>
+        }
+        right={
+          <Button type="button" onClick={handleSave} data-testid="save-page">
+            <Save size={16} strokeWidth={2} />
+            Save Page
+          </Button>
+        }
+      />
     </div>
   );
 }

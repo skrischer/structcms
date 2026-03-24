@@ -8,7 +8,7 @@
 
 **Project:** StructCMS Admin
 **Generated:** 2026-03-16 11:24:31
-**Category:** Analytics Dashboard
+**Category:** CMS Admin Dashboard
 
 ---
 
@@ -19,23 +19,22 @@
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
 | Primary | `#2563EB` | `--color-primary` |
-| Secondary | `#3B82F6` | `--color-secondary` |
-| CTA/Accent | `#F97316` | `--color-cta` |
+| Secondary | `#F1F5F9` | `--color-secondary` |
 | Background | `#F8FAFC` | `--color-background` |
 | Text | `#1E293B` | `--color-text` |
 
-**Color Notes:** Blue data + amber highlights [Accent adjusted from #F59E0B for WCAG 3:1]
+**Color Notes:** Primary Blue `#2563EB` is the sole accent color. No separate CTA/accent -- all interactive highlights use the primary blue scale.
 
 ### Typography
 
-- **Heading Font:** Fira Code
-- **Body Font:** Fira Sans
-- **Mood:** dashboard, data, analytics, code, technical, precise
-- **Google Fonts:** [Fira Code + Fira Sans](https://fonts.google.com/share?selection.family=Fira+Code:wght@400;500;600;700|Fira+Sans:wght@300;400;500;600;700)
+- **UI / Body Font:** Inter
+- **Code / Mono Font:** JetBrains Mono
+- **Mood:** clean, professional, content-focused, productive
+- **Google Fonts:** [Inter + JetBrains Mono](https://fonts.google.com/share?selection.family=Inter:wght@400;500;600;700|JetBrains+Mono:wght@400;500;700)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -48,16 +47,18 @@
 | `--space-lg` | `24px` / `1.5rem` | Section padding |
 | `--space-xl` | `32px` / `2rem` | Large gaps |
 | `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
+| `--space-3xl` | `64px` / `4rem` | Major section separations |
 
 ### Shadow Depths
 
 | Level | Value | Usage |
 |-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+| `--shadow-xs` | `0 1px 2px 0 rgba(0,0,0,0.05)` | Subtle lift (inputs, small cards) |
+| `--shadow-sm` | `0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)` | Cards, buttons |
+| `--shadow-md` | `0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)` | Elevated cards, dropdowns |
+| `--shadow-lg` | `0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)` | Modals, popovers |
+| `--shadow-xl` | `0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)` | Dialogs, command palette |
+| `--shadow-ring` | `0 0 0 3px rgba(59, 130, 246, 0.15)` | Focus ring for inputs/buttons |
 
 ---
 
@@ -68,48 +69,82 @@
 ```css
 /* Primary Button */
 .btn-primary {
-  background: #F97316;
+  background: #2563EB;
   color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 150ms ease;
   cursor: pointer;
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  background: #1D4ED8;
 }
 
 /* Secondary Button */
 .btn-secondary {
+  background: #FFFFFF;
+  color: #334155;
+  border: 1px solid #E2E8F0;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+/* Ghost Button */
+.btn-ghost {
   background: transparent;
-  color: #2563EB;
-  border: 2px solid #2563EB;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
+  color: #475569;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+/* Danger Button */
+.btn-danger {
+  background: #EF4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 150ms ease;
   cursor: pointer;
 }
 ```
+
+**States:**
+- Hover: darken background 8%, or light bg fill for ghost/secondary
+- Active/Pressed: darken 12%
+- Disabled: opacity 0.5, cursor not-allowed
+- Focus: 3px ring `rgba(59, 130, 246, 0.15)`
+
+**Sizes:**
+- Small: height 32px, padding 6px 12px, font 13px
+- Default: height 36px, padding 8px 16px, font 14px
+- Large: height 40px, padding 10px 20px, font 14px
 
 ### Cards
 
 ```css
 .card {
-  background: #F8FAFC;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow-xs);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 ```
 
@@ -117,17 +152,25 @@
 
 ```css
 .input {
-  padding: 12px 16px;
+  height: 36px;
+  padding: 8px 12px;
   border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #FFFFFF;
+  transition: border-color 150ms ease;
 }
 
 .input:focus {
-  border-color: #2563EB;
+  border-color: #3B82F6;
   outline: none;
-  box-shadow: 0 0 0 3px #2563EB20;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.input.error {
+  border-color: #EF4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 ```
 
@@ -135,14 +178,13 @@
 
 ```css
 .modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.5);
 }
 
 .modal {
   background: white;
-  border-radius: 16px;
-  padding: 32px;
+  border-radius: 12px;
+  padding: 24px;
   box-shadow: var(--shadow-xl);
   max-width: 500px;
   width: 90%;
@@ -153,37 +195,27 @@
 
 ## Style Guidelines
 
-**Style:** Data-Dense Dashboard
+**Style:** CMS Admin Dashboard
 
-**Keywords:** Multiple charts/widgets, data tables, KPI cards, minimal padding, grid layout, space-efficient, maximum data visibility
+**Keywords:** Content management, page editing, section-based editing, navigation management, media library, form-driven workflows, clean layout, productivity-focused
 
-**Best For:** Business intelligence dashboards, financial analytics, enterprise reporting, operational dashboards, data warehousing
+**Best For:** Headless CMS administration, content editing interfaces, structured content management
 
-**Key Effects:** Hover tooltips, chart zoom on click, row highlighting on hover, smooth filter animations, data loading spinners
-
-### Page Pattern
-
-**Pattern Name:** Real-Time / Operations Landing
-
-- **Conversion Strategy:** For ops/security/iot products. Demo or sandbox link. Trust signals.
-- **CTA Placement:** Primary CTA in nav + After metrics
-- **Section Order:** 1. Hero (product + live preview or status), 2. Key metrics/indicators, 3. How it works, 4. CTA (Start trial / Contact)
+**Key Effects:** Row highlighting on hover, smooth filter animations, data loading states, toast notifications
 
 ---
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Ornate design
-- ❌ No filtering
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
+- No emojis as icons -- use Lucide SVG icons
+- No ornate/decorative styling -- this is a productivity tool
+- No animations > 300ms for micro-interactions
+- No hover-only interactions (must work on touch)
+- No color-only status indicators
+- No placeholder-only form labels
+- No layout-shifting hover transforms
+- No raw hex values in components -- use tokens
+- No z-index spaghetti -- use defined layers (1/10/20/50/100/1000)
 
 ---
 
@@ -192,7 +224,7 @@
 Before delivering any UI code, verify:
 
 - [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
+- [ ] All icons from Lucide React icon set
 - [ ] `cursor-pointer` on all clickable elements
 - [ ] Hover states with smooth transitions (150-300ms)
 - [ ] Light mode: text contrast 4.5:1 minimum

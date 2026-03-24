@@ -403,7 +403,13 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                     data-testid={`page-row-${page.id}`}
                   >
                     <td className="px-4 py-3 text-[14px] font-medium text-[var(--admin-gray-800)]">
-                      {page.title}
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:text-[var(--admin-primary-600)] transition-colors"
+                        onClick={() => onSelectPage(page)}
+                      >
+                        {page.title}
+                      </button>
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant="default" size="sm">
@@ -411,7 +417,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)] font-[JetBrains_Mono,monospace]">
-                      {page.slug}
+                      /{page.slug}
                     </td>
                     <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)]">
                       {getUpdatedAt(page)

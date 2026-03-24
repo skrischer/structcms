@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  Badge,
-  Breadcrumb,
   Button,
   PageEditor,
   Skeleton,
@@ -108,20 +106,6 @@ export default function EditPagePage() {
 
   return (
     <div className="max-w-[1100px] mx-auto space-y-6 py-6">
-      <Breadcrumb
-        items={[
-          { label: "Pages", href: "/admin/pages" },
-          { label: page.title },
-        ]}
-      />
-
-      <div className="flex items-center gap-3">
-        <h1 className="text-[24px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--admin-gray-900)]">
-          Edit Page
-        </h1>
-        <Badge variant="default">{page.pageType}</Badge>
-      </div>
-
       {allowedSections.length > 0 && (
         <PageEditor
           sections={page.sections}

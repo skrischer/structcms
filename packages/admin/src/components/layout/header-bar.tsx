@@ -77,7 +77,7 @@ function HeaderBar({
         )}
 
         {userInitials && (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--admin-gray-200)] text-[13px] font-medium text-[var(--admin-gray-600)]">
+          <div className="flex size-8 items-center justify-center rounded-full bg-[var(--admin-primary-100)] text-[13px] font-semibold text-[var(--admin-primary-700)]">
             {userInitials}
           </div>
         )}

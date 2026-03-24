@@ -54,6 +54,7 @@ function SelectField({
           onChange={onChange}
           name={name || inputId}
           error={!!error}
+          orientation="horizontal"
           aria-label={label}
           aria-invalid={!!error}
           aria-describedby={messageId}

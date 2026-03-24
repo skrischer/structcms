@@ -213,7 +213,7 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)] font-[JetBrains_Mono,monospace]">
-                    {page.slug}
+                    /{page.slug}
                   </td>
                   <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)]">
                     {getUpdatedAt(page)

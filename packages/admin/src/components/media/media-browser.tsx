@@ -192,7 +192,7 @@ function MediaBrowser({
       data-testid="media-browser"
     >
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-[24px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--admin-gray-900)]">
             Media
@@ -201,48 +201,52 @@ function MediaBrowser({
             Manage your media files and assets.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Search */}
-          <div className="relative">
-            <Search
-              size={16}
-              strokeWidth={2}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-gray-400)] pointer-events-none"
-            />
-            <input
-              type="text"
-              placeholder="Search media..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              aria-label="Search media"
-              className="h-9 w-60 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] pl-9 pr-3 text-[14px] text-[var(--admin-gray-800)] placeholder:text-[var(--admin-gray-400)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:shadow-[var(--admin-shadow-ring)]"
-              data-testid="search-input"
-            />
-          </div>
-
-          {/* Category filter */}
-          {!category && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Search */}
             <div className="relative">
-              <Filter
+              <Search
                 size={16}
                 strokeWidth={2}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-gray-600)] pointer-events-none"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-gray-400)] pointer-events-none"
               />
-              <select
-                value={categoryFilter}
-                onChange={(e) =>
-                  setCategoryFilter(e.target.value as "image" | "document" | "")
-                }
-                aria-label="Filter by type"
-                className="h-9 appearance-none rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] pl-9 pr-8 text-[14px] font-medium text-[var(--admin-gray-700)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:shadow-[var(--admin-shadow-ring)]"
-                data-testid="category-filter"
-              >
-                <option value="">All Types</option>
-                <option value="image">Images</option>
-                <option value="document">Documents</option>
-              </select>
+              <input
+                type="text"
+                placeholder="Search media..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                aria-label="Search media"
+                className="h-9 w-60 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] pl-9 pr-3 text-[14px] text-[var(--admin-gray-800)] placeholder:text-[var(--admin-gray-400)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:shadow-[var(--admin-shadow-ring)]"
+                data-testid="search-input"
+              />
             </div>
-          )}
+
+            {/* Category filter */}
+            {!category && (
+              <div className="relative">
+                <Filter
+                  size={16}
+                  strokeWidth={2}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-gray-600)] pointer-events-none"
+                />
+                <select
+                  value={categoryFilter}
+                  onChange={(e) =>
+                    setCategoryFilter(
+                      e.target.value as "image" | "document" | "",
+                    )
+                  }
+                  aria-label="Filter by type"
+                  className="h-9 appearance-none rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] pl-9 pr-8 text-[14px] font-medium text-[var(--admin-gray-700)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:shadow-[var(--admin-shadow-ring)]"
+                  data-testid="category-filter"
+                >
+                  <option value="">All Types</option>
+                  <option value="image">Images</option>
+                  <option value="document">Documents</option>
+                </select>
+              </div>
+            )}
+          </div>
 
           {/* Upload */}
           <input
@@ -307,7 +311,7 @@ function MediaBrowser({
               />
             </div>
             <span className="text-[14px] font-medium text-[var(--admin-gray-700)]">
-              Drop files here or click to browse
+              Click to browse
             </span>
             <span className="text-[12px] text-[var(--admin-gray-400)]">
               PNG, JPG, SVG, WebP up to 10MB
@@ -333,7 +337,7 @@ function MediaBrowser({
             strokeWidth={1.5}
           />
           <span className="text-[14px] font-medium text-[var(--admin-gray-700)]">
-            Drag files here or click to upload
+            Click here to upload files
           </span>
         </button>
       )}
@@ -431,16 +435,14 @@ function MediaBrowser({
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={page + 1}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              variant="compact"
-              totalItems={totalCount}
-              itemsPerPage={pageSize}
-            />
-          )}
+          <Pagination
+            currentPage={page + 1}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            variant="compact"
+            totalItems={totalCount}
+            itemsPerPage={pageSize}
+          />
         </>
       )}
 

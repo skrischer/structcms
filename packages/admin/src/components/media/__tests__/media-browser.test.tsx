@@ -209,7 +209,7 @@ describe("MediaBrowser", () => {
       expect(screen.getByTestId("media-grid")).toBeInTheDocument();
     });
 
-    expect(screen.queryByText(/Page \d+ of/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Page \d+ of/)).toBeInTheDocument();
   });
 
   it("shows upload zone above grid when items exist", async () => {
@@ -222,9 +222,7 @@ describe("MediaBrowser", () => {
     });
 
     expect(screen.getByTestId("upload-zone")).toBeInTheDocument();
-    expect(
-      screen.getByText("Drag files here or click to upload"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Click here to upload files")).toBeInTheDocument();
   });
 
   it("displays filenames for each media item", async () => {

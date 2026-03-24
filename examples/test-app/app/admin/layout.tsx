@@ -11,13 +11,7 @@ import {
   useAuth,
 } from "@structcms/admin";
 import type { BreadcrumbItem } from "@structcms/admin";
-import {
-  FileText,
-  Image,
-  LayoutDashboard,
-  Navigation2,
-  Settings,
-} from "lucide-react";
+import { FileText, Image, LayoutDashboard, Navigation2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -42,18 +36,12 @@ const navItems: SidebarItem[] = [
     path: "/navigation",
     icon: <Navigation2 size={20} strokeWidth={1.5} />,
   },
-  {
-    label: "Settings",
-    path: "/settings",
-    icon: <Settings size={20} strokeWidth={1.5} />,
-  },
 ];
 
 const pathLabels: Record<string, string> = {
   pages: "Pages",
   media: "Media",
   navigation: "Navigation",
-  settings: "Settings",
 };
 
 function buildBreadcrumbs(pathname: string): BreadcrumbItem[] {

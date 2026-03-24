@@ -117,27 +117,47 @@
   font-synthesis: none;
 }
 
-/* CSS Baseline Reset scoped to admin */
-[data-structcms-admin] *,
-[data-structcms-admin] *::before,
-[data-structcms-admin] *::after {
-  box-sizing: border-box;
-  margin: 0;
-}
+/* Scoped baseline reset — in @layer base so Tailwind utilities can override */
+@layer base {
+  [data-structcms-admin] *,
+  [data-structcms-admin] *::before,
+  [data-structcms-admin] *::after {
+    box-sizing: border-box;
+  }
 
-[data-structcms-admin] button {
-  font-family: inherit;
-  cursor: pointer;
-}
+  [data-structcms-admin] p,
+  [data-structcms-admin] h1,
+  [data-structcms-admin] h2,
+  [data-structcms-admin] h3,
+  [data-structcms-admin] h4,
+  [data-structcms-admin] h5,
+  [data-structcms-admin] h6,
+  [data-structcms-admin] ul,
+  [data-structcms-admin] ol,
+  [data-structcms-admin] dl,
+  [data-structcms-admin] dd,
+  [data-structcms-admin] figure,
+  [data-structcms-admin] blockquote,
+  [data-structcms-admin] fieldset,
+  [data-structcms-admin] pre,
+  [data-structcms-admin] hr {
+    margin: 0;
+  }
 
-[data-structcms-admin] a {
-  text-decoration: inherit;
-}
+  [data-structcms-admin] button {
+    font-family: inherit;
+    cursor: pointer;
+  }
 
-[data-structcms-admin] input,
-[data-structcms-admin] textarea,
-[data-structcms-admin] select {
-  font-family: inherit;
+  [data-structcms-admin] a {
+    text-decoration: inherit;
+  }
+
+  [data-structcms-admin] input,
+  [data-structcms-admin] textarea,
+  [data-structcms-admin] select {
+    font-family: inherit;
+  }
 }
 
 /* Reduced motion */

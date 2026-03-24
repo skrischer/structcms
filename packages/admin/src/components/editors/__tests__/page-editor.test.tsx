@@ -239,7 +239,7 @@ describe("PageEditor", () => {
     );
 
     expect(screen.getByText("Sections")).toBeInTheDocument();
-    expect(screen.getByText("2 sections")).toBeInTheDocument();
+    expect(screen.getByText("2 sections on this page")).toBeInTheDocument();
   });
 
   it("does not render page settings when no page props provided", () => {

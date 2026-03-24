@@ -131,7 +131,7 @@ describe("RecentPages", () => {
     });
 
     expect(screen.getByText("Newest Page")).toBeInTheDocument();
-    expect(screen.getByText("newest")).toBeInTheDocument();
+    expect(screen.getByText("/newest")).toBeInTheDocument();
     // Timestamp should be formatted
     const row = screen.getByTestId("recent-page-2");
     expect(row).toHaveTextContent(/Feb/);

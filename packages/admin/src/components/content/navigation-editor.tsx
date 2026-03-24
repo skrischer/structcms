@@ -4,6 +4,7 @@ import type { NavigationItem } from "@structcms/core";
 import { ChevronRight, GripVertical, Plus, Save, Trash2 } from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/utils";
+import { ActionFooter } from "../ui/action-footer";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -301,20 +302,22 @@ function NavigationEditor({
                           strokeWidth={2}
                         />
 
-                        <span
-                          className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
-                          data-testid={`nav-item-label-${index}`}
-                        >
-                          {item.label || "Untitled"}
-                        </span>
-                        <span
-                          className="text-[13px] text-[var(--admin-gray-500)] truncate"
-                          data-testid={`nav-item-href-${index}`}
-                        >
-                          {item.href || "/"}
-                        </span>
+                        <div className="flex flex-col min-w-0">
+                          <span
+                            className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
+                            data-testid={`nav-item-label-${index}`}
+                          >
+                            {item.label || "Untitled"}
+                          </span>
+                          <span
+                            className="text-[13px] text-[var(--admin-gray-500)] truncate"
+                            data-testid={`nav-item-href-${index}`}
+                          >
+                            {item.href || "/"}
+                          </span>
+                        </div>
 
-                        <div className="flex items-center gap-1 shrink-0 ml-auto opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1 shrink-0 ml-auto">
                           <Button
                             type="button"
                             variant="ghost"
@@ -354,7 +357,7 @@ function NavigationEditor({
 
                       {/* Children */}
                       {(item.children ?? []).length > 0 && (
-                        <div className="ml-8 border-l-2 border-l-[var(--admin-primary-200)]">
+                        <div className="ml-8 border-l-2 border-[var(--admin-gray-200)]">
                           {(item.children ?? []).map((child, childIndex) => (
                             <div
                               key={childIndex}
@@ -387,20 +390,22 @@ function NavigationEditor({
                                 strokeWidth={2}
                               />
 
-                              <span
-                                className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
-                                data-testid={`nav-child-label-${index}-${childIndex}`}
-                              >
-                                {child.label || "Untitled"}
-                              </span>
-                              <span
-                                className="text-[13px] text-[var(--admin-gray-500)] truncate"
-                                data-testid={`nav-child-href-${index}-${childIndex}`}
-                              >
-                                {child.href || "/"}
-                              </span>
+                              <div className="flex flex-col min-w-0">
+                                <span
+                                  className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
+                                  data-testid={`nav-child-label-${index}-${childIndex}`}
+                                >
+                                  {child.label || "Untitled"}
+                                </span>
+                                <span
+                                  className="text-[13px] text-[var(--admin-gray-500)] truncate"
+                                  data-testid={`nav-child-href-${index}-${childIndex}`}
+                                >
+                                  {child.href || "/"}
+                                </span>
+                              </div>
 
-                              <div className="flex items-center gap-1 shrink-0 ml-auto opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                              <div className="flex items-center gap-1 shrink-0 ml-auto">
                                 <Button
                                   type="button"
                                   variant="ghost"
@@ -507,20 +512,24 @@ function NavigationEditor({
           </div>
 
           {/* Save footer */}
-          <div className="flex items-center justify-between py-4 px-4 rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-gray-50)]">
-            <span className="text-[13px] text-[var(--admin-gray-500)]">
-              {totalCount} {totalCount === 1 ? "item" : "items"} total
-            </span>
-            <Button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              data-testid="nav-save"
-            >
-              <Save size={16} strokeWidth={2} />
-              {saving ? "Saving..." : "Save Navigation"}
-            </Button>
-          </div>
+          <ActionFooter
+            left={
+              <span className="text-[13px] text-[var(--admin-gray-500)]">
+                {totalCount} {totalCount === 1 ? "item" : "items"} total
+              </span>
+            }
+            right={
+              <Button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                data-testid="nav-save"
+              >
+                <Save size={16} strokeWidth={2} />
+                {saving ? "Saving..." : "Save Navigation"}
+              </Button>
+            }
+          />
         </>
       )}
     </div>

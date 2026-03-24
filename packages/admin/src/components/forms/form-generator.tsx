@@ -7,7 +7,7 @@ import {
   type FieldType,
   getFieldMeta,
 } from "@structcms/core";
-import { ArrowDown, ArrowUp, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import * as React from "react";
 import {
   type Control,
@@ -31,11 +31,11 @@ import { SelectField } from "../fields/select-field";
 import { StringField } from "../fields/string-field";
 import { TextField } from "../fields/text-field";
 import { UrlField } from "../fields/url-field";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { FieldGroup } from "../ui/field-group";
 import { FieldMessage } from "../ui/field-message";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 
 /**
  * Unwraps Zod wrappers (optional, default, nullable, etc.) to find the inner schema
@@ -166,25 +166,43 @@ function ObjectArrayFieldInner(
       className={cn("flex flex-col gap-1.5", className)}
       data-testid="array-field"
     >
-      <Label htmlFor={inputId} required={required}>
-        {label}
-      </Label>
       <div
         className={cn(
-          "rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-4",
+          "rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] shadow-xs",
           error && "border-[var(--admin-error-500)]",
         )}
       >
+        {/* Header bar */}
+        <div className="flex justify-between items-center py-3 px-4 border-b border-[var(--admin-gray-200)]">
+          <span
+            className={cn(
+              "text-[16px] font-semibold text-[var(--admin-gray-900)]",
+              required &&
+                "after:content-['*'] after:ml-0.5 after:text-[var(--admin-error-500)]",
+            )}
+          >
+            {label}
+          </span>
+          <Badge data-testid="item-count">
+            {arrayFields.length} {arrayFields.length === 1 ? "item" : "items"}
+          </Badge>
+        </div>
+
+        {/* Item rows */}
         {arrayFields.length === 0 ? (
           <p className="text-sm text-[var(--admin-gray-500)] text-center py-4">
             No items yet
           </p>
         ) : (
-          <div className="space-y-3">
+          <div>
             {arrayFields.map((field, index) => (
               <div
                 key={field.id}
-                className="flex gap-2 items-start p-3 rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-gray-50)]"
+                className={cn(
+                  "flex gap-2 items-start py-2.5 px-4",
+                  index < arrayFields.length - 1 &&
+                    "border-b border-[var(--admin-gray-200)]",
+                )}
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
@@ -198,7 +216,7 @@ function ObjectArrayFieldInner(
                     })}
                   </div>
                 </div>
-                <div className="flex flex-col gap-1">
+                <div className="flex gap-1">
                   <Button
                     type="button"
                     variant="ghost"
@@ -207,7 +225,7 @@ function ObjectArrayFieldInner(
                       if (index > 0) swap(index, index - 1);
                     }}
                     disabled={index === 0}
-                    title="Move up"
+                    aria-label="Move up"
                     data-testid={`move-up-${index}`}
                   >
                     <ArrowUp className="h-4 w-4" />
@@ -221,7 +239,7 @@ function ObjectArrayFieldInner(
                         swap(index, index + 1);
                     }}
                     disabled={index === arrayFields.length - 1}
-                    title="Move down"
+                    aria-label="Move down"
                     data-testid={`move-down-${index}`}
                   >
                     <ArrowDown className="h-4 w-4" />
@@ -231,7 +249,7 @@ function ObjectArrayFieldInner(
                     variant="ghost"
                     size="icon"
                     onClick={() => remove(index)}
-                    title="Remove"
+                    aria-label="Remove"
                     data-testid={`remove-${index}`}
                   >
                     <X className="h-4 w-4" />
@@ -241,16 +259,20 @@ function ObjectArrayFieldInner(
             ))}
           </div>
         )}
-        <div className="mt-4">
+
+        {/* Add-item footer */}
+        <div className="border-t border-[var(--admin-gray-200)]">
           <Button
             type="button"
-            variant="secondary"
+            variant="ghost"
             onClick={() =>
               append(createDefaultObject(innerShape) as FieldValues)
             }
             id={inputId}
             data-testid="add-item"
+            className="flex justify-center w-full py-2.5"
           >
+            <Plus className="h-4 w-4 mr-1" />
             Add Item
           </Button>
         </div>

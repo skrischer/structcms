@@ -8,7 +8,6 @@ import {
   Navigation,
   PanelLeftClose,
   PanelLeftOpen,
-  Settings,
 } from "lucide-react";
 import type * as React from "react";
 import { cn } from "../../lib/utils";
@@ -54,11 +53,6 @@ const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
     path: "/navigation",
     icon: <Navigation size={20} strokeWidth={1.5} />,
   },
-  {
-    label: "Settings",
-    path: "/settings",
-    icon: <Settings size={20} strokeWidth={1.5} />,
-  },
 ];
 
 function Sidebar({
@@ -94,22 +88,14 @@ function Sidebar({
       )}
       data-testid="sidebar"
     >
-      {/* Logo section */}
-      <div className="flex items-center justify-between h-14 px-4 border-b border-[var(--admin-gray-100)] shrink-0">
-        {!collapsed && (
-          <span
-            className="text-base font-bold text-[var(--admin-gray-900)] truncate"
-            data-testid="sidebar-title"
-          >
-            {title}
-          </span>
-        )}
+      {/* Logo / collapse toggle */}
+      <div className="flex items-center h-14 px-4 border-b border-[var(--admin-gray-100)] shrink-0">
         <button
           type="button"
           onClick={onToggleCollapse}
           className={cn(
-            "flex items-center justify-center rounded-md text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] transition-colors",
-            collapsed ? "mx-auto h-8 w-8" : "h-8 w-8",
+            "flex items-center rounded-md text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] transition-colors",
+            collapsed ? "justify-center h-8 w-8 mx-auto" : "gap-2 h-8 px-1",
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           data-testid="sidebar-collapse-toggle"
@@ -117,7 +103,19 @@ function Sidebar({
           {collapsed ? (
             <PanelLeftOpen size={18} strokeWidth={1.5} />
           ) : (
-            <PanelLeftClose size={18} strokeWidth={1.5} />
+            <>
+              <PanelLeftClose
+                size={18}
+                strokeWidth={1.5}
+                className="shrink-0"
+              />
+              <span
+                className="text-base font-bold text-[var(--admin-gray-900)] truncate"
+                data-testid="sidebar-title"
+              >
+                {title}
+              </span>
+            </>
           )}
         </button>
       </div>
@@ -161,44 +159,54 @@ function Sidebar({
         )}
         data-testid="sidebar-footer"
       >
-        <div
-          className={cn(
-            "flex items-center rounded-md px-3 py-2",
-            collapsed ? "justify-center px-0" : "gap-3",
-          )}
-        >
-          <div
-            className="flex items-center justify-center shrink-0 h-8 w-8 rounded-full bg-[var(--admin-gray-200)] text-xs font-semibold text-[var(--admin-gray-700)]"
-            data-testid="sidebar-avatar"
-          >
-            {initials}
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-medium text-[var(--admin-gray-700)] truncate">
+        {collapsed ? (
+          <>
+            <div
+              className="size-8 rounded-full bg-[var(--admin-primary-100)] text-[var(--admin-primary-700)] flex items-center justify-center text-[13px] font-semibold"
+              data-testid="sidebar-avatar"
+            >
+              {initials}
+            </div>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="flex items-center justify-center size-8 rounded-md text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] hover:text-[var(--admin-gray-700)] transition-colors"
+              aria-label="Log out"
+              title="Log out"
+              data-testid="sidebar-logout"
+            >
+              <LogOut size={18} strokeWidth={1.5} />
+            </button>
+          </>
+        ) : (
+          <div className="flex items-center gap-3 rounded-md px-3 py-2">
+            <div
+              className="size-8 rounded-full bg-[var(--admin-primary-100)] text-[var(--admin-primary-700)] flex items-center justify-center text-[13px] font-semibold shrink-0"
+              data-testid="sidebar-avatar"
+            >
+              {initials}
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-[13px] font-medium text-[var(--admin-gray-800)] truncate">
                 {displayName}
               </span>
               {userRole && (
-                <span className="text-xs text-[var(--admin-gray-500)] truncate">
+                <span className="text-[12px] text-[var(--admin-gray-500)] truncate">
                   {userRole}
                 </span>
               )}
             </div>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={onLogout}
-          className={cn(
-            "flex items-center w-full rounded-md text-sm font-medium text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] hover:text-[var(--admin-gray-700)] transition-colors",
-            collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2",
-          )}
-          title={collapsed ? "Log out" : undefined}
-          data-testid="sidebar-logout"
-        >
-          <LogOut size={20} strokeWidth={1.5} className="shrink-0" />
-          {!collapsed && <span>Log out</span>}
-        </button>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="flex items-center justify-center shrink-0 size-8 rounded-md text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] hover:text-[var(--admin-gray-700)] transition-colors"
+              aria-label="Log out"
+              data-testid="sidebar-logout"
+            >
+              <LogOut size={18} strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   );
