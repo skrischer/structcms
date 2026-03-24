@@ -1,13 +1,12 @@
 "use client";
 
-import { Filter, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Filter, Plus, Search, Trash2 } from "lucide-react";
 import * as React from "react";
 import { useAdmin } from "../../hooks/use-admin";
 import { useApiClient } from "../../hooks/use-api-client";
 import { cn } from "../../lib/utils";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
 import { Dialog } from "../ui/dialog";
 import { ErrorAlert } from "../ui/error-alert";
 import { Pagination } from "../ui/pagination";
@@ -129,7 +128,6 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
   const [sortField, setSortField] = React.useState<SortField>("updatedAt");
   const [sortDirection, setSortDirection] =
     React.useState<SortDirection>("desc");
-  const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = React.useState(1);
   const [itemsPerPage, setItemsPerPage] = React.useState(
     ITEMS_PER_PAGE_DEFAULT,
@@ -216,31 +214,6 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
     safePage * itemsPerPage,
   );
 
-  const allSelected =
-    paginatedPages.length > 0 && selectedIds.size === paginatedPages.length;
-  const someSelected =
-    selectedIds.size > 0 && selectedIds.size < paginatedPages.length;
-
-  const handleToggleAll = React.useCallback(() => {
-    if (allSelected) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(paginatedPages.map((p) => p.id)));
-    }
-  }, [allSelected, paginatedPages]);
-
-  const handleToggleRow = React.useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  }, []);
-
   const handleSort = React.useCallback(
     (field: SortField) => {
       if (field === sortField) {
@@ -255,19 +228,16 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
 
   const handlePageChange = React.useCallback((page: number) => {
     setCurrentPage(page);
-    setSelectedIds(new Set());
   }, []);
 
   const handleItemsPerPageChange = React.useCallback((count: number) => {
     setItemsPerPage(count);
     setCurrentPage(1);
-    setSelectedIds(new Set());
   }, []);
 
   // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1);
-    setSelectedIds(new Set());
   }, [search, pageTypeFilter]);
 
   return (
@@ -386,13 +356,6 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
             <table className="w-full">
               <thead>
                 <tr className="bg-[var(--admin-gray-50)] border-b border-[var(--admin-gray-200)]">
-                  <th className="w-10 px-4 py-3">
-                    <Checkbox
-                      checked={allSelected}
-                      indeterminate={someSelected}
-                      onChange={handleToggleAll}
-                    />
-                  </th>
                   <th className="px-4 py-3 text-left">
                     <button
                       type="button"
@@ -436,19 +399,9 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                 {paginatedPages.map((page) => (
                   <tr
                     key={page.id}
-                    className={cn(
-                      "border-b border-[var(--admin-border-subtle)] last:border-b-0 hover:bg-[var(--admin-gray-50)]",
-                      selectedIds.has(page.id) &&
-                        "bg-[var(--admin-primary-50)]",
-                    )}
+                    className="border-b border-[var(--admin-border-subtle)] last:border-b-0 hover:bg-[var(--admin-gray-50)]"
                     data-testid={`page-row-${page.id}`}
                   >
-                    <td className="px-4 py-3">
-                      <Checkbox
-                        checked={selectedIds.has(page.id)}
-                        onChange={() => handleToggleRow(page.id)}
-                      />
-                    </td>
                     <td className="px-4 py-3 text-[14px] font-medium text-[var(--admin-gray-800)]">
                       {page.title}
                     </td>
@@ -467,18 +420,6 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onSelectPage(page)}
-                          aria-label={`Edit ${page.title}`}
-                        >
-                          <Pencil
-                            size={16}
-                            strokeWidth={1.5}
-                            className="text-[var(--admin-gray-500)]"
-                          />
-                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"

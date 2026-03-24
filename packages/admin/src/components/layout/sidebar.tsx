@@ -156,7 +156,7 @@ function Sidebar({
       {/* User footer */}
       <div
         className={cn(
-          "shrink-0 border-t border-[var(--admin-gray-200)] p-2",
+          "shrink-0 border-t border-[var(--admin-gray-100)] p-2",
           collapsed ? "flex flex-col items-center gap-1" : "",
         )}
         data-testid="sidebar-footer"

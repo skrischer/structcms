@@ -132,7 +132,7 @@ function PageEditor({
           className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)]"
           data-testid="page-settings"
         >
-          <div className="border-b border-[var(--admin-border-default)] px-5 py-3">
+          <div className="border-b border-[var(--admin-border-default)] px-5 py-5">
             <h3 className="text-[16px] font-semibold leading-[1.3] text-[var(--admin-gray-900)]">
               Page Settings
             </h3>
@@ -213,7 +213,7 @@ function PageEditor({
                 className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)]"
                 data-testid={`page-section-${index}`}
               >
-                <div className="flex items-center justify-between border-b border-[var(--admin-border-default)] px-5 py-3">
+                <div className="flex items-center justify-between border-b border-[var(--admin-border-default)] px-5 py-5">
                   <div className="flex items-center gap-2">
                     <h3 className="text-[16px] font-semibold leading-[1.3] text-[var(--admin-gray-900)] capitalize">
                       {sectionLabel}

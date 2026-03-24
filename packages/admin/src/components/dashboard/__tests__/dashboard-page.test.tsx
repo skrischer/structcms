@@ -150,19 +150,6 @@ describe("DashboardPage", () => {
     expect(screen.getByText("About")).toBeInTheDocument();
   });
 
-  it("passes onSelectPage to RecentPages", async () => {
-    const onSelectPage = vi.fn();
-    mockAllApiSuccess();
-    renderWithProvider({ ...defaultProps, onSelectPage });
-
-    await waitFor(() => {
-      expect(screen.getByTestId("recent-page-1")).toBeInTheDocument();
-    });
-
-    await userEvent.click(screen.getByLabelText("Edit Home"));
-    expect(onSelectPage).toHaveBeenCalledWith(mockPages[0]);
-  });
-
   it("wraps sections in ErrorBoundary for isolation", () => {
     mockAllApiSuccess();
     renderWithProvider();

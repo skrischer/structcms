@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Menu, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/utils";
 import type { BreadcrumbItem } from "../ui/breadcrumb";
@@ -14,7 +14,6 @@ export interface HeaderBarProps {
   searchPlaceholder?: string;
   onToggleSidebar?: () => void;
   userInitials?: string;
-  notificationCount?: number;
   className?: string;
 }
 
@@ -24,7 +23,6 @@ function HeaderBar({
   searchPlaceholder = "Search...",
   onToggleSidebar,
   userInitials,
-  notificationCount = 0,
   className,
 }: HeaderBarProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -77,22 +75,6 @@ function HeaderBar({
             />
           </div>
         )}
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-          aria-label="Notifications"
-        >
-          <Bell
-            size={20}
-            strokeWidth={1.5}
-            className="text-[var(--admin-gray-600)]"
-          />
-          {notificationCount > 0 && (
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[var(--admin-error-500)]" />
-          )}
-        </Button>
 
         {userInitials && (
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--admin-gray-200)] text-[13px] font-medium text-[var(--admin-gray-600)]">
