@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Button,
-  PageEditor,
-  Skeleton,
-  useAdmin,
-  useApiClient,
-} from "@structcms/admin";
+import { PageEditor, Skeleton, useAdmin, useApiClient } from "@structcms/admin";
 import type { SectionData } from "@structcms/core";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
@@ -105,24 +99,14 @@ export default function EditPagePage() {
   }
 
   return (
-    <div className="max-w-[1100px] mx-auto space-y-6 py-6">
-      {allowedSections.length > 0 && (
-        <PageEditor
-          sections={page.sections}
-          allowedSections={allowedSections}
-          onSave={handleSave}
-          pageTitle={title}
-          pageType={page.pageType}
-          pageSlug={page.slug}
-          onTitleChange={setTitle}
-        />
-      )}
-
-      <div className="flex gap-2">
-        <Button variant="secondary" onClick={() => router.push("/admin/pages")}>
-          Cancel
-        </Button>
-      </div>
-    </div>
+    <PageEditor
+      sections={page.sections}
+      allowedSections={allowedSections}
+      onSave={handleSave}
+      pageTitle={title}
+      pageType={page.pageType}
+      pageSlug={page.slug}
+      onTitleChange={setTitle}
+    />
   );
 }
