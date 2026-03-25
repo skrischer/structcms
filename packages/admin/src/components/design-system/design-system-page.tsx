@@ -204,6 +204,308 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
       </p>
 
       {/* ============================================================ */}
+      {/*  DESIGN TOKENS                                                */}
+      {/* ============================================================ */}
+      <div className="border-b-2 border-[var(--admin-gray-200)] pb-12 mb-12">
+        <h1 className="text-[30px] font-bold text-[var(--admin-gray-900)] leading-[1.2] tracking-[-0.02em] mb-2">
+          Design Tokens
+        </h1>
+        <p className="text-[14px] text-[var(--admin-gray-500)] mb-12">
+          Color, typography, spacing, radius, and shadow tokens used across the
+          system.
+        </p>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Color Palette                                                  */}
+        {/* -------------------------------------------------------------- */}
+        <SectionTitle>Color Palette</SectionTitle>
+
+        <SubSection title="Primary">
+          <div className="flex flex-wrap gap-3">
+            {[
+              { token: "primary-50", hex: "#eff6ff" },
+              { token: "primary-100", hex: "#dbeafe" },
+              { token: "primary-200", hex: "#bfdbfe" },
+              { token: "primary-500", hex: "#3b82f6" },
+              { token: "primary-600", hex: "#2563eb" },
+              { token: "primary-700", hex: "#1d4ed8" },
+            ].map((c) => (
+              <div key={c.token} className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-12 h-12 rounded-md border border-[var(--admin-gray-200)]"
+                  style={{
+                    backgroundColor: `var(--admin-${c.token})`,
+                  }}
+                />
+                <span className="text-[11px] text-[var(--admin-gray-600)]">
+                  {c.token}
+                </span>
+                <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
+                  {c.hex}
+                </span>
+              </div>
+            ))}
+          </div>
+        </SubSection>
+
+        <SubSection title="Gray / Neutral">
+          <div className="flex flex-wrap gap-3">
+            {[
+              { token: "gray-50", hex: "#f8fafc" },
+              { token: "gray-100", hex: "#f1f5f9" },
+              { token: "gray-200", hex: "#e2e8f0" },
+              { token: "gray-300", hex: "#cbd5e1" },
+              { token: "gray-400", hex: "#94a3b8" },
+              { token: "gray-500", hex: "#64748b" },
+              { token: "gray-600", hex: "#475569" },
+              { token: "gray-700", hex: "#334155" },
+              { token: "gray-800", hex: "#1e293b" },
+              { token: "gray-900", hex: "#0f172a" },
+            ].map((c) => (
+              <div key={c.token} className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-12 h-12 rounded-md border border-[var(--admin-gray-200)]"
+                  style={{
+                    backgroundColor: `var(--admin-${c.token})`,
+                  }}
+                />
+                <span className="text-[11px] text-[var(--admin-gray-600)]">
+                  {c.token}
+                </span>
+                <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
+                  {c.hex}
+                </span>
+              </div>
+            ))}
+          </div>
+        </SubSection>
+
+        <SubSection title="Semantic">
+          <div className="flex flex-wrap gap-6">
+            {[
+              {
+                group: "Success",
+                tokens: [
+                  { token: "success-500", hex: "#22c55e" },
+                  { token: "success-700", hex: "#15803d" },
+                ],
+              },
+              {
+                group: "Error",
+                tokens: [
+                  { token: "error-500", hex: "#ef4444" },
+                  { token: "error-700", hex: "#b91c1c" },
+                ],
+              },
+              {
+                group: "Warning",
+                tokens: [
+                  { token: "warning-500", hex: "#f59e0b" },
+                  { token: "warning-700", hex: "#b45309" },
+                ],
+              },
+              {
+                group: "Info",
+                tokens: [
+                  { token: "info-500", hex: "#3b82f6" },
+                  { token: "info-700", hex: "#1d4ed8" },
+                ],
+              },
+            ].map((g) => (
+              <div key={g.group} className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-medium text-[var(--admin-gray-500)] tracking-[0.04em] uppercase mb-1">
+                  {g.group}
+                </span>
+                <div className="flex gap-3">
+                  {g.tokens.map((c) => (
+                    <div
+                      key={c.token}
+                      className="flex flex-col items-center gap-1.5"
+                    >
+                      <div
+                        className="w-12 h-12 rounded-md border border-[var(--admin-gray-200)]"
+                        style={{ backgroundColor: `var(--admin-${c.token})` }}
+                      />
+                      <span className="text-[11px] text-[var(--admin-gray-600)]">
+                        {c.token}
+                      </span>
+                      <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
+                        {c.hex}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </SubSection>
+
+        <SubSection title="Surfaces">
+          <div className="flex flex-wrap gap-3">
+            {[
+              { token: "surface-page", label: "Page", hex: "#f8fafc" },
+              { token: "surface-card", label: "Card", hex: "#ffffff" },
+              { token: "surface-sidebar", label: "Sidebar", hex: "#ffffff" },
+              { token: "surface-header", label: "Header", hex: "#ffffff" },
+            ].map((c) => (
+              <div key={c.token} className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-12 h-12 rounded-md border border-[var(--admin-gray-200)]"
+                  style={{ backgroundColor: `var(--admin-${c.token})` }}
+                />
+                <span className="text-[11px] text-[var(--admin-gray-600)]">
+                  {c.label}
+                </span>
+                <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
+                  {c.hex}
+                </span>
+              </div>
+            ))}
+          </div>
+        </SubSection>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Typography Scale                                               */}
+        {/* -------------------------------------------------------------- */}
+        <SectionTitle>Typography Scale</SectionTitle>
+
+        <SubSection title="Type Specimens">
+          <div className="flex flex-col gap-5">
+            {[
+              {
+                name: "Display",
+                size: "30px",
+                weight: 700,
+                lh: "1.2",
+                tracking: "-0.02em",
+              },
+              { name: "H1", size: "24px", weight: 600, lh: "1.3" },
+              { name: "H2", size: "20px", weight: 600, lh: "1.35" },
+              { name: "H3", size: "16px", weight: 600, lh: "1.3" },
+              { name: "Body LG", size: "16px", weight: 400, lh: "1.5" },
+              { name: "Body", size: "14px", weight: 400, lh: "1.5" },
+              { name: "Body Medium", size: "14px", weight: 500, lh: "1.5" },
+              { name: "Label", size: "13px", weight: 500, lh: "1.4" },
+              { name: "Caption", size: "12px", weight: 400, lh: "1.4" },
+              {
+                name: "Overline",
+                size: "11px",
+                weight: 600,
+                lh: "1.4",
+                tracking: "0.06em",
+                transform: "uppercase" as const,
+              },
+              {
+                name: "Code",
+                size: "13px",
+                weight: 400,
+                lh: "1.5",
+                font: "'JetBrains Mono', monospace",
+              },
+            ].map((t) => (
+              <div key={t.name} className="flex items-baseline gap-6">
+                <div className="w-[120px] shrink-0">
+                  <span className="text-[11px] font-medium text-[var(--admin-gray-500)]">
+                    {t.name}
+                  </span>
+                  <span className="block text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
+                    {t.size}/{t.weight}
+                  </span>
+                </div>
+                <span
+                  className="text-[var(--admin-gray-900)]"
+                  style={{
+                    fontSize: t.size,
+                    fontWeight: t.weight,
+                    lineHeight: t.lh,
+                    letterSpacing: t.tracking,
+                    textTransform: t.transform,
+                    fontFamily: t.font,
+                  }}
+                >
+                  The quick brown fox jumps over the lazy dog
+                </span>
+              </div>
+            ))}
+          </div>
+        </SubSection>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Spacing Scale                                                  */}
+        {/* -------------------------------------------------------------- */}
+        <SectionTitle>Spacing Scale</SectionTitle>
+
+        <SubSection title="Spacing Values">
+          <div className="flex flex-col gap-2">
+            {[2, 4, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48, 64].map((px) => (
+              <div key={px} className="flex items-center gap-3">
+                <span className="w-[48px] text-right text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-500)] shrink-0">
+                  {px}px
+                </span>
+                <div
+                  className="h-3 rounded-sm bg-[var(--admin-primary-400)]"
+                  style={{ width: `${px}px` }}
+                />
+              </div>
+            ))}
+          </div>
+        </SubSection>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Border Radius                                                  */}
+        {/* -------------------------------------------------------------- */}
+        <SectionTitle>Border Radius</SectionTitle>
+
+        <SubSection title="Radius Values">
+          <div className="flex flex-wrap items-end gap-4">
+            {[
+              { name: "none", value: "0px" },
+              { name: "sm", value: "4px" },
+              { name: "md", value: "6px" },
+              { name: "lg", value: "8px" },
+              { name: "xl", value: "12px" },
+              { name: "2xl", value: "16px" },
+              { name: "full", value: "9999px" },
+            ].map((r) => (
+              <div key={r.name} className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-16 h-16 bg-[var(--admin-primary-100)] border-2 border-[var(--admin-primary-400)]"
+                  style={{ borderRadius: `var(--admin-radius-${r.name})` }}
+                />
+                <span className="text-[11px] font-medium text-[var(--admin-gray-600)]">
+                  {r.name}
+                </span>
+                <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
+                  {r.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </SubSection>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Shadows                                                        */}
+        {/* -------------------------------------------------------------- */}
+        <SectionTitle>Shadows</SectionTitle>
+
+        <SubSection title="Shadow Levels">
+          <div className="flex flex-wrap items-start gap-6">
+            {["xs", "sm", "md", "lg", "xl", "ring"].map((s) => (
+              <div key={s} className="flex flex-col items-center gap-2">
+                <div
+                  className="w-24 h-24 rounded-lg bg-[var(--admin-surface-card)]"
+                  style={{ boxShadow: `var(--admin-shadow-${s})` }}
+                />
+                <span className="text-[11px] font-medium text-[var(--admin-gray-600)]">
+                  {s}
+                </span>
+              </div>
+            ))}
+          </div>
+        </SubSection>
+      </div>
+
+      {/* ============================================================ */}
       {/*  1. Buttons                                                   */}
       {/* ============================================================ */}
       <SectionTitle>1. Buttons</SectionTitle>
