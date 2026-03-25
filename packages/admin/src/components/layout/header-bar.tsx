@@ -1,11 +1,11 @@
 "use client";
 
-import { Menu, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/utils";
 import type { BreadcrumbItem } from "../ui/breadcrumb";
 import { Breadcrumb } from "../ui/breadcrumb";
-import { Button } from "../ui/button";
+
 import { Input } from "../ui/input";
 
 export interface HeaderBarProps {
@@ -41,19 +41,6 @@ function HeaderBar({
       )}
     >
       <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={onToggleSidebar}
-          aria-label="Toggle sidebar"
-        >
-          <Menu
-            size={20}
-            strokeWidth={1.5}
-            className="text-[var(--admin-gray-600)]"
-          />
-        </Button>
         {breadcrumbItems && breadcrumbItems.length > 0 && (
           <Breadcrumb items={breadcrumbItems} />
         )}

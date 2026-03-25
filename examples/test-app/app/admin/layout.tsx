@@ -13,7 +13,7 @@ import {
 import type { BreadcrumbItem } from "@structcms/admin";
 import { FileText, Image, LayoutDashboard, Navigation2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const navItems: SidebarItem[] = [
   {
@@ -96,8 +96,17 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const auth = useAuthSafe();
-  const [collapsed, setCollapsed] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !window.matchMedia("(min-width: 1024px)").matches;
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handler = (e: MediaQueryListEvent) => setCollapsed(!e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   const currentPath = pathname.replace(/^\/admin/, "") || "/";
 
@@ -105,7 +114,6 @@ function AdminShell({ children }: { children: React.ReactNode }) {
 
   const handleNavigate = (path: string) => {
     router.push(`/admin${path === "/" ? "" : path}`);
-    setSidebarOpen(false);
   };
 
   const userEmail = auth?.user?.email;
@@ -123,17 +131,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-dvh" data-structcms-admin="">
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setSidebarOpen(false);
-          }}
-        />
-      )}
-
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary-600)]"
+      >
+        Skip to content
+      </a>
       <Sidebar
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((c) => !c)}
@@ -146,21 +149,16 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           auth?.signOut();
           router.push("/admin/login");
         }}
-        className={[
-          "fixed md:relative z-50 transition-transform duration-200",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-        ].join(" ")}
+        className="shrink-0"
       />
 
       <div className="flex-1 flex flex-col min-w-0">
         <HeaderBar
           breadcrumbItems={breadcrumbItems}
           userInitials={userInitials}
-          notificationCount={0}
-          onToggleSidebar={() => setSidebarOpen((o) => !o)}
         />
-        <main className="flex-1 overflow-auto p-10 bg-[#F8FAFC]">
-          {children}
+        <main id="main-content" className="flex-1 overflow-auto bg-background">
+          <div className="min-h-full px-10 pt-10 flex flex-col">{children}</div>
         </main>
       </div>
     </div>

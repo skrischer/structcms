@@ -46,8 +46,22 @@ function AdminLayout({
   onLogout,
   className,
 }: AdminLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    )
+      return false;
+    return !window.matchMedia("(min-width: 1024px)").matches;
+  });
+
+  React.useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handler = (e: MediaQueryListEvent) => setSidebarCollapsed(!e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   return (
     <div
@@ -58,56 +72,27 @@ function AdminLayout({
       data-testid="admin-layout"
       data-structcms-admin=""
     >
-      {/* Mobile overlay */}
-      {mobileSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={() => setMobileSidebarOpen(false)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === "Escape") {
-              setMobileSidebarOpen(false);
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          data-testid="sidebar-overlay"
-        />
-      )}
-
-      {/* Sidebar — fixed on mobile, relative on desktop */}
-      <div
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 md:relative md:translate-x-0",
-          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
-        )}
-      >
-        <Sidebar
-          currentPath={activePath}
-          onNavigate={(path) => {
-            onNavigate(path);
-            setMobileSidebarOpen(false);
-          }}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
-          title={title}
-          navItems={navItems}
-          userName={userName}
-          userInitials={userInitials}
-          userRole={userRole}
-          onLogout={onLogout}
-        />
-      </div>
+      <Sidebar
+        currentPath={activePath}
+        onNavigate={onNavigate}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
+        title={title}
+        navItems={navItems}
+        userName={userName}
+        userInitials={userInitials}
+        userRole={userRole}
+        onLogout={onLogout}
+        className="shrink-0"
+      />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <HeaderBar
-          onToggleSidebar={() => setMobileSidebarOpen((o) => !o)}
-          userInitials={userInitials}
-        />
+        <HeaderBar userInitials={userInitials} />
 
         {/* Content */}
-        <main className="flex-1 overflow-auto p-10" data-testid="main-content">
-          {children}
+        <main className="flex-1 overflow-auto" data-testid="main-content">
+          <div className="min-h-full px-10 pt-10 flex flex-col">{children}</div>
         </main>
       </div>
     </div>
