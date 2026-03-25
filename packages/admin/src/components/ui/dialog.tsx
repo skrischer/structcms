@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { createPortal } from 'react-dom';
-import { cn } from '../../lib/utils';
+import { X } from "lucide-react";
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { cn } from "../../lib/utils";
 
 export interface DialogProps {
   open: boolean;
@@ -10,18 +11,21 @@ export interface DialogProps {
   children: React.ReactNode;
   className?: string;
   title?: string;
+  footer?: React.ReactNode;
 }
 
 const FOCUSABLE_SELECTOR =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+  );
 }
 
 function openDialog(
   dialog: HTMLDialogElement,
-  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>,
 ) {
   previousActiveElementRef.current = document.activeElement as HTMLElement;
   if (!dialog.open) {
@@ -35,7 +39,7 @@ function openDialog(
 
 function closeDialog(
   dialog: HTMLDialogElement,
-  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>
+  previousActiveElementRef: React.MutableRefObject<HTMLElement | null>,
 ) {
   if (dialog.open) {
     dialog.close();
@@ -76,7 +80,14 @@ function trapFocus(e: KeyboardEvent, elements: HTMLElement[]) {
  * </Dialog>
  * ```
  */
-function Dialog({ open, onClose, children, className, title }: DialogProps) {
+function Dialog({
+  open,
+  onClose,
+  children,
+  className,
+  title,
+  footer,
+}: DialogProps) {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   const previousActiveElementRef = React.useRef<HTMLElement | null>(null);
 
@@ -98,14 +109,14 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
     if (!dialog || !open) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
+      if (e.key === "Tab") {
         trapFocus(e, getFocusableElements(dialog));
       }
     };
 
-    dialog.addEventListener('keydown', handleKeyDown);
+    dialog.addEventListener("keydown", handleKeyDown);
     return () => {
-      dialog.removeEventListener('keydown', handleKeyDown);
+      dialog.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
 
@@ -132,7 +143,7 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDialogElement>) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       onClose();
     }
   };
@@ -145,18 +156,19 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
       onCancel={handleCancel}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="backdrop:bg-black/50 fixed inset-0 z-50 p-0 bg-transparent"
+      className="backdrop:bg-black/50 fixed inset-0 z-50 m-0 p-0 bg-transparent flex items-center justify-center"
+      data-structcms-admin=""
       data-testid="dialog-overlay"
     >
       <div
         className={cn(
-          'relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-lg border border-input bg-background p-6 shadow-lg',
-          className
+          "relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-xl bg-[var(--admin-surface-card)] shadow-xl",
+          className,
         )}
         data-testid="dialog-content"
       >
         {title && (
-          <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center justify-between p-6 pb-0">
             <h2 className="text-lg font-semibold">{title}</h2>
             <button
               type="button"
@@ -165,17 +177,22 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
               aria-label="Close"
               data-testid="dialog-close"
             >
-              ✕
+              <X size={16} strokeWidth={2} />
             </button>
           </div>
         )}
-        {children}
+        <div className="p-6 pt-4">{children}</div>
+        {footer && (
+          <div className="border-t border-[var(--admin-border-default)] bg-[var(--admin-gray-50)] px-6 py-4 rounded-b-xl">
+            {footer}
+          </div>
+        )}
       </div>
     </dialog>,
-    document.body
+    document.body,
   );
 }
 
-Dialog.displayName = 'Dialog';
+Dialog.displayName = "Dialog";
 
 export { Dialog };

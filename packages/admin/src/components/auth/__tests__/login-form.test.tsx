@@ -535,8 +535,8 @@ describe('LoginForm', () => {
 
       await waitFor(() => {
         const errorDiv = screen.getByText(/test error/i);
-        expect(errorDiv).toHaveClass('text-red-600');
-        expect(errorDiv).toHaveClass('bg-red-50');
+        expect(errorDiv).toHaveClass('text-[13px]');
+        expect(errorDiv).toHaveClass('p-3');
       });
     });
   });

@@ -1,19 +1,21 @@
 'use client';
 
+import { AlertTriangle, CheckCircle, Info, X, XCircle } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
-export type ToastVariant = 'default' | 'success' | 'error';
+export type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info';
 
 export interface Toast {
   id: string;
   message: string;
+  title?: string;
   variant?: ToastVariant;
 }
 
 interface ToastContextValue {
   toasts: Toast[];
-  addToast: (message: string, variant?: ToastVariant) => void;
+  addToast: (message: string, variant?: ToastVariant, title?: string) => void;
   removeToast: (id: string) => void;
 }
 
@@ -24,16 +26,6 @@ export interface ToastProviderProps {
   autoDismissMs?: number;
 }
 
-/**
- * Provider for toast notifications. Wrap your app with this to enable useToast().
- *
- * @example
- * ```tsx
- * <ToastProvider>
- *   <App />
- * </ToastProvider>
- * ```
- */
 function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
   const counterRef = React.useRef(0);
@@ -43,9 +35,9 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
   }, []);
 
   const addToast = React.useCallback(
-    (message: string, variant: ToastVariant = 'default') => {
+    (message: string, variant: ToastVariant = 'default', title?: string) => {
       const id = `toast-${++counterRef.current}`;
-      const toast: Toast = { id, message, variant };
+      const toast: Toast = { id, message, variant, title };
       setToasts((prev) => [...prev, toast]);
 
       if (autoDismissMs > 0) {
@@ -70,16 +62,6 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
 
 ToastProvider.displayName = 'ToastProvider';
 
-/**
- * Hook to trigger toast notifications. Must be used within a ToastProvider.
- *
- * @example
- * ```tsx
- * const { toast } = useToast();
- * toast('Page saved!', 'success');
- * toast('Something went wrong', 'error');
- * ```
- */
 function useToast() {
   const context = React.useContext(ToastContext);
   if (!context) {
@@ -92,11 +74,122 @@ function useToast() {
   };
 }
 
-const variantStyles: Record<ToastVariant, string> = {
-  default: 'bg-card border-input text-foreground',
-  success: 'bg-card border-green-500 text-foreground',
-  error: 'bg-card border-destructive text-foreground',
+const variantIcons: Record<ToastVariant, React.ReactNode> = {
+  default: null,
+  success: (
+    <CheckCircle
+      size={20}
+      strokeWidth={1.5}
+      className="text-[var(--admin-success-500)] shrink-0 mt-px"
+    />
+  ),
+  error: (
+    <XCircle size={20} strokeWidth={1.5} className="text-[var(--admin-error-500)] shrink-0 mt-px" />
+  ),
+  warning: (
+    <AlertTriangle
+      size={20}
+      strokeWidth={1.5}
+      className="text-[var(--admin-warning-500)] shrink-0 mt-px"
+    />
+  ),
+  info: (
+    <Info size={20} strokeWidth={1.5} className="text-[var(--admin-primary-500)] shrink-0 mt-px" />
+  ),
 };
+
+const compactIcons: Record<ToastVariant, React.ReactNode> = {
+  default: null,
+  success: (
+    <CheckCircle size={16} strokeWidth={2} className="text-[var(--admin-success-500)] shrink-0" />
+  ),
+  error: <XCircle size={16} strokeWidth={2} className="text-[var(--admin-error-500)] shrink-0" />,
+  warning: (
+    <AlertTriangle size={16} strokeWidth={2} className="text-[var(--admin-warning-500)] shrink-0" />
+  ),
+  info: <Info size={16} strokeWidth={2} className="text-[var(--admin-primary-500)] shrink-0" />,
+};
+
+export interface ToastItemProps {
+  variant?: ToastVariant;
+  title?: string;
+  message: string;
+  onDismiss?: () => void;
+  className?: string;
+  'data-testid'?: string;
+  dismissTestId?: string;
+}
+
+function ToastItem({
+  variant = 'default',
+  title,
+  message,
+  onDismiss,
+  className,
+  'data-testid': testId,
+  dismissTestId,
+}: ToastItemProps) {
+  const isCompact = !title;
+
+  if (isCompact) {
+    return (
+      <div
+        className={cn(
+          'flex items-center rounded-lg py-2.5 px-3.5 gap-2.5 bg-[var(--admin-surface-card)] border border-[var(--admin-gray-200)] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]',
+          className
+        )}
+        role="alert"
+        data-testid={testId}
+      >
+        {compactIcons[variant]}
+        <p className="text-[14px] text-[var(--admin-gray-800)] leading-[18px] grow">{message}</p>
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="shrink-0"
+            aria-label="Dismiss"
+            data-testid={dismissTestId}
+          >
+            <X size={14} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex items-start rounded-lg gap-3 bg-[var(--admin-surface-card)] border border-[var(--admin-gray-200)] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] p-4',
+        className
+      )}
+      role="alert"
+      data-testid={testId}
+    >
+      {variantIcons[variant]}
+      <div className="flex flex-col grow gap-0.5">
+        <p className="text-[14px] font-medium text-[var(--admin-gray-900)] leading-[18px]">
+          {title}
+        </p>
+        <p className="text-[13px] text-[var(--admin-gray-500)] leading-4">{message}</p>
+      </div>
+      {onDismiss && (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="shrink-0"
+          aria-label="Dismiss"
+          data-testid={dismissTestId}
+        >
+          <X size={16} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+ToastItem.displayName = 'ToastItem';
 
 interface ToastContainerProps {
   toasts: Toast[];
@@ -112,28 +205,18 @@ function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
       data-testid="toast-container"
     >
       {toasts.map((toast) => (
-        <div
+        <ToastItem
           key={toast.id}
-          className={cn(
-            'rounded-md border px-4 py-3 shadow-md flex items-center justify-between gap-2',
-            variantStyles[toast.variant ?? 'default']
-          )}
-          role="alert"
+          variant={toast.variant}
+          title={toast.title}
+          message={toast.message}
+          onDismiss={() => onDismiss(toast.id)}
           data-testid={`toast-${toast.id}`}
-        >
-          <p className="text-sm">{toast.message}</p>
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground text-sm"
-            onClick={() => onDismiss(toast.id)}
-            data-testid={`toast-dismiss-${toast.id}`}
-          >
-            ✕
-          </button>
-        </div>
+          dismissTestId={`toast-dismiss-${toast.id}`}
+        />
       ))}
     </div>
   );
 }
 
-export { ToastProvider, useToast };
+export { ToastProvider, useToast, ToastItem };

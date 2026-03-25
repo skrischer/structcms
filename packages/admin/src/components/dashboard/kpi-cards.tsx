@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { useAdmin } from '../../hooks/use-admin';
-import { useApiClient } from '../../hooks/use-api-client';
-import { cn } from '../../lib/utils';
-import { Button } from '../ui/button';
-import { Skeleton } from '../ui/skeleton';
+import { FileText, Image, Navigation2 } from "lucide-react";
+import * as React from "react";
+import { useApiClient } from "../../hooks/use-api-client";
+import { cn } from "../../lib/utils";
+import { ErrorAlert } from "../ui/error-alert";
+import { Skeleton } from "../ui/skeleton";
 
 interface KpiState {
   value: number | null;
@@ -21,7 +21,6 @@ export interface KpiCardsProps {
  * Dashboard KPI cards displaying content metrics.
  *
  * Fetches pages, media, and navigation counts from the API in parallel.
- * Sections count is derived synchronously from the registry.
  *
  * @example
  * ```tsx
@@ -32,64 +31,88 @@ export interface KpiCardsProps {
  */
 function KpiCards({ className }: KpiCardsProps) {
   const api = useApiClient();
-  const { registry } = useAdmin();
-
-  const [pages, setPages] = React.useState<KpiState>({ value: null, loading: true, error: null });
-  const [media, setMedia] = React.useState<KpiState>({ value: null, loading: true, error: null });
+  const [pages, setPages] = React.useState<KpiState>({
+    value: null,
+    loading: true,
+    error: null,
+  });
+  const [media, setMedia] = React.useState<KpiState>({
+    value: null,
+    loading: true,
+    error: null,
+  });
   const [navigation, setNavigation] = React.useState<KpiState>({
     value: null,
     loading: true,
     error: null,
   });
 
-  const sectionsCount = registry.getAllSections().length;
-
   const fetchPages = React.useCallback(
     async (signal?: { cancelled: boolean }) => {
       setPages({ value: null, loading: true, error: null });
-      const result = await api.get<unknown[]>('/pages');
+      const result = await api.get<unknown[]>("/pages");
       if (signal?.cancelled) return;
       if (result.error) {
         setPages({ value: null, loading: false, error: result.error.message });
       } else {
-        setPages({ value: result.data?.length ?? 0, loading: false, error: null });
+        setPages({
+          value: result.data?.length ?? 0,
+          loading: false,
+          error: null,
+        });
       }
     },
-    [api]
+    [api],
   );
 
   const fetchMedia = React.useCallback(
     async (signal?: { cancelled: boolean }) => {
       setMedia({ value: null, loading: true, error: null });
-      const result = await api.get<unknown[]>('/media');
+      const result = await api.get<unknown[]>("/media");
       if (signal?.cancelled) return;
       if (result.error) {
         setMedia({ value: null, loading: false, error: result.error.message });
       } else {
-        setMedia({ value: result.data?.length ?? 0, loading: false, error: null });
+        setMedia({
+          value: result.data?.length ?? 0,
+          loading: false,
+          error: null,
+        });
       }
     },
-    [api]
+    [api],
   );
 
   const fetchNavigation = React.useCallback(
     async (signal?: { cancelled: boolean }) => {
       setNavigation({ value: null, loading: true, error: null });
-      const result = await api.get<unknown[]>('/navigation');
+      const result = await api.get<unknown[]>("/navigation");
       if (signal?.cancelled) return;
       if (result.error) {
-        setNavigation({ value: null, loading: false, error: result.error.message });
+        setNavigation({
+          value: null,
+          loading: false,
+          error: result.error.message,
+        });
       } else {
-        setNavigation({ value: result.data?.length ?? 0, loading: false, error: null });
+        setNavigation({
+          value: result.data?.length ?? 0,
+          loading: false,
+          error: null,
+        });
       }
     },
-    [api]
+    [api],
   );
 
   React.useEffect(() => {
     const signal = { cancelled: false };
 
-    void Promise.allSettled([fetchPages(signal), fetchMedia(signal), fetchNavigation(signal)]);
+    void Promise.allSettled([
+      fetchPages(signal),
+      fetchMedia(signal),
+      fetchNavigation(signal),
+    ]);
 
     return () => {
       signal.cancelled = true;
@@ -97,67 +120,105 @@ function KpiCards({ className }: KpiCardsProps) {
   }, [fetchPages, fetchMedia, fetchNavigation]);
 
   const kpis = [
-    { label: 'Pages', state: pages, onRetry: () => void fetchPages(), testId: 'kpi-pages' },
-    { label: 'Media Files', state: media, onRetry: () => void fetchMedia(), testId: 'kpi-media' },
     {
-      label: 'Navigation Sets',
-      state: navigation,
-      onRetry: () => void fetchNavigation(),
-      testId: 'kpi-navigation',
+      label: "Pages",
+      state: pages,
+      onRetry: () => void fetchPages(),
+      testId: "kpi-pages",
+      icon: (
+        <FileText
+          size={20}
+          strokeWidth={1.5}
+          className="text-[var(--admin-gray-400)]"
+        />
+      ),
     },
     {
-      label: 'Sections',
-      state: { value: sectionsCount, loading: false, error: null } as KpiState,
-      onRetry: undefined,
-      testId: 'kpi-sections',
+      label: "Media Files",
+      state: media,
+      onRetry: () => void fetchMedia(),
+      testId: "kpi-media",
+      icon: (
+        <Image
+          size={20}
+          strokeWidth={1.5}
+          className="text-[var(--admin-gray-400)]"
+        />
+      ),
+    },
+    {
+      label: "Navigation Sets",
+      state: navigation,
+      onRetry: () => void fetchNavigation(),
+      testId: "kpi-navigation",
+      icon: (
+        <Navigation2
+          size={20}
+          strokeWidth={1.5}
+          className="text-[var(--admin-gray-400)]"
+        />
+      ),
     },
   ];
 
   return (
-    <div className={cn('grid grid-cols-2 gap-4 md:grid-cols-4', className)} data-testid="kpi-cards">
+    <div
+      className={cn("grid grid-cols-1 sm:grid-cols-3 gap-5", className)}
+      data-testid="kpi-cards"
+    >
       {kpis.map((kpi) => (
         <div
           key={kpi.testId}
-          className="rounded-lg border border-input bg-background p-4"
+          className="rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-5"
+          style={{ boxShadow: "var(--admin-shadow-xs)" }}
           data-testid={kpi.testId}
         >
-          <p className="text-sm text-muted-foreground">{kpi.label}</p>
+          <div className="flex items-center justify-between mb-3">
+            {kpi.icon}
+          </div>
 
-          {kpi.state.loading && (
-            <Skeleton className="mt-2 h-8 w-16" data-testid={`${kpi.testId}-skeleton`} />
-          )}
+          <dl>
+            <dt className="text-[13px] text-[var(--admin-gray-500)]">
+              {kpi.label}
+            </dt>
 
-          {!kpi.state.loading && kpi.state.error && (
-            <div className="mt-1">
-              <p className="text-sm text-destructive" data-testid={`${kpi.testId}-error`}>
-                Error loading
-              </p>
-              {kpi.onRetry && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                  onClick={kpi.onRetry}
-                  data-testid={`${kpi.testId}-retry`}
+            {kpi.state.loading && (
+              <dd>
+                <Skeleton
+                  className="h-9 w-20"
+                  data-testid={`${kpi.testId}-skeleton`}
+                />
+              </dd>
+            )}
+
+            {!kpi.state.loading && kpi.state.error && (
+              <dd>
+                <ErrorAlert
+                  onRetry={kpi.onRetry}
+                  data-testid={`${kpi.testId}-error`}
                 >
-                  Retry
-                </Button>
-              )}
-            </div>
-          )}
+                  Error loading
+                </ErrorAlert>
+              </dd>
+            )}
 
-          {!kpi.state.loading && !kpi.state.error && kpi.state.value !== null && (
-            <p className="mt-1 text-2xl font-bold" data-testid={`${kpi.testId}-value`}>
-              {kpi.state.value}
-            </p>
-          )}
+            {!kpi.state.loading &&
+              !kpi.state.error &&
+              kpi.state.value !== null && (
+                <dd
+                  className="text-[30px] font-bold leading-none text-[var(--admin-gray-900)] mt-1"
+                  data-testid={`${kpi.testId}-value`}
+                >
+                  {kpi.state.value}
+                </dd>
+              )}
+          </dl>
         </div>
       ))}
     </div>
   );
 }
 
-KpiCards.displayName = 'KpiCards';
+KpiCards.displayName = "KpiCards";
 
 export { KpiCards };

@@ -119,8 +119,11 @@ export const fields = {
    * Uses z.enum() for full type-safety — infers literal union types.
    * @example fields.select({ options: ['static', 'overlay'] as const })
    */
-  select: <T extends readonly [string, ...string[]]>({ options }: { options: T }) =>
-    z.enum(options).describe(encodeFieldMeta('select', { options })),
+  select: <T extends readonly [string, ...string[]]>({
+    options,
+  }: {
+    options: T;
+  }) => z.enum(options).describe(encodeFieldMeta('select', { options })),
 
   /**
    * File field (document/media reference)
@@ -144,11 +147,11 @@ export const fields = {
 export function visibleWhen<T extends z.ZodTypeAny>(
   schema: T,
   field: string,
-  value: string | readonly string[]
+  value: string | boolean | readonly (string | boolean)[]
 ): T {
   const meta = getFieldMeta(schema);
   if (!meta) return schema;
-  const values = Array.isArray(value) ? [...value] : [value];
+  const values: (string | boolean)[] = Array.isArray(value) ? [...value] : [value];
   const newMeta: Omit<FieldMeta, 'version' | 'fieldType'> = {};
   if (meta.options) newMeta.options = meta.options;
   if (meta.allowedBlocks) newMeta.allowedBlocks = meta.allowedBlocks;

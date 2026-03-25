@@ -1,8 +1,8 @@
-'use client';
-import type { z } from 'zod';
-import { useAdmin } from '../../hooks/use-admin';
-import { FormGenerator } from '../../lib/form-generator';
-import { cn } from '../../lib/utils';
+"use client";
+import type { z } from "zod";
+import { useAdmin } from "../../hooks/use-admin";
+import { cn } from "../../lib/utils";
+import { FormGenerator } from "../forms/form-generator";
 
 export interface SectionEditorProps {
   sectionType: string;
@@ -30,7 +30,7 @@ function SectionEditor({
   sectionType,
   data,
   onChange,
-  submitLabel = 'Save Section',
+  submitLabel = "Save Section",
   className,
 }: SectionEditorProps) {
   const { registry } = useAdmin();
@@ -40,10 +40,13 @@ function SectionEditor({
   if (!section) {
     return (
       <div
-        className={cn('rounded-md border border-destructive p-4', className)}
+        className={cn(
+          "rounded-md border border-[var(--admin-error-500)] p-4",
+          className,
+        )}
         data-testid="section-editor-error"
       >
-        <p className="text-sm text-destructive">
+        <p className="text-sm text-[var(--admin-error-600)]">
           Unknown section type: <strong>{sectionType}</strong>
         </p>
       </div>
@@ -51,19 +54,20 @@ function SectionEditor({
   }
 
   return (
-    <div className={cn('space-y-4', className)} data-testid="section-editor">
-      <h3 className="text-lg font-semibold capitalize">{section.name}</h3>
+    <div className={cn("space-y-4", className)} data-testid="section-editor">
       <FormGenerator
         schema={section.schema as z.ZodObject<z.ZodRawShape>}
         onSubmit={onChange}
         onChange={onChange}
         defaultValues={data}
         submitLabel={submitLabel}
+        descriptions={section.descriptions}
+        groups={section.groups}
       />
     </div>
   );
 }
 
-SectionEditor.displayName = 'SectionEditor';
+SectionEditor.displayName = "SectionEditor";
 
 export { SectionEditor };

@@ -8,6 +8,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
@@ -18,6 +19,7 @@
       }
     },
     "./next": {
+      "source": "./src/next/index.ts",
       "import": {
         "types": "./dist/next/index.d.ts",
         "default": "./dist/next/index.js"
@@ -28,6 +30,7 @@
       }
     },
     "./supabase": {
+      "source": "./src/supabase/index.ts",
       "import": {
         "types": "./dist/supabase/index.d.ts",
         "default": "./dist/supabase/index.js"

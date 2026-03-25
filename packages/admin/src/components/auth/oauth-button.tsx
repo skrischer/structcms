@@ -46,7 +46,7 @@ export function OAuthButton({
   };
 
   return (
-    <Button type="button" variant="outline" onClick={handleClick} className={className}>
+    <Button type="button" variant="secondary" onClick={handleClick} className={className}>
       {children || `Sign in with ${providerLabels[provider]}`}
     </Button>
   );
