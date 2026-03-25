@@ -399,14 +399,18 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                 {paginatedPages.map((page) => (
                   <tr
                     key={page.id}
-                    className="border-b border-[var(--admin-border-subtle)] last:border-b-0 hover:bg-[var(--admin-gray-50)]"
+                    className="border-b border-[var(--admin-border-subtle)] last:border-b-0 hover:bg-[var(--admin-gray-50)] cursor-pointer"
                     data-testid={`page-row-${page.id}`}
+                    onClick={() => onSelectPage(page)}
                   >
                     <td className="px-4 py-3 text-[14px] font-medium text-[var(--admin-gray-800)]">
                       <button
                         type="button"
                         className="cursor-pointer hover:text-[var(--admin-primary-600)] transition-colors"
-                        onClick={() => onSelectPage(page)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectPage(page);
+                        }}
                       >
                         {page.title}
                       </button>
@@ -429,7 +433,10 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setPageToDelete(page)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPageToDelete(page);
+                          }}
                           aria-label={`Delete ${page.title}`}
                         >
                           <Trash2

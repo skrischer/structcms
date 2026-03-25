@@ -201,10 +201,12 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
               {pages.map((page) => (
                 <tr
                   key={page.id}
-                  className="border-b border-[var(--admin-gray-100)] last:border-b-0 hover:bg-[var(--admin-gray-50)]"
+                  className="border-b border-[var(--admin-gray-100)] last:border-b-0 hover:bg-[var(--admin-gray-50)] cursor-pointer"
                   data-testid={`recent-page-${page.id}`}
+                  onClick={() => onSelectPage(page)}
+                  role="link"
                 >
-                  <td className="px-4 py-3 text-[14px] font-medium text-[var(--admin-gray-800)]">
+                  <td className="px-4 py-3 text-[14px] font-medium text-[var(--admin-primary-600)] hover:text-[var(--admin-primary-700)]">
                     {page.title}
                   </td>
                   <td className="px-4 py-3">
@@ -225,7 +227,10 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setPageToDelete(page)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPageToDelete(page);
+                        }}
                         aria-label={`Delete ${page.title}`}
                       >
                         <Trash2
