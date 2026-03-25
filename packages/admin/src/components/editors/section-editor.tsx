@@ -55,9 +55,6 @@ function SectionEditor({
 
   return (
     <div className={cn("space-y-4", className)} data-testid="section-editor">
-      <h3 className="text-lg font-semibold capitalize">
-        {section.name} Section
-      </h3>
       <FormGenerator
         schema={section.schema as z.ZodObject<z.ZodRawShape>}
         onSubmit={onChange}

@@ -127,7 +127,10 @@ function PageEditor({
     pageTitle != null || pageType != null || pageSlug != null;
 
   return (
-    <div className={cn("space-y-6", className)} data-testid="page-editor">
+    <div
+      className={cn("flex-1 flex flex-col gap-6", className)}
+      data-testid="page-editor"
+    >
       {showPageSettings && (
         <div
           className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)]"
@@ -219,41 +222,43 @@ function PageEditor({
                     <h3 className="text-[16px] font-semibold leading-[1.3] text-[var(--admin-gray-900)] capitalize">
                       {sectionLabel} Section
                     </h3>
-                    <Badge variant="primary">{section.type}</Badge>
                   </div>
-                  <div className="flex gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleMoveUp(index)}
-                      disabled={index === 0}
-                      title="Move up"
-                      data-testid={`section-move-up-${index}`}
-                    >
-                      <ChevronUp size={16} strokeWidth={1.5} />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleMoveDown(index)}
-                      disabled={index === sections.length - 1}
-                      title="Move down"
-                      data-testid={`section-move-down-${index}`}
-                    >
-                      <ChevronDown size={16} strokeWidth={1.5} />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveSection(index)}
-                      title="Remove section"
-                      data-testid={`section-remove-${index}`}
-                    >
-                      <X size={16} strokeWidth={1.5} />
-                    </Button>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="primary">{section.type}</Badge>
+                    <div className="flex gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleMoveUp(index)}
+                        disabled={index === 0}
+                        title="Move up"
+                        data-testid={`section-move-up-${index}`}
+                      >
+                        <ChevronUp size={16} strokeWidth={1.5} />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleMoveDown(index)}
+                        disabled={index === sections.length - 1}
+                        title="Move down"
+                        data-testid={`section-move-down-${index}`}
+                      >
+                        <ChevronDown size={16} strokeWidth={1.5} />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveSection(index)}
+                        title="Remove section"
+                        data-testid={`section-remove-${index}`}
+                      >
+                        <X size={16} strokeWidth={1.5} />
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 <div className="p-5">

@@ -32,7 +32,6 @@ describe("SectionEditor", () => {
     );
 
     expect(screen.getByTestId("section-editor")).toBeInTheDocument();
-    expect(screen.getByText("hero Section")).toBeInTheDocument();
   });
 
   it("renders form fields from section schema", () => {
