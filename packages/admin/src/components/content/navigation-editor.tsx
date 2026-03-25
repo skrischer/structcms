@@ -1,7 +1,14 @@
 "use client";
 
 import type { NavigationItem } from "@structcms/core";
-import { ChevronRight, GripVertical, Plus, Save, Trash2 } from "lucide-react";
+import {
+  ChevronRight,
+  GripVertical,
+  MousePointerClick,
+  Plus,
+  Save,
+  Trash2,
+} from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/utils";
 import { ActionFooter } from "../ui/action-footer";
@@ -194,7 +201,7 @@ function NavigationEditor({
   };
 
   const handleRowKeyDown = (
-    e: React.KeyboardEvent<HTMLDivElement>,
+    e: React.KeyboardEvent<HTMLElement>,
     sel: SelectedItem,
   ) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -219,7 +226,7 @@ function NavigationEditor({
 
   return (
     <div
-      className={cn("flex flex-col gap-6", className)}
+      className={cn("flex-1 flex flex-col gap-6", className)}
       data-testid="navigation-editor"
     >
       {/* Page header */}
@@ -282,19 +289,12 @@ function NavigationEditor({
                     <div key={index} data-testid={`nav-item-${index}`}>
                       {/* Parent item row */}
                       <div
-                        role="button"
-                        tabIndex={0}
                         className={cn(
-                          "group flex items-center py-2.5 px-4 gap-3 border-b border-[var(--admin-border-subtle)] cursor-pointer",
-                          isParentSelected(index) &&
-                            "bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]",
+                          "group flex items-center py-2.5 px-4 gap-3 border-b border-[var(--admin-border-subtle)] transition-colors duration-[var(--admin-transition-fast)]",
+                          isParentSelected(index)
+                            ? "bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]"
+                            : "hover:bg-[var(--admin-gray-100)]",
                         )}
-                        onClick={() =>
-                          handleSelectItem({ type: "parent", index })
-                        }
-                        onKeyDown={(e) =>
-                          handleRowKeyDown(e, { type: "parent", index })
-                        }
                       >
                         <GripVertical
                           size={16}
@@ -302,7 +302,16 @@ function NavigationEditor({
                           strokeWidth={2}
                         />
 
-                        <div className="flex flex-col min-w-0">
+                        <button
+                          type="button"
+                          className="flex flex-col min-w-0 flex-1 cursor-pointer bg-transparent border-none p-0 text-left focus-visible:outline-none focus-visible:shadow-[var(--admin-shadow-ring)] rounded-sm"
+                          onClick={() =>
+                            handleSelectItem({ type: "parent", index })
+                          }
+                          onKeyDown={(e) =>
+                            handleRowKeyDown(e, { type: "parent", index })
+                          }
+                        >
                           <span
                             className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
                             data-testid={`nav-item-label-${index}`}
@@ -315,13 +324,14 @@ function NavigationEditor({
                           >
                             {item.href || "/"}
                           </span>
-                        </div>
+                        </button>
 
                         <div className="flex items-center gap-1 shrink-0 ml-auto">
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon"
+                            className="focus-visible:outline-none focus-visible:shadow-[var(--admin-shadow-ring)]"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAddChild(index);
@@ -339,6 +349,7 @@ function NavigationEditor({
                             type="button"
                             variant="ghost"
                             size="icon"
+                            className="focus-visible:outline-none focus-visible:shadow-[var(--admin-shadow-ring)]"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleRemoveItem(index);
@@ -361,28 +372,13 @@ function NavigationEditor({
                           {(item.children ?? []).map((child, childIndex) => (
                             <div
                               key={childIndex}
-                              role="button"
-                              tabIndex={0}
                               className={cn(
-                                "group flex items-center py-2 px-3 gap-3 border-b border-[var(--admin-border-subtle)] cursor-pointer",
-                                isChildSelected(index, childIndex) &&
-                                  "bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]",
+                                "group flex items-center py-2 px-3 gap-3 border-b border-[var(--admin-border-subtle)] transition-colors duration-[var(--admin-transition-fast)]",
+                                isChildSelected(index, childIndex)
+                                  ? "bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]"
+                                  : "hover:bg-[var(--admin-gray-100)]",
                               )}
                               data-testid={`nav-child-${index}-${childIndex}`}
-                              onClick={() =>
-                                handleSelectItem({
-                                  type: "child",
-                                  parentIndex: index,
-                                  childIndex,
-                                })
-                              }
-                              onKeyDown={(e) =>
-                                handleRowKeyDown(e, {
-                                  type: "child",
-                                  parentIndex: index,
-                                  childIndex,
-                                })
-                              }
                             >
                               <ChevronRight
                                 size={14}
@@ -390,7 +386,24 @@ function NavigationEditor({
                                 strokeWidth={2}
                               />
 
-                              <div className="flex flex-col min-w-0">
+                              <button
+                                type="button"
+                                className="flex flex-col min-w-0 flex-1 cursor-pointer bg-transparent border-none p-0 text-left focus-visible:outline-none focus-visible:shadow-[var(--admin-shadow-ring)] rounded-sm"
+                                onClick={() =>
+                                  handleSelectItem({
+                                    type: "child",
+                                    parentIndex: index,
+                                    childIndex,
+                                  })
+                                }
+                                onKeyDown={(e) =>
+                                  handleRowKeyDown(e, {
+                                    type: "child",
+                                    parentIndex: index,
+                                    childIndex,
+                                  })
+                                }
+                              >
                                 <span
                                   className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
                                   data-testid={`nav-child-label-${index}-${childIndex}`}
@@ -403,13 +416,14 @@ function NavigationEditor({
                                 >
                                   {child.href || "/"}
                                 </span>
-                              </div>
+                              </button>
 
                               <div className="flex items-center gap-1 shrink-0 ml-auto">
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="icon"
+                                  className="focus-visible:outline-none focus-visible:shadow-[var(--admin-shadow-ring)]"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleRemoveChild(index, childIndex);
@@ -453,62 +467,85 @@ function NavigationEditor({
             </div>
 
             {/* Editor Panel */}
-            {selectedItem && (
-              <div
-                className="flex-1 max-w-[480px]"
-                data-testid="nav-editor-panel"
-              >
-                <div className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] overflow-hidden shadow-[var(--admin-shadow-xs)]">
-                  {/* Card header */}
-                  <div className="py-3 px-4 border-b border-[var(--admin-border-default)]">
-                    <span className="text-[13px] font-medium text-[var(--admin-gray-700)]">
-                      Properties
-                    </span>
-                  </div>
-
-                  {/* Form */}
-                  <div className="p-4 flex flex-col gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <Label>Label</Label>
-                      <Input
-                        value={editLabel}
-                        onChange={(e) => setEditLabel(e.target.value)}
-                        placeholder="Label"
-                        data-testid="nav-editor-label"
-                      />
+            <div
+              className="flex-1 max-w-[480px]"
+              data-testid="nav-editor-panel"
+            >
+              <div className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] overflow-hidden shadow-[var(--admin-shadow-xs)]">
+                {selectedItem ? (
+                  <>
+                    {/* Card header */}
+                    <div className="py-3 px-4 border-b border-[var(--admin-border-default)]">
+                      <span className="text-[13px] font-medium text-[var(--admin-gray-700)]">
+                        Properties
+                      </span>
                     </div>
-                    <div className="flex flex-col gap-1.5">
-                      <Label>URL</Label>
-                      <Input
-                        value={editHref}
-                        onChange={(e) => setEditHref(e.target.value)}
-                        placeholder="/about"
-                        data-testid="nav-editor-href"
-                      />
-                    </div>
-                  </div>
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-end gap-2 py-3 px-4 border-t border-[var(--admin-border-default)]">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={handleCancel}
-                      data-testid="nav-editor-cancel"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={handleApply}
-                      data-testid="nav-editor-apply"
-                    >
-                      Apply
-                    </Button>
+                    {/* Form */}
+                    <div className="p-4 flex flex-col gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <Label>
+                          Label
+                          <span className="text-[var(--admin-error-500)] ml-0.5">
+                            *
+                          </span>
+                        </Label>
+                        <Input
+                          value={editLabel}
+                          onChange={(e) => setEditLabel(e.target.value)}
+                          placeholder="Label"
+                          data-testid="nav-editor-label"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>
+                          URL
+                          <span className="text-[var(--admin-error-500)] ml-0.5">
+                            *
+                          </span>
+                        </Label>
+                        <Input
+                          value={editHref}
+                          onChange={(e) => setEditHref(e.target.value)}
+                          placeholder="/about"
+                          data-testid="nav-editor-href"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-end gap-2 py-3 px-4 border-t border-[var(--admin-border-default)]">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={handleCancel}
+                        data-testid="nav-editor-cancel"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={handleApply}
+                        data-testid="nav-editor-apply"
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 px-4">
+                    <MousePointerClick
+                      size={32}
+                      className="text-[var(--admin-gray-300)] mb-3"
+                      strokeWidth={1.5}
+                    />
+                    <p className="text-[14px] text-[var(--admin-gray-400)] text-center">
+                      Select an item to edit its properties
+                    </p>
                   </div>
-                </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Save footer */}

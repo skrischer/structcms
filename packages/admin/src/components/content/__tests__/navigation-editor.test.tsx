@@ -81,7 +81,7 @@ describe("NavigationEditor", () => {
 
     render(<NavigationEditor items={items} onSave={() => {}} />);
 
-    expect(screen.queryByTestId("nav-editor-panel")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("nav-editor-label")).not.toBeInTheDocument();
 
     await user.click(screen.getByTestId("nav-item-label-0"));
 
@@ -121,7 +121,7 @@ describe("NavigationEditor", () => {
 
     expect(screen.getByTestId("nav-item-label-0")).toHaveTextContent("About");
     expect(screen.getByTestId("nav-item-href-0")).toHaveTextContent("/about");
-    expect(screen.queryByTestId("nav-editor-panel")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("nav-editor-label")).not.toBeInTheDocument();
   });
 
   it("cancels editing and discards changes", async () => {
@@ -138,7 +138,7 @@ describe("NavigationEditor", () => {
     await user.click(screen.getByTestId("nav-editor-cancel"));
 
     expect(screen.getByTestId("nav-item-label-0")).toHaveTextContent("Home");
-    expect(screen.queryByTestId("nav-editor-panel")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("nav-editor-label")).not.toBeInTheDocument();
   });
 
   it("adds a child item", async () => {
@@ -282,7 +282,7 @@ describe("NavigationEditor", () => {
     expect(screen.getByTestId("nav-editor-panel")).toBeInTheDocument();
 
     await user.click(screen.getByTestId("nav-item-remove-0"));
-    expect(screen.queryByTestId("nav-editor-panel")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("nav-editor-label")).not.toBeInTheDocument();
   });
 
   it("saves edited values through onSave after apply", async () => {
@@ -356,16 +356,16 @@ describe("NavigationEditor", () => {
 
     render(<NavigationEditor items={items} onSave={() => {}} />);
 
-    const row = screen
+    // The label is inside a native <button>, find it
+    const labelButton = screen
       .getByTestId("nav-item-label-0")
-      .closest("[role=button]") as HTMLElement | null;
-    expect(row).toHaveAttribute("tabindex", "0");
+      .closest("button") as HTMLElement | null;
+    expect(labelButton).toBeInTheDocument();
 
     // Focus and press Enter
-    row?.focus();
+    labelButton?.focus();
     await user.keyboard("{Enter}");
 
-    expect(screen.getByTestId("nav-editor-panel")).toBeInTheDocument();
     expect(screen.getByTestId("nav-editor-label")).toHaveValue("Home");
   });
 });
