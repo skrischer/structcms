@@ -3,7 +3,7 @@
 @source "../../../packages/admin/src/**/*.{ts,tsx}";
 
 @theme {
-  --color-background: #f3f6ff;
+  --color-background: #f8fafc;
   --color-foreground: #111827;
   --color-muted: #e9eefb;
   --color-muted-foreground: #5b6472;
@@ -25,11 +25,17 @@
 @layer base {
   body {
     @apply min-h-screen bg-background text-foreground antialiased;
-    background-image: radial-gradient(
+    background-image:
+      radial-gradient(
         circle at 15% -10%,
         rgba(34, 103, 179, 0.22) 0%,
         transparent 42%
-      ), radial-gradient(circle at 85% -30%, rgba(51, 181, 145, 0.2) 0%, transparent 40%);
+      ),
+      radial-gradient(
+        circle at 85% -30%,
+        rgba(51, 181, 145, 0.2) 0%,
+        transparent 40%
+      );
   }
 
   ::selection {
