@@ -44,7 +44,7 @@ function Toggle({
           disabled && "opacity-50",
         )}
       >
-        <div className="w-[18px] h-[18px] rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.1)] shrink-0" />
+        <div className="w-[18px] h-[18px] rounded-full bg-white shadow-[var(--admin-shadow-xs)] shrink-0" />
       </button>
       {label && (
         <span

@@ -13,8 +13,9 @@ const badgeVariants = cva("inline-flex items-center font-medium", {
       error: "bg-[var(--admin-error-50)] text-[var(--admin-error-700)]",
     },
     size: {
-      default: "text-[12px] leading-4 py-0.5 px-2 rounded-[3px]",
-      sm: "text-[12px] leading-4 py-0.5 px-2 rounded-[3px]",
+      default:
+        "text-[12px] leading-4 py-0.5 px-2 rounded-[var(--admin-radius-sm)]",
+      sm: "text-[12px] leading-4 py-0.5 px-2 rounded-[var(--admin-radius-sm)]",
     },
   },
   defaultVariants: {

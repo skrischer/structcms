@@ -51,7 +51,7 @@ function Checkbox({
             height="12"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#FFFFFF"
+            stroke="currentColor"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"

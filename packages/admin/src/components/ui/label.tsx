@@ -20,7 +20,7 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
         "text-[13px] font-medium leading-4 peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
         error
           ? "text-[var(--admin-error-700)]"
-          : "text-[var(--admin-gray-700)]",
+          : "text-[var(--admin-gray-600)]",
         className,
       )}
       {...props}

@@ -420,7 +420,7 @@ function PageList({ onSelectPage, onCreatePage, className }: PageListProps) {
                         {page.pageType}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)] font-[JetBrains_Mono,monospace]">
+                    <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)] font-mono">
                       /{page.slug}
                     </td>
                     <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)]">
