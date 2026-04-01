@@ -156,7 +156,7 @@ function Dialog({
       onCancel={handleCancel}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="backdrop:bg-black/50 fixed inset-0 z-50 m-0 p-0 bg-transparent flex items-center justify-center"
+      className="backdrop:bg-[var(--admin-surface-overlay)] fixed inset-0 z-50 m-0 p-0 bg-transparent flex items-center justify-center"
       data-structcms-admin=""
       data-testid="dialog-overlay"
     >

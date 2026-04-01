@@ -359,7 +359,7 @@ function MediaBrowser({
                   className={cn(
                     "group relative rounded-lg overflow-hidden cursor-pointer transition-all",
                     isSelected
-                      ? "border-2 border-[var(--admin-primary-500)] shadow-[0_0_0_3px_rgba(59,130,246,0.15)]"
+                      ? "border-2 border-[var(--admin-primary-500)] shadow-[var(--admin-shadow-ring)]"
                       : "border border-[var(--admin-border-default)]",
                   )}
                   data-testid={`media-item-${item.id}`}
@@ -405,7 +405,7 @@ function MediaBrowser({
                   {/* Hover overlay */}
                   <div
                     className={cn(
-                      "absolute bottom-0 inset-x-0 flex items-center justify-between bg-[rgba(15,23,42,0.7)] p-2 transition-opacity group-focus-within:opacity-100",
+                      "absolute bottom-0 inset-x-0 flex items-center justify-between bg-[var(--admin-surface-overlay)] p-2 transition-opacity group-focus-within:opacity-100",
                       isHovered ? "opacity-100" : "opacity-0",
                     )}
                   >

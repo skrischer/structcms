@@ -8,7 +8,7 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const shapeClasses: Record<string, string> = {
-  text: "h-5 rounded-[3px]",
+  text: "h-5 rounded-[var(--admin-radius-sm)]",
   circle: "rounded-full",
   rect: "rounded-lg",
   button: "rounded-md",
