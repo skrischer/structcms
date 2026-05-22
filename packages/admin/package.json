@@ -27,25 +27,25 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
+    "@hookform/resolvers": "^5.4.0",
     "@structcms/api": "workspace:*",
     "@structcms/core": "workspace:*",
-    "@tiptap/extension-link": "^3.19.0",
-    "@tiptap/pm": "^3.19.0",
-    "@tiptap/react": "^3.19.0",
-    "@tiptap/starter-kit": "^3.19.0",
+    "@tiptap/extension-link": "^3.23.6",
+    "@tiptap/pm": "^3.23.6",
+    "@tiptap/react": "^3.23.6",
+    "@tiptap/starter-kit": "^3.23.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "react-hook-form": "^7.71.1",
-    "tailwind-merge": "^3.4.0",
-    "zod": "^3.23.0"
+    "react-hook-form": "^7.76.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.0.0",
     "jsdom": "^28.0.0",
     "typescript": "~5.7.0"
