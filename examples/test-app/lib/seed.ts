@@ -124,6 +124,54 @@ export const seedPages: CreatePageInput[] = [
       },
     ],
   },
+  {
+    slug: 'showcase',
+    pageType: 'landing',
+    title: 'Component Showcase',
+    sections: [
+      {
+        id: 'showcase-1',
+        type: 'showcase',
+        data: {
+          title: 'Component Showcase',
+          subtitle: 'Every field type in the CMS contract',
+          summary:
+            'A single section instance that exercises all field types for end-to-end CMS and rendering tests.',
+          body: '<p>This rich text block supports <strong>bold</strong>, <em>italic</em>, and <a href="https://structcms.dev">links</a>.</p>',
+          image: 'https://placehold.co/1200x500?text=Showcase',
+          grid: [
+            {
+              title: 'First Card',
+              image: 'https://placehold.co/600x400?text=One',
+            },
+            {
+              title: 'Second Card',
+              image: 'https://placehold.co/600x400?text=Two',
+            },
+            {
+              title: 'Third Card',
+              image: 'https://placehold.co/600x400?text=Three',
+            },
+          ],
+          attachment: 'https://placehold.co/specsheet.pdf',
+          layout: 'grid',
+          theme: 'light',
+          showCaption: true,
+          externalUrl: 'https://github.com/structcms',
+          showButton: true,
+          button: {
+            label: 'Get Started',
+            url: 'https://structcms.dev',
+            variant: 'primary',
+            target: '_blank',
+          },
+          tags: ['cms', 'rendering', 'all-types'],
+          author: { name: 'StructCMS Team', role: 'Maintainers' },
+          relatedPage: 'about',
+        },
+      },
+    ],
+  },
 ];
 
 const mainNavigationItems: NavigationItem[] = [
@@ -148,6 +196,10 @@ const mainNavigationItems: NavigationItem[] = [
   {
     label: 'Blog',
     href: '/blog',
+  },
+  {
+    label: 'Showcase',
+    href: '/showcase',
   },
 ];
 

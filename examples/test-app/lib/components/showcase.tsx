@@ -95,12 +95,20 @@ export function ShowcaseSection({ data }: { data: ShowcaseData }) {
         )}
 
         {/* Metadata footer */}
-        {(data.author || (data.tags && data.tags.length > 0)) && (
+        {(data.author || data.relatedPage || (data.tags && data.tags.length > 0)) && (
           <footer className="border-t border-border/70 pt-4 text-sm text-muted-foreground">
             {data.author && (
               <p>
                 {data.author.name}
                 {data.author.role && <span className="ml-1">({data.author.role})</span>}
+              </p>
+            )}
+            {data.relatedPage && (
+              <p className="mt-2">
+                Related page:{' '}
+                <a href={`/${data.relatedPage}`} className="underline hover:text-foreground">
+                  {data.relatedPage}
+                </a>
               </p>
             )}
             {data.tags && data.tags.length > 0 && (

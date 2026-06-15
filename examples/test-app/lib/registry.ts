@@ -79,6 +79,8 @@ export const ShowcaseSection = defineSection({
         role: fields.string().optional(),
       })
       .optional(),
+    // Page reference field type — points to another page by slug
+    relatedPage: fields.reference().optional(),
   },
   descriptions: {
     title: 'Main heading for the showcase section',
@@ -96,6 +98,7 @@ export const ShowcaseSection = defineSection({
     button: 'Configure the CTA button appearance and link',
     tags: 'Keywords for categorization',
     author: 'Attribution information',
+    relatedPage: 'Reference to a related page (by slug)',
   },
   groups: [
     {
@@ -120,7 +123,7 @@ export const ShowcaseSection = defineSection({
     },
     {
       name: 'Metadata',
-      fields: ['tags', 'author'],
+      fields: ['tags', 'author', 'relatedPage'],
     },
   ],
 });
