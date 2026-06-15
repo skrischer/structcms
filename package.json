@@ -27,6 +27,7 @@
     "format": "biome format --write .",
     "typecheck": "pnpm build && pnpm -r typecheck",
     "lint:strict": "biome check --max-diagnostics=100 .",
+    "verify": "biome check . && pnpm typecheck",
     "dev": "pnpm --filter test-app dev"
   },
   "devDependencies": {
