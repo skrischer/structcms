@@ -53,7 +53,7 @@ describe('Media Handlers', () => {
 
       expect(result.id).toBeDefined();
       expect(result.filename).toBe(`${testPrefix}-upload.jpg`);
-      expect(result.url).toContain('supabase');
+      expect(result.url).toContain('/storage/v1/');
       expect(result.mimeType).toBe('image/jpeg');
       expect(result.size).toBe(testData.length);
       expect(result.createdAt).toBeInstanceOf(Date);

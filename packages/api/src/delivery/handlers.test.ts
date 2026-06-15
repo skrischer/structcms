@@ -110,7 +110,9 @@ describe('Delivery Handlers', () => {
     );
 
     it.skipIf(!supabaseUrl || !supabaseKey)('should filter pages by pageType', async () => {
-      const pages = await handleListPages(adapter, mediaAdapter, { pageType: 'landing' });
+      const pages = await handleListPages(adapter, mediaAdapter, {
+        pageType: 'landing',
+      });
 
       const testPages = pages.filter((p) => p.slug.startsWith(testPrefix));
       expect(testPages.length).toBeGreaterThanOrEqual(2);
@@ -120,7 +122,9 @@ describe('Delivery Handlers', () => {
     });
 
     it.skipIf(!supabaseUrl || !supabaseKey)('should support pagination', async () => {
-      const pages = await handleListPages(adapter, mediaAdapter, { limit: 1 });
+      const pages = await handleListPages(adapter, mediaAdapter, {
+        limit: 1,
+      });
 
       expect(pages.length).toBe(1);
     });
@@ -133,7 +137,7 @@ describe('Delivery Handlers', () => {
 
       const imageUrl = mediaPage?.sections[0].data.image;
       expect(typeof imageUrl).toBe('string');
-      expect(imageUrl).toContain('supabase');
+      expect(imageUrl).toContain('/storage/v1/');
       // Should not be a UUID anymore
       expect(imageUrl).not.toBe(testMediaId);
     });
@@ -172,7 +176,7 @@ describe('Delivery Handlers', () => {
 
         const imageUrl = page?.sections[0].data.image;
         expect(typeof imageUrl).toBe('string');
-        expect(imageUrl).toContain('supabase');
+        expect(imageUrl).toContain('/storage/v1/');
         // Should be a full URL, not the UUID
         expect(imageUrl).not.toBe(testMediaId);
       }

@@ -61,7 +61,7 @@ describe('SupabaseMediaAdapter', () => {
 
         expect(result.id).toBeDefined();
         expect(result.filename).toBe(`${testPrefix}-test.jpg`);
-        expect(result.url).toContain('supabase');
+        expect(result.url).toContain('/storage/v1/');
         expect(result.url).toContain('media');
         expect(result.mimeType).toBe('image/jpeg');
         expect(result.size).toBe(testData.length);
