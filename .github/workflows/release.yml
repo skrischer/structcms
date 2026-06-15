@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
@@ -54,14 +54,16 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      # pnpm publish (not npm publish) replaces the `workspace:*` protocol in
+      # @structcms/admin with the concrete versions of core and api. It also
+      # performs the npm OIDC token exchange for trusted publishing, so no
+      # long-lived NPM_TOKEN is required. Provenance is generated via
+      # --provenance. Published in dependency order: core -> api -> admin.
       - name: Publish @structcms/core
-        run: npm publish --provenance --access public
-        working-directory: packages/core
+        run: pnpm --filter @structcms/core publish --access public --no-git-checks --provenance
 
       - name: Publish @structcms/api
-        run: npm publish --provenance --access public
-        working-directory: packages/api
+        run: pnpm --filter @structcms/api publish --access public --no-git-checks --provenance
 
       - name: Publish @structcms/admin
-        run: npm publish --provenance --access public
-        working-directory: packages/admin
+        run: pnpm --filter @structcms/admin publish --access public --no-git-checks --provenance

@@ -14,10 +14,10 @@
   },
   "homepage": "https://github.com/skrischer/structcms#readme",
   "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=22.14.0",
+    "pnpm": ">=11.0.7"
   },
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@11.7.0",
   "scripts": {
     "build": "pnpm -r build",
     "test": "vitest",

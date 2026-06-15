@@ -124,7 +124,7 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       zod:
-        specifier: ^3.23.0
+        specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
       '@testing-library/dom':
@@ -161,7 +161,7 @@ importers:
         specifier: ^2.17.0
         version: 2.17.0
       zod:
-        specifier: ^3.23.0
+        specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
       '@types/sanitize-html':
@@ -177,9 +177,6 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
-      '@vitest/coverage-v8':
-        specifier: 2.1.9
-        version: 2.1.9(vitest@2.1.9(@types/node@25.2.0)(jsdom@28.0.0)(lightningcss@1.30.2))
       typescript:
         specifier: ~5.7.0
         version: 5.7.3
