@@ -1,19 +1,15 @@
-import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { FieldMessage } from "../ui/field-message";
+import { ArrowDown, ArrowUp, Plus, X } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { FieldMessage } from '../ui/field-message';
 
 export interface ArrayFieldProps<T> {
   label: string;
   value: T[];
   onChange: (value: T[]) => void;
-  renderItem: (
-    item: T,
-    index: number,
-    onChange: (item: T) => void,
-  ) => React.ReactNode;
+  renderItem: (item: T, index: number, onChange: (item: T) => void) => React.ReactNode;
   createDefaultItem: () => T;
   error?: string;
   description?: string;
@@ -61,7 +57,7 @@ function ArrayFieldInner<T>(
     id,
     name,
   }: ArrayFieldProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const generatedId = React.useId();
   const inputId = id ?? name ?? generatedId;
@@ -129,54 +125,44 @@ function ArrayFieldInner<T>(
   };
 
   return (
-    <div
-      ref={ref}
-      className={cn("flex flex-col gap-1.5", className)}
-      data-testid="array-field"
-    >
+    <div ref={ref} className={cn('flex flex-col gap-1.5', className)} data-testid="array-field">
       <div
         className={cn(
-          "rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] shadow-xs",
-          error && "border-[var(--admin-error-500)]",
+          'rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] shadow-xs',
+          error && 'border-[var(--admin-error-500)]'
         )}
       >
         {/* Header bar */}
         <div className="flex justify-between items-center py-3 px-4 border-b border-[var(--admin-gray-200)]">
           <span
             className={cn(
-              "text-[16px] font-semibold text-[var(--admin-gray-900)]",
-              required &&
-                "after:content-['*'] after:ml-0.5 after:text-[var(--admin-error-500)]",
+              'text-[16px] font-semibold text-[var(--admin-gray-900)]',
+              required && "after:content-['*'] after:ml-0.5 after:text-[var(--admin-error-500)]"
             )}
           >
             {label}
           </span>
           <Badge data-testid="item-count">
-            {value.length} {value.length === 1 ? "item" : "items"}
+            {value.length} {value.length === 1 ? 'item' : 'items'}
           </Badge>
         </div>
 
         {/* Item rows */}
         {value.length === 0 ? (
-          <p className="text-sm text-[var(--admin-gray-500)] text-center py-4">
-            No items yet
-          </p>
+          <p className="text-sm text-[var(--admin-gray-500)] text-center py-4">No items yet</p>
         ) : (
           <div>
             {itemsWithKeys.map(({ key, item }, index) => (
               <div
                 key={key}
                 className={cn(
-                  "flex gap-2 items-start py-2.5 px-4",
-                  index < value.length - 1 &&
-                    "border-b border-[var(--admin-gray-200)]",
+                  'flex gap-2 items-start py-2.5 px-4',
+                  index < value.length - 1 && 'border-b border-[var(--admin-gray-200)]'
                 )}
                 data-testid={`array-item-${index}`}
               >
                 <div className="flex-1">
-                  {renderItem(item, index, (newItem) =>
-                    handleItemChange(index, newItem),
-                  )}
+                  {renderItem(item, index, (newItem) => handleItemChange(index, newItem))}
                 </div>
                 <div className="flex gap-1">
                   <Button
@@ -232,9 +218,7 @@ function ArrayFieldInner<T>(
           </Button>
         </div>
       </div>
-      {description && !error && (
-        <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>
-      )}
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
         <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
@@ -245,7 +229,7 @@ function ArrayFieldInner<T>(
 }
 
 const ArrayField = React.forwardRef(ArrayFieldInner) as <T>(
-  props: ArrayFieldProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> },
+  props: ArrayFieldProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
 ) => React.ReactElement;
 
 export { ArrayField };

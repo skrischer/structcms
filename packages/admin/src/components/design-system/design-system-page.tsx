@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   AlertCircle,
@@ -26,32 +26,32 @@ import {
   Type,
   Upload,
   X,
-} from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { ArrayField } from "../fields/array-field";
-import { Badge } from "../ui/badge";
-import { Breadcrumb } from "../ui/breadcrumb";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
-import { Checkbox } from "../ui/checkbox";
-import { DataTable } from "../ui/data-table";
-import type { Column } from "../ui/data-table";
-import { Dialog } from "../ui/dialog";
-import { EmptyState } from "../ui/empty-state";
-import { ErrorAlert } from "../ui/error-alert";
-import { FieldGroup } from "../ui/field-group";
-import { FieldMessage } from "../ui/field-message";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Pagination } from "../ui/pagination";
-import { RadioGroup } from "../ui/radio-group";
-import { Select } from "../ui/select";
-import { Skeleton } from "../ui/skeleton";
-import { TagInput } from "../ui/tag-input";
-import { Textarea } from "../ui/textarea";
-import { ToastItem } from "../ui/toast";
-import { Toggle } from "../ui/toggle";
+} from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { ArrayField } from '../fields/array-field';
+import { Badge } from '../ui/badge';
+import { Breadcrumb } from '../ui/breadcrumb';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
+import { DataTable } from '../ui/data-table';
+import type { Column } from '../ui/data-table';
+import { Dialog } from '../ui/dialog';
+import { EmptyState } from '../ui/empty-state';
+import { ErrorAlert } from '../ui/error-alert';
+import { FieldGroup } from '../ui/field-group';
+import { FieldMessage } from '../ui/field-message';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Pagination } from '../ui/pagination';
+import { RadioGroup } from '../ui/radio-group';
+import { Select } from '../ui/select';
+import { Skeleton } from '../ui/skeleton';
+import { TagInput } from '../ui/tag-input';
+import { Textarea } from '../ui/textarea';
+import { ToastItem } from '../ui/toast';
+import { Toggle } from '../ui/toggle';
 
 /* ------------------------------------------------------------------ */
 /*  Layout helpers                                                     */
@@ -96,59 +96,56 @@ interface SamplePage extends Record<string, unknown> {
 
 const samplePages: SamplePage[] = [
   {
-    id: "1",
-    title: "Homepage",
-    status: "published",
-    slug: "/",
-    modified: "2 hours ago",
+    id: '1',
+    title: 'Homepage',
+    status: 'published',
+    slug: '/',
+    modified: '2 hours ago',
   },
   {
-    id: "2",
-    title: "About Us",
-    status: "draft",
-    slug: "/about",
-    modified: "1 day ago",
+    id: '2',
+    title: 'About Us',
+    status: 'draft',
+    slug: '/about',
+    modified: '1 day ago',
   },
   {
-    id: "3",
-    title: "Blog",
-    status: "published",
-    slug: "/blog",
-    modified: "3 days ago",
+    id: '3',
+    title: 'Blog',
+    status: 'published',
+    slug: '/blog',
+    modified: '3 days ago',
   },
   {
-    id: "4",
-    title: "Contact",
-    status: "draft",
-    slug: "/contact",
-    modified: "5 days ago",
+    id: '4',
+    title: 'Contact',
+    status: 'draft',
+    slug: '/contact',
+    modified: '5 days ago',
   },
   {
-    id: "5",
-    title: "Privacy Policy",
-    status: "published",
-    slug: "/privacy",
-    modified: "1 week ago",
+    id: '5',
+    title: 'Privacy Policy',
+    status: 'published',
+    slug: '/privacy',
+    modified: '1 week ago',
   },
 ];
 
 const sampleColumns: Column<SamplePage>[] = [
-  { key: "title", header: "Title", sortable: true },
+  { key: 'title', header: 'Title', sortable: true },
   {
-    key: "status",
-    header: "Status",
-    width: "100px",
+    key: 'status',
+    header: 'Status',
+    width: '100px',
     render: (_value: unknown, row: SamplePage) => (
-      <Badge
-        variant={row.status === "published" ? "success" : "default"}
-        size="sm"
-      >
+      <Badge variant={row.status === 'published' ? 'success' : 'default'} size="sm">
         {row.status}
       </Badge>
     ),
   },
-  { key: "slug", header: "Slug" },
-  { key: "modified", header: "Last Modified", sortable: true, width: "140px" },
+  { key: 'slug', header: 'Slug' },
+  { key: 'modified', header: 'Last Modified', sortable: true, width: '140px' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -165,35 +162,26 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
   const [checkboxB, setCheckboxB] = React.useState(true);
   const [toggleA, setToggleA] = React.useState(false);
   const [toggleB, setToggleB] = React.useState(true);
-  const [selectValue, setSelectValue] = React.useState("");
-  const [selectOpen, setSelectOpen] = React.useState("opt2");
-  const [tags, setTags] = React.useState<string[]>([
-    "cms",
-    "headless",
-    "typescript",
-  ]);
+  const [selectValue, setSelectValue] = React.useState('');
+  const [selectOpen, setSelectOpen] = React.useState('opt2');
+  const [tags, setTags] = React.useState<string[]>(['cms', 'headless', 'typescript']);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [arrayItems, setArrayItems] = React.useState<string[]>([
-    "Hero Section",
-    "Feature Grid",
-    "Testimonials",
+    'Hero Section',
+    'Feature Grid',
+    'Testimonials',
   ]);
-  const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
-    new Set(),
-  );
+  const [selectedRows, setSelectedRows] = React.useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [formLayout, setFormLayout] = React.useState("default");
-  const [formTheme, setFormTheme] = React.useState("light");
-  const [formTarget, setFormTarget] = React.useState("_self");
+  const [formLayout, setFormLayout] = React.useState('default');
+  const [formTheme, setFormTheme] = React.useState('light');
+  const [formTarget, setFormTarget] = React.useState('_self');
   const [formShowCta, setFormShowCta] = React.useState(true);
   const [formPublished, setFormPublished] = React.useState(true);
 
   return (
     <div
-      className={cn(
-        "max-w-[1200px] mx-auto w-full flex flex-col gap-6",
-        className,
-      )}
+      className={cn('max-w-[1200px] mx-auto w-full flex flex-col gap-6', className)}
       data-testid="design-system-page"
     >
       <h1 className="text-[30px] font-bold text-[var(--admin-gray-900)] leading-[1.2] tracking-[-0.02em] mb-2">
@@ -211,8 +199,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           Design Tokens
         </h1>
         <p className="text-[14px] text-[var(--admin-gray-500)] mb-12">
-          Color, typography, spacing, radius, and shadow tokens used across the
-          system.
+          Color, typography, spacing, radius, and shadow tokens used across the system.
         </p>
 
         {/* -------------------------------------------------------------- */}
@@ -223,12 +210,12 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <SubSection title="Primary">
           <div className="flex flex-wrap gap-3">
             {[
-              { token: "primary-50", hex: "#eff6ff" },
-              { token: "primary-100", hex: "#dbeafe" },
-              { token: "primary-200", hex: "#bfdbfe" },
-              { token: "primary-500", hex: "#3b82f6" },
-              { token: "primary-600", hex: "#2563eb" },
-              { token: "primary-700", hex: "#1d4ed8" },
+              { token: 'primary-50', hex: '#eff6ff' },
+              { token: 'primary-100', hex: '#dbeafe' },
+              { token: 'primary-200', hex: '#bfdbfe' },
+              { token: 'primary-500', hex: '#3b82f6' },
+              { token: 'primary-600', hex: '#2563eb' },
+              { token: 'primary-700', hex: '#1d4ed8' },
             ].map((c) => (
               <div key={c.token} className="flex flex-col items-center gap-1.5">
                 <div
@@ -237,9 +224,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                     backgroundColor: `var(--admin-${c.token})`,
                   }}
                 />
-                <span className="text-[11px] text-[var(--admin-gray-600)]">
-                  {c.token}
-                </span>
+                <span className="text-[11px] text-[var(--admin-gray-600)]">{c.token}</span>
                 <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
                   {c.hex}
                 </span>
@@ -251,16 +236,16 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <SubSection title="Gray / Neutral">
           <div className="flex flex-wrap gap-3">
             {[
-              { token: "gray-50", hex: "#f8fafc" },
-              { token: "gray-100", hex: "#f1f5f9" },
-              { token: "gray-200", hex: "#e2e8f0" },
-              { token: "gray-300", hex: "#cbd5e1" },
-              { token: "gray-400", hex: "#94a3b8" },
-              { token: "gray-500", hex: "#64748b" },
-              { token: "gray-600", hex: "#475569" },
-              { token: "gray-700", hex: "#334155" },
-              { token: "gray-800", hex: "#1e293b" },
-              { token: "gray-900", hex: "#0f172a" },
+              { token: 'gray-50', hex: '#f8fafc' },
+              { token: 'gray-100', hex: '#f1f5f9' },
+              { token: 'gray-200', hex: '#e2e8f0' },
+              { token: 'gray-300', hex: '#cbd5e1' },
+              { token: 'gray-400', hex: '#94a3b8' },
+              { token: 'gray-500', hex: '#64748b' },
+              { token: 'gray-600', hex: '#475569' },
+              { token: 'gray-700', hex: '#334155' },
+              { token: 'gray-800', hex: '#1e293b' },
+              { token: 'gray-900', hex: '#0f172a' },
             ].map((c) => (
               <div key={c.token} className="flex flex-col items-center gap-1.5">
                 <div
@@ -269,9 +254,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                     backgroundColor: `var(--admin-${c.token})`,
                   }}
                 />
-                <span className="text-[11px] text-[var(--admin-gray-600)]">
-                  {c.token}
-                </span>
+                <span className="text-[11px] text-[var(--admin-gray-600)]">{c.token}</span>
                 <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
                   {c.hex}
                 </span>
@@ -284,31 +267,31 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <div className="flex flex-wrap gap-6">
             {[
               {
-                group: "Success",
+                group: 'Success',
                 tokens: [
-                  { token: "success-500", hex: "#22c55e" },
-                  { token: "success-700", hex: "#15803d" },
+                  { token: 'success-500', hex: '#22c55e' },
+                  { token: 'success-700', hex: '#15803d' },
                 ],
               },
               {
-                group: "Error",
+                group: 'Error',
                 tokens: [
-                  { token: "error-500", hex: "#ef4444" },
-                  { token: "error-700", hex: "#b91c1c" },
+                  { token: 'error-500', hex: '#ef4444' },
+                  { token: 'error-700', hex: '#b91c1c' },
                 ],
               },
               {
-                group: "Warning",
+                group: 'Warning',
                 tokens: [
-                  { token: "warning-500", hex: "#f59e0b" },
-                  { token: "warning-700", hex: "#b45309" },
+                  { token: 'warning-500', hex: '#f59e0b' },
+                  { token: 'warning-700', hex: '#b45309' },
                 ],
               },
               {
-                group: "Info",
+                group: 'Info',
                 tokens: [
-                  { token: "info-500", hex: "#3b82f6" },
-                  { token: "info-700", hex: "#1d4ed8" },
+                  { token: 'info-500', hex: '#3b82f6' },
+                  { token: 'info-700', hex: '#1d4ed8' },
                 ],
               },
             ].map((g) => (
@@ -318,17 +301,12 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                 </span>
                 <div className="flex gap-3">
                   {g.tokens.map((c) => (
-                    <div
-                      key={c.token}
-                      className="flex flex-col items-center gap-1.5"
-                    >
+                    <div key={c.token} className="flex flex-col items-center gap-1.5">
                       <div
                         className="w-12 h-12 rounded-md border border-[var(--admin-gray-200)]"
                         style={{ backgroundColor: `var(--admin-${c.token})` }}
                       />
-                      <span className="text-[11px] text-[var(--admin-gray-600)]">
-                        {c.token}
-                      </span>
+                      <span className="text-[11px] text-[var(--admin-gray-600)]">{c.token}</span>
                       <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
                         {c.hex}
                       </span>
@@ -343,19 +321,17 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <SubSection title="Surfaces">
           <div className="flex flex-wrap gap-3">
             {[
-              { token: "surface-page", label: "Page", hex: "#f8fafc" },
-              { token: "surface-card", label: "Card", hex: "#ffffff" },
-              { token: "surface-sidebar", label: "Sidebar", hex: "#ffffff" },
-              { token: "surface-header", label: "Header", hex: "#ffffff" },
+              { token: 'surface-page', label: 'Page', hex: '#f8fafc' },
+              { token: 'surface-card', label: 'Card', hex: '#ffffff' },
+              { token: 'surface-sidebar', label: 'Sidebar', hex: '#ffffff' },
+              { token: 'surface-header', label: 'Header', hex: '#ffffff' },
             ].map((c) => (
               <div key={c.token} className="flex flex-col items-center gap-1.5">
                 <div
                   className="w-12 h-12 rounded-md border border-[var(--admin-gray-200)]"
                   style={{ backgroundColor: `var(--admin-${c.token})` }}
                 />
-                <span className="text-[11px] text-[var(--admin-gray-600)]">
-                  {c.label}
-                </span>
+                <span className="text-[11px] text-[var(--admin-gray-600)]">{c.label}</span>
                 <span className="text-[11px] font-['JetBrains_Mono',monospace] text-[var(--admin-gray-400)]">
                   {c.hex}
                 </span>
@@ -373,33 +349,33 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <div className="flex flex-col gap-5">
             {[
               {
-                name: "Display",
-                size: "30px",
+                name: 'Display',
+                size: '30px',
                 weight: 700,
-                lh: "1.2",
-                tracking: "-0.02em",
+                lh: '1.2',
+                tracking: '-0.02em',
               },
-              { name: "H1", size: "24px", weight: 600, lh: "1.3" },
-              { name: "H2", size: "20px", weight: 600, lh: "1.35" },
-              { name: "H3", size: "16px", weight: 600, lh: "1.3" },
-              { name: "Body LG", size: "16px", weight: 400, lh: "1.5" },
-              { name: "Body", size: "14px", weight: 400, lh: "1.5" },
-              { name: "Body Medium", size: "14px", weight: 500, lh: "1.5" },
-              { name: "Label", size: "13px", weight: 500, lh: "1.4" },
-              { name: "Caption", size: "12px", weight: 400, lh: "1.4" },
+              { name: 'H1', size: '24px', weight: 600, lh: '1.3' },
+              { name: 'H2', size: '20px', weight: 600, lh: '1.35' },
+              { name: 'H3', size: '16px', weight: 600, lh: '1.3' },
+              { name: 'Body LG', size: '16px', weight: 400, lh: '1.5' },
+              { name: 'Body', size: '14px', weight: 400, lh: '1.5' },
+              { name: 'Body Medium', size: '14px', weight: 500, lh: '1.5' },
+              { name: 'Label', size: '13px', weight: 500, lh: '1.4' },
+              { name: 'Caption', size: '12px', weight: 400, lh: '1.4' },
               {
-                name: "Overline",
-                size: "11px",
+                name: 'Overline',
+                size: '11px',
                 weight: 600,
-                lh: "1.4",
-                tracking: "0.06em",
-                transform: "uppercase" as const,
+                lh: '1.4',
+                tracking: '0.06em',
+                transform: 'uppercase' as const,
               },
               {
-                name: "Code",
-                size: "13px",
+                name: 'Code',
+                size: '13px',
                 weight: 400,
-                lh: "1.5",
+                lh: '1.5',
                 font: "'JetBrains Mono', monospace",
               },
             ].map((t) => (
@@ -459,13 +435,13 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <SubSection title="Radius Values">
           <div className="flex flex-wrap items-end gap-4">
             {[
-              { name: "none", value: "0px" },
-              { name: "sm", value: "4px" },
-              { name: "md", value: "6px" },
-              { name: "lg", value: "8px" },
-              { name: "xl", value: "12px" },
-              { name: "2xl", value: "16px" },
-              { name: "full", value: "9999px" },
+              { name: 'none', value: '0px' },
+              { name: 'sm', value: '4px' },
+              { name: 'md', value: '6px' },
+              { name: 'lg', value: '8px' },
+              { name: 'xl', value: '12px' },
+              { name: '2xl', value: '16px' },
+              { name: 'full', value: '9999px' },
             ].map((r) => (
               <div key={r.name} className="flex flex-col items-center gap-1.5">
                 <div
@@ -490,15 +466,13 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
 
         <SubSection title="Shadow Levels">
           <div className="flex flex-wrap items-start gap-6">
-            {["xs", "sm", "md", "lg", "xl", "ring"].map((s) => (
+            {['xs', 'sm', 'md', 'lg', 'xl', 'ring'].map((s) => (
               <div key={s} className="flex flex-col items-center gap-2">
                 <div
                   className="w-24 h-24 rounded-lg bg-[var(--admin-surface-card)]"
                   style={{ boxShadow: `var(--admin-shadow-${s})` }}
                 />
-                <span className="text-[11px] font-medium text-[var(--admin-gray-600)]">
-                  {s}
-                </span>
+                <span className="text-[11px] font-medium text-[var(--admin-gray-600)]">{s}</span>
               </div>
             ))}
           </div>
@@ -629,18 +603,13 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <div className="flex flex-wrap items-start gap-4">
           <div className="flex flex-col w-[300px] gap-1.5">
             <Label>Search</Label>
-            <Input
-              prefix={<Search size={16} strokeWidth={1.5} />}
-              placeholder="Search pages..."
-            />
+            <Input prefix={<Search size={16} strokeWidth={1.5} />} placeholder="Search pages..." />
           </div>
           <div className="flex flex-col w-[300px] gap-1.5">
             <Label>Slug</Label>
             <Input
               prefix={
-                <span className="text-[13px] font-['JetBrains_Mono',monospace]">
-                  /pages/
-                </span>
+                <span className="text-[13px] font-['JetBrains_Mono',monospace]">/pages/</span>
               }
               defaultValue="about-us"
             />
@@ -696,9 +665,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
 
       <SubSection title="With Subtitle">
         <div className="flex flex-wrap items-start gap-6">
-          <Label subtitle="A short summary shown in search results">
-            Meta Description
-          </Label>
+          <Label subtitle="A short summary shown in search results">Meta Description</Label>
           <Label subtitle="Used in the browser tab" required>
             Page Title
           </Label>
@@ -715,9 +682,9 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <div className="w-[220px]">
             <Select
               options={[
-                { value: "opt1", label: "Option 1" },
-                { value: "opt2", label: "Option 2" },
-                { value: "opt3", label: "Option 3" },
+                { value: 'opt1', label: 'Option 1' },
+                { value: 'opt2', label: 'Option 2' },
+                { value: 'opt3', label: 'Option 3' },
               ]}
               value={selectValue}
               onChange={setSelectValue}
@@ -727,8 +694,8 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <div className="w-[220px]">
             <Select
               options={[
-                { value: "opt1", label: "Option 1" },
-                { value: "opt2", label: "Option 2" },
+                { value: 'opt1', label: 'Option 1' },
+                { value: 'opt2', label: 'Option 2' },
               ]}
               value="opt1"
               onChange={() => {}}
@@ -737,14 +704,14 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           </div>
           <div className="w-[220px]">
             <Select
-              options={[{ value: "opt1", label: "Option 1" }]}
+              options={[{ value: 'opt1', label: 'Option 1' }]}
               error
               placeholder="Error state"
             />
           </div>
           <div className="w-[220px]">
             <Select
-              options={[{ value: "opt1", label: "Option 1" }]}
+              options={[{ value: 'opt1', label: 'Option 1' }]}
               disabled
               placeholder="Disabled"
             />
@@ -757,9 +724,9 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <div className="w-[220px]">
             <Select
               options={[
-                { value: "opt1", label: "Published" },
-                { value: "opt2", label: "Draft" },
-                { value: "opt3", label: "Archived" },
+                { value: 'opt1', label: 'Published' },
+                { value: 'opt2', label: 'Draft' },
+                { value: 'opt3', label: 'Archived' },
               ]}
               value={selectOpen}
               onChange={setSelectOpen}
@@ -776,16 +743,8 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
 
       <SubSection title="Checkboxes">
         <div className="flex flex-wrap items-start gap-6">
-          <Checkbox
-            label="Unchecked"
-            checked={checkboxA}
-            onChange={setCheckboxA}
-          />
-          <Checkbox
-            label="Checked"
-            checked={checkboxB}
-            onChange={setCheckboxB}
-          />
+          <Checkbox label="Unchecked" checked={checkboxA} onChange={setCheckboxA} />
+          <Checkbox label="Checked" checked={checkboxB} onChange={setCheckboxB} />
           <Checkbox label="Indeterminate" indeterminate />
           <Checkbox label="Disabled" disabled />
           <Checkbox label="Disabled checked" checked disabled />
@@ -863,22 +822,20 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
 
       <SubSection title="Standard Navigation Paths">
         <div className="flex flex-col gap-4">
-          <Breadcrumb
-            items={[{ label: "Dashboard", href: "/" }, { label: "Pages" }]}
-          />
+          <Breadcrumb items={[{ label: 'Dashboard', href: '/' }, { label: 'Pages' }]} />
           <Breadcrumb
             items={[
-              { label: "Dashboard", href: "/" },
-              { label: "Pages", href: "/pages" },
-              { label: "Edit Page" },
+              { label: 'Dashboard', href: '/' },
+              { label: 'Pages', href: '/pages' },
+              { label: 'Edit Page' },
             ]}
           />
           <Breadcrumb
             items={[
-              { label: "Dashboard", href: "/" },
-              { label: "Media", href: "/media" },
-              { label: "Images", href: "/media/images" },
-              { label: "hero-banner.jpg" },
+              { label: 'Dashboard', href: '/' },
+              { label: 'Media', href: '/media' },
+              { label: 'Images', href: '/media/images' },
+              { label: 'hero-banner.jpg' },
             ]}
           />
         </div>
@@ -961,31 +918,15 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
 
       <SubSection title="Compact (no title)">
         <div className="flex flex-col gap-3 max-w-sm">
-          <ToastItem
-            variant="success"
-            message="Page saved successfully."
-            onDismiss={() => {}}
-          />
-          <ToastItem
-            variant="error"
-            message="Failed to delete page."
-            onDismiss={() => {}}
-          />
+          <ToastItem variant="success" message="Page saved successfully." onDismiss={() => {}} />
+          <ToastItem variant="error" message="Failed to delete page." onDismiss={() => {}} />
           <ToastItem
             variant="warning"
             message="Session expires in 5 minutes."
             onDismiss={() => {}}
           />
-          <ToastItem
-            variant="info"
-            message="2 pages updated."
-            onDismiss={() => {}}
-          />
-          <ToastItem
-            variant="default"
-            message="Action completed."
-            onDismiss={() => {}}
-          />
+          <ToastItem variant="info" message="2 pages updated." onDismiss={() => {}} />
+          <ToastItem variant="default" message="Action completed." onDismiss={() => {}} />
         </div>
       </SubSection>
 
@@ -998,21 +939,15 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <div className="flex items-end gap-4 text-[var(--admin-gray-600)]">
           <div className="flex flex-col items-center gap-1">
             <FileText size={16} strokeWidth={1.5} />
-            <span className="text-[11px] text-[var(--admin-gray-400)]">
-              16px
-            </span>
+            <span className="text-[11px] text-[var(--admin-gray-400)]">16px</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <FileText size={20} strokeWidth={1.5} />
-            <span className="text-[11px] text-[var(--admin-gray-400)]">
-              20px
-            </span>
+            <span className="text-[11px] text-[var(--admin-gray-400)]">20px</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <FileText size={24} strokeWidth={1.5} />
-            <span className="text-[11px] text-[var(--admin-gray-400)]">
-              24px
-            </span>
+            <span className="text-[11px] text-[var(--admin-gray-400)]">24px</span>
           </div>
         </div>
       </SubSection>
@@ -1022,35 +957,30 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           {[
             {
               icon: <LayoutDashboard size={20} strokeWidth={1.5} />,
-              name: "Dashboard",
+              name: 'Dashboard',
             },
-            { icon: <FileText size={20} strokeWidth={1.5} />, name: "Pages" },
-            { icon: <Image size={20} strokeWidth={1.5} />, name: "Media" },
+            { icon: <FileText size={20} strokeWidth={1.5} />, name: 'Pages' },
+            { icon: <Image size={20} strokeWidth={1.5} />, name: 'Media' },
             {
               icon: <Settings size={20} strokeWidth={1.5} />,
-              name: "Settings",
+              name: 'Settings',
             },
-            { icon: <Plus size={20} strokeWidth={1.5} />, name: "Add" },
-            { icon: <Pencil size={20} strokeWidth={1.5} />, name: "Edit" },
-            { icon: <Trash2 size={20} strokeWidth={1.5} />, name: "Delete" },
-            { icon: <Search size={20} strokeWidth={1.5} />, name: "Search" },
-            { icon: <Eye size={20} strokeWidth={1.5} />, name: "Preview" },
-            { icon: <Upload size={20} strokeWidth={1.5} />, name: "Upload" },
-            { icon: <Link size={20} strokeWidth={1.5} />, name: "Link" },
-            { icon: <Copy size={20} strokeWidth={1.5} />, name: "Copy" },
+            { icon: <Plus size={20} strokeWidth={1.5} />, name: 'Add' },
+            { icon: <Pencil size={20} strokeWidth={1.5} />, name: 'Edit' },
+            { icon: <Trash2 size={20} strokeWidth={1.5} />, name: 'Delete' },
+            { icon: <Search size={20} strokeWidth={1.5} />, name: 'Search' },
+            { icon: <Eye size={20} strokeWidth={1.5} />, name: 'Preview' },
+            { icon: <Upload size={20} strokeWidth={1.5} />, name: 'Upload' },
+            { icon: <Link size={20} strokeWidth={1.5} />, name: 'Link' },
+            { icon: <Copy size={20} strokeWidth={1.5} />, name: 'Copy' },
             {
               icon: <GripVertical size={20} strokeWidth={1.5} />,
-              name: "Drag",
+              name: 'Drag',
             },
           ].map((item) => (
-            <div
-              key={item.name}
-              className="flex flex-col items-center gap-1.5 w-14"
-            >
+            <div key={item.name} className="flex flex-col items-center gap-1.5 w-14">
               {item.icon}
-              <span className="text-[11px] text-[var(--admin-gray-400)]">
-                {item.name}
-              </span>
+              <span className="text-[11px] text-[var(--admin-gray-400)]">{item.name}</span>
             </div>
           ))}
         </div>
@@ -1084,19 +1014,13 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
       <SubSection title="Padding Sizes">
         <div className="flex items-start gap-4">
           <Card padding="sm" className="w-[180px]">
-            <p className="text-[13px] text-[var(--admin-gray-600)]">
-              Small padding (p-4)
-            </p>
+            <p className="text-[13px] text-[var(--admin-gray-600)]">Small padding (p-4)</p>
           </Card>
           <Card padding="default" className="w-[180px]">
-            <p className="text-[13px] text-[var(--admin-gray-600)]">
-              Default padding (p-6)
-            </p>
+            <p className="text-[13px] text-[var(--admin-gray-600)]">Default padding (p-6)</p>
           </Card>
           <Card padding="lg" className="w-[180px]">
-            <p className="text-[13px] text-[var(--admin-gray-600)]">
-              Large padding (p-8)
-            </p>
+            <p className="text-[13px] text-[var(--admin-gray-600)]">Large padding (p-8)</p>
           </Card>
         </div>
       </SubSection>
@@ -1172,27 +1096,19 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <div className="flex flex-wrap items-start gap-4">
           <div className="flex flex-col w-[300px] gap-1.5">
             <Label>Tags</Label>
-            <TagInput
-              value={tags}
-              onChange={setTags}
-              placeholder="Add a tag..."
-            />
+            <TagInput value={tags} onChange={setTags} placeholder="Add a tag..." />
           </div>
           <div className="flex flex-col w-[300px] gap-1.5">
             <Label>Tags (empty)</Label>
-            <TagInput
-              value={[]}
-              onChange={() => {}}
-              placeholder="Add a tag..."
-            />
+            <TagInput value={[]} onChange={() => {}} placeholder="Add a tag..." />
           </div>
           <div className="flex flex-col w-[300px] gap-1.5">
             <Label error>Tags (error)</Label>
-            <TagInput value={["invalid"]} onChange={() => {}} error />
+            <TagInput value={['invalid']} onChange={() => {}} error />
           </div>
           <div className="flex flex-col w-[300px] gap-1.5">
             <Label>Tags (disabled)</Label>
-            <TagInput value={["locked", "tag"]} onChange={() => {}} disabled />
+            <TagInput value={['locked', 'tag']} onChange={() => {}} disabled />
           </div>
         </div>
       </SubSection>
@@ -1238,12 +1154,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           selectable
           selectedRows={selectedRows}
           onSelectionChange={setSelectedRows}
-          emptyState={
-            <EmptyState
-              title="No pages found"
-              description="Create your first page."
-            />
-          }
+          emptyState={<EmptyState title="No pages found" description="Create your first page." />}
         />
       </SubSection>
 
@@ -1254,11 +1165,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
 
       <SubSection title="Standard and Compact">
         <div className="flex flex-col gap-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={12}
-            onPageChange={setCurrentPage}
-          />
+          <Pagination currentPage={currentPage} totalPages={12} onPageChange={setCurrentPage} />
           <Pagination
             currentPage={currentPage}
             totalPages={12}
@@ -1283,9 +1190,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
       <SubSection title='variant="inline" (default)'>
         <div className="flex flex-col gap-4 max-w-md">
           <ErrorAlert>Failed to load page data. Please try again.</ErrorAlert>
-          <ErrorAlert onRetry={() => {}}>
-            Connection lost. Click retry to reconnect.
-          </ErrorAlert>
+          <ErrorAlert onRetry={() => {}}>Connection lost. Click retry to reconnect.</ErrorAlert>
         </div>
       </SubSection>
 
@@ -1297,8 +1202,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
             onRetry={() => {}}
             className="w-[340px]"
           >
-            We could not load the page data. Please check your connection and
-            try again.
+            We could not load the page data. Please check your connection and try again.
           </ErrorAlert>
         </div>
       </SubSection>
@@ -1328,37 +1232,37 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
             {[
               {
                 icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
-                label: "Dashboard",
+                label: 'Dashboard',
                 active: true,
               },
               {
                 icon: <FileText size={18} strokeWidth={1.5} />,
-                label: "Pages",
+                label: 'Pages',
                 active: false,
               },
               {
                 icon: <Image size={18} strokeWidth={1.5} />,
-                label: "Media",
+                label: 'Media',
                 active: false,
               },
               {
                 icon: <Link size={18} strokeWidth={1.5} />,
-                label: "Navigation",
+                label: 'Navigation',
                 active: false,
               },
               {
                 icon: <Settings size={18} strokeWidth={1.5} />,
-                label: "Settings",
+                label: 'Settings',
                 active: false,
               },
             ].map((item) => (
               <div
                 key={item.label}
                 className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-md text-[14px] transition-colors cursor-pointer",
+                  'flex items-center gap-2.5 px-3 py-2 rounded-md text-[14px] transition-colors cursor-pointer',
                   item.active
-                    ? "bg-[var(--admin-primary-50)] text-[var(--admin-primary-600)] font-medium"
-                    : "text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-50)]",
+                    ? 'bg-[var(--admin-primary-50)] text-[var(--admin-primary-600)] font-medium'
+                    : 'text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-50)]'
                 )}
               >
                 {item.icon}
@@ -1375,9 +1279,9 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <div className="bg-[var(--admin-surface-card)] border border-[var(--admin-gray-200)] rounded-lg px-6 py-3 flex items-center justify-between">
           <Breadcrumb
             items={[
-              { label: "Dashboard", href: "/" },
-              { label: "Pages", href: "/pages" },
-              { label: "Edit Page" },
+              { label: 'Dashboard', href: '/' },
+              { label: 'Pages', href: '/pages' },
+              { label: 'Edit Page' },
             ]}
           />
           <div className="flex items-center gap-2">
@@ -1416,17 +1320,12 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <FieldGroup label="Content" className="px-5 py-5">
             <div className="flex flex-col gap-1.5">
               <Label required>Title</Label>
-              <Input
-                placeholder="Enter headline..."
-                defaultValue="Welcome to StructCMS"
-              />
+              <Input placeholder="Enter headline..." defaultValue="Welcome to StructCMS" />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label>Subtitle</Label>
               <Input placeholder="Optional subtitle..." />
-              <FieldMessage>
-                Short tagline displayed below the title
-              </FieldMessage>
+              <FieldMessage>Short tagline displayed below the title</FieldMessage>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label optional>Summary</Label>
@@ -1435,9 +1334,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                 error
                 defaultValue="This text is too long for a summary and should be shortened to fit the preview card layout properly."
               />
-              <FieldMessage variant="error">
-                Summary must not exceed 120 characters.
-              </FieldMessage>
+              <FieldMessage variant="error">Summary must not exceed 120 characters.</FieldMessage>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label>Body</Label>
@@ -1454,10 +1351,10 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                       key={`form-toolbar-${i}`}
                       type="button"
                       className={cn(
-                        "flex items-center justify-center w-8 h-8 rounded-md transition-colors",
+                        'flex items-center justify-center w-8 h-8 rounded-md transition-colors',
                         btn.active
-                          ? "bg-[var(--admin-gray-100)] text-[var(--admin-gray-800)]"
-                          : "text-[var(--admin-gray-500)] hover:bg-[var(--admin-gray-50)]",
+                          ? 'bg-[var(--admin-gray-100)] text-[var(--admin-gray-800)]'
+                          : 'text-[var(--admin-gray-500)] hover:bg-[var(--admin-gray-50)]'
                       )}
                     >
                       {btn.icon}
@@ -1489,17 +1386,15 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <Label>Grid Items</Label>
-                <span className="text-[12px] text-[var(--admin-gray-400)]">
-                  2 items
-                </span>
+                <span className="text-[12px] text-[var(--admin-gray-400)]">2 items</span>
               </div>
               <Card variant="outlined" padding="none">
-                {["Product Overview", "Team Photo"].map((item, i) => (
+                {['Product Overview', 'Team Photo'].map((item, i) => (
                   <div
                     key={item}
                     className={cn(
-                      "flex items-center gap-3 px-4 py-2.5",
-                      i < 1 && "border-b border-[var(--admin-gray-100)]",
+                      'flex items-center gap-3 px-4 py-2.5',
+                      i < 1 && 'border-b border-[var(--admin-gray-100)]'
                     )}
                   >
                     <GripVertical
@@ -1507,9 +1402,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                       strokeWidth={1.5}
                       className="text-[var(--admin-gray-300)] cursor-grab shrink-0"
                     />
-                    <span className="text-[13px] text-[var(--admin-gray-700)] grow">
-                      {item}
-                    </span>
+                    <span className="text-[13px] text-[var(--admin-gray-700)] grow">{item}</span>
                     <Button size="icon" variant="ghost" className="w-6 h-6">
                       <Trash2 size={12} />
                     </Button>
@@ -1534,21 +1427,13 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                   <span className="text-[13px] text-[var(--admin-gray-700)] truncate">
                     datasheet-v2.pdf
                   </span>
-                  <span className="text-[11px] text-[var(--admin-gray-400)]">
-                    248 KB
-                  </span>
+                  <span className="text-[11px] text-[var(--admin-gray-400)]">248 KB</span>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="w-6 h-6 shrink-0"
-                >
+                <Button size="icon" variant="ghost" className="w-6 h-6 shrink-0">
                   <X size={12} />
                 </Button>
               </div>
-              <FieldMessage>
-                Downloadable file (PDF, document, etc.)
-              </FieldMessage>
+              <FieldMessage>Downloadable file (PDF, document, etc.)</FieldMessage>
             </div>
           </FieldGroup>
 
@@ -1560,24 +1445,22 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
               <Label>Layout</Label>
               <RadioGroup
                 options={[
-                  { value: "default", label: "Default" },
-                  { value: "cards", label: "Cards" },
-                  { value: "grid", label: "Grid" },
+                  { value: 'default', label: 'Default' },
+                  { value: 'cards', label: 'Cards' },
+                  { value: 'grid', label: 'Grid' },
                 ]}
                 value={formLayout}
                 onChange={setFormLayout}
               />
-              <FieldMessage>
-                Controls how the section content is arranged
-              </FieldMessage>
+              <FieldMessage>Controls how the section content is arranged</FieldMessage>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label>Theme</Label>
               <RadioGroup
                 options={[
-                  { value: "light", label: "Light" },
-                  { value: "dark", label: "Dark" },
-                  { value: "auto", label: "Auto" },
+                  { value: 'light', label: 'Light' },
+                  { value: 'dark', label: 'Dark' },
+                  { value: 'auto', label: 'Auto' },
                 ]}
                 value={formTheme}
                 onChange={setFormTheme}
@@ -1585,10 +1468,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
               <FieldMessage>Color scheme for this section</FieldMessage>
             </div>
             <div className="flex flex-col gap-1">
-              <Checkbox
-                label="Display captions below grid/card items"
-                checked={false}
-              />
+              <Checkbox label="Display captions below grid/card items" checked={false} />
               <p className="text-[11px] italic text-[var(--admin-gray-400)] pl-6">
                 Visible when Layout is cards or grid
               </p>
@@ -1601,36 +1481,22 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <FieldGroup label="Call to Action" className="px-5 py-5">
             <div className="flex flex-col gap-1.5">
               <Label>External URL</Label>
-              <Input
-                placeholder="https://..."
-                defaultValue="https://structcms.dev/docs"
-              />
+              <Input placeholder="https://..." defaultValue="https://structcms.dev/docs" />
               <FieldMessage>Link to an external resource</FieldMessage>
             </div>
-            <Toggle
-              label="Show Button"
-              checked={formShowCta}
-              onChange={setFormShowCta}
-            />
+            <Toggle label="Show Button" checked={formShowCta} onChange={setFormShowCta} />
             {formShowCta && (
               <div className="flex flex-col gap-3 pl-4 border-l-2 border-[var(--admin-gray-200)]">
-                <FieldMessage>
-                  Visible when "Show Button" is enabled
-                </FieldMessage>
+                <FieldMessage>Visible when "Show Button" is enabled</FieldMessage>
                 <div className="flex flex-col gap-1.5">
                   <Label>Button Label</Label>
-                  <Input
-                    placeholder="e.g. Get Started"
-                    defaultValue="Get Started"
-                  />
+                  <Input placeholder="e.g. Get Started" defaultValue="Get Started" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label>Button URL</Label>
                   <Input
                     prefix={
-                      <span className="text-[13px] font-['JetBrains_Mono',monospace]">
-                        /
-                      </span>
+                      <span className="text-[13px] font-['JetBrains_Mono',monospace]">/</span>
                     }
                     placeholder="path"
                     defaultValue="docs/getting-started"
@@ -1640,10 +1506,10 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                   <Label>Variant</Label>
                   <Select
                     options={[
-                      { value: "primary", label: "Primary" },
-                      { value: "secondary", label: "Secondary" },
-                      { value: "ghost", label: "Ghost" },
-                      { value: "outline", label: "Outline" },
+                      { value: 'primary', label: 'Primary' },
+                      { value: 'secondary', label: 'Secondary' },
+                      { value: 'ghost', label: 'Ghost' },
+                      { value: 'outline', label: 'Outline' },
                     ]}
                     value="primary"
                     onChange={() => {}}
@@ -1654,8 +1520,8 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                   <Label>Target</Label>
                   <RadioGroup
                     options={[
-                      { value: "_self", label: "Same tab" },
-                      { value: "_blank", label: "New tab" },
+                      { value: '_self', label: 'Same tab' },
+                      { value: '_blank', label: 'New tab' },
                     ]}
                     value={formTarget}
                     onChange={setFormTarget}
@@ -1672,11 +1538,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
           <FieldGroup label="Metadata" className="px-5 py-5">
             <div className="flex flex-col gap-1.5">
               <Label>Tags</Label>
-              <TagInput
-                value={tags}
-                onChange={setTags}
-                placeholder="Add a tag..."
-              />
+              <TagInput value={tags} onChange={setTags} placeholder="Add a tag..." />
               <FieldMessage>Keywords for categorization</FieldMessage>
             </div>
             <div className="flex flex-col gap-3 pl-4 border-l-2 border-[var(--admin-gray-200)]">
@@ -1692,11 +1554,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                 <Input defaultValue="Editor" />
               </div>
             </div>
-            <Toggle
-              label="Published"
-              checked={formPublished}
-              onChange={setFormPublished}
-            />
+            <Toggle label="Published" checked={formPublished} onChange={setFormPublished} />
           </FieldGroup>
 
           {/* Footer */}
@@ -1712,20 +1570,16 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
       <SubSection title="KPI Cards">
         <div className="flex flex-wrap gap-4">
           {[
-            { label: "Total Pages", value: "24", change: "+3 this week" },
-            { label: "Media Files", value: "156", change: "+12 this week" },
-            { label: "Navigations", value: "4", change: "No change" },
+            { label: 'Total Pages', value: '24', change: '+3 this week' },
+            { label: 'Media Files', value: '156', change: '+12 this week' },
+            { label: 'Navigations', value: '4', change: 'No change' },
           ].map((kpi) => (
             <Card key={kpi.label} variant="default" className="w-[200px]">
-              <p className="text-[13px] text-[var(--admin-gray-500)]">
-                {kpi.label}
-              </p>
+              <p className="text-[13px] text-[var(--admin-gray-500)]">{kpi.label}</p>
               <p className="text-[28px] font-bold text-[var(--admin-gray-900)] leading-tight mt-1">
                 {kpi.value}
               </p>
-              <p className="text-[12px] text-[var(--admin-gray-400)] mt-1">
-                {kpi.change}
-              </p>
+              <p className="text-[12px] text-[var(--admin-gray-400)] mt-1">{kpi.change}</p>
             </Card>
           ))}
         </div>
@@ -1736,26 +1590,15 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
       <SubSection title="Image Grid">
         <div className="grid grid-cols-4 gap-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Card
-              key={`media-${i}`}
-              variant="outlined"
-              padding="none"
-              className="overflow-hidden"
-            >
+            <Card key={`media-${i}`} variant="outlined" padding="none" className="overflow-hidden">
               <div className="aspect-square bg-[var(--admin-gray-100)] flex items-center justify-center">
-                <Image
-                  size={24}
-                  strokeWidth={1.5}
-                  className="text-[var(--admin-gray-300)]"
-                />
+                <Image size={24} strokeWidth={1.5} className="text-[var(--admin-gray-300)]" />
               </div>
               <div className="p-2.5">
                 <p className="text-[13px] text-[var(--admin-gray-800)] truncate">
                   image-{i + 1}.jpg
                 </p>
-                <p className="text-[11px] text-[var(--admin-gray-400)]">
-                  1.2 MB
-                </p>
+                <p className="text-[11px] text-[var(--admin-gray-400)]">1.2 MB</p>
               </div>
             </Card>
           ))}
@@ -1770,7 +1613,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
             label="Sections"
             value={arrayItems}
             onChange={setArrayItems}
-            createDefaultItem={() => "New Section"}
+            createDefaultItem={() => 'New Section'}
             renderItem={(item, _index, onChange) => (
               <Input value={item} onChange={(e) => onChange(e.target.value)} />
             )}
@@ -1795,10 +1638,10 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
                 key={`toolbar-${i}`}
                 type="button"
                 className={cn(
-                  "flex items-center justify-center w-8 h-8 rounded-md transition-colors",
+                  'flex items-center justify-center w-8 h-8 rounded-md transition-colors',
                   btn.active
-                    ? "bg-[var(--admin-gray-100)] text-[var(--admin-gray-800)]"
-                    : "text-[var(--admin-gray-500)] hover:bg-[var(--admin-gray-50)]",
+                    ? 'bg-[var(--admin-gray-100)] text-[var(--admin-gray-800)]'
+                    : 'text-[var(--admin-gray-500)] hover:bg-[var(--admin-gray-50)]'
                 )}
               >
                 {btn.icon}
@@ -1819,9 +1662,7 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
         <div className="flex flex-wrap gap-6">
           <Card variant="outlined" className="w-[360px]" padding="none">
             <div className="p-4 border-b border-[var(--admin-gray-100)]">
-              <h3 className="text-[14px] font-medium text-[var(--admin-gray-800)]">
-                Recent Pages
-              </h3>
+              <h3 className="text-[14px] font-medium text-[var(--admin-gray-800)]">Recent Pages</h3>
             </div>
             <EmptyState
               icon={<FileText size={24} strokeWidth={1.5} />}
@@ -1852,6 +1693,6 @@ function DesignSystemPage({ className }: DesignSystemPageProps) {
   );
 }
 
-DesignSystemPage.displayName = "DesignSystemPage";
+DesignSystemPage.displayName = 'DesignSystemPage';
 
 export { DesignSystemPage };

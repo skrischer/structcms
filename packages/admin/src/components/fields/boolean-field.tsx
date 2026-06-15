@@ -1,7 +1,7 @@
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { FieldMessage } from "../ui/field-message";
-import { Toggle } from "../ui/toggle";
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { FieldMessage } from '../ui/field-message';
+import { Toggle } from '../ui/toggle';
 
 export interface BooleanFieldProps {
   label: string;
@@ -29,17 +29,10 @@ function BooleanField({
   disabled,
 }: BooleanFieldProps) {
   const inputId = id || name || React.useId();
-  const messageId = error
-    ? `${inputId}-error`
-    : description
-      ? `${inputId}-desc`
-      : undefined;
+  const messageId = error ? `${inputId}-error` : description ? `${inputId}-desc` : undefined;
 
   return (
-    <div
-      className={cn("flex flex-col gap-1.5", className)}
-      data-testid="boolean-input"
-    >
+    <div className={cn('flex flex-col gap-1.5', className)} data-testid="boolean-input">
       <div className="inline-flex items-center gap-2">
         <Toggle
           checked={checked}
@@ -48,13 +41,9 @@ function BooleanField({
           disabled={disabled}
           aria-describedby={messageId}
         />
-        {required && (
-          <span className="text-[var(--admin-error-500)] text-[13px]">*</span>
-        )}
+        {required && <span className="text-[var(--admin-error-500)] text-[13px]">*</span>}
       </div>
-      {description && !error && (
-        <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>
-      )}
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
         <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
@@ -64,6 +53,6 @@ function BooleanField({
   );
 }
 
-BooleanField.displayName = "BooleanField";
+BooleanField.displayName = 'BooleanField';
 
 export { BooleanField };

@@ -1,20 +1,20 @@
-import type { NavigationItem, Registry, SectionData } from "@structcms/core";
-import * as React from "react";
-import { useApiClient } from "../../hooks/use-api-client";
+import type { NavigationItem, Registry, SectionData } from '@structcms/core';
+import * as React from 'react';
+import { useApiClient } from '../../hooks/use-api-client';
 import {
   type NavigationData,
   type PageData,
   useNavigationData,
   usePageData,
-} from "../../hooks/use-page-data";
-import { NavigationEditor } from "../content/navigation-editor";
-import { PageList, type PageSummary } from "../content/page-list";
-import { DashboardPage } from "../dashboard/dashboard-page";
-import { PageEditor } from "../editors/page-editor";
-import { MediaBrowser } from "../media/media-browser";
-import { ErrorAlert } from "../ui/error-alert";
-import { Skeleton } from "../ui/skeleton";
-import type { View } from "./struct-cms-admin-app";
+} from '../../hooks/use-page-data';
+import { NavigationEditor } from '../content/navigation-editor';
+import { PageList, type PageSummary } from '../content/page-list';
+import { DashboardPage } from '../dashboard/dashboard-page';
+import { PageEditor } from '../editors/page-editor';
+import { MediaBrowser } from '../media/media-browser';
+import { ErrorAlert } from '../ui/error-alert';
+import { Skeleton } from '../ui/skeleton';
+import type { View } from './struct-cms-admin-app';
 
 interface ViewRendererProps {
   currentView: View;
@@ -39,9 +39,9 @@ function renderPageEditorView(
     pageType: string;
     pageSlug: string;
     onTitleChange: (title: string) => void;
-  },
+  }
 ): React.ReactNode {
-  if (currentView.type !== "page-editor") return null;
+  if (currentView.type !== 'page-editor') return null;
 
   if (currentView.pageId && pageLoading) {
     return (
@@ -83,7 +83,7 @@ function renderNavigationView(
   navigationData: NavigationData | null,
   navigationLoading: boolean,
   navigationError: string | null,
-  onSave: (items: NavigationItem[]) => void,
+  onSave: (items: NavigationItem[]) => void
 ): React.ReactNode {
   if (navigationLoading) {
     return (
@@ -123,17 +123,11 @@ export function ViewRenderer({
   onUploadMedia,
 }: ViewRendererProps) {
   const apiClient = useApiClient();
-  const {
-    navigationData,
-    navigationLoading,
-    navigationError,
-    setNavigationData,
-  } = useNavigationData(currentView);
+  const { navigationData, navigationLoading, navigationError, setNavigationData } =
+    useNavigationData(currentView);
   const { pageData, pageLoading, pageError } = usePageData(currentView);
   const [saveError, setSaveError] = React.useState<string | null>(null);
-  const [editedPageTitle, setEditedPageTitle] = React.useState<string | null>(
-    null,
-  );
+  const [editedPageTitle, setEditedPageTitle] = React.useState<string | null>(null);
 
   // Sync edited title only on initial load
   React.useEffect(() => {
@@ -151,10 +145,7 @@ export function ViewRenderer({
     setSaveError(null);
 
     try {
-      const response = await apiClient.put(
-        `/navigation/id/${navigationData.id}`,
-        { items },
-      );
+      const response = await apiClient.put(`/navigation/id/${navigationData.id}`, { items });
 
       if (response.error) {
         setSaveError(`Failed to update navigation: ${response.error.message}`);
@@ -162,7 +153,7 @@ export function ViewRenderer({
         setNavigationData(response.data as NavigationData);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
+      const message = err instanceof Error ? err.message : 'Unknown error';
       setSaveError(`Failed to update navigation: ${message}`);
     }
   };
@@ -180,10 +171,10 @@ export function ViewRenderer({
       if (response.error) {
         setSaveError(`Failed to update page: ${response.error.message}`);
       } else {
-        onNavigate({ type: "pages" });
+        onNavigate({ type: 'pages' });
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
+      const message = err instanceof Error ? err.message : 'Unknown error';
       setSaveError(`Failed to update page: ${message}`);
     }
   };
@@ -200,7 +191,7 @@ export function ViewRenderer({
   ) : null;
 
   switch (currentView.type) {
-    case "dashboard":
+    case 'dashboard':
       return (
         <DashboardPage
           onSelectPage={onSelectPage}
@@ -208,11 +199,9 @@ export function ViewRenderer({
           onUploadMedia={onUploadMedia}
         />
       );
-    case "pages":
-      return (
-        <PageList onSelectPage={onSelectPage} onCreatePage={onCreatePage} />
-      );
-    case "page-editor":
+    case 'pages':
+      return <PageList onSelectPage={onSelectPage} onCreatePage={onCreatePage} />;
+    case 'page-editor':
       return (
         <>
           {saveErrorBanner}
@@ -230,13 +219,13 @@ export function ViewRenderer({
                   pageSlug: pageData.slug,
                   onTitleChange: setEditedPageTitle,
                 }
-              : undefined,
+              : undefined
           )}
         </>
       );
-    case "media":
+    case 'media':
       return <MediaBrowser onSelect={() => {}} />;
-    case "navigation":
+    case 'navigation':
       return (
         <>
           {saveErrorBanner}
@@ -244,16 +233,12 @@ export function ViewRenderer({
             navigationData,
             navigationLoading,
             navigationError,
-            handleSaveNavigation,
+            handleSaveNavigation
           )}
         </>
       );
-    case "custom":
-      return (
-        <div data-testid="custom-view">
-          Custom view for path: {currentView.path}
-        </div>
-      );
+    case 'custom':
+      return <div data-testid="custom-view">Custom view for path: {currentView.path}</div>;
     default:
       return null;
   }

@@ -1,11 +1,11 @@
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import type { MediaItem } from "../../types/media";
-import { MediaBrowser } from "../media/media-browser";
-import { Button } from "../ui/button";
-import { Dialog } from "../ui/dialog";
-import { FieldMessage } from "../ui/field-message";
-import { Label } from "../ui/label";
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import type { MediaItem } from '../../types/media';
+import { MediaBrowser } from '../media/media-browser';
+import { Button } from '../ui/button';
+import { Dialog } from '../ui/dialog';
+import { FieldMessage } from '../ui/field-message';
+import { Label } from '../ui/label';
 
 export interface FilePickerProps {
   label: string;
@@ -23,9 +23,9 @@ export interface FilePickerProps {
 function extractFilename(url: string): string {
   try {
     const pathname = new URL(url).pathname;
-    return pathname.split("/").pop() ?? url;
+    return pathname.split('/').pop() ?? url;
   } catch {
-    return url.split("/").pop() ?? url;
+    return url.split('/').pop() ?? url;
   }
 }
 
@@ -45,7 +45,7 @@ function FilePicker({
   const [mediaBrowserOpen, setMediaBrowserOpen] = React.useState(false);
 
   const handleClear = () => {
-    onChange?.("");
+    onChange?.('');
   };
 
   const handleBrowse = onBrowse ?? (() => setMediaBrowserOpen(true));
@@ -56,32 +56,24 @@ function FilePicker({
   };
 
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <div className={cn('flex flex-col gap-1.5', className)}>
       <Label htmlFor={inputId} required={required}>
         {label}
       </Label>
       <div
         className={cn(
-          "rounded-md border border-input bg-background p-4",
-          !value && "border-dashed bg-[var(--admin-gray-50)]",
-          error && "border-[var(--admin-error-500)]",
+          'rounded-md border border-input bg-background p-4',
+          !value && 'border-dashed bg-[var(--admin-gray-50)]',
+          error && 'border-[var(--admin-error-500)]'
         )}
       >
         {value ? (
           <div className="space-y-3">
-            <p
-              className="text-sm text-foreground truncate"
-              data-testid="file-name"
-            >
+            <p className="text-sm text-foreground truncate" data-testid="file-name">
               {extractFilename(value)}
             </p>
             <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={handleBrowse}
-              >
+              <Button type="button" variant="secondary" size="sm" onClick={handleBrowse}>
                 Change
               </Button>
               <Button
@@ -97,9 +89,7 @@ function FilePicker({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-6 text-center">
-            <p className="mb-4 text-sm text-muted-foreground">
-              No file selected
-            </p>
+            <p className="mb-4 text-sm text-muted-foreground">No file selected</p>
             <Button
               type="button"
               variant="secondary"
@@ -112,9 +102,7 @@ function FilePicker({
           </div>
         )}
       </div>
-      {description && !error && (
-        <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>
-      )}
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
         <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
@@ -133,6 +121,6 @@ function FilePicker({
   );
 }
 
-FilePicker.displayName = "FilePicker";
+FilePicker.displayName = 'FilePicker';
 
 export { FilePicker };

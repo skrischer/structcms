@@ -1,41 +1,41 @@
-import { createRegistry } from "@structcms/core";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AdminProvider } from "../../../context/admin-context";
-import { MediaBrowser, type MediaItem } from "../media-browser";
+import { createRegistry } from '@structcms/core';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AdminProvider } from '../../../context/admin-context';
+import { MediaBrowser, type MediaItem } from '../media-browser';
 
 const registry = createRegistry({ sections: [] });
 
 const mockMedia: MediaItem[] = [
-  { id: "1", url: "https://example.com/img1.jpg", filename: "img1.jpg" },
-  { id: "2", url: "https://example.com/img2.jpg", filename: "img2.jpg" },
-  { id: "3", url: "https://example.com/img3.jpg", filename: "img3.jpg" },
+  { id: '1', url: 'https://example.com/img1.jpg', filename: 'img1.jpg' },
+  { id: '2', url: 'https://example.com/img2.jpg', filename: 'img2.jpg' },
+  { id: '3', url: 'https://example.com/img3.jpg', filename: 'img3.jpg' },
 ];
 
 function renderWithProvider(ui: React.ReactElement) {
   return render(
     <AdminProvider registry={registry} apiBaseUrl="/api/cms">
       {ui}
-    </AdminProvider>,
+    </AdminProvider>
   );
 }
 
 function mockFetchSuccess(data: MediaItem[]) {
-  vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+  vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
     new Response(JSON.stringify(data), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
-    }),
+      headers: { 'Content-Type': 'application/json' },
+    })
   );
 }
 
 function mockFetchError(message: string) {
-  vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+  vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
     new Response(JSON.stringify({ error: { message } }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
-    }),
+      headers: { 'Content-Type': 'application/json' },
+    })
   );
 }
 
@@ -43,82 +43,82 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("MediaBrowser", () => {
-  it("renders media browser", async () => {
+describe('MediaBrowser', () => {
+  it('renders media browser', async () => {
     mockFetchSuccess([]);
 
     renderWithProvider(<MediaBrowser />);
 
-    expect(screen.getByTestId("media-browser")).toBeInTheDocument();
-    expect(screen.getByText("Media")).toBeInTheDocument();
+    expect(screen.getByTestId('media-browser')).toBeInTheDocument();
+    expect(screen.getByText('Media')).toBeInTheDocument();
   });
 
-  it("shows loading state initially", () => {
+  it('shows loading state initially', () => {
     mockFetchSuccess([]);
 
     renderWithProvider(<MediaBrowser />);
 
-    expect(screen.getByTestId("loading")).toBeInTheDocument();
+    expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
 
-  it("renders media grid after loading", async () => {
+  it('renders media grid after loading', async () => {
     mockFetchSuccess(mockMedia);
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
-    expect(screen.getByTestId("media-item-1")).toBeInTheDocument();
-    expect(screen.getByTestId("media-item-2")).toBeInTheDocument();
-    expect(screen.getByTestId("media-item-3")).toBeInTheDocument();
+    expect(screen.getByTestId('media-item-1')).toBeInTheDocument();
+    expect(screen.getByTestId('media-item-2')).toBeInTheDocument();
+    expect(screen.getByTestId('media-item-3')).toBeInTheDocument();
   });
 
-  it("shows empty state when no media", async () => {
+  it('shows empty state when no media', async () => {
     mockFetchSuccess([]);
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("empty-state")).toBeInTheDocument();
+      expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     });
 
     expect(screen.getByText(/No media files yet/)).toBeInTheDocument();
   });
 
-  it("shows error state on API failure", async () => {
-    mockFetchError("Server error");
+  it('shows error state on API failure', async () => {
+    mockFetchError('Server error');
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("error")).toBeInTheDocument();
+      expect(screen.getByTestId('error')).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Server error")).toBeInTheDocument();
+    expect(screen.getByText('Server error')).toBeInTheDocument();
   });
 
-  it("renders Upload button", async () => {
+  it('renders Upload button', async () => {
     mockFetchSuccess([]);
 
     renderWithProvider(<MediaBrowser />);
 
-    expect(screen.getByTestId("upload-button")).toBeInTheDocument();
-    expect(screen.getByText("Upload")).toBeInTheDocument();
+    expect(screen.getByTestId('upload-button')).toBeInTheDocument();
+    expect(screen.getByText('Upload')).toBeInTheDocument();
   });
 
-  it("renders hidden file input", async () => {
+  it('renders hidden file input', async () => {
     mockFetchSuccess([]);
 
     renderWithProvider(<MediaBrowser />);
 
-    const fileInput = screen.getByTestId("file-input");
+    const fileInput = screen.getByTestId('file-input');
     expect(fileInput).toBeInTheDocument();
-    expect(fileInput).toHaveAttribute("type", "file");
+    expect(fileInput).toHaveAttribute('type', 'file');
   });
 
-  it("calls onSelect when a media item is clicked", async () => {
+  it('calls onSelect when a media item is clicked', async () => {
     mockFetchSuccess(mockMedia);
     const handleSelect = vi.fn();
     const user = userEvent.setup();
@@ -126,63 +126,63 @@ describe("MediaBrowser", () => {
     renderWithProvider(<MediaBrowser onSelect={handleSelect} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-select-1")).toBeInTheDocument();
+      expect(screen.getByTestId('media-select-1')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByTestId("media-select-1"));
+    await user.click(screen.getByTestId('media-select-1'));
 
     expect(handleSelect).toHaveBeenCalledWith(mockMedia[0]);
   });
 
-  it("renders delete button for each media item", async () => {
+  it('renders delete button for each media item', async () => {
     mockFetchSuccess(mockMedia);
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
-    expect(screen.getByTestId("media-delete-1")).toBeInTheDocument();
-    expect(screen.getByTestId("media-delete-2")).toBeInTheDocument();
-    expect(screen.getByTestId("media-delete-3")).toBeInTheDocument();
+    expect(screen.getByTestId('media-delete-1')).toBeInTheDocument();
+    expect(screen.getByTestId('media-delete-2')).toBeInTheDocument();
+    expect(screen.getByTestId('media-delete-3')).toBeInTheDocument();
   });
 
-  it("removes item from grid when delete is confirmed", async () => {
+  it('removes item from grid when delete is confirmed', async () => {
     mockFetchSuccess(mockMedia);
     const user = userEvent.setup();
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
     // Mock delete API call
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify(null), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
-      }),
+        headers: { 'Content-Type': 'application/json' },
+      })
     );
 
     // Click delete to open confirmation dialog
-    await user.click(screen.getByTestId("media-delete-1"));
+    await user.click(screen.getByTestId('media-delete-1'));
 
     // Confirm delete in dialog
     await waitFor(() => {
-      expect(screen.getByTestId("confirm-delete")).toBeInTheDocument();
+      expect(screen.getByTestId('confirm-delete')).toBeInTheDocument();
     });
-    await user.click(screen.getByTestId("confirm-delete"));
+    await user.click(screen.getByTestId('confirm-delete'));
 
     await waitFor(() => {
-      expect(screen.queryByTestId("media-item-1")).not.toBeInTheDocument();
+      expect(screen.queryByTestId('media-item-1')).not.toBeInTheDocument();
     });
 
-    expect(screen.getByTestId("media-item-2")).toBeInTheDocument();
+    expect(screen.getByTestId('media-item-2')).toBeInTheDocument();
   });
 
-  it("shows pagination when there are more items than pageSize", async () => {
+  it('shows pagination when there are more items than pageSize', async () => {
     // Return exactly pageSize items to indicate more available
     const fullPage = Array.from({ length: 12 }, (_, i) => ({
       id: String(i + 1),
@@ -194,100 +194,100 @@ describe("MediaBrowser", () => {
     renderWithProvider(<MediaBrowser pageSize={12} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
     expect(screen.getByText(/Page 1 of/)).toBeInTheDocument();
   });
 
-  it("does not show pagination when fewer items than pageSize", async () => {
+  it('does not show pagination when fewer items than pageSize', async () => {
     mockFetchSuccess(mockMedia); // 3 items, default pageSize=12
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
     expect(screen.getByText(/Page \d+ of/)).toBeInTheDocument();
   });
 
-  it("shows upload zone above grid when items exist", async () => {
+  it('shows upload zone above grid when items exist', async () => {
     mockFetchSuccess(mockMedia);
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
-    expect(screen.getByTestId("upload-zone")).toBeInTheDocument();
-    expect(screen.getByText("Click here to upload files")).toBeInTheDocument();
+    expect(screen.getByTestId('upload-zone')).toBeInTheDocument();
+    expect(screen.getByText('Click here to upload files')).toBeInTheDocument();
   });
 
-  it("displays filenames for each media item", async () => {
+  it('displays filenames for each media item', async () => {
     mockFetchSuccess(mockMedia);
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
-    expect(screen.getByText("img1.jpg")).toBeInTheDocument();
-    expect(screen.getByText("img2.jpg")).toBeInTheDocument();
+    expect(screen.getByText('img1.jpg')).toBeInTheDocument();
+    expect(screen.getByText('img2.jpg')).toBeInTheDocument();
   });
 
-  it("applies custom className", async () => {
+  it('applies custom className', async () => {
     mockFetchSuccess([]);
 
     renderWithProvider(<MediaBrowser className="custom-class" />);
 
-    expect(screen.getByTestId("media-browser")).toHaveClass("custom-class");
+    expect(screen.getByTestId('media-browser')).toHaveClass('custom-class');
   });
 
-  it("uploads file via api.upload to correct endpoint", async () => {
+  it('uploads file via api.upload to correct endpoint', async () => {
     mockFetchSuccess(mockMedia);
     const user = userEvent.setup();
 
     renderWithProvider(<MediaBrowser />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("media-grid")).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
     // Mock upload response, then refresh response
     const uploadedItem: MediaItem = {
-      id: "4",
-      url: "https://example.com/img4.jpg",
-      filename: "img4.jpg",
+      id: '4',
+      url: 'https://example.com/img4.jpg',
+      filename: 'img4.jpg',
     };
-    vi.spyOn(globalThis, "fetch")
+    vi.spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(
         new Response(JSON.stringify(uploadedItem), {
           status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
+          headers: { 'Content-Type': 'application/json' },
+        })
       )
       .mockResolvedValueOnce(
         new Response(JSON.stringify([...mockMedia, uploadedItem]), {
           status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
+          headers: { 'Content-Type': 'application/json' },
+        })
       );
 
-    const file = new File(["test"], "img4.jpg", { type: "image/jpeg" });
-    const fileInput = screen.getByTestId("file-input");
+    const file = new File(['test'], 'img4.jpg', { type: 'image/jpeg' });
+    const fileInput = screen.getByTestId('file-input');
     await user.upload(fileInput, file);
 
     await waitFor(() => {
       // Verify upload was called with correct URL (apiBaseUrl + /media)
       const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
       const uploadCall = fetchCalls.find(
-        (call) => call[1] && (call[1] as RequestInit).method === "POST",
+        (call) => call[1] && (call[1] as RequestInit).method === 'POST'
       );
       expect(uploadCall).toBeDefined();
-      expect(uploadCall?.[0]).toBe("/api/cms/media");
+      expect(uploadCall?.[0]).toBe('/api/cms/media');
     });
   });
 });

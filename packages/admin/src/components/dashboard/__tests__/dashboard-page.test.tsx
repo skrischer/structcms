@@ -1,14 +1,14 @@
-import { createRegistry, defineSection } from "@structcms/core";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { z } from "zod";
-import { AdminProvider } from "../../../context/admin-context";
-import type { PageSummary } from "../../content/page-list";
-import { DashboardPage } from "../dashboard-page";
+import { createRegistry, defineSection } from '@structcms/core';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
+import { AdminProvider } from '../../../context/admin-context';
+import type { PageSummary } from '../../content/page-list';
+import { DashboardPage } from '../dashboard-page';
 
 const heroSection = defineSection({
-  name: "hero",
+  name: 'hero',
   fields: { title: z.string() },
 });
 
@@ -27,63 +27,63 @@ function renderWithProvider(props = defaultProps) {
   return render(
     <AdminProvider registry={registry} apiBaseUrl="/api/cms">
       <DashboardPage {...props} />
-    </AdminProvider>,
+    </AdminProvider>
   );
 }
 
 const mockPages: PageSummary[] = [
   {
-    id: "1",
-    title: "Home",
-    slug: "home",
-    pageType: "landing",
-    meta: { updatedAt: "2026-02-09T00:00:00Z" },
+    id: '1',
+    title: 'Home',
+    slug: 'home',
+    pageType: 'landing',
+    meta: { updatedAt: '2026-02-09T00:00:00Z' },
   },
   {
-    id: "2",
-    title: "About",
-    slug: "about",
-    pageType: "landing",
-    meta: { updatedAt: "2026-02-08T00:00:00Z" },
+    id: '2',
+    title: 'About',
+    slug: 'about',
+    pageType: 'landing',
+    meta: { updatedAt: '2026-02-08T00:00:00Z' },
   },
 ];
 
 function mockAllApiSuccess() {
-  const fetchMock = vi.spyOn(globalThis, "fetch");
+  const fetchMock = vi.spyOn(globalThis, 'fetch');
   // KpiCards makes 3 calls: /pages, /media, /navigation
   // RecentPages makes 1 call: /pages
   // Total: 4 fetch calls
   fetchMock.mockImplementation((url) => {
-    const urlStr = typeof url === "string" ? url : (url as Request).url;
-    if (urlStr.includes("/pages")) {
+    const urlStr = typeof url === 'string' ? url : (url as Request).url;
+    if (urlStr.includes('/pages')) {
       return Promise.resolve(
         new Response(JSON.stringify(mockPages), {
           status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
+          headers: { 'Content-Type': 'application/json' },
+        })
       );
     }
-    if (urlStr.includes("/media")) {
+    if (urlStr.includes('/media')) {
       return Promise.resolve(
-        new Response(JSON.stringify([{ id: "m1" }]), {
+        new Response(JSON.stringify([{ id: 'm1' }]), {
           status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
+          headers: { 'Content-Type': 'application/json' },
+        })
       );
     }
-    if (urlStr.includes("/navigation")) {
+    if (urlStr.includes('/navigation')) {
       return Promise.resolve(
-        new Response(JSON.stringify([{ id: "n1" }]), {
+        new Response(JSON.stringify([{ id: 'n1' }]), {
           status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
+          headers: { 'Content-Type': 'application/json' },
+        })
       );
     }
     return Promise.resolve(
       new Response(JSON.stringify([]), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
-      }),
+        headers: { 'Content-Type': 'application/json' },
+      })
     );
   });
   return fetchMock;
@@ -93,88 +93,86 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("DashboardPage", () => {
-  it("renders the dashboard container", () => {
+describe('DashboardPage', () => {
+  it('renders the dashboard container', () => {
     mockAllApiSuccess();
     renderWithProvider();
-    expect(screen.getByTestId("dashboard-page")).toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
   });
 
-  it("does not render its own Dashboard heading (handled by layout HeaderBar)", () => {
+  it('does not render its own Dashboard heading (handled by layout HeaderBar)', () => {
     mockAllApiSuccess();
     renderWithProvider();
-    expect(
-      screen.queryByRole("heading", { name: "Dashboard" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Dashboard' })).not.toBeInTheDocument();
   });
 
-  it("renders KpiCards sub-component", () => {
+  it('renders KpiCards sub-component', () => {
     mockAllApiSuccess();
     renderWithProvider();
-    expect(screen.getByTestId("kpi-cards")).toBeInTheDocument();
+    expect(screen.getByTestId('kpi-cards')).toBeInTheDocument();
   });
 
-  it("renders RecentPages sub-component", () => {
+  it('renders RecentPages sub-component', () => {
     mockAllApiSuccess();
     renderWithProvider();
-    expect(screen.getByTestId("recent-pages")).toBeInTheDocument();
+    expect(screen.getByTestId('recent-pages')).toBeInTheDocument();
   });
 
-  it("does not render QuickActions (removed per design)", () => {
+  it('does not render QuickActions (removed per design)', () => {
     mockAllApiSuccess();
     renderWithProvider();
-    expect(screen.queryByTestId("quick-actions")).not.toBeInTheDocument();
+    expect(screen.queryByTestId('quick-actions')).not.toBeInTheDocument();
   });
 
-  it("displays KPI counts after data loads", async () => {
-    mockAllApiSuccess();
-    renderWithProvider();
-
-    await waitFor(() => {
-      expect(screen.getByTestId("kpi-pages-value")).toHaveTextContent("2");
-    });
-
-    expect(screen.getByTestId("kpi-media-value")).toHaveTextContent("1");
-    expect(screen.getByTestId("kpi-navigation-value")).toHaveTextContent("1");
-  });
-
-  it("displays recent pages after data loads", async () => {
+  it('displays KPI counts after data loads', async () => {
     mockAllApiSuccess();
     renderWithProvider();
 
     await waitFor(() => {
-      expect(screen.getByTestId("recent-pages-list")).toBeInTheDocument();
+      expect(screen.getByTestId('kpi-pages-value')).toHaveTextContent('2');
     });
 
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("About")).toBeInTheDocument();
+    expect(screen.getByTestId('kpi-media-value')).toHaveTextContent('1');
+    expect(screen.getByTestId('kpi-navigation-value')).toHaveTextContent('1');
   });
 
-  it("wraps sections in ErrorBoundary for isolation", () => {
+  it('displays recent pages after data loads', async () => {
+    mockAllApiSuccess();
+    renderWithProvider();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('recent-pages-list')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('About')).toBeInTheDocument();
+  });
+
+  it('wraps sections in ErrorBoundary for isolation', () => {
     mockAllApiSuccess();
     renderWithProvider();
 
     // ErrorBoundaries are present — if a child throws, the boundary catches it
     // We verify by checking that both sections render independently
-    expect(screen.getByTestId("kpi-cards")).toBeInTheDocument();
-    expect(screen.getByTestId("recent-pages")).toBeInTheDocument();
+    expect(screen.getByTestId('kpi-cards')).toBeInTheDocument();
+    expect(screen.getByTestId('recent-pages')).toBeInTheDocument();
   });
 
-  it("applies custom className", () => {
+  it('applies custom className', () => {
     mockAllApiSuccess();
     render(
       <AdminProvider registry={registry} apiBaseUrl="/api/cms">
         <DashboardPage {...defaultProps} className="my-dashboard" />
-      </AdminProvider>,
+      </AdminProvider>
     );
-    expect(screen.getByTestId("dashboard-page")).toHaveClass("my-dashboard");
+    expect(screen.getByTestId('dashboard-page')).toHaveClass('my-dashboard');
   });
 
-  it("uses vertical stacked layout", () => {
+  it('uses vertical stacked layout', () => {
     mockAllApiSuccess();
     renderWithProvider();
 
-    const dashboard = screen.getByTestId("dashboard-page");
-    expect(dashboard).toHaveClass("flex", "flex-col", "gap-6");
+    const dashboard = screen.getByTestId('dashboard-page');
+    expect(dashboard).toHaveClass('flex', 'flex-col', 'gap-6');
   });
 });

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { HeaderBar } from "./header-bar";
-import { Sidebar, type SidebarNavItem } from "./sidebar";
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { HeaderBar } from './header-bar';
+import { Sidebar, type SidebarNavItem } from './sidebar';
 
 export type { SidebarNavItem };
 
@@ -36,9 +36,9 @@ export interface AdminLayoutProps {
  */
 function AdminLayout({
   children,
-  title = "StructCMS",
+  title = 'StructCMS',
   navItems,
-  activePath = "/",
+  activePath = '/',
   onNavigate,
   userName,
   userInitials,
@@ -47,28 +47,21 @@ function AdminLayout({
   className,
 }: AdminLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => {
-    if (
-      typeof window === "undefined" ||
-      typeof window.matchMedia !== "function"
-    )
-      return false;
-    return !window.matchMedia("(min-width: 1024px)").matches;
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+    return !window.matchMedia('(min-width: 1024px)').matches;
   });
 
   React.useEffect(() => {
-    if (typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia("(min-width: 1024px)");
+    if (typeof window.matchMedia !== 'function') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
     const handler = (e: MediaQueryListEvent) => setSidebarCollapsed(!e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   return (
     <div
-      className={cn(
-        "flex h-dvh overflow-hidden bg-[var(--admin-gray-50)]",
-        className,
-      )}
+      className={cn('flex h-dvh overflow-hidden bg-[var(--admin-gray-50)]', className)}
       data-testid="admin-layout"
       data-structcms-admin=""
     >
@@ -99,6 +92,6 @@ function AdminLayout({
   );
 }
 
-AdminLayout.displayName = "AdminLayout";
+AdminLayout.displayName = 'AdminLayout';
 
 export { AdminLayout };

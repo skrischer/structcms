@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { AlertTriangle, CheckCircle, Info, X, XCircle } from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
+import { AlertTriangle, CheckCircle, Info, X, XCircle } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
 
-export type ToastVariant = "default" | "success" | "error" | "warning" | "info";
+export type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info';
 
 export interface Toast {
   id: string;
@@ -35,7 +35,7 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
   }, []);
 
   const addToast = React.useCallback(
-    (message: string, variant: ToastVariant = "default", title?: string) => {
+    (message: string, variant: ToastVariant = 'default', title?: string) => {
       const id = `toast-${++counterRef.current}`;
       const toast: Toast = { id, message, variant, title };
       setToasts((prev) => [...prev, toast]);
@@ -44,12 +44,12 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
         setTimeout(() => removeToast(id), autoDismissMs);
       }
     },
-    [autoDismissMs, removeToast],
+    [autoDismissMs, removeToast]
   );
 
   const value = React.useMemo(
     () => ({ toasts, addToast, removeToast }),
-    [toasts, addToast, removeToast],
+    [toasts, addToast, removeToast]
   );
 
   return (
@@ -60,12 +60,12 @@ function ToastProvider({ children, autoDismissMs = 5000 }: ToastProviderProps) {
   );
 }
 
-ToastProvider.displayName = "ToastProvider";
+ToastProvider.displayName = 'ToastProvider';
 
 function useToast() {
   const context = React.useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
+    throw new Error('useToast must be used within a ToastProvider');
   }
   return {
     toast: context.addToast,
@@ -84,11 +84,7 @@ const variantIcons: Record<ToastVariant, React.ReactNode> = {
     />
   ),
   error: (
-    <XCircle
-      size={20}
-      strokeWidth={1.5}
-      className="text-[var(--admin-error-500)] shrink-0 mt-px"
-    />
+    <XCircle size={20} strokeWidth={1.5} className="text-[var(--admin-error-500)] shrink-0 mt-px" />
   ),
   warning: (
     <AlertTriangle
@@ -98,44 +94,20 @@ const variantIcons: Record<ToastVariant, React.ReactNode> = {
     />
   ),
   info: (
-    <Info
-      size={20}
-      strokeWidth={1.5}
-      className="text-[var(--admin-primary-500)] shrink-0 mt-px"
-    />
+    <Info size={20} strokeWidth={1.5} className="text-[var(--admin-primary-500)] shrink-0 mt-px" />
   ),
 };
 
 const compactIcons: Record<ToastVariant, React.ReactNode> = {
   default: null,
   success: (
-    <CheckCircle
-      size={16}
-      strokeWidth={2}
-      className="text-[var(--admin-success-500)] shrink-0"
-    />
+    <CheckCircle size={16} strokeWidth={2} className="text-[var(--admin-success-500)] shrink-0" />
   ),
-  error: (
-    <XCircle
-      size={16}
-      strokeWidth={2}
-      className="text-[var(--admin-error-500)] shrink-0"
-    />
-  ),
+  error: <XCircle size={16} strokeWidth={2} className="text-[var(--admin-error-500)] shrink-0" />,
   warning: (
-    <AlertTriangle
-      size={16}
-      strokeWidth={2}
-      className="text-[var(--admin-warning-500)] shrink-0"
-    />
+    <AlertTriangle size={16} strokeWidth={2} className="text-[var(--admin-warning-500)] shrink-0" />
   ),
-  info: (
-    <Info
-      size={16}
-      strokeWidth={2}
-      className="text-[var(--admin-primary-500)] shrink-0"
-    />
-  ),
+  info: <Info size={16} strokeWidth={2} className="text-[var(--admin-primary-500)] shrink-0" />,
 };
 
 export interface ToastItemProps {
@@ -144,17 +116,17 @@ export interface ToastItemProps {
   message: string;
   onDismiss?: () => void;
   className?: string;
-  "data-testid"?: string;
+  'data-testid'?: string;
   dismissTestId?: string;
 }
 
 function ToastItem({
-  variant = "default",
+  variant = 'default',
   title,
   message,
   onDismiss,
   className,
-  "data-testid": testId,
+  'data-testid': testId,
   dismissTestId,
 }: ToastItemProps) {
   const isCompact = !title;
@@ -163,16 +135,14 @@ function ToastItem({
     return (
       <div
         className={cn(
-          "flex items-center rounded-lg py-2.5 px-3.5 gap-2.5 bg-[var(--admin-surface-card)] border border-[var(--admin-gray-200)] shadow-[var(--admin-shadow-md)]",
-          className,
+          'flex items-center rounded-lg py-2.5 px-3.5 gap-2.5 bg-[var(--admin-surface-card)] border border-[var(--admin-gray-200)] shadow-[var(--admin-shadow-md)]',
+          className
         )}
         role="alert"
         data-testid={testId}
       >
         {compactIcons[variant]}
-        <p className="text-[14px] text-[var(--admin-gray-800)] leading-[18px] grow">
-          {message}
-        </p>
+        <p className="text-[14px] text-[var(--admin-gray-800)] leading-[18px] grow">{message}</p>
         {onDismiss && (
           <button
             type="button"
@@ -181,11 +151,7 @@ function ToastItem({
             aria-label="Dismiss"
             data-testid={dismissTestId}
           >
-            <X
-              size={14}
-              strokeWidth={1.5}
-              className="text-[var(--admin-gray-400)]"
-            />
+            <X size={14} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />
           </button>
         )}
       </div>
@@ -195,8 +161,8 @@ function ToastItem({
   return (
     <div
       className={cn(
-        "flex items-start rounded-lg gap-3 bg-[var(--admin-surface-card)] border border-[var(--admin-gray-200)] shadow-[var(--admin-shadow-md)] p-4",
-        className,
+        'flex items-start rounded-lg gap-3 bg-[var(--admin-surface-card)] border border-[var(--admin-gray-200)] shadow-[var(--admin-shadow-md)] p-4',
+        className
       )}
       role="alert"
       data-testid={testId}
@@ -206,9 +172,7 @@ function ToastItem({
         <p className="text-[14px] font-medium text-[var(--admin-gray-900)] leading-[18px]">
           {title}
         </p>
-        <p className="text-[13px] text-[var(--admin-gray-500)] leading-4">
-          {message}
-        </p>
+        <p className="text-[13px] text-[var(--admin-gray-500)] leading-4">{message}</p>
       </div>
       {onDismiss && (
         <button
@@ -218,18 +182,14 @@ function ToastItem({
           aria-label="Dismiss"
           data-testid={dismissTestId}
         >
-          <X
-            size={16}
-            strokeWidth={1.5}
-            className="text-[var(--admin-gray-400)]"
-          />
+          <X size={16} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />
         </button>
       )}
     </div>
   );
 }
 
-ToastItem.displayName = "ToastItem";
+ToastItem.displayName = 'ToastItem';
 
 interface ToastContainerProps {
   toasts: Toast[];

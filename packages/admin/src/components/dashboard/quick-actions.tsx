@@ -1,6 +1,6 @@
-import { List, Plus, Upload } from "lucide-react";
-import { cn } from "../../lib/utils";
-import { Button } from "../ui/button";
+import { List, Plus, Upload } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
 
 export interface QuickActionsProps {
   onCreatePage: () => void;
@@ -16,10 +16,8 @@ export function QuickActions({
   className,
 }: QuickActionsProps) {
   return (
-    <div className={cn("space-y-4", className)} data-testid="quick-actions">
-      <h2 className="text-[20px] font-semibold text-[var(--admin-gray-900)]">
-        Quick Actions
-      </h2>
+    <div className={cn('space-y-4', className)} data-testid="quick-actions">
+      <h2 className="text-[20px] font-semibold text-[var(--admin-gray-900)]">Quick Actions</h2>
       <div className="flex flex-wrap gap-3">
         <Button
           onClick={onCreatePage}

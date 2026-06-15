@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Search } from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import type { BreadcrumbItem } from "../ui/breadcrumb";
-import { Breadcrumb } from "../ui/breadcrumb";
+import { Search } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import type { BreadcrumbItem } from '../ui/breadcrumb';
+import { Breadcrumb } from '../ui/breadcrumb';
 
-import { Input } from "../ui/input";
+import { Input } from '../ui/input';
 
 export interface HeaderBarProps {
   breadcrumbItems?: BreadcrumbItem[];
@@ -20,12 +20,12 @@ export interface HeaderBarProps {
 function HeaderBar({
   breadcrumbItems,
   onSearch,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = 'Search...',
   onToggleSidebar,
   userInitials,
   className,
 }: HeaderBarProps) {
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -36,14 +36,12 @@ function HeaderBar({
   return (
     <header
       className={cn(
-        "flex h-14 items-center justify-between border-b border-[var(--admin-gray-200)] bg-[var(--admin-surface-header)] px-5",
-        className,
+        'flex h-14 items-center justify-between border-b border-[var(--admin-gray-200)] bg-[var(--admin-surface-header)] px-5',
+        className
       )}
     >
       <div className="flex items-center gap-3">
-        {breadcrumbItems && breadcrumbItems.length > 0 && (
-          <Breadcrumb items={breadcrumbItems} />
-        )}
+        {breadcrumbItems && breadcrumbItems.length > 0 && <Breadcrumb items={breadcrumbItems} />}
       </div>
 
       <div className="flex items-center gap-2">
@@ -73,6 +71,6 @@ function HeaderBar({
   );
 }
 
-HeaderBar.displayName = "HeaderBar";
+HeaderBar.displayName = 'HeaderBar';
 
 export { HeaderBar };

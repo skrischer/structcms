@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { FileText, Image, Navigation2 } from "lucide-react";
-import * as React from "react";
-import { useApiClient } from "../../hooks/use-api-client";
-import { cn } from "../../lib/utils";
-import { ErrorAlert } from "../ui/error-alert";
-import { Skeleton } from "../ui/skeleton";
+import { FileText, Image, Navigation2 } from 'lucide-react';
+import * as React from 'react';
+import { useApiClient } from '../../hooks/use-api-client';
+import { cn } from '../../lib/utils';
+import { ErrorAlert } from '../ui/error-alert';
+import { Skeleton } from '../ui/skeleton';
 
 interface KpiState {
   value: number | null;
@@ -50,7 +50,7 @@ function KpiCards({ className }: KpiCardsProps) {
   const fetchPages = React.useCallback(
     async (signal?: { cancelled: boolean }) => {
       setPages({ value: null, loading: true, error: null });
-      const result = await api.get<unknown[]>("/pages");
+      const result = await api.get<unknown[]>('/pages');
       if (signal?.cancelled) return;
       if (result.error) {
         setPages({ value: null, loading: false, error: result.error.message });
@@ -62,13 +62,13 @@ function KpiCards({ className }: KpiCardsProps) {
         });
       }
     },
-    [api],
+    [api]
   );
 
   const fetchMedia = React.useCallback(
     async (signal?: { cancelled: boolean }) => {
       setMedia({ value: null, loading: true, error: null });
-      const result = await api.get<unknown[]>("/media");
+      const result = await api.get<unknown[]>('/media');
       if (signal?.cancelled) return;
       if (result.error) {
         setMedia({ value: null, loading: false, error: result.error.message });
@@ -80,13 +80,13 @@ function KpiCards({ className }: KpiCardsProps) {
         });
       }
     },
-    [api],
+    [api]
   );
 
   const fetchNavigation = React.useCallback(
     async (signal?: { cancelled: boolean }) => {
       setNavigation({ value: null, loading: true, error: null });
-      const result = await api.get<unknown[]>("/navigation");
+      const result = await api.get<unknown[]>('/navigation');
       if (signal?.cancelled) return;
       if (result.error) {
         setNavigation({
@@ -102,17 +102,13 @@ function KpiCards({ className }: KpiCardsProps) {
         });
       }
     },
-    [api],
+    [api]
   );
 
   React.useEffect(() => {
     const signal = { cancelled: false };
 
-    void Promise.allSettled([
-      fetchPages(signal),
-      fetchMedia(signal),
-      fetchNavigation(signal),
-    ]);
+    void Promise.allSettled([fetchPages(signal), fetchMedia(signal), fetchNavigation(signal)]);
 
     return () => {
       signal.cancelled = true;
@@ -121,97 +117,64 @@ function KpiCards({ className }: KpiCardsProps) {
 
   const kpis = [
     {
-      label: "Pages",
+      label: 'Pages',
       state: pages,
       onRetry: () => void fetchPages(),
-      testId: "kpi-pages",
-      icon: (
-        <FileText
-          size={20}
-          strokeWidth={1.5}
-          className="text-[var(--admin-gray-400)]"
-        />
-      ),
+      testId: 'kpi-pages',
+      icon: <FileText size={20} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />,
     },
     {
-      label: "Media Files",
+      label: 'Media Files',
       state: media,
       onRetry: () => void fetchMedia(),
-      testId: "kpi-media",
-      icon: (
-        <Image
-          size={20}
-          strokeWidth={1.5}
-          className="text-[var(--admin-gray-400)]"
-        />
-      ),
+      testId: 'kpi-media',
+      icon: <Image size={20} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />,
     },
     {
-      label: "Navigation Sets",
+      label: 'Navigation Sets',
       state: navigation,
       onRetry: () => void fetchNavigation(),
-      testId: "kpi-navigation",
-      icon: (
-        <Navigation2
-          size={20}
-          strokeWidth={1.5}
-          className="text-[var(--admin-gray-400)]"
-        />
-      ),
+      testId: 'kpi-navigation',
+      icon: <Navigation2 size={20} strokeWidth={1.5} className="text-[var(--admin-gray-400)]" />,
     },
   ];
 
   return (
-    <div
-      className={cn("grid grid-cols-1 sm:grid-cols-3 gap-5", className)}
-      data-testid="kpi-cards"
-    >
+    <div className={cn('grid grid-cols-1 sm:grid-cols-3 gap-5', className)} data-testid="kpi-cards">
       {kpis.map((kpi) => (
         <div
           key={kpi.testId}
           className="rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] p-5"
-          style={{ boxShadow: "var(--admin-shadow-xs)" }}
+          style={{ boxShadow: 'var(--admin-shadow-xs)' }}
           data-testid={kpi.testId}
         >
-          <div className="flex items-center justify-between mb-3">
-            {kpi.icon}
-          </div>
+          <div className="flex items-center justify-between mb-3">{kpi.icon}</div>
 
           <dl>
-            <dt className="text-[13px] text-[var(--admin-gray-500)]">
-              {kpi.label}
-            </dt>
+            <dt className="text-[13px] text-[var(--admin-gray-500)]">{kpi.label}</dt>
 
             {kpi.state.loading && (
               <dd>
-                <Skeleton
-                  className="h-9 w-20"
-                  data-testid={`${kpi.testId}-skeleton`}
-                />
+                <Skeleton className="h-9 w-20" data-testid={`${kpi.testId}-skeleton`} />
               </dd>
             )}
 
             {!kpi.state.loading && kpi.state.error && (
               <dd>
-                <ErrorAlert
-                  onRetry={kpi.onRetry}
-                  data-testid={`${kpi.testId}-error`}
-                >
+                <ErrorAlert onRetry={kpi.onRetry} data-testid={`${kpi.testId}-error`}>
                   Error loading
                 </ErrorAlert>
               </dd>
             )}
 
-            {!kpi.state.loading &&
-              !kpi.state.error &&
-              kpi.state.value !== null && (
-                <dd
-                  className="text-[30px] font-bold leading-none text-[var(--admin-gray-900)] mt-1"
-                  data-testid={`${kpi.testId}-value`}
-                >
-                  {kpi.state.value}
-                </dd>
-              )}
+            {!kpi.state.loading && !kpi.state.error && kpi.state.value !== null && (
+              <dd
+                className="text-[30px] font-bold leading-none text-[var(--admin-gray-900)] mt-1"
+                data-testid={`${kpi.testId}-value`}
+              >
+                {kpi.state.value}
+              </dd>
+            )}
           </dl>
         </div>
       ))}
@@ -219,6 +182,6 @@ function KpiCards({ className }: KpiCardsProps) {
   );
 }
 
-KpiCards.displayName = "KpiCards";
+KpiCards.displayName = 'KpiCards';
 
 export { KpiCards };

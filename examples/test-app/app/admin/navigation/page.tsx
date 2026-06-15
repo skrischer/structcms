@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { NavigationEditor, Skeleton, useApiClient } from "@structcms/admin";
-import type { NavigationItem } from "@structcms/core";
-import * as React from "react";
+import { NavigationEditor, Skeleton, useApiClient } from '@structcms/admin';
+import type { NavigationItem } from '@structcms/core';
+import * as React from 'react';
 
 interface NavigationData {
   id: string;
@@ -13,9 +13,7 @@ interface NavigationData {
 export default function NavigationPage() {
   const apiClient = useApiClient();
 
-  const [navigation, setNavigation] = React.useState<NavigationData | null>(
-    null,
-  );
+  const [navigation, setNavigation] = React.useState<NavigationData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -23,13 +21,12 @@ export default function NavigationPage() {
   React.useEffect(() => {
     const fetchNavigation = async () => {
       try {
-        const response =
-          await apiClient.get<NavigationData>("/navigation/main");
+        const response = await apiClient.get<NavigationData>('/navigation/main');
         if (response.data) {
           setNavigation(response.data);
         }
       } catch (err) {
-        setError("Failed to load navigation");
+        setError('Failed to load navigation');
         console.error(err);
       } finally {
         setLoading(false);
@@ -48,7 +45,7 @@ export default function NavigationPage() {
       });
       setNavigation({ ...navigation, items });
     } catch (err) {
-      console.error("Failed to update navigation:", err);
+      console.error('Failed to update navigation:', err);
     } finally {
       setSaving(false);
     }
@@ -82,11 +79,5 @@ export default function NavigationPage() {
     );
   }
 
-  return (
-    <NavigationEditor
-      items={navigation.items}
-      onSave={handleSave}
-      saving={saving}
-    />
-  );
+  return <NavigationEditor items={navigation.items} onSave={handleSave} saving={saving} />;
 }

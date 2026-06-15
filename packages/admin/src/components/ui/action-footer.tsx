@@ -1,5 +1,5 @@
-import * as React from "react";
-import { cn } from "../../lib/utils";
+import type * as React from 'react';
+import { cn } from '../../lib/utils';
 
 export interface ActionFooterProps {
   left?: React.ReactNode;
@@ -11,8 +11,8 @@ function ActionFooter({ left, right, className }: ActionFooterProps) {
   return (
     <div
       className={cn(
-        "sticky bottom-0 z-10 -mx-10 mt-auto flex items-center justify-between bg-[var(--admin-surface-card)] border-t border-[var(--admin-border-default)] px-6 py-3 shadow-[var(--admin-shadow-top)]",
-        className,
+        'sticky bottom-0 z-10 -mx-10 mt-auto flex items-center justify-between bg-[var(--admin-surface-card)] border-t border-[var(--admin-border-default)] px-6 py-3 shadow-[var(--admin-shadow-top)]',
+        className
       )}
       data-testid="action-footer"
     >
@@ -22,6 +22,6 @@ function ActionFooter({ left, right, className }: ActionFooterProps) {
   );
 }
 
-ActionFooter.displayName = "ActionFooter";
+ActionFooter.displayName = 'ActionFooter';
 
 export { ActionFooter };

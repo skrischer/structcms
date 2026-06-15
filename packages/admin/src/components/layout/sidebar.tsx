@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   FileText,
@@ -8,9 +8,9 @@ import {
   Navigation,
   PanelLeftClose,
   PanelLeftOpen,
-} from "lucide-react";
-import type * as React from "react";
-import { cn } from "../../lib/utils";
+} from 'lucide-react';
+import type * as React from 'react';
+import { cn } from '../../lib/utils';
 
 export interface SidebarNavItem {
   label: string;
@@ -34,23 +34,23 @@ export interface SidebarProps {
 
 const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
   {
-    label: "Dashboard",
-    path: "/",
+    label: 'Dashboard',
+    path: '/',
     icon: <LayoutDashboard size={20} strokeWidth={1.5} />,
   },
   {
-    label: "Pages",
-    path: "/pages",
+    label: 'Pages',
+    path: '/pages',
     icon: <FileText size={20} strokeWidth={1.5} />,
   },
   {
-    label: "Media",
-    path: "/media",
+    label: 'Media',
+    path: '/media',
     icon: <Image size={20} strokeWidth={1.5} />,
   },
   {
-    label: "Navigation",
-    path: "/navigation",
+    label: 'Navigation',
+    path: '/navigation',
     icon: <Navigation size={20} strokeWidth={1.5} />,
   },
 ];
@@ -60,7 +60,7 @@ function Sidebar({
   onNavigate,
   collapsed,
   onToggleCollapse,
-  title = "StructCMS",
+  title = 'StructCMS',
   navItems = DEFAULT_NAV_ITEMS,
   userName,
   userInitials,
@@ -68,23 +68,23 @@ function Sidebar({
   onLogout,
   className,
 }: SidebarProps) {
-  const displayName = userName ?? "User";
+  const displayName = userName ?? 'User';
   const initials =
     userInitials ??
     (userName
       ? userName
-          .split(" ")
+          .split(' ')
           .map((n) => n[0])
-          .join("")
+          .join('')
           .slice(0, 2)
           .toUpperCase()
-      : "?");
+      : '?');
   return (
     <aside
       className={cn(
-        "flex flex-col h-full border-r border-[var(--admin-gray-200)] bg-[var(--admin-surface-sidebar)] transition-[width] duration-200",
-        collapsed ? "w-16" : "w-[260px]",
-        className,
+        'flex flex-col h-full border-r border-[var(--admin-gray-200)] bg-[var(--admin-surface-sidebar)] transition-[width] duration-200',
+        collapsed ? 'w-16' : 'w-[260px]',
+        className
       )}
       data-testid="sidebar"
     >
@@ -94,21 +94,17 @@ function Sidebar({
           type="button"
           onClick={onToggleCollapse}
           className={cn(
-            "flex items-center rounded-md text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] transition-colors",
-            collapsed ? "justify-center h-8 w-8 mx-auto" : "gap-2 h-8 px-1",
+            'flex items-center rounded-md text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] transition-colors',
+            collapsed ? 'justify-center h-8 w-8 mx-auto' : 'gap-2 h-8 px-1'
           )}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           data-testid="sidebar-collapse-toggle"
         >
           {collapsed ? (
             <PanelLeftOpen size={18} strokeWidth={1.5} />
           ) : (
             <>
-              <PanelLeftClose
-                size={18}
-                strokeWidth={1.5}
-                className="shrink-0"
-              />
+              <PanelLeftClose size={18} strokeWidth={1.5} className="shrink-0" />
               <span
                 className="text-base font-bold text-[var(--admin-gray-900)] truncate"
                 data-testid="sidebar-title"
@@ -121,10 +117,7 @@ function Sidebar({
       </div>
 
       {/* Navigation */}
-      <nav
-        className="flex-1 overflow-y-auto p-2 space-y-1"
-        data-testid="sidebar-nav"
-      >
+      <nav className="flex-1 overflow-y-auto p-2 space-y-1" data-testid="sidebar-nav">
         {navItems.map((item) => {
           const isActive = currentPath === item.path;
           return (
@@ -133,13 +126,11 @@ function Sidebar({
               type="button"
               onClick={() => onNavigate(item.path)}
               className={cn(
-                "flex items-center w-full rounded-md text-sm font-medium transition-colors",
-                collapsed
-                  ? "justify-center h-10 w-10 mx-auto"
-                  : "gap-3 px-3 py-2",
+                'flex items-center w-full rounded-md text-sm font-medium transition-colors',
+                collapsed ? 'justify-center h-10 w-10 mx-auto' : 'gap-3 px-3 py-2',
                 isActive
-                  ? "bg-[var(--admin-surface-sidebar-active)] text-[var(--admin-primary-600)]"
-                  : "text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] hover:text-[var(--admin-gray-700)]",
+                  ? 'bg-[var(--admin-surface-sidebar-active)] text-[var(--admin-primary-600)]'
+                  : 'text-[var(--admin-gray-600)] hover:bg-[var(--admin-gray-100)] hover:text-[var(--admin-gray-700)]'
               )}
               title={collapsed ? item.label : undefined}
               data-testid={`nav-link-${item.path}`}
@@ -154,8 +145,8 @@ function Sidebar({
       {/* User footer */}
       <div
         className={cn(
-          "shrink-0 border-t border-[var(--admin-gray-100)] p-2",
-          collapsed ? "flex flex-col items-center gap-1" : "",
+          'shrink-0 border-t border-[var(--admin-gray-100)] p-2',
+          collapsed ? 'flex flex-col items-center gap-1' : ''
         )}
         data-testid="sidebar-footer"
       >
@@ -212,6 +203,6 @@ function Sidebar({
   );
 }
 
-Sidebar.displayName = "Sidebar";
+Sidebar.displayName = 'Sidebar';
 
 export { Sidebar };

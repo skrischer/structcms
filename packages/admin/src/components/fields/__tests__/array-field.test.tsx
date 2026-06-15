@@ -1,20 +1,16 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import { ArrayField } from "../array-field";
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+import { ArrayField } from '../array-field';
 
 interface TestItem {
   id: number;
   name: string;
 }
 
-const createDefaultItem = (): TestItem => ({ id: Date.now(), name: "" });
+const createDefaultItem = (): TestItem => ({ id: Date.now(), name: '' });
 
-const renderItem = (
-  item: TestItem,
-  index: number,
-  onChange: (item: TestItem) => void,
-) => (
+const renderItem = (item: TestItem, index: number, onChange: (item: TestItem) => void) => (
   <input
     data-testid={`item-input-${index}`}
     value={item.name}
@@ -22,8 +18,8 @@ const renderItem = (
   />
 );
 
-describe("ArrayField", () => {
-  it("renders with label in header", () => {
+describe('ArrayField', () => {
+  it('renders with label in header', () => {
     render(
       <ArrayField
         label="Items"
@@ -32,13 +28,13 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByText("Items")).toBeInTheDocument();
+    expect(screen.getByText('Items')).toBeInTheDocument();
   });
 
-  it("shows required indicator when required", () => {
+  it('shows required indicator when required', () => {
     render(
       <ArrayField
         label="Items"
@@ -48,17 +44,17 @@ describe("ArrayField", () => {
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
         required
-      />,
+      />
     );
 
-    const label = screen.getByText("Items");
-    expect(label.className).toContain("after:content");
+    const label = screen.getByText('Items');
+    expect(label.className).toContain('after:content');
   });
 
-  it("shows item count badge", () => {
+  it('shows item count badge', () => {
     const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
     ];
 
     render(
@@ -69,25 +65,25 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByTestId("item-count")).toHaveTextContent("2 items");
+    expect(screen.getByTestId('item-count')).toHaveTextContent('2 items');
   });
 
-  it("shows singular item count for single item", () => {
+  it('shows singular item count for single item', () => {
     render(
       <ArrayField
         label="Items"
         name="items"
-        value={[{ id: 1, name: "Only" }]}
+        value={[{ id: 1, name: 'Only' }]}
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByTestId("item-count")).toHaveTextContent("1 item");
+    expect(screen.getByTestId('item-count')).toHaveTextContent('1 item');
   });
 
   it('shows "No items yet" when array is empty', () => {
@@ -99,13 +95,13 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByText("No items yet")).toBeInTheDocument();
+    expect(screen.getByText('No items yet')).toBeInTheDocument();
   });
 
-  it("shows 0 items badge when empty", () => {
+  it('shows 0 items badge when empty', () => {
     render(
       <ArrayField
         label="Items"
@@ -114,13 +110,13 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByTestId("item-count")).toHaveTextContent("0 items");
+    expect(screen.getByTestId('item-count')).toHaveTextContent('0 items');
   });
 
-  it("renders Add Item button", () => {
+  it('renders Add Item button', () => {
     render(
       <ArrayField
         label="Items"
@@ -129,14 +125,14 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByTestId("add-item")).toBeInTheDocument();
-    expect(screen.getByText("Add Item")).toBeInTheDocument();
+    expect(screen.getByTestId('add-item')).toBeInTheDocument();
+    expect(screen.getByText('Add Item')).toBeInTheDocument();
   });
 
-  it("calls onChange with new item when Add Item is clicked", async () => {
+  it('calls onChange with new item when Add Item is clicked', async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();
 
@@ -146,20 +142,20 @@ describe("ArrayField", () => {
         name="items"
         value={[]}
         onChange={handleChange}
-        createDefaultItem={() => ({ id: 1, name: "new" })}
+        createDefaultItem={() => ({ id: 1, name: 'new' })}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    await user.click(screen.getByTestId("add-item"));
+    await user.click(screen.getByTestId('add-item'));
 
-    expect(handleChange).toHaveBeenCalledWith([{ id: 1, name: "new" }]);
+    expect(handleChange).toHaveBeenCalledWith([{ id: 1, name: 'new' }]);
   });
 
-  it("renders items with renderItem", () => {
+  it('renders items with renderItem', () => {
     const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
     ];
 
     render(
@@ -170,17 +166,17 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByTestId("item-input-0")).toHaveValue("First");
-    expect(screen.getByTestId("item-input-1")).toHaveValue("Second");
+    expect(screen.getByTestId('item-input-0')).toHaveValue('First');
+    expect(screen.getByTestId('item-input-1')).toHaveValue('Second');
   });
 
-  it("renders Remove button for each item", () => {
+  it('renders Remove button for each item', () => {
     const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
     ];
 
     render(
@@ -191,108 +187,19 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    expect(screen.getByTestId("remove-0")).toBeInTheDocument();
-    expect(screen.getByTestId("remove-1")).toBeInTheDocument();
+    expect(screen.getByTestId('remove-0')).toBeInTheDocument();
+    expect(screen.getByTestId('remove-1')).toBeInTheDocument();
   });
 
-  it("calls onChange without item when Remove is clicked", async () => {
+  it('calls onChange without item when Remove is clicked', async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();
     const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
-    ];
-
-    render(
-      <ArrayField
-        label="Items"
-        name="items"
-        value={items}
-        onChange={handleChange}
-        createDefaultItem={createDefaultItem}
-        renderItem={renderItem}
-      />,
-    );
-
-    await user.click(screen.getByTestId("remove-0"));
-
-    expect(handleChange).toHaveBeenCalledWith([{ id: 2, name: "Second" }]);
-  });
-
-  it("renders Up/Down buttons for each item", () => {
-    const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
-    ];
-
-    render(
-      <ArrayField
-        label="Items"
-        name="items"
-        value={items}
-        onChange={() => {}}
-        createDefaultItem={createDefaultItem}
-        renderItem={renderItem}
-      />,
-    );
-
-    expect(screen.getByTestId("move-up-0")).toBeInTheDocument();
-    expect(screen.getByTestId("move-down-0")).toBeInTheDocument();
-    expect(screen.getByTestId("move-up-1")).toBeInTheDocument();
-    expect(screen.getByTestId("move-down-1")).toBeInTheDocument();
-  });
-
-  it("disables Up button on first item", () => {
-    const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
-    ];
-
-    render(
-      <ArrayField
-        label="Items"
-        name="items"
-        value={items}
-        onChange={() => {}}
-        createDefaultItem={createDefaultItem}
-        renderItem={renderItem}
-      />,
-    );
-
-    expect(screen.getByTestId("move-up-0")).toBeDisabled();
-    expect(screen.getByTestId("move-up-1")).not.toBeDisabled();
-  });
-
-  it("disables Down button on last item", () => {
-    const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
-    ];
-
-    render(
-      <ArrayField
-        label="Items"
-        name="items"
-        value={items}
-        onChange={() => {}}
-        createDefaultItem={createDefaultItem}
-        renderItem={renderItem}
-      />,
-    );
-
-    expect(screen.getByTestId("move-down-0")).not.toBeDisabled();
-    expect(screen.getByTestId("move-down-1")).toBeDisabled();
-  });
-
-  it("moves item up when Up button is clicked", async () => {
-    const handleChange = vi.fn();
-    const user = userEvent.setup();
-    const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
     ];
 
     render(
@@ -303,23 +210,112 @@ describe("ArrayField", () => {
         onChange={handleChange}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    await user.click(screen.getByTestId("move-up-1"));
+    await user.click(screen.getByTestId('remove-0'));
+
+    expect(handleChange).toHaveBeenCalledWith([{ id: 2, name: 'Second' }]);
+  });
+
+  it('renders Up/Down buttons for each item', () => {
+    const items: TestItem[] = [
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
+    ];
+
+    render(
+      <ArrayField
+        label="Items"
+        name="items"
+        value={items}
+        onChange={() => {}}
+        createDefaultItem={createDefaultItem}
+        renderItem={renderItem}
+      />
+    );
+
+    expect(screen.getByTestId('move-up-0')).toBeInTheDocument();
+    expect(screen.getByTestId('move-down-0')).toBeInTheDocument();
+    expect(screen.getByTestId('move-up-1')).toBeInTheDocument();
+    expect(screen.getByTestId('move-down-1')).toBeInTheDocument();
+  });
+
+  it('disables Up button on first item', () => {
+    const items: TestItem[] = [
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
+    ];
+
+    render(
+      <ArrayField
+        label="Items"
+        name="items"
+        value={items}
+        onChange={() => {}}
+        createDefaultItem={createDefaultItem}
+        renderItem={renderItem}
+      />
+    );
+
+    expect(screen.getByTestId('move-up-0')).toBeDisabled();
+    expect(screen.getByTestId('move-up-1')).not.toBeDisabled();
+  });
+
+  it('disables Down button on last item', () => {
+    const items: TestItem[] = [
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
+    ];
+
+    render(
+      <ArrayField
+        label="Items"
+        name="items"
+        value={items}
+        onChange={() => {}}
+        createDefaultItem={createDefaultItem}
+        renderItem={renderItem}
+      />
+    );
+
+    expect(screen.getByTestId('move-down-0')).not.toBeDisabled();
+    expect(screen.getByTestId('move-down-1')).toBeDisabled();
+  });
+
+  it('moves item up when Up button is clicked', async () => {
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+    const items: TestItem[] = [
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
+    ];
+
+    render(
+      <ArrayField
+        label="Items"
+        name="items"
+        value={items}
+        onChange={handleChange}
+        createDefaultItem={createDefaultItem}
+        renderItem={renderItem}
+      />
+    );
+
+    await user.click(screen.getByTestId('move-up-1'));
 
     expect(handleChange).toHaveBeenCalledWith([
-      { id: 2, name: "Second" },
-      { id: 1, name: "First" },
+      { id: 2, name: 'Second' },
+      { id: 1, name: 'First' },
     ]);
   });
 
-  it("moves item down when Down button is clicked", async () => {
+  it('moves item down when Down button is clicked', async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();
     const items: TestItem[] = [
-      { id: 1, name: "First" },
-      { id: 2, name: "Second" },
+      { id: 1, name: 'First' },
+      { id: 2, name: 'Second' },
     ];
 
     render(
@@ -330,18 +326,18 @@ describe("ArrayField", () => {
         onChange={handleChange}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    await user.click(screen.getByTestId("move-down-0"));
+    await user.click(screen.getByTestId('move-down-0'));
 
     expect(handleChange).toHaveBeenCalledWith([
-      { id: 2, name: "Second" },
-      { id: 1, name: "First" },
+      { id: 2, name: 'Second' },
+      { id: 1, name: 'First' },
     ]);
   });
 
-  it("displays validation error below field", () => {
+  it('displays validation error below field', () => {
     render(
       <ArrayField
         label="Items"
@@ -351,15 +347,13 @@ describe("ArrayField", () => {
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
         error="At least one item is required"
-      />,
+      />
     );
 
-    expect(
-      screen.getByText("At least one item is required"),
-    ).toBeInTheDocument();
+    expect(screen.getByText('At least one item is required')).toBeInTheDocument();
   });
 
-  it("renders error via FieldMessage when error is present", () => {
+  it('renders error via FieldMessage when error is present', () => {
     render(
       <ArrayField
         label="Items"
@@ -369,13 +363,13 @@ describe("ArrayField", () => {
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
         error="Error message"
-      />,
+      />
     );
 
-    expect(screen.getByRole("alert")).toHaveTextContent("Error message");
+    expect(screen.getByRole('alert')).toHaveTextContent('Error message');
   });
 
-  it("applies custom className", () => {
+  it('applies custom className', () => {
     const { container } = render(
       <ArrayField
         label="Items"
@@ -385,13 +379,13 @@ describe("ArrayField", () => {
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
         className="custom-class"
-      />,
+      />
     );
 
-    expect(container.firstChild).toHaveClass("custom-class");
+    expect(container.firstChild).toHaveClass('custom-class');
   });
 
-  it("renders description when provided", () => {
+  it('renders description when provided', () => {
     render(
       <ArrayField
         label="Items"
@@ -401,14 +395,14 @@ describe("ArrayField", () => {
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
         description="Add your items here"
-      />,
+      />
     );
 
-    expect(screen.getByText("Add your items here")).toBeInTheDocument();
+    expect(screen.getByText('Add your items here')).toBeInTheDocument();
   });
 
-  it("renders actions horizontally", () => {
-    const items: TestItem[] = [{ id: 1, name: "First" }];
+  it('renders actions horizontally', () => {
+    const items: TestItem[] = [{ id: 1, name: 'First' }];
 
     const { container } = render(
       <ArrayField
@@ -418,11 +412,11 @@ describe("ArrayField", () => {
         onChange={() => {}}
         createDefaultItem={createDefaultItem}
         renderItem={renderItem}
-      />,
+      />
     );
 
-    const actionsContainer = screen.getByTestId("move-up-0").parentElement;
-    expect(actionsContainer?.className).toContain("flex gap-1");
-    expect(actionsContainer?.className).not.toContain("flex-col");
+    const actionsContainer = screen.getByTestId('move-up-0').parentElement;
+    expect(actionsContainer?.className).toContain('flex gap-1');
+    expect(actionsContainer?.className).not.toContain('flex-col');
   });
 });

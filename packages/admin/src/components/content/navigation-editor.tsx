@@ -1,21 +1,14 @@
-"use client";
+'use client';
 
-import type { NavigationItem } from "@structcms/core";
-import {
-  ChevronRight,
-  GripVertical,
-  MousePointerClick,
-  Plus,
-  Save,
-  Trash2,
-} from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { ActionFooter } from "../ui/action-footer";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import type { NavigationItem } from '@structcms/core';
+import { ChevronRight, GripVertical, MousePointerClick, Plus, Save, Trash2 } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { ActionFooter } from '../ui/action-footer';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 export interface NavigationEditorProps {
   items: NavigationItem[];
@@ -25,8 +18,8 @@ export interface NavigationEditorProps {
 }
 
 type SelectedItem =
-  | { type: "parent"; index: number }
-  | { type: "child"; parentIndex: number; childIndex: number };
+  | { type: 'parent'; index: number }
+  | { type: 'child'; parentIndex: number; childIndex: number };
 
 /**
  * Two-panel editor for navigation items with nested structure support (one level).
@@ -47,15 +40,13 @@ function NavigationEditor({
   className,
 }: NavigationEditorProps) {
   const [items, setItems] = React.useState<NavigationItem[]>(initialItems);
-  const [selectedItem, setSelectedItem] = React.useState<SelectedItem | null>(
-    null,
-  );
-  const [editLabel, setEditLabel] = React.useState("");
-  const [editHref, setEditHref] = React.useState("");
+  const [selectedItem, setSelectedItem] = React.useState<SelectedItem | null>(null);
+  const [editLabel, setEditLabel] = React.useState('');
+  const [editHref, setEditHref] = React.useState('');
 
   const getSelectedItemData = (): NavigationItem | undefined => {
     if (!selectedItem) return undefined;
-    if (selectedItem.type === "parent") return items[selectedItem.index];
+    if (selectedItem.type === 'parent') return items[selectedItem.index];
     return items[selectedItem.parentIndex]?.children?.[selectedItem.childIndex];
   };
 
@@ -68,7 +59,7 @@ function NavigationEditor({
   const applyEdits = (source: NavigationItem[]): NavigationItem[] => {
     if (!selectedItem) return source;
     const newItems = [...source];
-    if (selectedItem.type === "parent") {
+    if (selectedItem.type === 'parent') {
       const item = newItems[selectedItem.index];
       if (item) {
         newItems[selectedItem.index] = {
@@ -99,26 +90,20 @@ function NavigationEditor({
   };
 
   const handleAddItem = () => {
-    setItems([...items, { label: "", href: "", children: [] }]);
+    setItems([...items, { label: '', href: '', children: [] }]);
   };
 
   const handleRemoveItem = (index: number) => {
     if (selectedItem) {
-      if (selectedItem.type === "parent" && selectedItem.index === index) {
+      if (selectedItem.type === 'parent' && selectedItem.index === index) {
         setSelectedItem(null);
-      } else if (selectedItem.type === "parent" && selectedItem.index > index) {
-        setSelectedItem({ type: "parent", index: selectedItem.index - 1 });
-      } else if (
-        selectedItem.type === "child" &&
-        selectedItem.parentIndex === index
-      ) {
+      } else if (selectedItem.type === 'parent' && selectedItem.index > index) {
+        setSelectedItem({ type: 'parent', index: selectedItem.index - 1 });
+      } else if (selectedItem.type === 'child' && selectedItem.parentIndex === index) {
         setSelectedItem(null);
-      } else if (
-        selectedItem.type === "child" &&
-        selectedItem.parentIndex > index
-      ) {
+      } else if (selectedItem.type === 'child' && selectedItem.parentIndex > index) {
         setSelectedItem({
-          type: "child",
+          type: 'child',
           parentIndex: selectedItem.parentIndex - 1,
           childIndex: selectedItem.childIndex,
         });
@@ -135,22 +120,19 @@ function NavigationEditor({
     if (parent) {
       newItems[parentIndex] = {
         ...parent,
-        children: [...(parent.children ?? []), { label: "", href: "" }],
+        children: [...(parent.children ?? []), { label: '', href: '' }],
       };
     }
     setItems(newItems);
   };
 
   const handleRemoveChild = (parentIndex: number, childIndex: number) => {
-    if (
-      selectedItem?.type === "child" &&
-      selectedItem.parentIndex === parentIndex
-    ) {
+    if (selectedItem?.type === 'child' && selectedItem.parentIndex === parentIndex) {
       if (selectedItem.childIndex === childIndex) {
         setSelectedItem(null);
       } else if (selectedItem.childIndex > childIndex) {
         setSelectedItem({
-          type: "child",
+          type: 'child',
           parentIndex,
           childIndex: selectedItem.childIndex - 1,
         });
@@ -174,7 +156,7 @@ function NavigationEditor({
     }
 
     let item: NavigationItem | undefined;
-    if (sel.type === "parent") {
+    if (sel.type === 'parent') {
       item = currentItems[sel.index];
     } else {
       item = currentItems[sel.parentIndex]?.children?.[sel.childIndex];
@@ -200,35 +182,26 @@ function NavigationEditor({
     onSave(items);
   };
 
-  const handleRowKeyDown = (
-    e: React.KeyboardEvent<HTMLElement>,
-    sel: SelectedItem,
-  ) => {
-    if (e.key === "Enter" || e.key === " ") {
+  const handleRowKeyDown = (e: React.KeyboardEvent<HTMLElement>, sel: SelectedItem) => {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       handleSelectItem(sel);
     }
   };
 
   const isParentSelected = (index: number) =>
-    selectedItem?.type === "parent" && selectedItem.index === index;
+    selectedItem?.type === 'parent' && selectedItem.index === index;
 
   const isChildSelected = (parentIndex: number, childIndex: number) =>
-    selectedItem?.type === "child" &&
+    selectedItem?.type === 'child' &&
     selectedItem.parentIndex === parentIndex &&
     selectedItem.childIndex === childIndex;
 
-  const totalChildren = items.reduce(
-    (sum, item) => sum + (item.children?.length ?? 0),
-    0,
-  );
+  const totalChildren = items.reduce((sum, item) => sum + (item.children?.length ?? 0), 0);
   const totalCount = items.length + totalChildren;
 
   return (
-    <div
-      className={cn("flex-1 flex flex-col gap-6", className)}
-      data-testid="navigation-editor"
-    >
+    <div className={cn('flex-1 flex flex-col gap-6', className)} data-testid="navigation-editor">
       {/* Page header */}
       <div>
         <h2 className="text-[24px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--admin-gray-900)]">
@@ -245,11 +218,7 @@ function NavigationEditor({
           className="flex flex-col items-center justify-center py-16 rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)]"
           data-testid="empty-state"
         >
-          <GripVertical
-            size={32}
-            className="text-[var(--admin-gray-300)] mb-3"
-            strokeWidth={1.5}
-          />
+          <GripVertical size={32} className="text-[var(--admin-gray-300)] mb-3" strokeWidth={1.5} />
           <p className="text-[14px] font-medium text-[var(--admin-gray-700)]">
             No navigation items
           </p>
@@ -279,7 +248,7 @@ function NavigationEditor({
                     Navigation
                   </span>
                   <Badge size="sm">
-                    {totalCount} {totalCount === 1 ? "item" : "items"}
+                    {totalCount} {totalCount === 1 ? 'item' : 'items'}
                   </Badge>
                 </div>
 
@@ -290,10 +259,10 @@ function NavigationEditor({
                       {/* Parent item row */}
                       <div
                         className={cn(
-                          "group flex items-center py-2.5 px-4 gap-3 border-b border-[var(--admin-border-subtle)] transition-colors duration-[var(--admin-transition-fast)]",
+                          'group flex items-center py-2.5 px-4 gap-3 border-b border-[var(--admin-border-subtle)] transition-colors duration-[var(--admin-transition-fast)]',
                           isParentSelected(index)
-                            ? "bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]"
-                            : "hover:bg-[var(--admin-gray-100)]",
+                            ? 'bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]'
+                            : 'hover:bg-[var(--admin-gray-100)]'
                         )}
                       >
                         <GripVertical
@@ -305,24 +274,20 @@ function NavigationEditor({
                         <button
                           type="button"
                           className="flex flex-col min-w-0 flex-1 cursor-pointer bg-transparent border-none p-0 text-left focus-visible:outline-none focus-visible:shadow-[var(--admin-shadow-ring)] rounded-sm"
-                          onClick={() =>
-                            handleSelectItem({ type: "parent", index })
-                          }
-                          onKeyDown={(e) =>
-                            handleRowKeyDown(e, { type: "parent", index })
-                          }
+                          onClick={() => handleSelectItem({ type: 'parent', index })}
+                          onKeyDown={(e) => handleRowKeyDown(e, { type: 'parent', index })}
                         >
                           <span
                             className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
                             data-testid={`nav-item-label-${index}`}
                           >
-                            {item.label || "Untitled"}
+                            {item.label || 'Untitled'}
                           </span>
                           <span
                             className="text-[13px] text-[var(--admin-gray-500)] truncate"
                             data-testid={`nav-item-href-${index}`}
                           >
-                            {item.href || "/"}
+                            {item.href || '/'}
                           </span>
                         </button>
 
@@ -373,10 +338,10 @@ function NavigationEditor({
                             <div
                               key={childIndex}
                               className={cn(
-                                "group flex items-center py-2 px-3 gap-3 border-b border-[var(--admin-border-subtle)] transition-colors duration-[var(--admin-transition-fast)]",
+                                'group flex items-center py-2 px-3 gap-3 border-b border-[var(--admin-border-subtle)] transition-colors duration-[var(--admin-transition-fast)]',
                                 isChildSelected(index, childIndex)
-                                  ? "bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]"
-                                  : "hover:bg-[var(--admin-gray-100)]",
+                                  ? 'bg-[var(--admin-primary-50)] border-l-2 border-l-[var(--admin-primary-500)]'
+                                  : 'hover:bg-[var(--admin-gray-100)]'
                               )}
                               data-testid={`nav-child-${index}-${childIndex}`}
                             >
@@ -391,14 +356,14 @@ function NavigationEditor({
                                 className="flex flex-col min-w-0 flex-1 cursor-pointer bg-transparent border-none p-0 text-left focus-visible:outline-none focus-visible:shadow-[var(--admin-shadow-ring)] rounded-sm"
                                 onClick={() =>
                                   handleSelectItem({
-                                    type: "child",
+                                    type: 'child',
                                     parentIndex: index,
                                     childIndex,
                                   })
                                 }
                                 onKeyDown={(e) =>
                                   handleRowKeyDown(e, {
-                                    type: "child",
+                                    type: 'child',
                                     parentIndex: index,
                                     childIndex,
                                   })
@@ -408,13 +373,13 @@ function NavigationEditor({
                                   className="text-[14px] font-medium text-[var(--admin-gray-900)] truncate"
                                   data-testid={`nav-child-label-${index}-${childIndex}`}
                                 >
-                                  {child.label || "Untitled"}
+                                  {child.label || 'Untitled'}
                                 </span>
                                 <span
                                   className="text-[13px] text-[var(--admin-gray-500)] truncate"
                                   data-testid={`nav-child-href-${index}-${childIndex}`}
                                 >
-                                  {child.href || "/"}
+                                  {child.href || '/'}
                                 </span>
                               </button>
 
@@ -454,11 +419,7 @@ function NavigationEditor({
                   onClick={handleAddItem}
                   data-testid="nav-add-item"
                 >
-                  <Plus
-                    size={16}
-                    className="text-[var(--admin-primary-600)]"
-                    strokeWidth={2}
-                  />
+                  <Plus size={16} className="text-[var(--admin-primary-600)]" strokeWidth={2} />
                   <span className="text-[13px] font-medium text-[var(--admin-primary-600)]">
                     Add Item
                   </span>
@@ -467,10 +428,7 @@ function NavigationEditor({
             </div>
 
             {/* Editor Panel */}
-            <div
-              className="flex-1 max-w-[480px]"
-              data-testid="nav-editor-panel"
-            >
+            <div className="flex-1 max-w-[480px]" data-testid="nav-editor-panel">
               <div className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] overflow-hidden shadow-[var(--admin-shadow-xs)]">
                 {selectedItem ? (
                   <>
@@ -486,9 +444,7 @@ function NavigationEditor({
                       <div className="flex flex-col gap-1.5">
                         <Label>
                           Label
-                          <span className="text-[var(--admin-error-500)] ml-0.5">
-                            *
-                          </span>
+                          <span className="text-[var(--admin-error-500)] ml-0.5">*</span>
                         </Label>
                         <Input
                           value={editLabel}
@@ -500,9 +456,7 @@ function NavigationEditor({
                       <div className="flex flex-col gap-1.5">
                         <Label>
                           URL
-                          <span className="text-[var(--admin-error-500)] ml-0.5">
-                            *
-                          </span>
+                          <span className="text-[var(--admin-error-500)] ml-0.5">*</span>
                         </Label>
                         <Input
                           value={editHref}
@@ -523,11 +477,7 @@ function NavigationEditor({
                       >
                         Cancel
                       </Button>
-                      <Button
-                        type="button"
-                        onClick={handleApply}
-                        data-testid="nav-editor-apply"
-                      >
+                      <Button type="button" onClick={handleApply} data-testid="nav-editor-apply">
                         Apply
                       </Button>
                     </div>
@@ -552,18 +502,13 @@ function NavigationEditor({
           <ActionFooter
             left={
               <span className="text-[13px] text-[var(--admin-gray-500)]">
-                {totalCount} {totalCount === 1 ? "item" : "items"} total
+                {totalCount} {totalCount === 1 ? 'item' : 'items'} total
               </span>
             }
             right={
-              <Button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                data-testid="nav-save"
-              >
+              <Button type="button" onClick={handleSave} disabled={saving} data-testid="nav-save">
                 <Save size={16} strokeWidth={2} />
-                {saving ? "Saving..." : "Save Navigation"}
+                {saving ? 'Saving...' : 'Save Navigation'}
               </Button>
             }
           />
@@ -573,6 +518,6 @@ function NavigationEditor({
   );
 }
 
-NavigationEditor.displayName = "NavigationEditor";
+NavigationEditor.displayName = 'NavigationEditor';
 
 export { NavigationEditor };

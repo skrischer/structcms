@@ -1,9 +1,9 @@
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { FieldMessage } from "../ui/field-message";
-import { Label } from "../ui/label";
-import { RadioGroup } from "../ui/radio-group";
-import { Select } from "../ui/select";
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+import { FieldMessage } from '../ui/field-message';
+import { Label } from '../ui/label';
+import { RadioGroup } from '../ui/radio-group';
+import { Select } from '../ui/select';
 
 export interface SelectFieldProps {
   label: string;
@@ -33,17 +33,10 @@ function SelectField({
   const generatedId = React.useId();
   const inputId = id || name || generatedId;
   const isRadio = options.length <= 3;
-  const messageId = error
-    ? `${inputId}-error`
-    : description
-      ? `${inputId}-desc`
-      : undefined;
+  const messageId = error ? `${inputId}-error` : description ? `${inputId}-desc` : undefined;
 
   return (
-    <div
-      className={cn("flex flex-col gap-1.5", className)}
-      data-testid="select-input"
-    >
+    <div className={cn('flex flex-col gap-1.5', className)} data-testid="select-input">
       <Label htmlFor={isRadio ? undefined : inputId} required={required}>
         {label}
       </Label>
@@ -69,9 +62,7 @@ function SelectField({
           error={!!error}
         />
       )}
-      {description && !error && (
-        <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>
-      )}
+      {description && !error && <FieldMessage id={`${inputId}-desc`}>{description}</FieldMessage>}
       {error && (
         <FieldMessage id={`${inputId}-error`} variant="error">
           {error}
@@ -80,6 +71,6 @@ function SelectField({
     </div>
   );
 }
-SelectField.displayName = "SelectField";
+SelectField.displayName = 'SelectField';
 
 export { SelectField };

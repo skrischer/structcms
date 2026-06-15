@@ -1,6 +1,6 @@
-import { ChevronRight } from "lucide-react";
-import * as React from "react";
-import { cn } from "../../lib/utils";
+import { ChevronRight } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '../../lib/utils';
 
 export interface BreadcrumbItem {
   label: string;
@@ -15,10 +15,7 @@ export interface BreadcrumbProps {
 
 function Breadcrumb({ items, className }: BreadcrumbProps) {
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={cn("flex items-center gap-1.5", className)}
-    >
+    <nav aria-label="Breadcrumb" className={cn('flex items-center gap-1.5', className)}>
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
@@ -57,6 +54,6 @@ function Breadcrumb({ items, className }: BreadcrumbProps) {
   );
 }
 
-Breadcrumb.displayName = "Breadcrumb";
+Breadcrumb.displayName = 'Breadcrumb';
 
 export { Breadcrumb };

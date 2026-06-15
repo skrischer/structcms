@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Check, File, Filter, Search, Trash2, Upload } from "lucide-react";
-import * as React from "react";
-import { useApiClient } from "../../hooks/use-api-client";
-import { cn } from "../../lib/utils";
-import type { MediaItem } from "../../types/media";
-import { Button } from "../ui/button";
-import { Dialog } from "../ui/dialog";
-import { Pagination } from "../ui/pagination";
-import { Skeleton } from "../ui/skeleton";
+import { Check, File, Filter, Search, Trash2, Upload } from 'lucide-react';
+import * as React from 'react';
+import { useApiClient } from '../../hooks/use-api-client';
+import { cn } from '../../lib/utils';
+import type { MediaItem } from '../../types/media';
+import { Button } from '../ui/button';
+import { Dialog } from '../ui/dialog';
+import { Pagination } from '../ui/pagination';
+import { Skeleton } from '../ui/skeleton';
 
 export type { MediaItem };
 
@@ -16,25 +16,22 @@ export interface MediaBrowserProps {
   onSelect?: (item: MediaItem) => void;
   className?: string;
   pageSize?: number;
-  category?: "image" | "document";
+  category?: 'image' | 'document';
 }
 
 /**
  * Returns true if the given MIME type is an image type.
  */
 function isImageMimeType(mimeType?: string): boolean {
-  return !!mimeType && mimeType.startsWith("image/");
+  return !!mimeType && mimeType.startsWith('image/');
 }
 
 /**
  * Returns the accept attribute value for the file input based on category.
  */
-function getAcceptAttribute(
-  category?: "image" | "document",
-): string | undefined {
-  if (category === "image") return "image/*";
-  if (category === "document")
-    return ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.rtf";
+function getAcceptAttribute(category?: 'image' | 'document'): string | undefined {
+  if (category === 'image') return 'image/*';
+  if (category === 'document') return '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.rtf';
   return undefined;
 }
 
@@ -42,47 +39,40 @@ function getAcceptAttribute(
  * Returns a text-based icon label for non-image file types.
  */
 function getDocumentIcon(filename: string): string {
-  const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+  const ext = filename.split('.').pop()?.toLowerCase() ?? '';
   const iconMap: Record<string, string> = {
-    pdf: "PDF",
-    doc: "DOC",
-    docx: "DOC",
-    xls: "XLS",
-    xlsx: "XLS",
-    ppt: "PPT",
-    pptx: "PPT",
-    txt: "TXT",
-    csv: "CSV",
-    rtf: "RTF",
+    pdf: 'PDF',
+    doc: 'DOC',
+    docx: 'DOC',
+    xls: 'XLS',
+    xlsx: 'XLS',
+    ppt: 'PPT',
+    pptx: 'PPT',
+    txt: 'TXT',
+    csv: 'CSV',
+    rtf: 'RTF',
   };
-  return iconMap[ext] ?? "FILE";
+  return iconMap[ext] ?? 'FILE';
 }
 
-function isImage(item: MediaItem, category?: "image" | "document"): boolean {
-  return isImageMimeType(item.mimeType) || category === "image";
+function isImage(item: MediaItem, category?: 'image' | 'document'): boolean {
+  return isImageMimeType(item.mimeType) || category === 'image';
 }
 
-function MediaBrowser({
-  onSelect,
-  className,
-  pageSize = 12,
-  category,
-}: MediaBrowserProps) {
+function MediaBrowser({ onSelect, className, pageSize = 12, category }: MediaBrowserProps) {
   const api = useApiClient();
   const [items, setItems] = React.useState<MediaItem[]>([]);
   const [totalCount, setTotalCount] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(0);
-  const [search, setSearch] = React.useState("");
-  const [categoryFilter, setCategoryFilter] = React.useState<
-    "image" | "document" | ""
-  >(category ?? "");
+  const [search, setSearch] = React.useState('');
+  const [categoryFilter, setCategoryFilter] = React.useState<'image' | 'document' | ''>(
+    category ?? ''
+  );
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
-  const [itemToDelete, setItemToDelete] = React.useState<MediaItem | null>(
-    null,
-  );
+  const [itemToDelete, setItemToDelete] = React.useState<MediaItem | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const fetchMedia = React.useCallback(
@@ -116,7 +106,7 @@ function MediaBrowser({
       }
       setLoading(false);
     },
-    [api, pageSize, category, categoryFilter, search],
+    [api, pageSize, category, categoryFilter, search]
   );
 
   // Reset to page 0 when filters change
@@ -125,8 +115,7 @@ function MediaBrowser({
 
   React.useEffect(() => {
     const filtersChanged =
-      prevCategoryRef.current !== categoryFilter ||
-      prevSearchRef.current !== search;
+      prevCategoryRef.current !== categoryFilter || prevSearchRef.current !== search;
     prevCategoryRef.current = categoryFilter;
     prevSearchRef.current = search;
 
@@ -142,12 +131,12 @@ function MediaBrowser({
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
     setLoading(true);
     setError(null);
 
-    const result = await api.upload<MediaItem>("/media", formData);
+    const result = await api.upload<MediaItem>('/media', formData);
 
     if (result.error) {
       setError(result.error.message);
@@ -158,7 +147,7 @@ function MediaBrowser({
     }
 
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
   };
 
@@ -185,10 +174,7 @@ function MediaBrowser({
 
   return (
     <div
-      className={cn(
-        "max-w-[1100px] mx-auto w-full flex flex-col gap-6",
-        className,
-      )}
+      className={cn('max-w-[1100px] mx-auto w-full flex flex-col gap-6', className)}
       data-testid="media-browser"
     >
       {/* Page Header */}
@@ -231,11 +217,7 @@ function MediaBrowser({
                 />
                 <select
                   value={categoryFilter}
-                  onChange={(e) =>
-                    setCategoryFilter(
-                      e.target.value as "image" | "document" | "",
-                    )
-                  }
+                  onChange={(e) => setCategoryFilter(e.target.value as 'image' | 'document' | '')}
                   aria-label="Filter by type"
                   className="h-9 appearance-none rounded-md border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)] pl-9 pr-8 text-[14px] font-medium text-[var(--admin-gray-700)] focus-visible:outline-none focus-visible:border-[var(--admin-primary-500)] focus-visible:ring-[3px] focus-visible:shadow-[var(--admin-shadow-ring)]"
                   data-testid="category-filter"
@@ -270,10 +252,7 @@ function MediaBrowser({
 
       {/* Error */}
       {error && (
-        <p
-          className="text-sm text-[var(--admin-error-700)]"
-          data-testid="error"
-        >
+        <p className="text-sm text-[var(--admin-error-700)]" data-testid="error">
           {error}
         </p>
       )}
@@ -304,11 +283,7 @@ function MediaBrowser({
             className="flex flex-col items-center justify-center w-full max-w-[480px] rounded-lg gap-2 bg-[var(--admin-gray-50)] border-2 border-dashed border-[var(--admin-gray-300)] p-8 cursor-pointer hover:border-[var(--admin-primary-400)] hover:bg-[var(--admin-primary-50)] transition-colors"
           >
             <div className="flex items-center justify-center rounded-full bg-[var(--admin-gray-100)] shrink-0 size-10">
-              <Upload
-                size={20}
-                className="text-[var(--admin-gray-500)]"
-                strokeWidth={1.5}
-              />
+              <Upload size={20} className="text-[var(--admin-gray-500)]" strokeWidth={1.5} />
             </div>
             <span className="text-[14px] font-medium text-[var(--admin-gray-700)]">
               Click to browse
@@ -331,11 +306,7 @@ function MediaBrowser({
           className="flex items-center justify-center gap-2 w-full rounded-lg bg-[var(--admin-gray-50)] border-2 border-dashed border-[var(--admin-gray-300)] py-4 cursor-pointer hover:border-[var(--admin-primary-400)] hover:bg-[var(--admin-primary-50)] transition-colors"
           data-testid="upload-zone"
         >
-          <Upload
-            size={16}
-            className="text-[var(--admin-gray-500)]"
-            strokeWidth={1.5}
-          />
+          <Upload size={16} className="text-[var(--admin-gray-500)]" strokeWidth={1.5} />
           <span className="text-[14px] font-medium text-[var(--admin-gray-700)]">
             Click here to upload files
           </span>
@@ -357,10 +328,10 @@ function MediaBrowser({
                 <div
                   key={item.id}
                   className={cn(
-                    "group relative rounded-lg overflow-hidden cursor-pointer transition-all",
+                    'group relative rounded-lg overflow-hidden cursor-pointer transition-all',
                     isSelected
-                      ? "border-2 border-[var(--admin-primary-500)] shadow-[var(--admin-shadow-ring)]"
-                      : "border border-[var(--admin-border-default)]",
+                      ? 'border-2 border-[var(--admin-primary-500)] shadow-[var(--admin-shadow-ring)]'
+                      : 'border border-[var(--admin-border-default)]'
                   )}
                   data-testid={`media-item-${item.id}`}
                   onMouseEnter={() => setHoveredId(item.id)}
@@ -405,13 +376,11 @@ function MediaBrowser({
                   {/* Hover overlay */}
                   <div
                     className={cn(
-                      "absolute bottom-0 inset-x-0 flex items-center justify-between bg-[var(--admin-surface-overlay)] p-2 transition-opacity group-focus-within:opacity-100",
-                      isHovered ? "opacity-100" : "opacity-0",
+                      'absolute bottom-0 inset-x-0 flex items-center justify-between bg-[var(--admin-surface-overlay)] p-2 transition-opacity group-focus-within:opacity-100',
+                      isHovered ? 'opacity-100' : 'opacity-0'
                     )}
                   >
-                    <span className="text-[11px] text-white truncate flex-1">
-                      {item.filename}
-                    </span>
+                    <span className="text-[11px] text-white truncate flex-1">{item.filename}</span>
                     <button
                       type="button"
                       className="shrink-0 ml-1 hover:text-[var(--admin-error-300)] transition-colors"
@@ -422,11 +391,7 @@ function MediaBrowser({
                       title="Delete"
                       data-testid={`media-delete-${item.id}`}
                     >
-                      <Trash2
-                        size={14}
-                        className="text-white"
-                        strokeWidth={1.5}
-                      />
+                      <Trash2 size={14} className="text-white" strokeWidth={1.5} />
                     </button>
                   </div>
                 </div>
@@ -454,7 +419,7 @@ function MediaBrowser({
       >
         <div className="flex flex-col gap-4">
           <p className="text-[14px] text-[var(--admin-gray-600)]">
-            Are you sure you want to delete{" "}
+            Are you sure you want to delete{' '}
             <span className="font-medium text-[var(--admin-gray-800)]">
               {itemToDelete?.filename}
             </span>
@@ -483,6 +448,6 @@ function MediaBrowser({
   );
 }
 
-MediaBrowser.displayName = "MediaBrowser";
+MediaBrowser.displayName = 'MediaBrowser';
 
 export { MediaBrowser, isImageMimeType };

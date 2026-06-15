@@ -1,140 +1,140 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import { AdminLayout } from "../admin-layout";
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+import { AdminLayout } from '../admin-layout';
 
-describe("AdminLayout", () => {
-  it("renders admin layout", () => {
+describe('AdminLayout', () => {
+  it('renders admin layout', () => {
     render(
       <AdminLayout onNavigate={() => {}}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByTestId("admin-layout")).toBeInTheDocument();
+    expect(screen.getByTestId('admin-layout')).toBeInTheDocument();
   });
 
-  it("renders sidebar with default nav items", () => {
+  it('renders sidebar with default nav items', () => {
     render(
       <AdminLayout onNavigate={() => {}}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByTestId("sidebar")).toBeInTheDocument();
-    expect(screen.getByTestId("sidebar-nav")).toBeInTheDocument();
+    expect(screen.getByTestId('sidebar')).toBeInTheDocument();
+    expect(screen.getByTestId('sidebar-nav')).toBeInTheDocument();
   });
 
-  it("renders sidebar title", () => {
+  it('renders sidebar title', () => {
     render(
       <AdminLayout onNavigate={() => {}}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByTestId("sidebar-title")).toHaveTextContent("StructCMS");
+    expect(screen.getByTestId('sidebar-title')).toHaveTextContent('StructCMS');
   });
 
-  it("renders sidebar with custom title", () => {
+  it('renders sidebar with custom title', () => {
     render(
       <AdminLayout title="My CMS" onNavigate={() => {}}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByTestId("sidebar-title")).toHaveTextContent("My CMS");
+    expect(screen.getByTestId('sidebar-title')).toHaveTextContent('My CMS');
   });
 
-  it("renders children in main content area", () => {
+  it('renders children in main content area', () => {
     render(
       <AdminLayout onNavigate={() => {}}>
         <p>Hello World</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByTestId("main-content")).toBeInTheDocument();
-    expect(screen.getByText("Hello World")).toBeInTheDocument();
+    expect(screen.getByTestId('main-content')).toBeInTheDocument();
+    expect(screen.getByText('Hello World')).toBeInTheDocument();
   });
 
-  it("calls onNavigate when a nav link is clicked", async () => {
+  it('calls onNavigate when a nav link is clicked', async () => {
     const handleNavigate = vi.fn();
     const user = userEvent.setup();
 
     render(
       <AdminLayout onNavigate={handleNavigate}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    await user.click(screen.getByTestId("nav-link-/pages"));
+    await user.click(screen.getByTestId('nav-link-/pages'));
 
-    expect(handleNavigate).toHaveBeenCalledWith("/pages");
+    expect(handleNavigate).toHaveBeenCalledWith('/pages');
   });
 
-  it("renders custom nav items", () => {
+  it('renders custom nav items', () => {
     const customItems = [
-      { label: "Dashboard", path: "/dashboard" },
-      { label: "Settings", path: "/settings" },
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Settings', path: '/settings' },
     ];
 
     render(
       <AdminLayout navItems={customItems} onNavigate={() => {}}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
-    expect(screen.getByText("Settings")).toBeInTheDocument();
+    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
-  it("renders sidebar collapse toggle", () => {
+  it('renders sidebar collapse toggle', () => {
     render(
       <AdminLayout onNavigate={() => {}}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByTestId("sidebar-collapse-toggle")).toBeInTheDocument();
+    expect(screen.getByTestId('sidebar-collapse-toggle')).toBeInTheDocument();
   });
 
-  it("toggles sidebar collapsed state when collapse toggle is clicked", async () => {
+  it('toggles sidebar collapsed state when collapse toggle is clicked', async () => {
     const user = userEvent.setup();
 
     render(
       <AdminLayout onNavigate={() => {}}>
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByTestId('sidebar');
 
     // Click collapse toggle
-    await user.click(screen.getByTestId("sidebar-collapse-toggle"));
+    await user.click(screen.getByTestId('sidebar-collapse-toggle'));
 
     // Sidebar width should change (collapsed = w-16, expanded = w-[260px])
-    const hasCollapsedWidth = sidebar.className.includes("w-16");
-    const hasExpandedWidth = sidebar.className.includes("w-[260px]");
+    const hasCollapsedWidth = sidebar.className.includes('w-16');
+    const hasExpandedWidth = sidebar.className.includes('w-[260px]');
     expect(hasCollapsedWidth || hasExpandedWidth).toBe(true);
   });
 
-  it("applies custom className", () => {
+  it('applies custom className', () => {
     render(
       <AdminLayout onNavigate={() => {}} className="custom-class">
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    expect(screen.getByTestId("admin-layout")).toHaveClass("custom-class");
+    expect(screen.getByTestId('admin-layout')).toHaveClass('custom-class');
   });
 
-  it("highlights active nav item", () => {
+  it('highlights active nav item', () => {
     render(
       <AdminLayout onNavigate={() => {}} activePath="/pages">
         <p>Content</p>
-      </AdminLayout>,
+      </AdminLayout>
     );
 
-    const activeLink = screen.getByTestId("nav-link-/pages");
-    expect(activeLink.className).toContain("admin-surface-sidebar-active");
+    const activeLink = screen.getByTestId('nav-link-/pages');
+    expect(activeLink.className).toContain('admin-surface-sidebar-active');
   });
 });

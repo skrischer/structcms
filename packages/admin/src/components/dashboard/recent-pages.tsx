@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Trash2 } from "lucide-react";
-import * as React from "react";
-import { useApiClient } from "../../hooks/use-api-client";
-import { cn } from "../../lib/utils";
+import { Trash2 } from 'lucide-react';
+import * as React from 'react';
+import { useApiClient } from '../../hooks/use-api-client';
+import { cn } from '../../lib/utils';
 import {
   type PageSummary,
   type SortDirection,
@@ -12,12 +12,12 @@ import {
   formatTimestamp,
   getUpdatedAt,
   sortPages,
-} from "../content/page-list";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Dialog } from "../ui/dialog";
-import { ErrorAlert } from "../ui/error-alert";
-import { Skeleton } from "../ui/skeleton";
+} from '../content/page-list';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Dialog } from '../ui/dialog';
+import { ErrorAlert } from '../ui/error-alert';
+import { Skeleton } from '../ui/skeleton';
 
 export interface RecentPagesProps {
   onSelectPage: (page: PageSummary) => void;
@@ -30,30 +30,27 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
   const [rawPages, setRawPages] = React.useState<PageSummary[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
-  const [sortField, setSortField] = React.useState<SortField>("updatedAt");
-  const [sortDirection, setSortDirection] =
-    React.useState<SortDirection>("desc");
-  const [pageToDelete, setPageToDelete] = React.useState<PageSummary | null>(
-    null,
-  );
+  const [sortField, setSortField] = React.useState<SortField>('updatedAt');
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>('desc');
+  const [pageToDelete, setPageToDelete] = React.useState<PageSummary | null>(null);
   const [deleting, setDeleting] = React.useState(false);
   const [deleteError, setDeleteError] = React.useState<string | null>(null);
 
   const pages = React.useMemo(
     () => sortPages(rawPages, sortField, sortDirection),
-    [rawPages, sortField, sortDirection],
+    [rawPages, sortField, sortDirection]
   );
 
   const handleSort = React.useCallback(
     (field: SortField) => {
       if (field === sortField) {
-        setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+        setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
       } else {
         setSortField(field);
-        setSortDirection(field === "title" ? "asc" : "desc");
+        setSortDirection(field === 'title' ? 'asc' : 'desc');
       }
     },
-    [sortField],
+    [sortField]
   );
 
   const fetchPages = React.useCallback(
@@ -61,7 +58,7 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
       setLoading(true);
       setError(false);
 
-      const result = await api.get<PageSummary[]>("/pages");
+      const result = await api.get<PageSummary[]>('/pages');
 
       if (signal?.cancelled) return;
 
@@ -75,7 +72,7 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
       setRawPages(allPages.slice(0, 10));
       setLoading(false);
     },
-    [api],
+    [api]
   );
 
   const handleDeleteConfirm = React.useCallback(async () => {
@@ -103,16 +100,14 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)]",
-        className,
+        'rounded-lg border border-[var(--admin-gray-200)] bg-[var(--admin-surface-card)]',
+        className
       )}
-      style={{ boxShadow: "var(--admin-shadow-xs)" }}
+      style={{ boxShadow: 'var(--admin-shadow-xs)' }}
       data-testid="recent-pages"
     >
       <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--admin-gray-200)]">
-        <h2 className="text-[18px] font-semibold text-[var(--admin-gray-900)]">
-          Recent Pages
-        </h2>
+        <h2 className="text-[18px] font-semibold text-[var(--admin-gray-900)]">Recent Pages</h2>
         {onViewAll && (
           <button
             type="button"
@@ -161,15 +156,11 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
                 <th className="px-4 py-3 text-left">
                   <button
                     type="button"
-                    onClick={() => handleSort("title")}
+                    onClick={() => handleSort('title')}
                     className="inline-flex items-center gap-1 text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)] hover:text-[var(--admin-gray-800)] transition-colors"
                   >
                     Title
-                    <SortIcon
-                      field="title"
-                      activeField={sortField}
-                      direction={sortDirection}
-                    />
+                    <SortIcon field="title" activeField={sortField} direction={sortDirection} />
                   </button>
                 </th>
                 <th className="px-4 py-3 text-left text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)]">
@@ -181,15 +172,11 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
                 <th className="px-4 py-3 text-left">
                   <button
                     type="button"
-                    onClick={() => handleSort("updatedAt")}
+                    onClick={() => handleSort('updatedAt')}
                     className="inline-flex items-center gap-1 text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)] hover:text-[var(--admin-gray-800)] transition-colors"
                   >
                     Last Modified
-                    <SortIcon
-                      field="updatedAt"
-                      activeField={sortField}
-                      direction={sortDirection}
-                    />
+                    <SortIcon field="updatedAt" activeField={sortField} direction={sortDirection} />
                   </button>
                 </th>
                 <th className="px-4 py-3 text-right text-[13px] tracking-[0.01em] font-medium text-[var(--admin-gray-600)]">
@@ -218,9 +205,7 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
                     /{page.slug}
                   </td>
                   <td className="px-4 py-3 text-[13px] text-[var(--admin-gray-500)]">
-                    {getUpdatedAt(page)
-                      ? formatTimestamp(getUpdatedAt(page) as string)
-                      : ""}
+                    {getUpdatedAt(page) ? formatTimestamp(getUpdatedAt(page) as string) : ''}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
@@ -255,16 +240,12 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
         className="max-w-sm"
       >
         <p className="text-[14px] text-[var(--admin-gray-600)]">
-          Are you sure you want to delete{" "}
-          <span className="font-semibold text-[var(--admin-gray-900)]">
-            {pageToDelete?.title}
-          </span>
-          ? This action cannot be undone.
+          Are you sure you want to delete{' '}
+          <span className="font-semibold text-[var(--admin-gray-900)]">{pageToDelete?.title}</span>?
+          This action cannot be undone.
         </p>
         {deleteError && (
-          <p className="text-[13px] text-[var(--admin-error-600)] mt-2">
-            {deleteError}
-          </p>
+          <p className="text-[13px] text-[var(--admin-error-600)] mt-2">{deleteError}</p>
         )}
         <div className="flex justify-end gap-3 mt-6">
           <Button
@@ -285,7 +266,7 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
             disabled={deleting}
             data-testid="confirm-delete-page"
           >
-            {deleting ? "Deleting..." : "Delete"}
+            {deleting ? 'Deleting...' : 'Delete'}
           </Button>
         </div>
       </Dialog>
@@ -293,6 +274,6 @@ function RecentPages({ onSelectPage, onViewAll, className }: RecentPagesProps) {
   );
 }
 
-RecentPages.displayName = "RecentPages";
+RecentPages.displayName = 'RecentPages';
 
 export { RecentPages };

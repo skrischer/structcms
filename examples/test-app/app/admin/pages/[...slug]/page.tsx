@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { PageEditor, Skeleton, useAdmin, useApiClient } from "@structcms/admin";
-import type { SectionData } from "@structcms/core";
-import { useParams, useRouter } from "next/navigation";
-import * as React from "react";
+import { PageEditor, Skeleton, useAdmin, useApiClient } from '@structcms/admin';
+import type { SectionData } from '@structcms/core';
+import { useParams, useRouter } from 'next/navigation';
+import * as React from 'react';
 
 interface PageData {
   id: string;
@@ -17,12 +17,12 @@ export default function EditPagePage() {
   const router = useRouter();
   const params = useParams();
   const slugSegments = params.slug as string[];
-  const slug = slugSegments.join("/");
+  const slug = slugSegments.join('/');
   const { registry } = useAdmin();
   const apiClient = useApiClient();
 
   const [page, setPage] = React.useState<PageData | null>(null);
-  const [title, setTitle] = React.useState("");
+  const [title, setTitle] = React.useState('');
   const [loading, setLoading] = React.useState(true);
   const [_saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -36,7 +36,7 @@ export default function EditPagePage() {
           setTitle(response.data.title);
         }
       } catch (err) {
-        setError("Failed to load page");
+        setError('Failed to load page');
         console.error(err);
       } finally {
         setLoading(false);
@@ -63,10 +63,10 @@ export default function EditPagePage() {
         throw new Error(result.error.message);
       }
 
-      router.push("/admin/pages");
+      router.push('/admin/pages');
     } catch (err) {
-      setError("Failed to update page");
-      console.error("Failed to update page:", err);
+      setError('Failed to update page');
+      console.error('Failed to update page:', err);
     } finally {
       setSaving(false);
     }
@@ -91,9 +91,7 @@ export default function EditPagePage() {
   if (error || !page) {
     return (
       <div className="max-w-[1100px] mx-auto py-6">
-        <p className="text-[14px] text-[var(--admin-error-700)]">
-          {error || "Page not found"}
-        </p>
+        <p className="text-[14px] text-[var(--admin-error-700)]">{error || 'Page not found'}</p>
       </div>
     );
   }
