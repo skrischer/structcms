@@ -244,7 +244,8 @@ SUPABASE_SECRET_KEY=your-service-role-key
 For detailed documentation, see:
 
 - **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Technical layer documentation
-- **[docs/CONCEPT.md](./docs/CONCEPT.md)** - Product vision, scope, positioning
+- **[docs/vision.md](./docs/vision.md)** - Product vision, scope, differentiators
+- **[docs/roadmap.md](./docs/roadmap.md)** - Sequenced phase queue
 - **[docs/AUTH_SETUP.md](./docs/AUTH_SETUP.md)** - Authentication setup guide
 - **[docs/E2E_SETUP.md](./docs/E2E_SETUP.md)** - E2E test configuration
 - **[docs/AUTH_AUDIT.md](./docs/AUTH_AUDIT.md)** - Security audit documentation

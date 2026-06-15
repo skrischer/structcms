@@ -8,7 +8,7 @@ For package-specific details, see:
 - [@structcms/admin](./packages/admin/README.md) — Admin UI Components
 - [E2E Test App](./examples/test-app/README.md) — Integration Testing
 
-For product scope and roadmap, see [CONCEPT.md](./CONCEPT.md).
+For product scope and roadmap, see [vision.md](./vision.md) and [roadmap.md](./roadmap.md).
 
 ---
 

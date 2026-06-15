@@ -6,7 +6,7 @@
 
 A code-first, installable headless CMS framework that lives inside your website codebase. Content models are defined in TypeScript, validated with Zod, and rendered with full type safety.
 
-For product vision, scope, and positioning, see [docs/CONCEPT.md](./docs/CONCEPT.md).
+For product vision, scope, and differentiators, see [docs/vision.md](./docs/vision.md); for the phase roadmap, see [docs/roadmap.md](./docs/roadmap.md).
 
 ## Quick Start
 

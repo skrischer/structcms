@@ -23,6 +23,14 @@ model content in TypeScript and get a type-safe admin UI and delivery API for
 free — embedded in the host repo, with no platform lock-in and a swappable
 storage backend.
 
+## Differentiators
+- Code-first modeling: content models are TypeScript, not GUI-defined.
+- Embedded architecture: the CMS runs inside the website repository.
+- Installable framework: distributed as a dependency, not a platform.
+- Typed delivery: frontend rendering is fully type-safe.
+- Section-native content: optimized for page builders and structured layouts.
+- Registry-driven extensibility: host projects register their own models.
+
 ## Success criteria
 - A developer models a page type + sections in TypeScript and gets a working
   admin form with zero GUI schema steps.
@@ -50,3 +58,9 @@ storage backend.
 - Becoming a SaaS platform — StructCMS lives inside the host repo, by design.
 - GUI-driven schema modeling — schemas are code, to keep versioning and types intact.
 - Advanced caching layers — left to the host application's framework.
+
+## Distribution
+- Shipped as npm packages installed into the host project.
+- Semantic versioning; breaking changes only in major releases, with migration guides.
+- Host projects pin versions; non-breaking updates via `npm update`, all changes
+  documented in the changelog.
