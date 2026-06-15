@@ -43,6 +43,6 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", "dist", ".next", "coverage"]
+    "ignore": ["node_modules", "dist", ".next", "coverage", "supabase/.temp"]
   }
 }
