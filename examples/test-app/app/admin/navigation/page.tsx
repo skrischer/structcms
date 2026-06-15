@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, NavigationEditor, Skeleton, useApiClient } from '@structcms/admin';
+import { NavigationEditor, Skeleton, useApiClient } from '@structcms/admin';
 import type { NavigationItem } from '@structcms/core';
 import * as React from 'react';
 
@@ -53,33 +53,31 @@ export default function NavigationPage() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="max-w-[1100px] mx-auto space-y-4">
         <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-4 w-64" />
+        <Skeleton className="h-64 w-full" shape="rect" />
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-red-600">{error}</div>;
+    return (
+      <div className="max-w-[1100px] mx-auto flex-1 flex flex-col">
+        <p className="text-[14px] text-[var(--admin-error-700)]">{error}</p>
+      </div>
+    );
   }
 
   if (!navigation) {
     return (
-      <div className="text-gray-600">No navigation found. Create one via the seed endpoint.</div>
+      <div className="max-w-[1100px] mx-auto flex-1 flex flex-col">
+        <p className="text-[14px] text-[var(--admin-gray-600)]">
+          No navigation found. Create one via the seed endpoint.
+        </p>
+      </div>
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Navigation: {navigation.name}</h1>
-        <Button onClick={() => handleSave(navigation.items)} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Navigation'}
-        </Button>
-      </div>
-
-      <NavigationEditor items={navigation.items} onSave={handleSave} />
-    </div>
-  );
+  return <NavigationEditor items={navigation.items} onSave={handleSave} saving={saving} />;
 }

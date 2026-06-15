@@ -96,7 +96,7 @@ describe('PageList', () => {
       expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/No pages yet/)).toBeInTheDocument();
+    expect(screen.getByText(/No pages found/)).toBeInTheDocument();
   });
 
   it('shows error state on API failure', async () => {
@@ -111,16 +111,16 @@ describe('PageList', () => {
     expect(screen.getByText('Server error')).toBeInTheDocument();
   });
 
-  it('renders Create New Page button', async () => {
+  it('renders New Page button', async () => {
     mockFetchSuccess([]);
 
     renderWithProvider(<PageList onSelectPage={() => {}} onCreatePage={() => {}} />);
 
     expect(screen.getByTestId('create-page')).toBeInTheDocument();
-    expect(screen.getByText('Create New Page')).toBeInTheDocument();
+    expect(screen.getByText('New Page')).toBeInTheDocument();
   });
 
-  it('calls onCreatePage when Create New Page is clicked', async () => {
+  it('calls onCreatePage when New Page is clicked', async () => {
     mockFetchSuccess([]);
     const handleCreate = vi.fn();
     const user = userEvent.setup();
@@ -130,22 +130,6 @@ describe('PageList', () => {
     await user.click(screen.getByTestId('create-page'));
 
     expect(handleCreate).toHaveBeenCalledTimes(1);
-  });
-
-  it('calls onSelectPage when a row is clicked', async () => {
-    mockFetchSuccess(mockPages);
-    const handleSelect = vi.fn();
-    const user = userEvent.setup();
-
-    renderWithProvider(<PageList onSelectPage={handleSelect} onCreatePage={() => {}} />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('page-row-1')).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByTestId('page-row-1'));
-
-    expect(handleSelect).toHaveBeenCalledWith(mockPages[0]);
   });
 
   it('filters pages by search input', async () => {

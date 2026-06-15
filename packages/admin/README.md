@@ -49,15 +49,19 @@ packages/admin/
 │   │   ├── inputs/
 │   │   │   ├── string-input.tsx              # Single-line text input
 │   │   │   ├── text-input.tsx                # Textarea input
+│   │   │   ├── url-input.tsx                 # URL input with validation
+│   │   │   ├── boolean-input.tsx             # Checkbox/toggle input
+│   │   │   ├── select-input.tsx              # Dropdown select input
 │   │   │   ├── rich-text-editor.tsx          # WYSIWYG editor (Tiptap)
-│   │   │   ├── image-picker.tsx              # Media browser integration
+│   │   │   ├── image-picker.tsx              # Image media browser integration
+│   │   │   ├── file-picker.tsx               # Document/file media browser integration
 │   │   │   ├── array-field.tsx               # Add/remove/reorder items
 │   │   │   └── object-field.tsx              # Nested object form
 │   │   ├── content/
 │   │   │   ├── page-list.tsx                 # Page listing with search/filter
 │   │   │   └── navigation-editor.tsx         # Navigation item editor
 │   │   ├── media/
-│   │   │   └── media-browser.tsx             # Browse, upload, select media
+│   │   │   └── media-browser.tsx             # Browse, upload, select media (supports category filter)
 │   │   ├── layout/
 │   │   │   └── admin-layout.tsx              # Admin shell with sidebar
 │   │   └── ui/                               # Base UI primitives
@@ -80,7 +84,7 @@ packages/admin/
 
 ### Form Generation
 
-The `FormGenerator` component reads a Zod schema and renders the appropriate input component for each field based on its `FieldType` metadata (set by `fields.*` helpers from `@structcms/core`).
+The `FormGenerator` component reads a Zod schema and renders the appropriate input component for each field based on its `FieldType` metadata (set by `fields.*` helpers from `@structcms/core`). Fields with `visibleWhen` metadata are conditionally shown/hidden based on other field values.
 
 ### AdminProvider
 
@@ -117,8 +121,12 @@ The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `de
 
 - **`StringInput`** — Single-line text input for `fields.string()`
 - **`TextInput`** — Textarea for `fields.text()`
-- **`RichTextEditor`** — WYSIWYG editor using Tiptap for `fields.richtext()`
-- **`ImagePicker`** — Media browser integration for `fields.image()`
+- **`UrlInput`** — URL input with `type="url"` for `fields.url()`
+- **`BooleanInput`** — Checkbox/toggle for `fields.boolean()`
+- **`SelectInput`** — Dropdown select for `fields.select()`
+- **`RichTextEditor`** — WYSIWYG editor using Tiptap for `fields.richtext()`. Supports `allowedBlocks` prop to restrict toolbar buttons (e.g. `['bold', 'italic', 'heading2', 'list']`)
+- **`ImagePicker`** — Media browser integration for `fields.image()` (filters to image category)
+- **`FilePicker`** — Media browser integration for `fields.file()` (filters to document category)
 - **`ArrayField`** — Dynamic list with add/remove/reorder for `fields.array()`
 - **`ObjectField`** — Nested form for `fields.object()`
 
@@ -129,7 +137,7 @@ The `useApiClient()` hook provides typed HTTP methods (`get`, `post`, `put`, `de
 
 ### Media Components
 
-- **`MediaBrowser`** — Browse, upload, and select media files
+- **`MediaBrowser`** — Browse, upload, and select media files. Supports `category` prop (`'image'` or `'document'`) to filter by media type
 
 ### Layout Components
 
@@ -141,7 +149,7 @@ Base components in `src/components/ui/`: `Button`, `Input`, `Textarea`, `Label`,
 
 ### Utilities
 
-- **`FormGenerator`** — Maps Zod schemas to React Hook Form inputs with field type detection
+- **`FormGenerator`** — Maps Zod schemas to React Hook Form inputs with field type detection. Supports conditional field visibility via `visibleWhen()` metadata
 
 ## Dependencies
 

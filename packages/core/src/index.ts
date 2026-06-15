@@ -13,6 +13,7 @@ export type {
   DefineSectionConfig,
   FieldType,
   FieldMeta,
+  FieldGroup,
   InferSectionData,
   CreateRegistryConfig,
   Registry,

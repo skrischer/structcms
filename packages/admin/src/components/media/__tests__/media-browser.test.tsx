@@ -148,7 +148,7 @@ describe('MediaBrowser', () => {
     expect(screen.getByTestId('media-delete-3')).toBeInTheDocument();
   });
 
-  it('removes item from grid when delete is clicked', async () => {
+  it('removes item from grid when delete is confirmed', async () => {
     mockFetchSuccess(mockMedia);
     const user = userEvent.setup();
 
@@ -166,7 +166,14 @@ describe('MediaBrowser', () => {
       })
     );
 
+    // Click delete to open confirmation dialog
     await user.click(screen.getByTestId('media-delete-1'));
+
+    // Confirm delete in dialog
+    await waitFor(() => {
+      expect(screen.getByTestId('confirm-delete')).toBeInTheDocument();
+    });
+    await user.click(screen.getByTestId('confirm-delete'));
 
     await waitFor(() => {
       expect(screen.queryByTestId('media-item-1')).not.toBeInTheDocument();
@@ -175,7 +182,7 @@ describe('MediaBrowser', () => {
     expect(screen.getByTestId('media-item-2')).toBeInTheDocument();
   });
 
-  it('shows Load More button when there are more items', async () => {
+  it('shows pagination when there are more items than pageSize', async () => {
     // Return exactly pageSize items to indicate more available
     const fullPage = Array.from({ length: 12 }, (_, i) => ({
       id: String(i + 1),
@@ -187,11 +194,13 @@ describe('MediaBrowser', () => {
     renderWithProvider(<MediaBrowser pageSize={12} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('load-more')).toBeInTheDocument();
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
+
+    expect(screen.getByText(/Page 1 of/)).toBeInTheDocument();
   });
 
-  it('does not show Load More when fewer items than pageSize', async () => {
+  it('does not show pagination when fewer items than pageSize', async () => {
     mockFetchSuccess(mockMedia); // 3 items, default pageSize=12
 
     renderWithProvider(<MediaBrowser />);
@@ -200,7 +209,20 @@ describe('MediaBrowser', () => {
       expect(screen.getByTestId('media-grid')).toBeInTheDocument();
     });
 
-    expect(screen.queryByTestId('load-more')).not.toBeInTheDocument();
+    expect(screen.getByText(/Page \d+ of/)).toBeInTheDocument();
+  });
+
+  it('shows upload zone above grid when items exist', async () => {
+    mockFetchSuccess(mockMedia);
+
+    renderWithProvider(<MediaBrowser />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('media-grid')).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId('upload-zone')).toBeInTheDocument();
+    expect(screen.getByText('Click here to upload files')).toBeInTheDocument();
   });
 
   it('displays filenames for each media item', async () => {

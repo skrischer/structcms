@@ -7,7 +7,6 @@ dotenvConfig({ path: resolve(__dirname, '../../.env') });
 
 export default defineConfig({
   test: {
-    globals: true,
     include: ['src/**/*.test.{ts,tsx}'],
   },
 });

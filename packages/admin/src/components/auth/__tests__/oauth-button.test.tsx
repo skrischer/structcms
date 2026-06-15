@@ -76,7 +76,7 @@ describe('OAuthButton', () => {
       render(<OAuthButton provider="google" apiBaseUrl="/api/auth" />);
 
       const button = screen.getByRole('button');
-      // Button component should apply variant="outline" styles
+      // Button component should apply variant="secondary" styles
       expect(button).toBeInTheDocument();
     });
   });

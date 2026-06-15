@@ -36,9 +36,11 @@ StructCMS is embedded into the host project but connects to managed backend infr
 **Purpose**: Defines schemas and content structures using Zod.
 
 - Section schema definitions via `defineSection`
-- Field type definitions (`fields.string()`, `fields.richtext()`, `fields.image()`, etc.)
+- Field type definitions: `fields.string()`, `fields.text()`, `fields.richtext()`, `fields.image()`, `fields.file()`, `fields.url()`, `fields.boolean()`, `fields.select()`, `fields.reference()`, `fields.array()`, `fields.object()`
+- Configurable richtext toolbar via `fields.richtext({ allowedBlocks })`
+- Conditional field visibility via `visibleWhen(schema, field, values)`
 - Validation rules
-- TypeScript type inference from schemas via `InferSectionData`
+- TypeScript type inference from schemas via `InferSectionData<T>`
 
 Key concepts: **Section** (reusable content block with defined fields), **Page Type** (template defining which sections a page can contain), **Field Types** (primitives and complex types for content fields).
 
@@ -84,7 +86,8 @@ media
 ├─ filename (text)
 ├─ storage_path (text)
 ├─ mime_type (text)
-├─ size (integer)
+├─ size (bigint)
+├─ category (text, default 'image', CHECK: 'image' | 'document')
 ├─ created_at (timestamptz)
 └─ updated_at (timestamptz)
 
@@ -139,12 +142,13 @@ DELETE /api/cms/media/:id        # Delete media
 
 **Purpose**: Content management interface for editors.
 
-- Dynamic form generation from Zod schemas
-- Section editors with field-type-specific inputs
-- Media browser and upload
+- Dynamic form generation from Zod schemas with conditional field visibility
+- Section editors with field-type-specific inputs (string, text, url, boolean, select, richtext, image, file, array, object)
+- Configurable richtext toolbar via `allowedBlocks`
+- Media browser with category filter (images/documents) and upload
 - Content listing and filtering
 
-Key components: `PageEditor`, `SectionEditor`, `MediaBrowser`, `PageList`, `NavigationEditor`, `AdminLayout`, `AdminProvider`.
+Key components: `PageEditor`, `SectionEditor`, `FormGenerator`, `MediaBrowser`, `PageList`, `NavigationEditor`, `AdminLayout`, `AdminProvider`.
 
 See `packages/admin/src/components/` for implementation.
 

@@ -14,10 +14,10 @@
   },
   "homepage": "https://github.com/skrischer/structcms#readme",
   "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=22.14.0",
+    "pnpm": ">=11.0.7"
   },
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@11.7.0",
   "scripts": {
     "build": "pnpm -r build",
     "test": "vitest",
@@ -26,7 +26,8 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "typecheck": "pnpm build && pnpm -r typecheck",
-    "lint:strict": "biome check --max-diagnostics=100 ."
+    "lint:strict": "biome check --max-diagnostics=100 .",
+    "dev": "pnpm --filter test-app dev"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",

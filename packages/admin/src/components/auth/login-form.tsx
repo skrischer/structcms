@@ -35,8 +35,8 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
@@ -49,7 +49,7 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
@@ -62,7 +62,11 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
         />
       </div>
 
-      {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{error}</div>}
+      {error && (
+        <div className="text-[13px] text-[var(--admin-error-700)] bg-[var(--admin-error-50)] p-3 rounded-[var(--admin-radius-md)] border border-[var(--admin-error-100)]">
+          {error}
+        </div>
+      )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Signing in...' : 'Sign In'}

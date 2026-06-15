@@ -132,6 +132,7 @@ SQL migrations for Supabase PostgreSQL:
 - `004_enable_rls.sql` - Row Level Security policies
 - `005_media_size_bigint.sql` - Media size column INTEGER→BIGINT
 - `006_authenticated_policies.sql` - RLS policies for authenticated role
+- `007_media_category.sql` - Media category column (image/document) with CHECK constraint
 
 All migrations use PostgreSQL with Supabase extensions.
 
@@ -232,7 +233,7 @@ For detailed documentation, see:
 
 ### Create a Section
 ```typescript
-import { defineSection, fields } from '@structcms/core';
+import { defineSection, fields, visibleWhen } from '@structcms/core';
 
 const HeroSection = defineSection({
   name: 'hero',
@@ -240,6 +241,9 @@ const HeroSection = defineSection({
     title: fields.string(),
     subtitle: fields.text(),
     image: fields.image(),
+    showCta: fields.boolean(),
+    ctaUrl: visibleWhen(fields.url(), 'showCta', 'true'),
+    layout: fields.select({ options: ['centered', 'split'] as const }),
   },
 });
 ```
@@ -304,3 +308,33 @@ export const { GET, POST, PUT, DELETE } = createNextPagesRoute({
 │   - Auth + Storage                  │
 └─────────────────────────────────────┘
 ```
+
+## Design Context
+
+### Users
+Content editors and developers managing websites through a headless CMS admin interface. Non-technical users should feel confident without training; developers should feel at home with precision and predictability.
+
+### Brand Personality
+**Warm, intuitive, reliable.** Approachable without being casual. Competence through clarity, not complexity.
+
+### Emotional Goals
+- **Clarity & calm** — No visual stress. Scannable and predictable.
+- **Efficiency & flow** — The tool disappears behind the task.
+- **Trust & control** — Users always understand what's happening.
+
+### Design Principles
+1. **Content is the star.** The interface frames content, never competes with it.
+2. **Quiet confidence.** Professional without corporate. Warm without playful.
+3. **Predictability over novelty.** Consistent patterns reduce cognitive load.
+4. **Density with clarity.** Maximum useful information without clutter.
+5. **Accessible by default.** WCAG 2.1 AA is the baseline.
+
+### References & Anti-References
+- **Like:** Notion / Linear (clean, content-first, minimal noise)
+- **Not like:** WordPress (cluttered, legacy), generic SaaS (dark-navy + neon accent)
+- **Theme:** Light mode only. Slate grays for warmth.
+
+### Canonical Design Files
+- **Full spec:** `design-system/structcms-admin/MASTER.md` (authoritative)
+- **CSS tokens:** `packages/admin/src/styles/admin.css`
+- **Design context:** `.impeccable.md` (detailed version)

@@ -15,7 +15,7 @@ For product vision, scope, and positioning, see [docs/CONCEPT.md](./docs/CONCEPT
 npm install @structcms/core @structcms/api @structcms/admin
 
 # 2. Define a section
-import { defineSection, fields } from '@structcms/core';
+import { defineSection, fields, visibleWhen } from '@structcms/core';
 
 const HeroSection = defineSection({
   name: 'hero',
@@ -23,6 +23,9 @@ const HeroSection = defineSection({
     title: fields.string(),
     subtitle: fields.text(),
     image: fields.image(),
+    showCta: fields.boolean(),
+    ctaUrl: visibleWhen(fields.url(), 'showCta', 'true'),
+    layout: fields.select({ options: ['centered', 'split'] as const }),
   },
 });
 

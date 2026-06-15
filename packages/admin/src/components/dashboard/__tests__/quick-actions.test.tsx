@@ -19,10 +19,10 @@ describe('QuickActions', () => {
     expect(screen.getByText('Quick Actions')).toBeInTheDocument();
   });
 
-  it('renders Create New Page button', () => {
+  it('renders New Page button', () => {
     render(<QuickActions {...defaultProps} />);
     expect(screen.getByTestId('quick-action-create-page')).toBeInTheDocument();
-    expect(screen.getByText('Create New Page')).toBeInTheDocument();
+    expect(screen.getByText('New Page')).toBeInTheDocument();
   });
 
   it('renders Upload Media button', () => {
@@ -60,7 +60,28 @@ describe('QuickActions', () => {
 
   it('does not require any API dependency', () => {
     // QuickActions should render without AdminProvider (no useAdmin/useApiClient)
+    // Without onEditNavigation, only 2 buttons are rendered
     const { container } = render(<QuickActions {...defaultProps} />);
     expect(container.querySelectorAll('button')).toHaveLength(2);
+  });
+
+  it('renders Edit Navigation button when onEditNavigation is provided', () => {
+    const onEditNavigation = vi.fn();
+    render(<QuickActions {...defaultProps} onEditNavigation={onEditNavigation} />);
+    expect(screen.getByTestId('quick-action-edit-navigation')).toBeInTheDocument();
+    expect(screen.getByText('Edit Navigation')).toBeInTheDocument();
+  });
+
+  it('calls onEditNavigation when Edit Navigation is clicked', async () => {
+    const onEditNavigation = vi.fn();
+    render(<QuickActions {...defaultProps} onEditNavigation={onEditNavigation} />);
+
+    await userEvent.click(screen.getByTestId('quick-action-edit-navigation'));
+    expect(onEditNavigation).toHaveBeenCalledOnce();
+  });
+
+  it('renders 3 buttons when onEditNavigation is provided', () => {
+    const { container } = render(<QuickActions {...defaultProps} onEditNavigation={vi.fn()} />);
+    expect(container.querySelectorAll('button')).toHaveLength(3);
   });
 });

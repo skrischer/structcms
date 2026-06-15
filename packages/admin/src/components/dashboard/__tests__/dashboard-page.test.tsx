@@ -32,13 +32,19 @@ function renderWithProvider(props = defaultProps) {
 }
 
 const mockPages: PageSummary[] = [
-  { id: '1', title: 'Home', slug: 'home', pageType: 'landing', updatedAt: '2026-02-09T00:00:00Z' },
+  {
+    id: '1',
+    title: 'Home',
+    slug: 'home',
+    pageType: 'landing',
+    meta: { updatedAt: '2026-02-09T00:00:00Z' },
+  },
   {
     id: '2',
     title: 'About',
     slug: 'about',
     pageType: 'landing',
-    updatedAt: '2026-02-08T00:00:00Z',
+    meta: { updatedAt: '2026-02-08T00:00:00Z' },
   },
 ];
 
@@ -94,10 +100,10 @@ describe('DashboardPage', () => {
     expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
   });
 
-  it('renders Dashboard heading', () => {
+  it('does not render its own Dashboard heading (handled by layout HeaderBar)', () => {
     mockAllApiSuccess();
     renderWithProvider();
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Dashboard' })).not.toBeInTheDocument();
   });
 
   it('renders KpiCards sub-component', () => {
@@ -112,10 +118,10 @@ describe('DashboardPage', () => {
     expect(screen.getByTestId('recent-pages')).toBeInTheDocument();
   });
 
-  it('renders QuickActions sub-component', () => {
+  it('does not render QuickActions (removed per design)', () => {
     mockAllApiSuccess();
     renderWithProvider();
-    expect(screen.getByTestId('quick-actions')).toBeInTheDocument();
+    expect(screen.queryByTestId('quick-actions')).not.toBeInTheDocument();
   });
 
   it('displays KPI counts after data loads', async () => {
@@ -128,7 +134,6 @@ describe('DashboardPage', () => {
 
     expect(screen.getByTestId('kpi-media-value')).toHaveTextContent('1');
     expect(screen.getByTestId('kpi-navigation-value')).toHaveTextContent('1');
-    expect(screen.getByTestId('kpi-sections-value')).toHaveTextContent('1');
   });
 
   it('displays recent pages after data loads', async () => {
@@ -143,46 +148,14 @@ describe('DashboardPage', () => {
     expect(screen.getByText('About')).toBeInTheDocument();
   });
 
-  it('passes onSelectPage to RecentPages', async () => {
-    const onSelectPage = vi.fn();
-    mockAllApiSuccess();
-    renderWithProvider({ ...defaultProps, onSelectPage });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('recent-page-1')).toBeInTheDocument();
-    });
-
-    await userEvent.click(screen.getByTestId('recent-page-1'));
-    expect(onSelectPage).toHaveBeenCalledWith(mockPages[0]);
-  });
-
-  it('passes onCreatePage to QuickActions', async () => {
-    const onCreatePage = vi.fn();
-    mockAllApiSuccess();
-    renderWithProvider({ ...defaultProps, onCreatePage });
-
-    await userEvent.click(screen.getByTestId('quick-action-create-page'));
-    expect(onCreatePage).toHaveBeenCalledOnce();
-  });
-
-  it('passes onUploadMedia to QuickActions', async () => {
-    const onUploadMedia = vi.fn();
-    mockAllApiSuccess();
-    renderWithProvider({ ...defaultProps, onUploadMedia });
-
-    await userEvent.click(screen.getByTestId('quick-action-upload-media'));
-    expect(onUploadMedia).toHaveBeenCalledOnce();
-  });
-
   it('wraps sections in ErrorBoundary for isolation', () => {
     mockAllApiSuccess();
     renderWithProvider();
 
     // ErrorBoundaries are present — if a child throws, the boundary catches it
-    // We verify by checking that all 3 sections render independently
+    // We verify by checking that both sections render independently
     expect(screen.getByTestId('kpi-cards')).toBeInTheDocument();
     expect(screen.getByTestId('recent-pages')).toBeInTheDocument();
-    expect(screen.getByTestId('quick-actions')).toBeInTheDocument();
   });
 
   it('applies custom className', () => {
@@ -195,14 +168,11 @@ describe('DashboardPage', () => {
     expect(screen.getByTestId('dashboard-page')).toHaveClass('my-dashboard');
   });
 
-  it('uses responsive grid layout', () => {
+  it('uses vertical stacked layout', () => {
     mockAllApiSuccess();
     renderWithProvider();
 
-    // The dashboard has a grid layout for RecentPages + QuickActions
-    // Find the grid that contains both recent-pages and quick-actions
-    const recentPages = screen.getByTestId('recent-pages');
-    const gridParent = recentPages.closest('.md\\:grid-cols-3');
-    expect(gridParent).toBeInTheDocument();
+    const dashboard = screen.getByTestId('dashboard-page');
+    expect(dashboard).toHaveClass('flex', 'flex-col', 'gap-6');
   });
 });

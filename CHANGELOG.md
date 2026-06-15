@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-06-15
+
+### Features
+
+- Admin design system: foundational atoms, design tokens, and a `DesignSystemPage` showcase
+- Redesigned admin views: Dashboard, Pages List, page editor, login, and edit-page view
+- Media browser redesign with search, filters, and pagination
+- Navigation editor redesign with card layout and hierarchy
+- Dynamic admin components: Sidebar, HeaderBar, DataTable, Pagination
+- Field system: field groups, field descriptions, and modernized field components built on design-system atoms
+- Responsive sidebar collapse replacing the mobile overlay
+- Clickable table rows in page list and dashboard
+
+### Fixes
+
+- Normalize raw hex/rgba values and hardcoded sizes to design tokens
+- Accessibility improvements across navigation editor and KPI cards (semantic markup, keyboard support)
+- Resolve array recursion bug in `resolveDataObject`
+- Remove `.js` extensions from audit module imports
+- Prevent double scrollbar caused by `sr-only` checkbox inputs
+
+### Build
+
+- Migrate publish pipeline to pnpm 11 with npm OIDC trusted publishing and provenance
+
 ## [0.1.0] - Unreleased
 
 ### Features

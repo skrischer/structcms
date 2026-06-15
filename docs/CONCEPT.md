@@ -56,11 +56,12 @@ Website projects register their own models dynamically.
 
 ### MVP
 
-- **Content Modeling** — Code-defined schemas (Zod), section/block content, page structures, navigation models
-- **Admin UI** — Dynamic form generation from schemas, section editors, media selection, content listing & editing
-- **API** — Content CRUD, delivery endpoints
+- **Content Modeling** — Code-defined schemas (Zod), section/block content, page structures, navigation models. Field types: string, text, richtext, image, file, url, boolean, select, reference, array, object
+- **Field Configuration** — Configurable richtext toolbar (`allowedBlocks`), conditional field visibility (`visibleWhen`), type-safe enum selects
+- **Admin UI** — Dynamic form generation from schemas, section editors, media selection (images + documents), content listing & editing
+- **API** — Content CRUD, delivery endpoints, media categorization (image/document)
 - **Backend Abstraction** — Storage interface (Supabase-agnostic), auth interface, future portability to self-hosted PostgreSQL
-- **Media** — Upload, storage (Supabase Storage), referencing in content
+- **Media** — Upload, storage (Supabase Storage), referencing in content, category-based filtering
 - **Content Export** — JSON export, database backup strategy
 
 ### Phase 2

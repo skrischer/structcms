@@ -1,19 +1,40 @@
-import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
-const labelVariants = cva(
-  'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+  required?: boolean;
+  optional?: boolean;
+  error?: boolean;
+  subtitle?: string;
+}
+
+const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
+  ({ className, children, required, optional, error, subtitle, ...props }, ref) => (
+    // biome-ignore lint/a11y/noLabelWithoutControl: Generic label component, control association handled by consumers
+    <label
+      ref={ref}
+      className={cn(
+        'text-[13px] font-medium leading-4 peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+        error ? 'text-[var(--admin-error-700)]' : 'text-[var(--admin-gray-600)]',
+        className
+      )}
+      {...props}
+    >
+      {children}
+      {required && <span className="text-[var(--admin-error-500)] ml-0.5">*</span>}
+      {optional && (
+        <span className="text-[11px] text-[var(--admin-gray-400)] font-normal ml-1.5">
+          (optional)
+        </span>
+      )}
+      {subtitle && (
+        <span className="text-[11px] text-[var(--admin-gray-400)] font-normal block mt-0.5">
+          {subtitle}
+        </span>
+      )}
+    </label>
+  )
 );
-
-export interface LabelProps
-  extends React.LabelHTMLAttributes<HTMLLabelElement>,
-    VariantProps<typeof labelVariants> {}
-
-const Label = React.forwardRef<HTMLLabelElement, LabelProps>(({ className, ...props }, ref) => (
-  // biome-ignore lint/a11y/noLabelWithoutControl: Generic label component, control association handled by consumers
-  <label ref={ref} className={cn(labelVariants(), className)} {...props} />
-));
 Label.displayName = 'Label';
 
-export { Label, labelVariants };
+export { Label };

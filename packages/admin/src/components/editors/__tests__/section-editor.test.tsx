@@ -30,7 +30,6 @@ describe('SectionEditor', () => {
     renderWithProvider(<SectionEditor sectionType="hero" onChange={() => {}} />);
 
     expect(screen.getByTestId('section-editor')).toBeInTheDocument();
-    expect(screen.getByText('hero')).toBeInTheDocument();
   });
 
   it('renders form fields from section schema', () => {

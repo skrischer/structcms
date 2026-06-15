@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Label, PageEditor, Skeleton, useAdmin, useApiClient } from '@structcms/admin';
+import { PageEditor, Skeleton, useAdmin, useApiClient } from '@structcms/admin';
 import type { SectionData } from '@structcms/core';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -74,58 +74,37 @@ export default function EditPagePage() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-10 w-full max-w-md" />
-        <Skeleton className="h-64 w-full" />
+      <div className="max-w-[1100px] mx-auto space-y-6 py-6">
+        <Skeleton className="h-4 w-48" shape="text" />
+        <Skeleton className="h-8 w-64" shape="text" />
+        <div className="rounded-lg border border-[var(--admin-border-default)] bg-[var(--admin-surface-card)] shadow-[var(--admin-shadow-xs)] p-5 space-y-4">
+          <Skeleton className="h-4 w-24" shape="text" />
+          <Skeleton className="h-9 w-full max-w-md" shape="rect" />
+          <Skeleton className="h-4 w-24" shape="text" />
+          <Skeleton className="h-9 w-48" shape="rect" />
+        </div>
+        <Skeleton className="h-64 w-full" shape="rect" />
       </div>
     );
   }
 
   if (error || !page) {
-    return <div className="text-red-600">{error || 'Page not found'}</div>;
+    return (
+      <div className="max-w-[1100px] mx-auto py-6">
+        <p className="text-[14px] text-[var(--admin-error-700)]">{error || 'Page not found'}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Edit Page: {page.title}</h1>
-
-      <div className="space-y-4 max-w-md">
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <input
-            id="title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-          />
-        </div>
-
-        <div>
-          <Label>Page Type</Label>
-          <p className="text-gray-600">{page.pageType}</p>
-        </div>
-
-        <div>
-          <Label>Slug</Label>
-          <p className="text-gray-600">{page.slug}</p>
-        </div>
-      </div>
-
-      {allowedSections.length > 0 && (
-        <PageEditor
-          sections={page.sections}
-          allowedSections={allowedSections}
-          onSave={handleSave}
-        />
-      )}
-
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={() => router.push('/admin/pages')}>
-          Cancel
-        </Button>
-      </div>
-    </div>
+    <PageEditor
+      sections={page.sections}
+      allowedSections={allowedSections}
+      onSave={handleSave}
+      pageTitle={title}
+      pageType={page.pageType}
+      pageSlug={page.slug}
+      onTitleChange={setTitle}
+    />
   );
 }

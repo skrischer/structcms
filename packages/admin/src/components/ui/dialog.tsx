@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../../lib/utils';
@@ -10,6 +11,7 @@ export interface DialogProps {
   children: React.ReactNode;
   className?: string;
   title?: string;
+  footer?: React.ReactNode;
 }
 
 const FOCUSABLE_SELECTOR =
@@ -76,7 +78,7 @@ function trapFocus(e: KeyboardEvent, elements: HTMLElement[]) {
  * </Dialog>
  * ```
  */
-function Dialog({ open, onClose, children, className, title }: DialogProps) {
+function Dialog({ open, onClose, children, className, title, footer }: DialogProps) {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   const previousActiveElementRef = React.useRef<HTMLElement | null>(null);
 
@@ -145,18 +147,19 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
       onCancel={handleCancel}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="backdrop:bg-black/50 fixed inset-0 z-50 p-0 bg-transparent"
+      className="backdrop:bg-[var(--admin-surface-overlay)] fixed inset-0 z-50 m-0 p-0 bg-transparent flex items-center justify-center"
+      data-structcms-admin=""
       data-testid="dialog-overlay"
     >
       <div
         className={cn(
-          'relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-lg border border-input bg-background p-6 shadow-lg',
+          'relative mx-4 max-h-[85vh] w-full max-w-3xl overflow-auto rounded-xl bg-[var(--admin-surface-card)] shadow-xl',
           className
         )}
         data-testid="dialog-content"
       >
         {title && (
-          <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center justify-between p-6 pb-0">
             <h2 className="text-lg font-semibold">{title}</h2>
             <button
               type="button"
@@ -165,11 +168,16 @@ function Dialog({ open, onClose, children, className, title }: DialogProps) {
               aria-label="Close"
               data-testid="dialog-close"
             >
-              ✕
+              <X size={16} strokeWidth={2} />
             </button>
           </div>
         )}
-        {children}
+        <div className="p-6 pt-4">{children}</div>
+        {footer && (
+          <div className="border-t border-[var(--admin-border-default)] bg-[var(--admin-gray-50)] px-6 py-4 rounded-b-xl">
+            {footer}
+          </div>
+        )}
       </div>
     </dialog>,
     document.body

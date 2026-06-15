@@ -174,6 +174,88 @@ describe('PageEditor', () => {
     expect(screen.getByTestId('page-editor')).toHaveClass('custom-class');
   });
 
+  it('renders Sections heading with count badge', () => {
+    const sections: SectionData[] = [
+      { type: 'hero', data: {} },
+      { type: 'content', data: {} },
+    ];
+
+    renderWithProvider(
+      <PageEditor sections={sections} allowedSections={['hero', 'content']} onSave={() => {}} />
+    );
+
+    expect(screen.getByText('Sections')).toBeInTheDocument();
+    expect(screen.getByText('2 sections on this page')).toBeInTheDocument();
+  });
+
+  it('does not render page settings when no page props provided', () => {
+    renderWithProvider(
+      <PageEditor sections={[]} allowedSections={['hero', 'content']} onSave={() => {}} />
+    );
+
+    expect(screen.queryByTestId('page-settings')).not.toBeInTheDocument();
+  });
+
+  it('renders page settings card when page props are provided', () => {
+    renderWithProvider(
+      <PageEditor
+        sections={[]}
+        allowedSections={['hero', 'content']}
+        onSave={() => {}}
+        pageTitle="My Page"
+        pageType="blog"
+        pageSlug="/my-page"
+      />
+    );
+
+    expect(screen.getByTestId('page-settings')).toBeInTheDocument();
+    expect(screen.getByText('Page Settings')).toBeInTheDocument();
+    expect(screen.getByTestId('page-title-input')).toHaveValue('My Page');
+    expect(screen.getByTestId('page-type-display')).toHaveTextContent('blog');
+    expect(screen.getByTestId('page-slug-display')).toHaveTextContent('/my-page');
+  });
+
+  it('calls onTitleChange when page title is edited', async () => {
+    const handleTitleChange = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithProvider(
+      <PageEditor
+        sections={[]}
+        allowedSections={['hero', 'content']}
+        onSave={() => {}}
+        pageTitle=""
+        pageType="blog"
+        pageSlug="/test"
+        onTitleChange={handleTitleChange}
+      />
+    );
+
+    await user.type(screen.getByTestId('page-title-input'), 'N');
+
+    expect(handleTitleChange).toHaveBeenCalledWith('N');
+  });
+
+  it('renders page type and slug as read-only', () => {
+    renderWithProvider(
+      <PageEditor
+        sections={[]}
+        allowedSections={['hero', 'content']}
+        onSave={() => {}}
+        pageTitle="Test"
+        pageType="blog"
+        pageSlug="/test"
+      />
+    );
+
+    const typeDisplay = screen.getByTestId('page-type-display');
+    const slugDisplay = screen.getByTestId('page-slug-display');
+
+    // These are divs, not inputs — inherently read-only
+    expect(typeDisplay.tagName).toBe('DIV');
+    expect(slugDisplay.tagName).toBe('DIV');
+  });
+
   it('captures unsaved section data when Save Page is clicked', async () => {
     const handleSave = vi.fn();
     const user = userEvent.setup();

@@ -24,7 +24,16 @@ export interface FieldMeta {
   fieldType: FieldType;
   options?: readonly string[];
   allowedBlocks?: readonly string[];
-  visibleWhen?: { field: string; values: string[] };
+  visibleWhen?: { field: string; values: (string | boolean)[] };
+}
+
+/**
+ * Groups related fields together with an optional description
+ */
+export interface FieldGroup<T extends z.ZodRawShape = z.ZodRawShape> {
+  name: string;
+  description?: string;
+  fields: Array<Extract<keyof T, string>>;
 }
 
 /**
@@ -33,6 +42,8 @@ export interface FieldMeta {
 export interface DefineSectionConfig<T extends z.ZodRawShape> {
   name: string;
   fields: T;
+  descriptions?: Partial<Record<Extract<keyof T, string>, string>>;
+  groups?: Array<FieldGroup<T>>;
 }
 
 /**
@@ -41,6 +52,8 @@ export interface DefineSectionConfig<T extends z.ZodRawShape> {
 export interface SectionDefinition<T extends z.ZodRawShape> {
   name: string;
   schema: z.ZodObject<T>;
+  descriptions?: Partial<Record<string, string>>;
+  groups?: Array<FieldGroup>;
 }
 
 /**

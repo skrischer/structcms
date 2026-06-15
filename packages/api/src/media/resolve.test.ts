@@ -189,6 +189,72 @@ describe('resolveMediaReferences', () => {
     expect(resolved[0].data.image).toBe('https://cdn.example.com/image1.jpg');
   });
 
+  it('should resolve media references inside arrays', async () => {
+    const sections: PageSection[] = [
+      {
+        id: 'gallery-1',
+        type: 'gallery',
+        data: {
+          images: [
+            { image: mediaId1, caption: 'First' },
+            { image: mediaId2, caption: 'Second' },
+          ],
+        },
+      },
+    ];
+
+    const resolved = await resolveMediaReferences(sections, mockAdapter);
+
+    const images = resolved[0].data.images as Record<string, unknown>[];
+    expect(images[0].image).toBe('https://cdn.example.com/image1.jpg');
+    expect(images[0].caption).toBe('First');
+    expect(images[1].image).toBe('https://cdn.example.com/image2.png');
+    expect(images[1].caption).toBe('Second');
+  });
+
+  it('should resolve deeply nested arrays', async () => {
+    const sections: PageSection[] = [
+      {
+        id: 'team-1',
+        type: 'team',
+        data: {
+          departments: [
+            {
+              name: 'Engineering',
+              persons: [
+                { name: 'Alice', avatar: mediaId1 },
+                { name: 'Bob', avatar: mediaId2 },
+              ],
+            },
+          ],
+        },
+      },
+    ];
+
+    const resolved = await resolveMediaReferences(sections, mockAdapter);
+
+    const departments = resolved[0].data.departments as Record<string, unknown>[];
+    const persons = departments[0].persons as Record<string, unknown>[];
+    expect(persons[0].avatar).toBe('https://cdn.example.com/image1.jpg');
+    expect(persons[1].avatar).toBe('https://cdn.example.com/image2.png');
+  });
+
+  it('should handle arrays with non-object items', async () => {
+    const sections: PageSection[] = [
+      {
+        id: 'tags-1',
+        type: 'tags',
+        data: {
+          tags: ['foo', 'bar', 42],
+        },
+      },
+    ];
+
+    const resolved = await resolveMediaReferences(sections, mockAdapter);
+
+    expect(resolved[0].data.tags).toEqual(['foo', 'bar', 42]);
+  });
+
   it('should resolve "media", "photo", "avatar", "icon" fields', async () => {
     const sections: PageSection[] = [
       {

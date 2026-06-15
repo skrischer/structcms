@@ -4,21 +4,20 @@ import { cn } from '../../lib/utils';
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   width?: string | number;
   height?: string | number;
+  shape?: 'text' | 'circle' | 'rect' | 'button';
 }
 
-/**
- * Skeleton loading placeholder with pulse animation.
- *
- * @example
- * ```tsx
- * <Skeleton className="h-4 w-48" />
- * <Skeleton width={200} height={20} />
- * ```
- */
-function Skeleton({ className, width, height, style, ...props }: SkeletonProps) {
+const shapeClasses: Record<string, string> = {
+  text: 'h-5 rounded-[var(--admin-radius-sm)]',
+  circle: 'rounded-full',
+  rect: 'rounded-lg',
+  button: 'rounded-md',
+};
+
+function Skeleton({ className, width, height, shape = 'text', style, ...props }: SkeletonProps) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-muted', className)}
+      className={cn('animate-pulse bg-[var(--admin-gray-200)]', shapeClasses[shape], className)}
       style={{ width, height, ...style }}
       data-testid="skeleton"
       {...props}

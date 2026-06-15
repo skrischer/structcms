@@ -63,7 +63,15 @@ async function resolveDataObject(
     if (isMediaField(key) && isMediaId(value)) {
       const media = await adapter.getMedia(value);
       resolved[key] = media ? media.url : null;
-    } else if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    } else if (Array.isArray(value)) {
+      resolved[key] = await Promise.all(
+        value.map((item) =>
+          item !== null && typeof item === 'object' && !Array.isArray(item)
+            ? resolveDataObject(item as Record<string, unknown>, adapter)
+            : item
+        )
+      );
+    } else if (value !== null && typeof value === 'object') {
       resolved[key] = await resolveDataObject(value as Record<string, unknown>, adapter);
     } else {
       resolved[key] = value;

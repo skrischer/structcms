@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { type AuditEntry, createAuditLogger, withAuditLog } from './logger.js';
+import { type AuditEntry, createAuditLogger, withAuditLog } from './logger';
 
 describe('createAuditLogger', () => {
   it('should use default sink when none provided', async () => {
@@ -107,7 +107,10 @@ describe('withAuditLog', () => {
 
   it('should extract userId when provided', async () => {
     const sink = vi.fn();
-    const handler = vi.fn(async (id: string, userId: string) => ({ id, userId }));
+    const handler = vi.fn(async (id: string, userId: string) => ({
+      id,
+      userId,
+    }));
 
     const wrapped = withAuditLog(
       handler,
