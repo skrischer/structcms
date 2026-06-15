@@ -1,5 +1,5 @@
-import type * as React from "react";
-import { cn } from "../../lib/utils";
+import type * as React from 'react';
+import { cn } from '../../lib/utils';
 
 export interface FieldGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: string;
@@ -8,13 +8,9 @@ export interface FieldGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function FieldGroup({ label, children, className, ...props }: FieldGroupProps) {
   return (
-    <div
-      className={cn("flex flex-col gap-4", className)}
-      data-testid="field-group"
-      {...props}
-    >
+    <div className={cn('flex flex-col gap-4', className)} data-testid="field-group" {...props}>
       {label && (
-        <div className="text-[12px] tracking-[0.06em] uppercase font-semibold text-[var(--admin-gray-500)]">
+        <div className="text-[11px] tracking-[0.06em] uppercase font-semibold text-[var(--admin-gray-500)]">
           {label}
         </div>
       )}
@@ -23,6 +19,6 @@ function FieldGroup({ label, children, className, ...props }: FieldGroupProps) {
   );
 }
 
-FieldGroup.displayName = "FieldGroup";
+FieldGroup.displayName = 'FieldGroup';
 
 export { FieldGroup };
