@@ -27,9 +27,36 @@ export default function AdminLayoutRoot({ children }) {
 }
 ```
 
-**Tailwind Configuration:** Add `./node_modules/@structcms/admin/dist/**/*.{js,mjs}` to your `tailwind.config.ts` content array.
+## Styling (Tailwind v4)
 
-See [examples/test-app/app/admin/](../../examples/test-app/app/admin/) for complete admin view implementations.
+The admin components ship design tokens, fonts and a scoped reset in
+`@structcms/admin/styles.css`, but **not** the utility classes themselves.
+Tailwind must generate those by scanning the compiled components. Tailwind v4
+does not scan `node_modules` by default, so add an explicit `@source` directive.
+
+In your global stylesheet (e.g. `app/globals.css`):
+
+```css
+@import "tailwindcss";
+@import "@structcms/admin/styles.css";        /* tokens, Inter/JetBrains fonts, reset */
+@source "../node_modules/@structcms/admin/dist"; /* generate the components' utility classes */
+```
+
+Notes:
+
+- `@source` must point at `dist` (only `dist` is published, not `src`) and the
+  path is resolved relative to the CSS file. Adjust the `../` depth to your
+  project layout.
+- All tokens are scoped under `[data-structcms-admin]`. The admin shell sets
+  this attribute for you; if you build your own shell, add
+  `data-structcms-admin` to its root element or the tokens won't apply.
+- This is Tailwind v4 setup. There is no `tailwind.config.ts` `content` array —
+  content sources are declared in CSS via `@source`.
+
+See [examples/test-app/app/globals.css](../../examples/test-app/app/globals.css)
+for the reference wiring and
+[examples/test-app/app/admin/](../../examples/test-app/app/admin/) for complete
+admin view implementations.
 
 ## File Structure
 
