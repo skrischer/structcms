@@ -71,6 +71,9 @@ output that reshapes the downstream roadmap before new capabilities are built.
   package (`core`, `api`, `admin`) plus one synthesis issue that consolidates the
   report, classifies severity, emits remediation output, and proposes roadmap
   reordering. The synthesis issue depends on the three package audits.
+  Cross-package concerns (e.g. the auth/session seam, whose symptoms live in both
+  `api` and `admin`) are audited by whichever package owns each symptom; the
+  synthesis stitches them into a single finding.
 
 ## Human prerequisites
 
@@ -83,12 +86,12 @@ output that reshapes the downstream roadmap before new capabilities are built.
 
 | Decision | Rationale | Date |
 |---|---|---|
-| Report lives at `docs/audits/feature-audit.md` | Follows the existing `docs/AUTH_AUDIT.md` audit-doc precedent | 2026-06-16 |
+| Report lives at `docs/audits/feature-audit.md` | Follows the existing `docs/AUTH_AUDIT.md` audit-doc precedent; `docs/audits/` is a new directory the synthesis issue creates | 2026-06-16 |
 | Audit method = claim -> `file:line` verification; agnostic-by-design vs unfinished-seam litmus test | Already applied to the auth layer this session; produces verifiable, non-speculative findings | 2026-06-16 |
 | Fixed severity scale `blocker`/`missing`/`partial`/`drift`/`ok` | Keeps findings comparable and prioritisable across packages | 2026-06-16 |
 | Issue split = one audit issue per package + one synthesis issue (synthesis depends on all three) | Mirrors the `architecture.md` component map; parallelisable audits, single consolidation point | 2026-06-16 |
 | Doc accuracy (`drift`) is in scope; deep security hardening is not | Stale docs are a real MVP-trust gap; security depth has its own `AUTH_AUDIT.md` track | 2026-06-16 |
-| Auth seam findings from this session fold into the `api` audit issue, re-verified | Avoids redoing work while keeping every finding cited | 2026-06-16 |
+| Auth seam spans `api` (session/cookie handlers) and `admin` (`enableAuth` not gating, `ProtectedRoute` bypass); each finding lands in the audit issue of the package that owns the symptom, re-verified; synthesis stitches them into one cross-package finding | Keeps findings in the correct package audit so none falls between issues, while reusing this session's analysis | 2026-06-16 |
 | OPEN — remediation-handling model: roadmap-first vs backlog-first vs hybrid | resolved at the spec-acceptance gate | — |
 
 ## Tracking
@@ -107,7 +110,8 @@ This list doubles as the human milestone-QA-gate script.
 
 - [ ] `pnpm verify` passes (the report is docs-only; no code behavior change).
 - [ ] `docs/audits/feature-audit.md` covers all three packages, and every
-      `present/partial/missing/blocker` verdict carries a `file:line` citation.
+      verdict (`ok`/`partial`/`missing`/`blocker`/`drift`) carries a `file:line`
+      citation — including `ok` (per Outcome: no claim recorded as fact without a cite).
 - [ ] The known findings are captured at minimum: field-type coverage vs claims
       (e.g. number/date/datetime), JSON-export coverage, the auth client/server
       cookie seam, `enableAuth` not gating, the `ProtectedRoute`
@@ -132,3 +136,7 @@ This list doubles as the human milestone-QA-gate script.
 - 2026-06-16: Report path, audit method, severity scale, issue decomposition, and
   the in/out-of-scope boundary fixed as Prior decisions above. Remediation-handling
   model left OPEN for the spec-acceptance gate.
+- 2026-06-16: Gate note — `roadmap.md` already states findings "may reshuffle later
+  phases" and this spec's Outcome commits to reflecting reordering in
+  `docs/roadmap.md`. That leans toward a roadmap-first model; the gate decision
+  should stay consistent with it rather than contradict the roadmap's stated intent.
