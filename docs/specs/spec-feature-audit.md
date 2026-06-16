@@ -1,6 +1,6 @@
 # Spec: Feature-Level Audit (Phase 1)
 
-> Status: DRAFT
+> Status: READY
 > Created: 2026-06-16
 
 Establish ground truth: verify what `core`/`api`/`admin` actually implement
@@ -19,7 +19,9 @@ output that reshapes the downstream roadmap before new capabilities are built.
 - [ ] Prior-art references relevant to the current MVP are benchmarked for
       fit/readiness (light touch; not a deep gap analysis).
 - [ ] Each discrepancy is classified by severity and converted into remediation
-      output per the accepted remediation-handling model (OPEN — gate decision).
+      output per the **roadmap-first** model: the verified report plus a proposed
+      `docs/roadmap.md` update (new/reordered remediation phases); each remediation
+      is planned later as its own phase via `/loopkit:plan` — no orphan issues.
 - [ ] `docs/roadmap.md` reflects any reordering the findings imply, or records an
       explicit "no reorder needed" with justification.
 
@@ -92,7 +94,7 @@ output that reshapes the downstream roadmap before new capabilities are built.
 | Issue split = one audit issue per package + one synthesis issue (synthesis depends on all three) | Mirrors the `architecture.md` component map; parallelisable audits, single consolidation point | 2026-06-16 |
 | Doc accuracy (`drift`) is in scope; deep security hardening is not | Stale docs are a real MVP-trust gap; security depth has its own `AUTH_AUDIT.md` track | 2026-06-16 |
 | Auth seam spans `api` (session/cookie handlers) and `admin` (`enableAuth` not gating, `ProtectedRoute` bypass); each finding lands in the audit issue of the package that owns the symptom, re-verified; synthesis stitches them into one cross-package finding | Keeps findings in the correct package audit so none falls between issues, while reusing this session's analysis | 2026-06-16 |
-| OPEN — remediation-handling model: roadmap-first vs backlog-first vs hybrid | resolved at the spec-acceptance gate | — |
+| Remediation-handling model = **roadmap-first**: audit emits the verified report + a proposed `docs/roadmap.md` update; each remediation is planned later as its own phase, no orphan issues filed | Keeps the spec -> milestone -> issue chain clean and matches the roadmap's stated intent that findings "may reshuffle later phases" | 2026-06-16 |
 
 ## Tracking
 
@@ -140,3 +142,7 @@ This list doubles as the human milestone-QA-gate script.
   phases" and this spec's Outcome commits to reflecting reordering in
   `docs/roadmap.md`. That leans toward a roadmap-first model; the gate decision
   should stay consistent with it rather than contradict the roadmap's stated intent.
+- 2026-06-16: Spec-acceptance gate — remediation-handling model resolved as
+  **roadmap-first** (report + proposed roadmap update; remediations planned as
+  their own phases). Human prerequisites confirmed `none`. Spec accepted, flipped
+  to READY.
