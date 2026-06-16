@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-06-16
+
+### Documentation
+
+- Correct `@structcms/admin` setup instructions for Tailwind v4. The previous guidance pointed at a Tailwind v3 `tailwind.config.ts` `content` array, which v4 ignores, leaving consumer admin UIs unstyled. The README now documents the `@structcms/admin/styles.css` import, the `@source` directive pointing at `dist`, and the required `data-structcms-admin` scoping.
+
 ## [0.2.0] - 2026-06-15
 
 ### Features
