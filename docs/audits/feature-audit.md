@@ -73,7 +73,7 @@ modeling, registry, field types, type inference (zod only)". Verified against
   claimed in the docs' field list, so they are `missing` capabilities rather than
   `drift`; for a content CMS their absence is material. They are currently
   unscheduled on the roadmap — routing them for scheduling (new field types ->
-  `@structcms/core` per `architecture.md:32`) is the synthesis issue's (#27) job.
+  `@structcms/core` per `architecture.md:31`) is the synthesis issue's (#27) job.
 
 - **Verdict summary (core):** 7 `ok`, 2 `partial`, 2 `missing`, 0 `blocker`,
   0 `drift` finding (R2 is a risk note attached to an `ok` capability). No phantom
